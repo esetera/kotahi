@@ -120,7 +120,7 @@
     "react-visibility-sensor": "5.1.1",
     "styled-components": "4.4.1",
     "supertest": "3.4.2",
-    "wax-prosemirror-core": "0.0.10",
+    "wax-prosemirror-core": "0.0.29",
     "wax-prosemirror-plugins": "0.0.10",
     "wax-prosemirror-schema": "0.0.10",
     "wax-prosemirror-services": "0.0.10",
