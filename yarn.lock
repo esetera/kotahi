@@ -17842,7 +17842,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prompt@flatiron/prompt#1c95d1d8d333b5fbc13fa5f0619f3dcf0d514f87:
+"prompt@github:flatiron/prompt#1c95d1d8d333b5fbc13fa5f0619f3dcf0d514f87":
   version "1.0.0"
   resolved "https://codeload.github.com/flatiron/prompt/tar.gz/1c95d1d8d333b5fbc13fa5f0619f3dcf0d514f87"
   dependencies:
@@ -18134,7 +18134,7 @@ pubsweet-client@10.2.5:
     styled-normalize "^8.0.6"
     subscriptions-transport-ws "^0.9.12"
 
-pubsweet-server@13.12.3, pubsweet-server@^13.11.1, pubsweet-server@^13.11.6, pubsweet-server@^13.12.3:
+pubsweet-server@13.12.3, pubsweet-server@^13.11.6, pubsweet-server@^13.12.3:
   version "13.12.3"
   resolved "https://registry.yarnpkg.com/pubsweet-server/-/pubsweet-server-13.12.3.tgz#f5fade9667000d2be8bc448f15b1df9a89fb58b2"
   integrity sha512-tl3LemBnFBBo5x/UucwevGDBYb2Jg7mwcYaxQ4tkzVHCoFqC9BB5wx9qGVHM9EwcwhiNMK+vqmzvDClFZrrbvw==
@@ -18176,13 +18176,13 @@ pubsweet-sse@^1.0.48:
   resolved "https://registry.yarnpkg.com/pubsweet-sse/-/pubsweet-sse-1.0.48.tgz#834b0c10f3f5d444691599cc1746877c275d3892"
   integrity sha512-9Kut+qefYSU82PQRzdrMBXVS/XDl5lNrzJ1Z98ANVnqsDmNcreFlxZXR32tgo7NRd26Q9KgSibItBtOI11yELQ==
 
-pubsweet@5.1.14:
-  version "5.1.14"
-  resolved "https://registry.yarnpkg.com/pubsweet/-/pubsweet-5.1.14.tgz#a4f8756e72b3a8c63b24344d52e72d7bdd3a5180"
-  integrity sha512-f8L4/099/fTU26fCmhBlv/QxhvAmutyNOJ7FfpYLVcXiJ7sWdWhtTwAHvI3mLMbIEXWbFhBCMIS9GH4OqDQHwg==
+pubsweet@5.1.23:
+  version "5.1.23"
+  resolved "https://registry.yarnpkg.com/pubsweet/-/pubsweet-5.1.23.tgz#e45a4c100007df0d9c68fa337e179d92cce427ed"
+  integrity sha512-cNQDZnVVO6uSRyp0ng2FvGqlS8hGXQ+DkgIYOYyWNsj0EivoTnEUnQTYs81gC/VevPoabSjvCqN0scUxGbqQcA==
   dependencies:
-    "@pubsweet/db-manager" "^3.1.11"
-    "@pubsweet/logger" "^0.2.46"
+    "@pubsweet/db-manager" "^3.1.19"
+    "@pubsweet/logger" "^0.2.54"
     colors "^1.1.2"
     commander "^2.20.0"
     config "^3.0.1"
@@ -18193,7 +18193,7 @@ pubsweet@5.1.14:
     lodash "^4.17.11"
     node-dev "^4.0.0"
     prompt flatiron/prompt#1c95d1d8d333b5fbc13fa5f0619f3dcf0d514f87
-    pubsweet-server "^13.11.1"
+    pubsweet-server "^13.12.3"
     webpack "^4.29.5"
     webpack-dev-middleware "^3.6.0"
     webpack-dev-server "^3.9.0"
