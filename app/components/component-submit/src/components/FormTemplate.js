@@ -19,6 +19,8 @@ import LinksInput from './LinksInput'
 import ValidatedFieldFormik from './ValidatedField'
 import Confirm from './Confirm'
 import { articleStatuses } from '../../../../globals'
+import axios from 'axios'
+import { VALIDATE_DOI } from '../../../../queries/index'
 
 const Intro = styled.div`
   font-style: italic;
@@ -110,7 +112,11 @@ const createMarkup = encodedHtml => ({
   __html: unescape(encodedHtml),
 })
 
-const composeValidate = (vld = [], valueField = {}) => value => {
+const requestDOIValidation = () => {
+  return axios.post('graphql', VALIDATE_DOI)
+}
+
+const composeValidate = (vld = [], valueField = {}, fieldName) => value => {
   const validator = vld || []
 
   if (validator.length === 0) return undefined
@@ -124,11 +130,21 @@ const composeValidate = (vld = [], valueField = {}) => value => {
           : validators[validatorFn](valueField[validatorFn])(value)
 
       if (error) {
+        console.log('error from FormTemplate')
+        console.log(error)
         errors.push(error)
       }
 
       return validatorFn
     })
+
+    if(errors.length === 0 && fieldName === 'submission.articleURL') {
+      return requestDOIValidation().then((response) => {
+        if (response) {
+          return 'DOI is not Valid'
+        }
+      })
+    }
   return errors.length > 0 ? errors[0] : undefined
 }
 
@@ -175,6 +191,11 @@ const FormTemplate = ({
       </Button>
     </div>
   )
+
+  console.log('form')
+  console.log(form)
+  console.log('validators')
+  console.log(validators)
 
   return (
     <Container>
@@ -253,9 +274,17 @@ const FormTemplate = ({
                     'shortDescription',
                     'order',
                   ])}
+                  // validate={(val) => {
+                  //   return requestDOIValidation().then((response) => {
+                  //     if(response) {
+                  //       return 'DOI is not Valid'
+                  //     }
+                  //   })
+                  // }}
                   validate={composeValidate(
                     element.validate,
                     element.validateValue,
+                    element.name,
                   )}
                   values={values}
                 />

@@ -507,6 +507,18 @@ const resolvers = {
 
       // return ctx.connectors.User.fetchAll(where, ctx, { eager })
     },
+
+    async validateDOI(_, { articleURL }, ctx) {
+      const DOI = encodeURI(articleURL.split('.org/')[1])
+      try {
+        const response = axios.get(`https://api.crossref.org/works/${DOI}/agency`)
+        console.log('responese================================================')
+        console.log(responese)
+      } catch(err) {
+        console.log('errrr====================================================')
+        console.log(err)
+      }
+    }
   },
   // We want submission into to come out as a stringified JSON, so that we don't have to
   // change our queries if the submission form changes. We still want to store it as JSONB
