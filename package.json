@@ -119,7 +119,7 @@
     "faker": "4.1.0",
     "font-awesome": "4.7.0",
     "formik": "2.2.6",
-    "fs-extra": "4.0.3",
+    "fs-extra": "9.1.0",
     "google-spreadsheet": "^3.1.15",
     "got": "11.7.0",
     "graphql": "^15.5.0",
