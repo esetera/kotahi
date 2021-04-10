@@ -204,7 +204,7 @@
     "cypress": "^6.8.0",
     "cypress-file-upload": "^5.0.2",
     "dotenv-cli": "^4.0.0",
-    "file-loader": "1.1.11",
+    "file-loader": "6.2.0",
     "html-webpack-plugin": "3.2.0",
     "jest-cli": "22.4.4",
     "joi-browser": "10.6.1",
