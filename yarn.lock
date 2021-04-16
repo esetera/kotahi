@@ -2487,12 +2487,12 @@
     objection "^2.1.6"
     uuid "^7.0.3"
 
-"@pubsweet/component-send-email@0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@pubsweet/component-send-email/-/component-send-email-0.4.3.tgz#caf8019f90b1fa490645a93f76725b83a951d7c9"
-  integrity sha512-ST9DxFbRjmWlVaXBFci/i4FFVN7YM6nySznb1jxsndWyvPLk2IhFrPP6iuGJXDEo4uplUnLk6EXkFKUEyPFmow==
+"@pubsweet/component-send-email@0.4.16":
+  version "0.4.16"
+  resolved "https://registry.yarnpkg.com/@pubsweet/component-send-email/-/component-send-email-0.4.16.tgz#260c71e1240125ffede7b3da89ed763fbd255c8d"
+  integrity sha512-s5P4oBB60kVbrZ6gdnqTexiN3aj2qvH4Ul/82HOIE8L76whPfpIMdQGnJ5c6yjUEEYpjpznXzdMH+wKIWp9bxA==
   dependencies:
-    nodemailer "^4.4.2"
+    nodemailer "^6.4.18"
 
 "@pubsweet/db-manager@^3.1.11", "@pubsweet/db-manager@^3.1.19":
   version "3.1.19"
@@ -14379,10 +14379,10 @@ node-wait-for-it@^0.2.0:
   resolved "https://registry.yarnpkg.com/node-wait-for-it/-/node-wait-for-it-0.2.0.tgz#598f13cedd25be61f5d2ab1691eb1923eea17464"
   integrity sha512-y3EiZ5xUhbP3vhptMVjyaVVWPtmb0mgXJUVRpMY6TM+CGjDg1tc1+foxF8sgiUVHqwOKtRZfqcfxDPNElNLofQ==
 
-nodemailer@^4.4.2:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.7.0.tgz#4420e06abfffd77d0618f184ea49047db84f4ad8"
-  integrity sha512-IludxDypFpYw4xpzKdMAozBSkzKHmNBvGanUREjJItgJ2NYcK/s8+PggVhj7c2yGFQykKsnnmv1+Aqo0ZfjHmw==
+nodemailer@^6.4.18:
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.5.0.tgz#d12c28d8d48778918e25f1999d97910231b175d9"
+  integrity sha512-Tm4RPrrIZbnqDKAvX+/4M+zovEReiKlEXWDzG4iwtpL9X34MJY+D5LnQPH/+eghe8DLlAVshHAJZAZWBGhkguw==
 
 nodemon@^2.0.6:
   version "2.0.7"
