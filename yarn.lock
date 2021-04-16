@@ -20665,7 +20665,16 @@ wax-prosemirror-services@0.0.40, wax-prosemirror-services@^0.0.40:
     wax-prosemirror-schema "^0.0.40"
     wax-prosemirror-utilities "^0.0.40"
 
-wax-prosemirror-utilities@0.0.40, wax-prosemirror-utilities@^0.0.40:
+wax-prosemirror-utilities@0.0.44:
+  version "0.0.44"
+  resolved "https://registry.yarnpkg.com/wax-prosemirror-utilities/-/wax-prosemirror-utilities-0.0.44.tgz#2fe96ee006d2a81cd808fe171b0e7bafd78e31bb"
+  integrity sha512-1hiE6ISlC5qSRcOE2Ex/qb9Io9bBHnvieYmxIxNbMGYOIwAB+NoD2mMuDJhZDI+B0sIIqZ7yRLZiBhVhCxuNlg==
+  dependencies:
+    prosemirror-commands "1.1.7"
+    prosemirror-utils "^0.9.6"
+    uuid "^7.0.3"
+
+wax-prosemirror-utilities@^0.0.40:
   version "0.0.40"
   resolved "https://registry.yarnpkg.com/wax-prosemirror-utilities/-/wax-prosemirror-utilities-0.0.40.tgz#6517ce9678110fee687d1a245fc094d2d7d06f79"
   integrity sha512-oPClqK5rRcjpywB1vRplnjlltFLKvSZxRmnJUqv1MoNGtt1QIRD/F/bTMHTuU/0r8EmUdNkA0GGgCh+qyWEwFw==
