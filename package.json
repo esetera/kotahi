@@ -101,7 +101,7 @@
     "@pubsweet/errors": "^2.0.40",
     "@pubsweet/job-xsweet": "^2.2.1",
     "@pubsweet/logger": "^0.2.50",
-    "@pubsweet/model-user": "6.0.3",
+    "@pubsweet/model-user": "6.0.16",
     "@pubsweet/models": "^0.3.15",
     "@pubsweet/ui": "12.6.0",
     "@pubsweet/ui-toolkit": "^2.3.5",

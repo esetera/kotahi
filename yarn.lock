@@ -2474,14 +2474,14 @@
     objection "^2.1.6"
     uuid "^7.0.3"
 
-"@pubsweet/base-model@^4.0.0":
-  version "4.0.8"
-  resolved "https://registry.yarnpkg.com/@pubsweet/base-model/-/base-model-4.0.8.tgz#22c35c8a95055ab37d89a2d64c56bacd1d89ec9f"
-  integrity sha512-2o07BnYibcu5YghVdGrLq3p9cECHbD2PPxD7wziZdGlbP2mcSwaAQ2yVe/3onvhYVBPgCpDuG+itBosPKGXUwQ==
+"@pubsweet/base-model@^4.0.13":
+  version "4.0.13"
+  resolved "https://registry.yarnpkg.com/@pubsweet/base-model/-/base-model-4.0.13.tgz#03e3e30a5dedc98b93f9ca9a90ebc494a92906db"
+  integrity sha512-QlEdVQAdg5VKyiSXUt4kUlJsiECZ54crXPqTQc2cXrLaSNYV8nT+rtk1ZhKuGIPitoG5/V+BhrHjpAUEB43+hg==
   dependencies:
-    "@pubsweet/db-manager" "^3.1.19"
-    "@pubsweet/errors" "^2.0.44"
-    "@pubsweet/logger" "^0.2.54"
+    "@pubsweet/db-manager" "^3.1.24"
+    "@pubsweet/errors" "^2.0.49"
+    "@pubsweet/logger" "^0.2.59"
     knex "^0.21.1"
     lodash "^4.17.11"
     objection "^2.1.6"
@@ -2531,6 +2531,13 @@
   dependencies:
     http-status-codes "^1.3.0"
 
+"@pubsweet/errors@^2.0.49":
+  version "2.0.49"
+  resolved "https://registry.yarnpkg.com/@pubsweet/errors/-/errors-2.0.49.tgz#a6a0edc38203a1c9a69d6ea5a2ab794f9aefca92"
+  integrity sha512-Rp4I7vDZXsnJNluXgdsRykv7JprGITCDr5onm+gIhYpkBjjDnCRr57gqH/Z3BMiYwWtz1EU9hpPfcXlyQ618Kw==
+  dependencies:
+    http-status-codes "^1.3.0"
+
 "@pubsweet/job-xsweet@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@pubsweet/job-xsweet/-/job-xsweet-2.2.1.tgz#0bdda8428f43cfc1d47bb6959248416f91942e2e"
@@ -2560,23 +2567,30 @@
     "@hapi/joi" "^14.5.0"
     config "^3.0.1"
 
-"@pubsweet/model-user@6.0.3":
-  version "6.0.3"
-  resolved "https://registry.yarnpkg.com/@pubsweet/model-user/-/model-user-6.0.3.tgz#b0ad3e307e293d9794f20bcc3797164732eb221b"
-  integrity sha512-7i86E0kfUu+seeSJqnFETGNAM1/sc8EnitW1QZYuCI3AMawfV4/qlVtlVLV9HdcOl6oORRzjtuiSm1+TcLhgwQ==
+"@pubsweet/model-user@6.0.16":
+  version "6.0.16"
+  resolved "https://registry.yarnpkg.com/@pubsweet/model-user/-/model-user-6.0.16.tgz#ecbd5b118aa1d1175569a3a92bfa17e24a9cca3b"
+  integrity sha512-uA1PvrKuRned8flCduEl9DCuAsXM8/HpTg3YJ/0VyX7toolobMyrSJ3Gregcu7qKSkoYgeD37ndotxeoZ8kTlw==
   dependencies:
-    "@pubsweet/base-model" "^4.0.0"
-    "@pubsweet/errors" "^2.0.36"
-    "@pubsweet/logger" "^0.2.46"
-    "@pubsweet/models" "^0.3.11"
+    "@pubsweet/base-model" "^4.0.13"
+    "@pubsweet/errors" "^2.0.49"
+    "@pubsweet/logger" "^0.2.59"
+    "@pubsweet/models" "^0.3.24"
     bcrypt "^3.0.6"
 
-"@pubsweet/models@^0.3.11", "@pubsweet/models@^0.3.15", "@pubsweet/models@^0.3.19":
+"@pubsweet/models@^0.3.15", "@pubsweet/models@^0.3.19":
   version "0.3.19"
   resolved "https://registry.yarnpkg.com/@pubsweet/models/-/models-0.3.19.tgz#c3a1ca7ccc4676ad9583914502648367a0c9c612"
   integrity sha512-I3PjWCoVAms36mqDCwyaO1dmhvTEZSZT54/Nuo7on4QJ1V800FX+Q73t/VduIhjACjmvt6op6lsFzoloIjp/mw==
   dependencies:
     "@pubsweet/logger" "^0.2.54"
+
+"@pubsweet/models@^0.3.24":
+  version "0.3.24"
+  resolved "https://registry.yarnpkg.com/@pubsweet/models/-/models-0.3.24.tgz#3037279d69c6f0ed0bd78089a5dfc75000fdba8e"
+  integrity sha512-NDfFbk+bM6ZqAhoykys3LEFrfg2KZJcgTes27PB9ke/WyClXp7I2Ujy8iOwXPTBvgchneSVVxgEfyQfIgyOJnQ==
+  dependencies:
+    "@pubsweet/logger" "^0.2.59"
 
 "@pubsweet/ui-toolkit@^2.3.1":
   version "2.3.12"
