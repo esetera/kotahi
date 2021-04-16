@@ -168,7 +168,7 @@
     "waait": "^1.0.5",
     "wax-prosemirror-core": "0.0.40",
     "wax-prosemirror-plugins": "0.0.40",
-    "wax-prosemirror-schema": "0.0.40",
+    "wax-prosemirror-schema": "0.0.44",
     "wax-prosemirror-services": "0.0.40",
     "wax-prosemirror-utilities": "0.0.40",
     "winston": "2.4.5",
