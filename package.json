@@ -173,7 +173,7 @@
     "wax-prosemirror-utilities": "0.0.40",
     "winston": "2.4.5",
     "ws": "^7.4.2",
-    "xpub-edit": "2.6.11",
+    "xpub-edit": "2.6.24",
     "xpub-journal": "0.1.0",
     "xpub-validators": "0.0.28",
     "xpub-with-context": "0.2.0"
