@@ -15,6 +15,23 @@ const logger = require('@pubsweet/logger')
 const STATUS = require('http-status-codes')
 const registerComponents = require('pubsweet-server/src/register-components') // TODO: Fix import
 const compression = require('compression')
+const AWS = require('aws-sdk')
+
+const s3Bucket = new AWS.S3({
+  accessKeyId: 'test',
+  secretAccessKey: 'password',
+  endpoint: 'http://localhost:9000/',
+  s3ForcePathStyle: true, 
+  signatureVersion: 'v4'
+});
+
+// const s3Bucket = new AWS.S3({
+//   accessKeyId: 'AKIAVR2MMN7MBSWISGQT',
+//   secretAccessKey: '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',
+//   endpoint: 'elife-kotahi-attachment-storage.s3.amazonaws.com',
+//   s3ForcePathStyle: true, 
+//   signatureVersion: 'v4'
+// });
 
 // Wax Collab requirements
 const EventEmitter = require('events')
@@ -49,6 +66,10 @@ const configureApp = app => {
 
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(cookieParser())
+  app.use((req, res, next) => {
+    res.s3 = s3Bucket
+    next()
+  })
   // TODO: With this requests all try to go to https even when it does not exist
   // app.use(
   //   helmet({

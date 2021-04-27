@@ -6,6 +6,9 @@ const path = require('path')
 const config = require('config')
 const jimp = require('jimp')
 
+const putParams = { Bucket: 'testbucket', Key: 'testobject', Body: 'Hello from MinIO!!' };
+
+
 const authBearer = passport.authenticate('bearer', { session: false })
 
 const storage = multer.diskStorage({
@@ -34,6 +37,9 @@ module.exports = app => {
     authBearer,
     upload.single('file'),
     async (req, res, next) => {
+      console.log('res')
+      console.log(res.s3)
+      return
       const user = await User.find(req.user)
 
       const image = await jimp.read(req.file.path)
