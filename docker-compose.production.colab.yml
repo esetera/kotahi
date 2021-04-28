@@ -25,6 +25,9 @@ services:
       - ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET}
       - USE_SANDBOXED_ORCID=${USE_SANDBOXED_ORCID:-false}
       - INSTANCE_NAME=${INSTANCE_NAME:-colab}
+      - S3_ACCES_KEY_ID=${S3_ACCES_KEY_ID}
+      - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
+      - S3_ENDPOINT={S3_ENDPOINT}
     entrypoint:
       [
         'bash',
