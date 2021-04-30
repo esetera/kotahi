@@ -1,11 +1,14 @@
+/* eslint-disable jest/expect-expect */
 import { FormsPage } from '../../page-object/forms-page'
 import { Menu } from '../../page-object/page-component/menu'
 import { dashboard } from '../../support/routes'
+import seedForms from '../../../scripts/seedForms'
 
 describe('Form builder', () => {
   it('views a form field', () => {
     // task to restore the database as per the  dumps/initialState.sql
     cy.task('restore', 'initialState')
+    seedForms()
 
     // login as admin
     // eslint-disable-next-line jest/valid-expect-in-promise

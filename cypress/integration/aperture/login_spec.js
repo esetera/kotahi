@@ -1,11 +1,14 @@
+/* eslint-disable jest/expect-expect */
 import { DashboardPage } from '../../page-object/dashboard-page'
 import { Menu } from '../../page-object/page-component/menu'
 import { dashboard } from '../../support/routes'
+import seedForms from '../../../scripts/seedForms'
 
 describe('Login test', () => {
   it('Can log in as admin (and logout)', () => {
     // task to restore the database as per the  dumps/initialState.sql
     cy.task('restore', 'initialState')
+    seedForms()
 
     // login as admin and validate admin is logedin
     // eslint-disable-next-line jest/valid-expect-in-promise

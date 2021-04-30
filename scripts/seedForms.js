@@ -1,9 +1,9 @@
-#! usr/bin/env node
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable no-console */
 
 const { Form } = require('@pubsweet/models')
+//const { db } = require('@pubsweet/db-manager')
 
 const formPaths = {
   aperture: '../app/storage/forms-aperture/submit.json',
@@ -14,6 +14,7 @@ const formPaths = {
 
 const seed = async () => {
   const [{ count }] = await Form.query().count()
+  // const [{ count }] = await db('forms').count('id')
 
   if (count > 0) {
     console.log('  Form(s) already exist in database. Skipping.')
@@ -36,9 +37,10 @@ const seed = async () => {
     }
 
     await Form.query().insert(submissionForm)
+    // await db('forms').insert(submissionForm)
     console.log(`  Added submission form ${formPath} to database.`)
     process.exit()
   }
 }
 
-seed()
+module.exports = seed
