@@ -3,7 +3,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { get } from 'lodash'
 import { Attachment } from '@pubsweet/ui'
-import { AbstractEditor } from 'xpub-edit'
+import SimpleWaxEditor from '../../../../wax-collab/src/Editoria'
 import { Title, SectionHeader, SectionRowGrid } from '../style'
 import { SectionContent } from '../../../../shared'
 
@@ -20,7 +20,7 @@ const Cell = styled.span`
   padding: 0;
 `
 
-const UnadornedEditor = styled(AbstractEditor)`
+const UnadornedEditor = styled(SimpleWaxEditor)`
   border: none;
   padding: 0;
 `

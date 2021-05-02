@@ -10,9 +10,9 @@ import {
   Attachment,
 } from '@pubsweet/ui'
 import * as validators from 'xpub-validators'
-import { AbstractEditor } from 'xpub-edit'
 import config from 'config'
 import { useApolloClient } from '@apollo/client'
+import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
 import { Section as Container, Select, FilesUpload } from '../../../shared'
 import { Heading1, Section, Legend, SubNote } from '../style'
 import AuthorsInput from './AuthorsInput'
@@ -64,12 +64,7 @@ elements.AbstractEditor = ({
   ...rest
 }) => {
   return (
-    <AbstractEditor
-      bulletlist
-      joinaboveblock
-      liftitem
-      link
-      orderedlist
+    <SimpleWaxEditor
       value={get(values, rest.name) || ''}
       {...rest}
       onBlur={() => {
