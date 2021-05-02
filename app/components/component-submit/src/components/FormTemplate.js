@@ -52,7 +52,7 @@ const filterFileManuscript = files =>
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   )
 
-// Add the AbstractEditor and AuthorsInput to the list of available form elements
+// Add AbstractEditor, AuthorsInput, Select and LinksInput to the list of available form elements
 const elements = { TextField, RadioGroup, CheckboxGroup }
 
 elements.AbstractEditor = ({
@@ -62,21 +62,21 @@ elements.AbstractEditor = ({
   value,
   values,
   ...rest
-}) => {
-  return (
-    <SimpleWaxEditor
-      value={get(values, rest.name) || ''}
-      {...rest}
-      onBlur={() => {
-        setTouched(set({}, rest.name, true))
-      }}
-      onChange={val => {
-        setTouched(set({}, rest.name, true))
-        onChange(val)
-      }}
-    />
-  )
-}
+}) => (
+  <SimpleWaxEditor
+    validationStatus={validationStatus}
+    value={get(values, rest.name) || ''}
+    {...rest}
+    onBlur={() => {
+      setTouched(set({}, rest.name, true))
+    }}
+    onChange={val => {
+      setTouched(set({}, rest.name, true))
+      const cleanedVal = val === '<p class="paragraph"></p>' ? '' : val
+      onChange(cleanedVal)
+    }}
+  />
+)
 
 elements.AbstractEditor.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types

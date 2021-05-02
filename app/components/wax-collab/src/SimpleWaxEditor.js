@@ -82,6 +82,10 @@ const EditorDiv = styled.div`
   padding: 16px;
   position: relative;
 
+  .error & {
+    border: 1px solid ${th('colorError')};
+  }
+
   /* stylelint-disable-next-line order/properties-alphabetical-order */
   ${EditorElements}
 `
@@ -129,25 +133,29 @@ const WaxLayout = readonly => ({ editor }) => (
 
 const SimpleWaxEditor = ({
   value,
+  validationStatus,
   readonly,
   autoFocus,
   placeholder,
   ...rest
 }) => (
-  <Wax
-    autoFocus={autoFocus}
-    config={waxConfig}
-    // fileUpload={file => renderImage(file)}
-    layout={WaxLayout(readonly)}
-    placeholder={placeholder}
-    readonly={readonly}
-    value={value}
-    {...rest}
-  />
+  <div className={validationStatus}>
+    <Wax
+      autoFocus={autoFocus}
+      config={waxConfig}
+      // fileUpload={file => renderImage(file)}
+      layout={WaxLayout(readonly)}
+      placeholder={placeholder}
+      readonly={readonly}
+      value={value}
+      {...rest}
+    />
+  </div>
 )
 
 SimpleWaxEditor.propTypes = {
   value: PropTypes.string,
+  validationStatus: PropTypes.string,
   readonly: PropTypes.bool,
   autoFocus: PropTypes.bool,
   placeholder: PropTypes.string,
@@ -155,6 +163,7 @@ SimpleWaxEditor.propTypes = {
 
 SimpleWaxEditor.defaultProps = {
   value: '',
+  validationStatus: undefined,
   readonly: false,
   autoFocus: false,
   placeholder: '',
