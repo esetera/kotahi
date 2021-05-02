@@ -110,6 +110,7 @@ const Menu = styled.div`
 `
 
 const TopBar = ComponentPlugin('topBar')
+const WaxOverlays = ComponentPlugin('waxOverlays')
 
 // eslint-disable-next-line react/prop-types
 const WaxLayout = readonly => ({ editor }) => (
@@ -122,6 +123,7 @@ const WaxLayout = readonly => ({ editor }) => (
       )}
       <EditorDiv className="wax-surface-scroll">{editor}</EditorDiv>
     </Grid>
+    <WaxOverlays />
   </div>
 )
 
