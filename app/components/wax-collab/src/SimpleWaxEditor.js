@@ -90,6 +90,12 @@ const EditorDiv = styled.div`
   ${EditorElements}
 `
 
+const ReadOnlyEditorDiv = styled.div`
+  grid-area: editor;
+  overflow: auto;
+  position: relative;
+`
+
 const Menu = styled.div`
   align-items: center;
   background: #fff;
@@ -120,12 +126,18 @@ const WaxOverlays = ComponentPlugin('waxOverlays')
 const WaxLayout = readonly => ({ editor }) => (
   <div>
     <Grid readonly={readonly}>
-      {!readonly && (
-        <Menu>
-          <TopBar />
-        </Menu>
+      {readonly ? (
+        <ReadOnlyEditorDiv className="wax-surface-scroll">
+          {editor}
+        </ReadOnlyEditorDiv>
+      ) : (
+        <>
+          <Menu>
+            <TopBar />
+          </Menu>
+          <EditorDiv className="wax-surface-scroll">{editor}</EditorDiv>
+        </>
       )}
-      <EditorDiv className="wax-surface-scroll">{editor}</EditorDiv>
     </Grid>
     <WaxOverlays />
   </div>
