@@ -83,22 +83,22 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: S3_ACCESS_KEY_ID
-                  name: orcid-secret
+                  name: "{{ .Values.s3secret }}"
             - name: S3_ACCESS_KEY_SECRET
               valueFrom:
                 secretKeyRef:
                   key: S3_ACCESS_KEY_SECRET
-                  name: orcid-secret
+                  name: "{{ .Values.s3secret }}"
             - name: S3_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   key: S3_ENDPOINT
-                  name: orcid-secret
+                  name: "{{ .Values.s3secret }}"
             - name: S3_REGION
               valueFrom:
                 secretKeyRef:
                   key: S3_REGION
-                  name: orcid-secret
+                  name: "{{ .Values.s3secret }}"
             - name: SERVER_PORT
               valueFrom:
                 configMapKeyRef:
@@ -110,8 +110,9 @@ spec:
                   key: USE_SANDBOXED_ORCID
                   name: env
           image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag }}"
-          command: ["node"]
-          args: ["./startServer.js"]
+          command: ["/bin/sh", "-c"]
+          args:
+            - bash scripts/setupProdServer.sh;node ./startServer.js;
           name: server
           ports:
             - containerPort: {{ .Values.backend.deployment.containerPort }}

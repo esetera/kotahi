@@ -1,5 +1,5 @@
 import React from 'react'
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery, useApolloClient } from '@apollo/client'
 // import { Action } from '@pubsweet/ui'
 import config from 'config'
 import PropTypes from 'prop-types'
@@ -25,12 +25,28 @@ import { convertTimestampToDate } from '../../../shared/time-formatting'
 import { convertCamelCaseToText } from '../../../shared/convertCamelCaseToText'
 import { articleStatuses } from '../../../globals'
 import { publishManuscriptMutation } from '../../component-review/src/components/queries'
+import query from '../../component-submit/src/userManuscriptFormQuery'
+import { composeValidate } from '../../component-submit/src/components/FormTemplate'
 
 const DELETE_MANUSCRIPT = gql`
   mutation($id: ID!) {
     deleteManuscript(id: $id)
   }
 `
+
+export const validateManuscript = (submission, form, client) =>
+  form.children
+    .map(element => {
+      return composeValidate(
+        element.validate,
+        element.validateValue,
+        element.name,
+        JSON.parse(element.doiValidation ? element.doiValidation : false),
+        client,
+        element.component,
+      )(submission[element.name.split('.')[1]])
+    })
+    .filter(Boolean)
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -49,18 +65,33 @@ const User = ({ manuscriptId, manuscript, submitter, history, ...props }) => {
     },
   })
 
-  const publishManuscriptHandler = () => {
-    publishManuscript({
-      variables: { id: manuscript.id },
-      update: (cache, { data }) => {
-        cache.modify({
-          id: cache.identify(manuscript),
-          fields: {
-            status: data.publishManuscript.status,
-          },
-        })
-      },
-    })
+  const { data } = useQuery(query, {
+    variables: { id: manuscriptId },
+    partialRefetch: true,
+  })
+
+  const client = useApolloClient()
+
+  const form = data?.formForPurpose?.structure
+
+  const publishManuscriptHandler = async () => {
+    const areThereInvalidFields = await Promise.all(
+      validateManuscript(manuscript.submission, form, client),
+    )
+
+    if (areThereInvalidFields.filter(Boolean).length === 0) {
+      publishManuscript({
+        variables: { id: manuscript.id },
+        update: (cache, { dataTemp }) => {
+          cache.modify({
+            id: cache.identify(manuscript),
+            fields: {
+              status: dataTemp.publishManuscript.status,
+            },
+          })
+        },
+      })
+    }
   }
 
   const filterByTopic = topic => {

@@ -1,187 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { debounce, set } from 'lodash'
-import { gql, useQuery, useMutation } from '@apollo/client'
+import { gql, useQuery, useMutation, useApolloClient } from '@apollo/client'
 import config from 'config'
 import ReactRouterPropTypes from 'react-router-prop-types'
 import Submit from './Submit'
+import query, { fragmentFields } from '../userManuscriptFormQuery'
 import { Spinner } from '../../../shared'
 import gatherManuscriptVersions from '../../../../shared/manuscript_versions'
 import { publishManuscriptMutation } from '../../../component-review/src/components/queries'
 import pruneEmpty from '../../../../shared/pruneEmpty'
-
-const commentFields = `
-  id
-  commentType
-  content
-  files {
-    id
-    created
-    label
-    filename
-    fileType
-    mimeType
-    size
-    url
-  }
-`
-
-const reviewFields = `
-  id
-  created
-  updated
-  decisionComment {
-    ${commentFields}
-  }
-  reviewComment {
-    ${commentFields}
-  }
-  confidentialComment {
-    ${commentFields}
-  }
-  isDecision
-  recommendation
-  user {
-    id
-    defaultIdentity {
-      name
-    }
-    username
-  }
-`
-
-const fragmentFields = `
-  id
-  created
-  files {
-    id
-    created
-    label
-    filename
-    fileType
-    mimeType
-    size
-    url
-  }
-  reviews {
-    ${reviewFields}
-  }
-  teams {
-    id
-    role
-    members {
-      id
-      user {
-        id
-        username
-      }
-    }
-  }
-  decision
-  status
-  meta {
-    manuscriptId
-    title
-    source
-    abstract
-    declarations {
-      openData
-      openPeerReview
-      preregistered
-      previouslySubmitted
-      researchNexus
-      streamlinedReview
-    }
-    articleSections
-    articleType
-    history {
-      type
-      date
-    }
-    notes {
-      notesType
-      content
-    }
-    keywords
-  }
-  suggestions {
-    reviewers {
-      opposed
-      suggested
-    }
-    editors {
-      opposed
-      suggested
-    }
-  }
-  authors {
-    firstName
-    lastName
-    email
-    affiliation
-  }
-  submission
-`
-
-const query = gql`
-  query($id: ID!) {
-    currentUser {
-      id
-      username
-      admin
-    }
-
-    manuscript(id: $id) {
-      hypothesisPublicationId
-      ${fragmentFields}
-      manuscriptVersions {
-        parentId
-        ${fragmentFields}
-      }
-      channels {
-        id
-        type
-        topic
-      }
-    }
-
-    formForPurpose(purpose: "submit") {
-      structure {
-        name
-        description
-        haspopup
-        popuptitle
-        popupdescription
-        children {
-          title
-          shortDescription
-          id
-          component
-          name
-          description
-          doiValidation
-          placeholder
-          parse
-          format
-          options {
-            id
-            label
-            value
-          }
-          validate {
-            id
-            label
-            value
-          }
-          validateValue {
-            minChars
-            maxChars
-            minSize
-          }
-        }
-      }
-    }
-  }
-`
+import { validateManuscript } from '../../../component-manuscripts/src/Manuscript'
 
 const updateMutation = gql`
   mutation($id: ID!, $input: String) {
@@ -212,6 +40,12 @@ const createNewVersionMutation = gql`
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
+const cleanForm = form => {
+  if (!form) return form
+  // Remove any form items that are incomplete/invalid
+  return { ...form, children: form.children.filter(f => f.component && f.name) }
+}
+
 let debouncers = {}
 
 const SubmitPage = ({ match, history }) => {
@@ -237,14 +71,20 @@ const SubmitPage = ({ match, history }) => {
   const [createNewVersion] = useMutation(createNewVersionMutation)
   const [publishManuscript] = useMutation(publishManuscriptMutation)
 
+  const [manuscriptChangedFields, setManuscriptChangedFields] = useState({
+    submission: {},
+  })
+
+  const client = useApolloClient()
+
   if (loading) return <Spinner />
   if (error) return JSON.stringify(error)
 
   const manuscript = data?.manuscript
-  const form = data?.formForPurpose?.structure
+  const form = cleanForm(data?.formForPurpose?.structure)
 
   const updateManuscript = (versionId, manuscriptDelta) => {
-    update({
+    return update({
       variables: {
         id: versionId,
         input: JSON.stringify(manuscriptDelta),
@@ -257,14 +97,39 @@ const SubmitPage = ({ match, history }) => {
   const handleChange = (value, path, versionId) => {
     const manuscriptDelta = {} // Only the changed fields
     set(manuscriptDelta, path, value)
+    setManuscriptChangedFields(s => {
+      return {
+        submission: {
+          ...s.submission,
+          ...manuscriptDelta.submission,
+        },
+      }
+    })
     debouncers[path] = debouncers[path] || debounce(updateManuscript, 3000)
     return debouncers[path](versionId, manuscriptDelta)
   }
 
-  const republish = manuscriptId => {
-    publishManuscript({
+  const republish = async manuscriptId => {
+    const areThereInvalidFields = await Promise.all(
+      validateManuscript(
+        {
+          ...JSON.parse(manuscript.submission),
+          ...manuscriptChangedFields.submission,
+        },
+        form,
+        client,
+      ),
+    )
+
+    if (areThereInvalidFields.filter(Boolean).length !== 0) {
+      return
+    }
+
+    await updateManuscript(manuscriptId, manuscriptChangedFields)
+    await publishManuscript({
       variables: {
         id: manuscriptId,
+        input: JSON.stringify(manuscriptChangedFields),
       },
     })
 
@@ -278,6 +143,8 @@ const SubmitPage = ({ match, history }) => {
   }
 
   const onSubmit = async versionId => {
+    await updateManuscript(versionId, manuscriptChangedFields)
+
     const delta = {
       status: match.url.includes('/evaluation') ? 'evaluated' : 'submitted',
     }
