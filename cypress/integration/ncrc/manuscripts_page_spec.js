@@ -4,13 +4,12 @@ import { ManuscriptsPage } from '../../page-object/manuscripts-page'
 import { NewSubmissionPage } from '../../page-object/new-submission-page'
 import { SubmissionFormPage } from '../../page-object/submission-form-page'
 import { Menu } from '../../page-object/page-component/menu'
-import seedForms from '../../../scripts/seedForms'
 
 describe('manuscripts page tests', () => {
   beforeEach(() => {
     // task to restore the database as per the  dumps/initialState.sql
     cy.task('restore', 'initialState')
-    seedForms()
+    cy.task('seedForms')
 
     // login as admin
     // eslint-disable-next-line jest/valid-expect-in-promise

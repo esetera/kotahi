@@ -3,7 +3,6 @@
 /* eslint-disable no-console */
 
 const { Form } = require('@pubsweet/models')
-//const { db } = require('@pubsweet/db-manager')
 
 const formPaths = {
   aperture: '../app/storage/forms-aperture/submit.json',
@@ -14,33 +13,30 @@ const formPaths = {
 
 const seed = async () => {
   const [{ count }] = await Form.query().count()
-  // const [{ count }] = await db('forms').count('id')
 
   if (count > 0) {
     console.log('  Form(s) already exist in database. Skipping.')
-    process.exit()
-  } else {
-    const formPath = formPaths[process.env.INSTANCE_NAME]
-
-    if (!formPath) {
-      console.log(
-        `  No form file known for '${process.env.INSTANCE_NAME}' instance type. No forms were added to the database.`,
-      )
-      return
-    }
-
-    const submissionFormStructure = require(formPath)
-
-    const submissionForm = {
-      purpose: 'submit',
-      structure: submissionFormStructure,
-    }
-
-    await Form.query().insert(submissionForm)
-    // await db('forms').insert(submissionForm)
-    console.log(`  Added submission form ${formPath} to database.`)
-    process.exit()
+    return
   }
+
+  const formPath = formPaths[process.env.INSTANCE_NAME]
+
+  if (!formPath) {
+    console.log(
+      `  No form file known for '${process.env.INSTANCE_NAME}' instance type. No forms were added to the database.`,
+    )
+    return
+  }
+
+  const submissionFormStructure = require(formPath)
+
+  const submissionForm = {
+    purpose: 'submit',
+    structure: submissionFormStructure,
+  }
+
+  await Form.query().insert(submissionForm)
+  console.log(`  Added submission form ${formPath} to database.`)
 }
 
 module.exports = seed

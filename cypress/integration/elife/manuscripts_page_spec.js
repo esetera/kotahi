@@ -4,14 +4,13 @@ import { NewSubmissionPage } from '../../page-object/new-submission-page'
 import { SubmissionFormPage } from '../../page-object/submission-form-page'
 import { manuscripts } from '../../support/routes'
 import { Menu } from '../../page-object/page-component/menu'
-import seedForms from '../../../scripts/seedForms'
 
 describe('Manuscripts page tests', () => {
   context('Elements visibility', () => {
     beforeEach(() => {
       // task to restore the database as per the  dumps/initialState.sql
       cy.task('restore', 'initialState')
-      seedForms()
+      cy.task('seedForms')
 
       // login as admin
       // eslint-disable-next-line jest/valid-expect-in-promise
@@ -42,7 +41,7 @@ describe('Manuscripts page tests', () => {
     beforeEach(() => {
       // task to restore the database as per the  dumps/initialState.sql
       cy.task('restore', 'initialState')
-      seedForms()
+      cy.task('seedForms')
 
       // login as admin
       // eslint-disable-next-line jest/valid-expect-in-promise
@@ -114,7 +113,7 @@ describe('Manuscripts page tests', () => {
     beforeEach(() => {
       // task to restore the database as per the  dumps/initialState.sql
       cy.task('restore', 'initialState')
-      seedForms()
+      cy.task('seedForms')
 
       // login as admin
       // eslint-disable-next-line jest/valid-expect-in-promise
@@ -243,7 +242,7 @@ describe('Manuscripts page tests', () => {
     beforeEach(() => {
       // task to restore the database as per the  dumps/initialState.sql
       cy.task('restore', 'initialState')
-      seedForms()
+      cy.task('seedForms')
 
       // login as admin
       // eslint-disable-next-line jest/valid-expect-in-promise

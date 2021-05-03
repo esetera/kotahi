@@ -4,7 +4,6 @@ import { NewSubmissionPage } from '../../page-object/new-submission-page'
 import { SubmissionFormPage } from '../../page-object/submission-form-page'
 import { ManuscriptsPage } from '../../page-object/manuscripts-page'
 import { formBuilder, manuscripts } from '../../support/routes'
-import seedForms from '../../../scripts/seedForms'
 
 describe('Form builder page tests', () => {
   // check the title and the elements in Form Builder
@@ -12,7 +11,7 @@ describe('Form builder page tests', () => {
     beforeEach(() => {
       // task to restore the database as per the  dumps/initialState.sql
       cy.task('restore', 'initialState')
-      seedForms()
+      cy.task('seedForms')
       // login as admin
       // eslint-disable-next-line jest/valid-expect-in-promise
       cy.fixture('role_names').then(name => {
@@ -85,7 +84,7 @@ describe('Form builder page tests', () => {
     beforeEach(() => {
       // task to restore the database as per the  dumps/initialState.sql
       cy.task('restore', 'initialState')
-      seedForms()
+      cy.task('seedForms')
       // login as admin
       cy.fixture('role_names').then(name => {
         cy.login(name.role.admin, manuscripts)
