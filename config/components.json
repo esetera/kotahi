@@ -10,5 +10,6 @@
   "./server/model-channel/src",
   "./server/model-message/src",
   "./server/profile-upload",
-  "./server/auth-orcid"
+  "./server/auth-orcid",
+  "./server/model-article-imports/src/"
 ]
