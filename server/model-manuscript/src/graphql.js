@@ -4,6 +4,7 @@ const axios = require('axios')
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const { mergeWith, isArray } = require('lodash')
 const Form = require('../../model-form/src/form')
+const importArticlesFromBiorxiv = require('../../import-articles/biorxiv-import')
 
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
@@ -307,6 +308,11 @@ const resolvers = {
 
       return reviewerTeam.$query().eager('members.[user]')
     },
+    async importManuscripts(_, {}, ctx) {
+      const manuscripts = await importArticlesFromBiorxiv(ctx)
+
+      return manuscripts
+    },
     async publishManuscript(_, { id }, ctx) {
       let manuscript = await ctx.models.Manuscript.query().findById(id)
 
@@ -606,6 +612,7 @@ const resolvers = {
       }
 
       const manuscripts = await query
+
       return {
         totalCount,
         manuscripts,
@@ -684,6 +691,7 @@ const typeDefs = `
     removeReviewer(manuscriptId: ID!, userId: ID!): Team
     publishManuscript(id: ID!): Manuscript
     createNewVersion(id: ID!): Manuscript
+    importManuscripts()
   }
 
   type Manuscript implements Object {

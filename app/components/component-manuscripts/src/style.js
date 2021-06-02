@@ -1,7 +1,6 @@
 import styled from 'styled-components'
-import { Action } from '@pubsweet/ui'
-import ReactTooltip from 'react-tooltip';
-
+import { Button, Action } from '@pubsweet/ui'
+import ReactTooltip from 'react-tooltip'
 export {
   Row,
   Cell,
@@ -30,6 +29,10 @@ export {
 
 // TODO: Extract common above
 // Specific
+
+export const StyledButton = styled(Button)`
+  margin: 0 20px;
+`
 
 export const UserAction = styled(Action)`
   cursor: pointer;

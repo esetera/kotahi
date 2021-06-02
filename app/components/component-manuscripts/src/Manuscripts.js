@@ -16,6 +16,7 @@ import {
   Pagination,
   SelectAllField,
   SelectedManuscriptsNumber,
+  StyledButton,
 } from './style'
 import { HeadingWithAction } from '../../shared'
 import { GET_MANUSCRIPTS, DELETE_MANUSCRIPTS } from '../../../queries'
@@ -183,12 +184,17 @@ const Manuscripts = ({ history, ...props }) => {
       {['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) && (
         <HeadingWithAction>
           <Heading>Manuscripts</Heading>
-          <Button
-            onClick={() => history.push(`${urlFrag}/newSubmission`)}
-            primary
-          >
-            ＋ New submission
-          </Button>
+          <div>
+            <StyledButton
+              onClick={() => history.push(`${urlFrag}/newSubmission`)}
+              primary
+            >
+              ＋ New submission
+            </StyledButton>
+            <StyledButton onClick={() => {}} primary>
+              Refresh
+            </StyledButton>
+          </div>
         </HeadingWithAction>
       )}
 
