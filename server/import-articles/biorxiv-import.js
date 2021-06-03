@@ -1,18 +1,21 @@
 const axios = require('axios')
 
 const getData = async ctx => {
+  const dateTwoWeeksAgo = Date.now() - 12096e5
+  const dateToday = Date.now()
+
   let res
 
   try {
-    res = await axios.get('https://api.biorxiv.org/covid19/0')
+    res = await axios.get(`https://api.biorxiv.org/covid19/0`)
   } catch (e) {
     console.error(e.message)
   }
+
   const { collection } = res.data
   const manuscripts = await ctx.models.Manuscript.query()
 
   const currentDOIs = manuscripts.map(({ submission }) => {
-    // WE NEED TO ASK EUGENIU ABOUT VERSIONS AND DOI!!!!!
     return submission.articleURL.split('.org/')[1]
   })
 
@@ -61,9 +64,7 @@ const getData = async ctx => {
       'corona virus disease 2019',
     ],
   ]
-
-  //NEED TO ASK EUGENIU
-  const Pharmaceutical_interventions = [
+  const pharmaceuticalInterventions = [
     [
       'drug therapy',
       'drug treatment',
@@ -324,8 +325,10 @@ const getData = async ctx => {
       'origin',
       'ecology',
       'spillover',
-    ][
-      ('COVID-19',
+    ],
+    
+    [
+      'COVID-19',
       'COVID 19',
       'COVID19',
       'COVID2019',
@@ -346,10 +349,9 @@ const getData = async ctx => {
       'severe acute respiratory syndrome coronavirus 2',
       'sars-coronavirus-2',
       'coronavirus disease 2019',
-      'corona virus disease 2019')
+      'corona virus disease 2019',,
     ],
   ]
-
   const epidemiology = [
     [
       'epidemiology',
@@ -396,8 +398,10 @@ const getData = async ctx => {
       'natural history',
       'risk factor',
       'risk factors',
-    ][
-      ('COVID-19',
+    ],
+    
+    [
+      'COVID-19',
       'COVID 19',
       'COVID19',
       'COVID2019',
@@ -418,11 +422,10 @@ const getData = async ctx => {
       'severe acute respiratory syndrome coronavirus 2',
       'sars-coronavirus-2',
       'coronavirus disease 2019',
-      'corona virus disease 2019')
-    ],
+      'corona virus disease 2019',,
+    ],,
   ]
-
-  const nonPharmaceuticalAndPharmaceuticalInterventions = [
+  const nonPharmaceuticalInterventions = [
     [
       'epidemiology',
       'epidemiologic',
@@ -468,8 +471,11 @@ const getData = async ctx => {
       'natural history',
       'risk factor',
       'risk factors',
-    ][
-      ('COVID-19',
+    ],
+  
+  
+      [
+      'COVID-19',
       'COVID 19',
       'COVID19',
       'COVID2019',
@@ -490,10 +496,9 @@ const getData = async ctx => {
       'severe acute respiratory syndrome coronavirus 2',
       'sars-coronavirus-2',
       'coronavirus disease 2019',
-      'corona virus disease 2019')
-    ],
+      'corona virus disease 2019',,,
+    ],,,
   ]
-
   const vaccines = [
     [
       'immunotherapy',
@@ -503,8 +508,10 @@ const getData = async ctx => {
       'vaccine',
       'vaccines',
       'vaccination',
-    ][
-      ('COVID-19',
+    ],
+    
+    [
+      'COVID-19',
       'COVID 19',
       'COVID19',
       'COVID2019',
@@ -525,26 +532,30 @@ const getData = async ctx => {
       'severe acute respiratory syndrome coronavirus 2',
       'sars-coronavirus-2',
       'coronavirus disease 2019',
-      'corona virus disease 2019')
-    ],
+      'corona virus disease 2019',,
+    ],,
   ]
 
   const topics = {
     ecologyAndSpillover,
     vaccines,
-    nonPharmaceuticalAndPharmaceuticalInterventions,
+    nonPharmaceuticalInterventions,
     epidemiology,
     diagnostics,
     modeling,
     clinicalPresentation,
-    // prognosticRiskFactors    NEED TO ASK EUGENIU
+    pharmaceuticalInterventions,
   }
 
-  const withoutDuplicates = collection.filter(({ rel_doi }) =>
-    currentDOIs.includes(rel_doi),
+  const withoutDuplicates = collection.filter(
+    ({ rel_doi, version, rel_site }) =>
+      currentDOIs.includes(
+        `https://${rel_site.toLowerCase()}/${rel_doi}v${version}`,
+      ),
   )
+
   const newManuscripts = withoutDuplicates.map(
-    ({ rel_doi, rel_title, rel_abs }) => {
+    ({ rel_doi, rel_site, version, rel_title, rel_abs }) => {
       const manuscriptTopics = Object.entries(topics)
         .filter(([topicName, topicKeywords]) => {
           return (
@@ -561,17 +572,17 @@ const getData = async ctx => {
       return {
         status: 'new',
         submission: {
-          articleURL: `https://doi.org/${rel_doi}`,
+          articleURL: `https://${rel_site.toLowerCase()}/${rel_doi}v${version}`,
           articleDescription: rel_title,
           abstract: rel_abs,
-          topics: manuscriptTopics,
+          topics: manuscriptTopics[0],
         },
       }
     },
   )
 
   const inserted = await ctx.models.Manuscript.query().insert(newManuscripts)
-
+  
   return inserted
 }
 

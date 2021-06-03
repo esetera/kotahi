@@ -308,11 +308,7 @@ const resolvers = {
 
       return reviewerTeam.$query().eager('members.[user]')
     },
-    async importManuscripts(_, {}, ctx) {
-      const manuscripts = await importArticlesFromBiorxiv(ctx)
 
-      return manuscripts
-    },
     async publishManuscript(_, { id }, ctx) {
       let manuscript = await ctx.models.Manuscript.query().findById(id)
 
@@ -529,6 +525,12 @@ const resolvers = {
         .where({ parentId: null })
         .orderBy('created', 'desc')
     },
+    async importManuscripts(_, props, ctx) {
+      const manuscripts = await importArticlesFromBiorxiv(ctx)
+      
+      console.log('manuscripts', manuscripts)
+      return manuscripts
+    },
     async publishedManuscripts(_, { sort, offset, limit }, ctx) {
       const query = ctx.models.Manuscript.query()
         .whereNotNull('published')
@@ -653,6 +655,7 @@ const typeDefs = `
     manuscripts: [Manuscript]!
     paginatedManuscripts(sort: String, offset: Int, limit: Int, filter: ManuscriptsFilter): PaginatedManuscripts
     publishedManuscripts(sort:String, offset: Int, limit: Int): PaginatedManuscripts
+    importManuscripts: PaginatedManuscripts
     validateDOI(articleURL: String): validateDOIResponse
   }
 
@@ -691,7 +694,6 @@ const typeDefs = `
     removeReviewer(manuscriptId: ID!, userId: ID!): Team
     publishManuscript(id: ID!): Manuscript
     createNewVersion(id: ID!): Manuscript
-    importManuscripts()
   }
 
   type Manuscript implements Object {

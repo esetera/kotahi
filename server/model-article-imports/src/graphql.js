@@ -1,5 +1,5 @@
 const typeDefs = `
-type ArticleImports implements Object {
+type ArticleImports {
     id: ID!
     date: DateTime
     source: String
