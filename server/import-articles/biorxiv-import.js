@@ -1,8 +1,9 @@
 const axios = require('axios')
 
 const getData = async ctx => {
-  const dateTwoWeeksAgo = Date.now() - 12096e5
-  const dateToday = Date.now()
+  const dateTwoWeeksAgo =
+    +new Date(new Date(Date.now()).toISOString().split('T')[0]) - 12096e5
+  const dateToday = +new Date(new Date(Date.now()).toISOString().split('T')[0])
 
   let res
 
@@ -326,7 +327,7 @@ const getData = async ctx => {
       'ecology',
       'spillover',
     ],
-    
+
     [
       'COVID-19',
       'COVID 19',
@@ -349,7 +350,8 @@ const getData = async ctx => {
       'severe acute respiratory syndrome coronavirus 2',
       'sars-coronavirus-2',
       'coronavirus disease 2019',
-      'corona virus disease 2019',,
+      'corona virus disease 2019',
+      ,
     ],
   ]
   const epidemiology = [
@@ -399,7 +401,7 @@ const getData = async ctx => {
       'risk factor',
       'risk factors',
     ],
-    
+
     [
       'COVID-19',
       'COVID 19',
@@ -422,8 +424,10 @@ const getData = async ctx => {
       'severe acute respiratory syndrome coronavirus 2',
       'sars-coronavirus-2',
       'coronavirus disease 2019',
-      'corona virus disease 2019',,
-    ],,
+      'corona virus disease 2019',
+      ,
+    ],
+    ,
   ]
   const nonPharmaceuticalInterventions = [
     [
@@ -472,9 +476,8 @@ const getData = async ctx => {
       'risk factor',
       'risk factors',
     ],
-  
-  
-      [
+
+    [
       'COVID-19',
       'COVID 19',
       'COVID19',
@@ -496,8 +499,12 @@ const getData = async ctx => {
       'severe acute respiratory syndrome coronavirus 2',
       'sars-coronavirus-2',
       'coronavirus disease 2019',
-      'corona virus disease 2019',,,
-    ],,,
+      'corona virus disease 2019',
+      ,
+      ,
+    ],
+    ,
+    ,
   ]
   const vaccines = [
     [
@@ -509,7 +516,7 @@ const getData = async ctx => {
       'vaccines',
       'vaccination',
     ],
-    
+
     [
       'COVID-19',
       'COVID 19',
@@ -532,8 +539,10 @@ const getData = async ctx => {
       'severe acute respiratory syndrome coronavirus 2',
       'sars-coronavirus-2',
       'coronavirus disease 2019',
-      'corona virus disease 2019',,
-    ],,
+      'corona virus disease 2019',
+      ,
+    ],
+    ,
   ]
 
   const topics = {
@@ -582,7 +591,7 @@ const getData = async ctx => {
   )
 
   const inserted = await ctx.models.Manuscript.query().insert(newManuscripts)
-  
+
   return inserted
 }
 
