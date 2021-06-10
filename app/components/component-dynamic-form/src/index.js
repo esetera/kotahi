@@ -32,7 +32,7 @@ const valuesPropType = PropTypes.objectOf(
       /* group with nested fields */
     }).isRequired,
   ]).isRequired,
-).isRequired
+)
 
 const FieldLabel = styled.label`
   margin: 0 0.5em 0 2em;
@@ -214,8 +214,7 @@ Group.propTypes = {
       }).isRequired,
     ]).isRequired,
   ).isRequired,
-  // eslint-disable-next-line react/require-default-props
-  values: valuesPropType,
+  values: valuesPropType.isRequired,
   onChange: PropTypes.func.isRequired,
 }
 
@@ -224,9 +223,40 @@ Group.defaultProps = {
   groupPath: '',
 }
 
+const fieldDefaultValues = {
+  text: '',
+  integer: 0,
+  boolean: false,
+  color: '#000',
+}
+
+const initialize = (baseValues = {}, schema, maxDepth = 50) => {
+  if (maxDepth < 0)
+    throw new Error(
+      'Form schema appears to contain a cycle. Max depth exceeded!',
+    )
+
+  const result = {}
+  schema.forEach(element => {
+    if (element.name)
+      result[element.name] =
+        baseValues[element.name] ??
+        element.defaultValue ??
+        fieldDefaultValues[element.type]
+    else if (element.groupName)
+      result[element.groupName] = initialize(
+        baseValues[element.groupName],
+        element.fields,
+        maxDepth - 1,
+      )
+  })
+
+  return result
+}
+
 const DynamicForm = ({ formSchema, values, onSubmit }) => {
   const formik = useFormik({
-    initialValues: values,
+    initialValues: initialize(values, formSchema),
     onSubmit,
   })
 
@@ -257,9 +287,12 @@ DynamicForm.propTypes = {
       }).isRequired,
     ]).isRequired,
   ).isRequired,
-  // eslint-disable-next-line react/require-default-props
   values: valuesPropType,
   onSubmit: PropTypes.func.isRequired,
+}
+
+DynamicForm.defaultProps = {
+  values: {},
 }
 
 export default DynamicForm

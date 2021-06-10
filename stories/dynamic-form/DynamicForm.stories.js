@@ -14,17 +14,15 @@ Base.args = {
       groupName: 'group',
       fields: [
         { name: 'asdf', type: 'text' },
-        { name: 'sdfg', type: 'text' },
+        { name: 'sdfg', type: 'text', defaultValue: 'XX' },
       ],
     },
   ],
   values: {
-    foo: 'Hello',
+    // These values are incomplete for the schema. This should be handled fine.
     bar: true,
     someNumber: 5,
-    baz: true,
     colour: '#aaeeff',
-    group: { asdf: 'a', sdfg: 's' },
   },
   // eslint-disable-next-line no-console
   onSubmit: vals => console.log(vals),
