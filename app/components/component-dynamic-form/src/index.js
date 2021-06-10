@@ -133,7 +133,7 @@ const Field = ({ groupPath, name, type, constraints, value, onChange }) => {
   return (
     <Row>
       <TitleCell>
-        <FieldLabel htmlFor={fieldPath}>{fieldPath}</FieldLabel>
+        <FieldLabel htmlFor={fieldPath}>{name}</FieldLabel>
       </TitleCell>
       {Component && (
         <Component
