@@ -108,32 +108,23 @@ const BooleanField = ({ name, value, constraints, onChange }) => {
   )
 }
 
+const fieldComponents = {
+  text: TextField,
+  integer: IntegerField,
+  boolean: BooleanField,
+}
+
 const Field = ({ groupPath, name, type, constraints, value, onChange }) => {
   const fieldPath = `${groupPath}${name}`
+  const Component = fieldComponents[type]
 
   return (
     <Row>
       <TitleCell>
         <FieldLabel htmlFor={fieldPath}>{fieldPath}</FieldLabel>
       </TitleCell>
-      {type === 'text' && (
-        <TextField
-          constraints={constraints}
-          name={fieldPath}
-          onChange={onChange}
-          value={value}
-        />
-      )}
-      {type === 'integer' && (
-        <IntegerField
-          constraints={constraints}
-          name={fieldPath}
-          onChange={onChange}
-          value={value}
-        />
-      )}
-      {type === 'boolean' && (
-        <BooleanField
+      {Component && (
+        <Component
           constraints={constraints}
           name={fieldPath}
           onChange={onChange}
