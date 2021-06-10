@@ -4,8 +4,7 @@ import DynamicForm from '../../app/components/component-dynamic-form/src'
 export const Base = args => <DynamicForm {...args} />
 
 Base.args = {
-  groupName: 'exampleForm',
-  fields: [
+  formSchema: [
     { name: 'foo', type: 'text', defaultValue: 'Boo!' },
     { name: 'bar', type: 'boolean' },
     { name: 'someNumber', type: 'integer', defaultValue: 3 },
@@ -19,13 +18,11 @@ Base.args = {
     },
   ],
   values: {
-    exampleForm: {
-      foo: 'Hello',
-      bar: true,
-      someNumber: 5,
-      baz: true,
-      group: { asdf: 'a', sdfg: 's' },
-    },
+    foo: 'Hello',
+    bar: true,
+    someNumber: 5,
+    baz: true,
+    group: { asdf: 'a', sdfg: 's' },
   },
   // eslint-disable-next-line no-console
   onSubmit: vals => console.log(vals),

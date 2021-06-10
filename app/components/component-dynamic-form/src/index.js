@@ -17,6 +17,23 @@ const constraintsPropType = PropTypes.oneOf([
   PropTypes.arrayOf(constraintPropType),
 ])
 
+const valuePropType = PropTypes.oneOfType([
+  PropTypes.string.isRequired,
+  PropTypes.number.isRequired,
+  PropTypes.bool.isRequired,
+]).isRequired
+
+const valuesPropType = PropTypes.objectOf(
+  PropTypes.oneOfType([
+    PropTypes.string.isRequired,
+    PropTypes.number.isRequired,
+    PropTypes.bool.isRequired,
+    PropTypes.shape({
+      /* group with nested fields */
+    }).isRequired,
+  ]).isRequired,
+).isRequired
+
 const FieldLabel = styled.label`
   margin: 0 0.5em 0 2em;
 
@@ -128,14 +145,12 @@ const Field = ({ groupPath, name, type, constraints, value, onChange }) => {
 }
 
 Field.propTypes = {
+  groupPath: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([
-    PropTypes.string.isRequired,
-    PropTypes.number.isRequired,
-    PropTypes.bool.isRequired,
-  ]),
+  value: valuePropType,
   constraints: constraintsPropType,
+  onChange: PropTypes.func.isRequired,
 }
 
 Field.defaultProps = {
@@ -150,7 +165,7 @@ const Group = ({
   values,
   onChange,
 }) => {
-  const innerGroupPath = `${outerGroupPath}${groupName}.`
+  const innerGroupPath = groupName ? `${outerGroupPath}${groupName}.` : ''
 
   return (
     <GroupContainer name={groupName}>
@@ -181,24 +196,32 @@ const Group = ({
 }
 
 Group.propTypes = {
-  groupName: PropTypes.string.isRequired,
+  groupName: PropTypes.string,
   groupPath: PropTypes.string,
   fields: PropTypes.arrayOf(
     PropTypes.oneOfType([
-      PropTypes.shape(Field.propTypes).isRequired,
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
+        constraints: constraintsPropType,
+      }).isRequired,
       PropTypes.shape({
         groupName: PropTypes.string.isRequired,
         fields: PropTypes.arrayOf(PropTypes.shape({}).isRequired).isRequired, // nested fields/groups
       }).isRequired,
     ]).isRequired,
   ).isRequired,
+  // eslint-disable-next-line react/require-default-props
+  values: valuesPropType,
+  onChange: PropTypes.func.isRequired,
 }
 
 Group.defaultProps = {
+  groupName: '',
   groupPath: '',
 }
 
-const DynamicForm = ({ groupName, fields, values, onSubmit }) => {
+const DynamicForm = ({ formSchema, values, onSubmit }) => {
   const formik = useFormik({
     initialValues: values,
     onSubmit,
@@ -207,16 +230,33 @@ const DynamicForm = ({ groupName, fields, values, onSubmit }) => {
   return (
     <form onSubmit={formik.handleSubmit}>
       <Group
-        fields={fields}
-        groupName={groupName}
+        fields={formSchema}
+        groupName=""
         onChange={formik.handleChange}
-        values={formik.values[groupName]}
+        values={formik.values}
       />
       <button type="submit">Submit</button>
     </form>
   )
 }
 
-DynamicForm.propTypes = {}
+DynamicForm.propTypes = {
+  formSchema: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
+        constraints: constraintsPropType,
+      }).isRequired,
+      PropTypes.shape({
+        groupName: PropTypes.string.isRequired,
+        fields: PropTypes.arrayOf(PropTypes.any.isRequired).isRequired, // nested fields/groups
+      }).isRequired,
+    ]).isRequired,
+  ).isRequired,
+  // eslint-disable-next-line react/require-default-props
+  values: valuesPropType,
+  onSubmit: PropTypes.func.isRequired,
+}
 
 export default DynamicForm
