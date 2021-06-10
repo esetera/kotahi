@@ -108,10 +108,22 @@ const BooleanField = ({ name, value, constraints, onChange }) => {
   )
 }
 
+const ColorField = ({ name, value, constraints, onChange }) => {
+  return (
+    <Input
+      name={name}
+      onChange={onChange}
+      type="color"
+      value={value ?? '#000'}
+    />
+  )
+}
+
 const fieldComponents = {
   text: TextField,
   integer: IntegerField,
   boolean: BooleanField,
+  color: ColorField,
 }
 
 const Field = ({ groupPath, name, type, constraints, value, onChange }) => {
