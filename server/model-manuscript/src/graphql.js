@@ -14,6 +14,7 @@ const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty
 const importArticlesFromBiorxiv = require('../../import-articles/biorxiv-import')
 const importArticlesFromPubmed = require('../../import-articles/pubmed-import')
 
+let isImportInProgress = false
 
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
@@ -169,9 +170,22 @@ const resolvers = {
       return manuscript
     },
     async importManuscripts(_, props, ctx) {
-      // const manuscripts = await importArticlesFromBiorxiv(ctx)
-      const manuscripts = await importArticlesFromPubmed(ctx)
-      return manuscripts
+      if (isImportInProgress) {
+        return null
+      }
+
+      isImportInProgress = true
+
+      const manuscriptsFromBiorxiv = await importArticlesFromBiorxiv(ctx)
+
+      const manuscriptsFromPubmed = await importArticlesFromPubmed(ctx)
+
+      isImportInProgress = false
+
+      return {
+        ...manuscriptsFromBiorxiv,
+        ...manuscriptsFromPubmed,
+      }
     },
     async deleteManuscripts(_, { ids }, ctx) {
       if (ids.length > 0) {

@@ -16,15 +16,7 @@ const {
   pharmaceuticalInterventions,
 } = require('./topics')
 
-let isImportInProgress = false
-
 const getData = async ctx => {
-  if (isImportInProgress) {
-    return
-  }
-
-  isImportInProgress = true
-
   const dateTwoWeeksAgo =
     +new Date(new Date(Date.now()).toISOString().split('T')[0]) - 12096e5
 
@@ -202,8 +194,6 @@ const getData = async ctx => {
     .filter(Boolean)
 
   if (!newManuscripts.length) {
-    isImportInProgress = false
-
     return []
   }
 
@@ -236,16 +226,10 @@ const getData = async ctx => {
       })
     }
 
-    isImportInProgress = false
-
-    return {
-      insertedManuscripts,
-      insertedTeams,
-    }
+    return inserted
   } catch (e) {
     /* eslint-disable-next-line */
     console.error(e.message)
-    isImportInProgress = false
   }
 }
 
