@@ -174,18 +174,19 @@ const resolvers = {
         return null
       }
 
+      console.log('start import')
+
       isImportInProgress = true
 
       const manuscriptsFromBiorxiv = await importArticlesFromBiorxiv(ctx)
 
       const manuscriptsFromPubmed = await importArticlesFromPubmed(ctx)
 
+      console.log('everything is good')
+
       isImportInProgress = false
 
-      return {
-        ...manuscriptsFromBiorxiv,
-        ...manuscriptsFromPubmed,
-      }
+      return manuscriptsFromBiorxiv.concat(manuscriptsFromPubmed)
     },
     async deleteManuscripts(_, { ids }, ctx) {
       if (ids.length > 0) {

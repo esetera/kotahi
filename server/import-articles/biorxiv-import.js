@@ -198,18 +198,19 @@ const getData = async ctx => {
   }
 
   try {
-    const insertedManuscripts = await ctx.models.Manuscript.query().insert(
+    const inserted = await ctx.models.Manuscript.query().upsertGraphAndFetch(
       newManuscripts,
+      { relate: true },
     )
 
-    const teamsToInsert = insertedManuscripts.map(manuscript => {
-      return {
-        manuscriptId: manuscript.id,
-        ...manuscript.teams[0],
-      }
-    })
+    // const teamsToInsert = insertedManuscripts.map(manuscript => {
+    //   return {
+    //     manuscriptId: manuscript.id,
+    //     ...manuscript.teams[0],
+    //   }
+    // })
 
-    const insertedTeams = await ctx.models.Team.query().insert(teamsToInsert)
+    // const insertedTeams = await ctx.models.Team.query().insert(teamsToInsert)
 
     if (lastImportDate.length) {
       await ArticleImportHistory.query()

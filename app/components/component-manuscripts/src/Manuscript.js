@@ -129,7 +129,13 @@ const User = ({
   let formattedAbstract
 
   if (manuscript.submission?.abstract) {
-    formattedAbstract = manuscript.submission.abstract.replace(/<[^>]*>/g, '')
+    if (Array.isArray(manuscript.submission.abstract)) {
+      formattedAbstract = manuscript.submission.abstract
+        .join(' ')
+        .replace(/<[^>]*>/g, '')
+    } else {
+      formattedAbstract = manuscript.submission.abstract.replace(/<[^>]*>/g, '')
+    }
   }
 
   return (
