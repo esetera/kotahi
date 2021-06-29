@@ -161,7 +161,7 @@ const User = ({
       {['elife'].includes(process.env.INSTANCE_NAME) && (
         <Cell>{manuscript.submission && manuscript.submission.articleId}</Cell>
       )}
-      {['ncrc'].includes(process.env.INSTANCE_NAME) && (
+      {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
         <>
           <Cell minWidth="150px">
             <StyledDescriptionWrapper>
@@ -240,7 +240,7 @@ const User = ({
           />
         </span>
       </Cell>
-      {process.env.INSTANCE_NAME === 'ncrc' && (
+      {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
         <Cell>
           {manuscript.submission && manuscript.submission.labels ? (
             <StyledTableLabel
