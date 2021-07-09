@@ -3,7 +3,7 @@ import { SectionHeader, SectionRowGrid, Title } from '../style'
 import { SectionContent } from '../../../../shared'
 
 const AssignEditorsReviewers = ({ manuscript, AssignEditor }) => (
-  <SectionContent noGap>
+  <SectionContent>
     <SectionHeader>
       <Title>Assign Editors</Title>
     </SectionHeader>
