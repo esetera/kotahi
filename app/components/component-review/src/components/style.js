@@ -93,20 +93,23 @@ export const RecommendationInputContainer = styled.div`
 
 export const StyledNotifyButton = styled(Button)`
   cursor: pointer;
+  height: 40px;
 `
 
 export const StyledTypeahead = styled(Typeahead)`
-  &.class-input {
+  input {
     border: 1px solid #aaa;
     border-color: #aaa;
     border-radius: 8px;
-    color: inherit;
-    font-family: inherit;
-    font-size: inherit;
-    height: calc(8px * 6);
+    height: 40px;
     outline: 0;
     padding: 0 8px;
     transition: 0.2s ease;
+    width: 100%;
+  }
+
+  .typeahead-selector {
+    list-style-type: none;
   }
 `
 

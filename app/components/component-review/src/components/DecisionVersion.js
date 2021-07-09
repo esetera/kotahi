@@ -149,7 +149,7 @@ const DecisionVersion = ({ form, current, version, parent }) => {
         )}
         {current && (
           <AdminSection>
-            <EmailNotifications />
+            {process.env.INSTANCE_NAME === 'colab' && <EmailNotifications />}
             <AssignEditorsReviewers
               AssignEditor={AssignEditor}
               manuscript={parent}

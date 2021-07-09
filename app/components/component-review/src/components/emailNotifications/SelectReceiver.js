@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import { gql, useQuery } from '@apollo/client'
-import { Typeahead } from 'react-typeahead'
+import { StyledTypeahead } from '../style'
 
 const query = gql`
   {
@@ -33,24 +32,22 @@ const SelectReceiver = ({ changeState, selectedReceiver }) => {
   const options = (data.users || []).map(user => editorOption(user))
 
   return (
-    <Typeahead
-      customClasses={{
-        input: 'class-input',
-      }}
+    <StyledTypeahead
       maxVisible={2}
-      onChange={e =>
+      onKeyUp={e => {
         changeState({
           ...selectedReceiver,
           email: e.target.value,
         })
-      }
-      onOptionSelected={selected =>
+      }}
+      onOptionSelected={selected => {
         changeState({
           ...selectedReceiver,
           email: options.filter(option => selected === option.label)[0].value,
         })
-      }
+      }}
       options={options.map(option => option.label)}
+      placeholder="Choose a receiver"
     />
   )
 }
