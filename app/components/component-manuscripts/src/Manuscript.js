@@ -193,19 +193,37 @@ const renderManuscriptColumn = ({
       )
     },
     'submission.topics': () => {
+      // manuscript.submission.topics = '' // uncomment this line to see failed topic error
+      // test to see if manuscript.submission.topics is coming in and is an array; if not,
+      // send the error to console.
+      if (
+        manuscript &&
+        manuscript.submission &&
+        manuscript.submission.topics &&
+        !Array.isArray(manuscript.submission.topics)
+      ) {
+        console.error('Topics not coming in as array:', manuscript)
+      }
       return (
         <Cell key="topics">
-          {manuscript.submission?.topics?.map(topic => {
-            return (
-              <StyledTopic
-                key={topic}
-                onClick={() => filterByTopic(topic)}
-                title={convertCamelCaseToText(topic)}
-              >
-                {convertCamelCaseToText(topic)}
-              </StyledTopic>
-            )
-          })}
+          {manuscript &&
+          manuscript.submission &&
+          manuscript.submission.topics &&
+          Array.isArray(manuscript.submission.topics) ? (
+            manuscript.submission?.topics?.map(topic => {
+              return (
+                <StyledTopic
+                  key={topic}
+                  onClick={() => filterByTopic(topic)}
+                  title={convertCamelCaseToText(topic)}
+                >
+                  {convertCamelCaseToText(topic)}
+                </StyledTopic>
+              )
+            })
+          ) : (
+            <span>Topics could not be loaded.</span>
+          )}
         </Cell>
       )
     },
