@@ -206,6 +206,7 @@ const renderManuscriptCell = ({
     },
     'submission.topics': (displayValue, value) => {
       const topicComponents = []
+
       if (Array.isArray(value)) {
         for (let i = 0; i < value.length; i += 1) {
           topicComponents.push(
@@ -222,6 +223,7 @@ const renderManuscriptCell = ({
         console.error('Topics not coming in as array:', value, displayValue)
         topicComponents.push(<span>Topics could not be loaded.</span>)
       }
+
       return <Cell key="topics">{topicComponents}</Cell>
     },
     status: (displayValue, value) => {

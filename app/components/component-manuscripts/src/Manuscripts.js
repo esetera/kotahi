@@ -25,7 +25,7 @@ import {
 } from './style'
 import { HeadingWithAction, Select } from '../../shared'
 import {
-  GET_MANUSCRIPTS,
+  GET_MANUSCRIPTS_AND_FORM,
   DELETE_MANUSCRIPTS,
   IMPORT_MANUSCRIPTS,
   IMPORTED_MANUSCRIPTS_SUBSCRIPTION,
@@ -379,7 +379,7 @@ const Manuscripts = ({ history, ...props }) => {
   const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
   const sort = sortName && sortDirection && `${sortName}_${sortDirection}`
 
-  const { loading, error, data, refetch } = useQuery(GET_MANUSCRIPTS, {
+  const { loading, error, data, refetch } = useQuery(GET_MANUSCRIPTS_AND_FORM, {
     variables: {
       sort,
       offset: (page - 1) * limit,
@@ -439,6 +439,12 @@ const Manuscripts = ({ history, ...props }) => {
     return { ...el, submission: JSON.parse(el.submission) }
   })
 
+  const fieldDefinitions = {}
+  const fields = data.formForPurpose?.structure?.children ?? []
+  fields.forEach(field => {
+    fieldDefinitions[field.name] = field
+  })
+
   const { totalCount } = data.paginatedManuscripts
 
   const setReadyToEvaluateLabel = id => {
@@ -458,6 +464,7 @@ const Manuscripts = ({ history, ...props }) => {
     })
   }
 
+  // eslint-disable-next-line no-unused-vars
   const bulkSetLabelReadyToEvaluate = (selectedNewManuscripts, manuscripts) => {
     manuscripts
       .filter(manuscript => !selectedNewManuscripts.includes(manuscript.id))
@@ -475,7 +482,7 @@ const Manuscripts = ({ history, ...props }) => {
   }
 
   const confirmBulkDelete = () => {
-    bulkSetLabelReadyToEvaluate(selectedNewManuscripts, manuscripts)
+    // bulkSetLabelReadyToEvaluate(selectedNewManuscripts, manuscripts) // Disable until requirements are clearer. See #602
     deleteManuscripts({
       variables: { ids: selectedNewManuscripts },
     })
@@ -592,6 +599,7 @@ const Manuscripts = ({ history, ...props }) => {
 
               return (
                 <Manuscript
+                  fieldDefinitions={fieldDefinitions}
                   filterArticle={filterArticle}
                   filterByArticleLabel={filterByArticleLabel}
                   filterByArticleStatus={filterByArticleStatus}
