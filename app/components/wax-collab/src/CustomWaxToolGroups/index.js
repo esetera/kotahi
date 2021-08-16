@@ -1,0 +1,2 @@
+import KotahiBlockDropDownToolGroupService from './KotahiBlockDropDownToolGroupService/KotahiBlockDropDownToolGroupService'
+export { KotahiBlockDropDownToolGroupService }
