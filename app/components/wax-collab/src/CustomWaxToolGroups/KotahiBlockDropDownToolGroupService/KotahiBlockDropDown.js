@@ -1,5 +1,7 @@
 import React, { useContext } from 'react'
+/* eslint-disable no-unused-vars */
 import { injectable, inject } from 'inversify' // TODO: add this.
+/* eslint-enable no-unused-vars */
 import { isEmpty } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import styled from 'styled-components'
@@ -48,6 +50,7 @@ class KotahiBlockDropDown extends ToolGroup {
       blockQuote,
     ]
   }
+
   renderTools(view) {
     if (isEmpty(view) || window.innerWidth > 18800) return null
 
@@ -77,7 +80,9 @@ class KotahiBlockDropDown extends ToolGroup {
     `
 
     const { dispatch, state } = view
+
     const dropDownOptions = [
+      /* eslint-disable no-underscore-dangle */
       { label: 'Title', value: '0', item: this._tools[0] },
       { label: 'author', value: '1', item: this._tools[1] },
       { label: 'Subtitle', value: '2', item: this._tools[2] },
@@ -92,6 +97,7 @@ class KotahiBlockDropDown extends ToolGroup {
       { label: 'Extract Poetry', value: '11', item: this._tools[11] },
       { label: 'Source Note', value: '12', item: this._tools[12] },
       { label: 'Block Quote', value: '13', item: this._tools[13] },
+      /* eslint-enable no-underscore-dangle */
     ]
 
     const isDisabled =
@@ -109,14 +115,16 @@ class KotahiBlockDropDown extends ToolGroup {
 
     return (
       <DropdownStyled
-        value={found}
         key={uuidv4()}
-        options={dropDownOptions}
         onChange={option => {
+          /* eslint-disable no-underscore-dangle */
           this._tools[option.value].run(state, dispatch)
+          /* eslint-enable no-underscore-dangle */
         }}
+        options={dropDownOptions}
         placeholder="Block Level"
         select={isDisabled}
+        value={found}
       />
     )
   }

@@ -22,10 +22,18 @@ import {
   SpecialCharactersToolGroupService,
   TextBlockLevelService,
   TextToolGroupService,
+  // these were added:
+  // BlockDropDownToolGroupService,
+  DisplayBlockLevelService,
 } from 'wax-prosemirror-services'
 import EditorElements from './EditorElements'
+import { KotahiBlockDropDownToolGroupService } from './CustomWaxToolGroups'
 
 import './katex/katex.css'
+
+const updateTitle = title => {
+  // console.log(`Title changed: ${title}`)
+}
 
 const waxConfig = () => ({
   SchemaService: DefaultSchema,
@@ -34,21 +42,25 @@ const waxConfig = () => ({
       templateArea: 'topBar',
       toolGroups: [
         {
+          name: 'KotahiBlockDropDown',
+          // exclude: ['Title'],
+        },
+        {
           name: 'Annotations',
           exclude: ['StrikeThrough', 'Code'],
         },
         'SpecialCharacters',
         'Lists',
-        {
-          name: 'Text',
-          exclude: [
-            'Paragraph',
-            'ParagraphContinued',
-            'ExtractProse',
-            'ExtractPoetry',
-            'SourceNote',
-          ],
-        },
+        // {
+        //   name: 'Text',
+        //   exclude: [
+        //     'Paragraph',
+        //     'ParagraphContinued',
+        //     'ExtractProse',
+        //     'ExtractPoetry',
+        //     'SourceNote',
+        //   ],
+        // },
       ],
     },
     {
@@ -58,6 +70,8 @@ const waxConfig = () => ({
   ],
 
   RulesService: [emDash, ellipsis],
+
+  TitleService: { updateTitle },
 
   ShortCutsService: {},
 
@@ -77,6 +91,10 @@ const waxConfig = () => ({
     new SpecialCharactersToolGroupService(),
     new TextBlockLevelService(),
     new TextToolGroupService(),
+    // this is what I've added to try to make this work:
+    new KotahiBlockDropDownToolGroupService(),
+    // new BlockDropDownToolGroupService(),
+    new DisplayBlockLevelService(),
   ],
 })
 

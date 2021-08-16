@@ -7,9 +7,14 @@ module.exports = [
   {
     test: /\.js$|\.jsx$/,
     loader: 'babel-loader',
-    query: {
+    options: {
       presets: [['@babel/preset-env'], '@babel/preset-react'],
-      plugins: [require.resolve('react-hot-loader/babel')],
+      plugins: [
+        ['@babel/plugin-proposal-decorators', { legacy: true }],
+        '@babel/plugin-proposal-class-properties',
+        require.resolve('react-hot-loader/babel'),
+      ],
+
       env: {
         production: {
           /* bug requires mangle:false https://github.com/babel/minify/issues/556#issuecomment-339751209 */
