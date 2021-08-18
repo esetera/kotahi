@@ -7,6 +7,7 @@ eslint.rules['react/jsx-props-no-spreading'] = 0
 eslint.rules['no-unused-vars'] = 0
 eslint.rules['no-underscore-dangle'] = 0
 eslint.rules['import/prefer-default-export'] = 0
+eslint.rules['class-methods-use-this'] = 0
 
 // end rules that should be taken out
 

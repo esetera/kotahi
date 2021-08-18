@@ -1,1 +1,3 @@
 app/components/wax-collab/src/CustomWaxToolGroups/KotahiBlockDropDownToolGroupService/KotahiBlockDropDown.js
+app/components/wax-collab/src/ExtendedHeaders/ExtendedHeadingService/Heading5.js
+app/components/wax-collab/src/ExtendedHeaders/ExtendedHeadingService/Heading6.js
