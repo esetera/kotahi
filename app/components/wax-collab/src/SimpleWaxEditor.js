@@ -22,10 +22,18 @@ import {
   SpecialCharactersToolGroupService,
   TextBlockLevelService,
   TextToolGroupService,
+  DisplayBlockLevelService,
 } from 'wax-prosemirror-services'
 import EditorElements from './EditorElements'
+import { KotahiBlockDropDownToolGroupService } from './CustomWaxToolGroups'
+import ExtendedHeadingService from './ExtendedHeaders'
 
 import './katex/katex.css'
+
+const updateTitle = title => {
+  // this gets fired when the title is changed in original version of this—not called now, but might still be needed
+  // console.log(`Title changed: ${title}`)
+}
 
 const waxConfig = () => ({
   SchemaService: DefaultSchema,
@@ -34,21 +42,24 @@ const waxConfig = () => ({
       templateArea: 'topBar',
       toolGroups: [
         {
+          name: 'KotahiBlockDropDown',
+        },
+        {
           name: 'Annotations',
           exclude: ['StrikeThrough', 'Code'],
         },
         'SpecialCharacters',
         'Lists',
-        {
-          name: 'Text',
-          exclude: [
-            'Paragraph',
-            'ParagraphContinued',
-            'ExtractProse',
-            'ExtractPoetry',
-            'SourceNote',
-          ],
-        },
+        // {
+        //   name: 'Text',
+        //   exclude: [
+        //     'Paragraph',
+        //     'ParagraphContinued',
+        //     'ExtractProse',
+        //     'ExtractPoetry',
+        //     'SourceNote',
+        //   ],
+        // },
       ],
     },
     {
@@ -60,6 +71,8 @@ const waxConfig = () => ({
   RulesService: [emDash, ellipsis],
 
   ShortCutsService: {},
+
+  TitleService: { updateTitle },
 
   services: [
     new AnnotationToolGroupService(),
@@ -77,6 +90,10 @@ const waxConfig = () => ({
     new SpecialCharactersToolGroupService(),
     new TextBlockLevelService(),
     new TextToolGroupService(),
+    // this is what I've added::
+    new ExtendedHeadingService(),
+    new KotahiBlockDropDownToolGroupService(),
+    new DisplayBlockLevelService(),
   ],
 })
 
@@ -126,6 +143,8 @@ const Menu = styled.div`
   display: flex;
   grid-area: menu;
   margin: 0 ${th('borderRadius')};
+  max-width: 100%; /* this is to avoid spillover */
+  /* overflow-x: scroll; this is not great! */
   position: sticky;
   top: -20px;
   user-select: none;
