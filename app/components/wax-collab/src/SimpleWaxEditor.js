@@ -23,11 +23,11 @@ import {
   TextBlockLevelService,
   TextToolGroupService,
   // these were added:
-  // BlockDropDownToolGroupService,
   DisplayBlockLevelService,
 } from 'wax-prosemirror-services'
 import EditorElements from './EditorElements'
 import { KotahiBlockDropDownToolGroupService } from './CustomWaxToolGroups'
+import ExtendedHeadingService from './ExtendedHeaders'
 
 import './katex/katex.css'
 
@@ -92,8 +92,8 @@ const waxConfig = () => ({
     new TextBlockLevelService(),
     new TextToolGroupService(),
     // this is what I've added to try to make this work:
+    new ExtendedHeadingService(),
     new KotahiBlockDropDownToolGroupService(),
-    // new BlockDropDownToolGroupService(),
     new DisplayBlockLevelService(),
   ],
 })
@@ -144,6 +144,8 @@ const Menu = styled.div`
   display: flex;
   grid-area: menu;
   margin: 0 ${th('borderRadius')};
+  max-width: 100%;
+  overflow-x: scroll;
   position: sticky;
   top: -20px;
   user-select: none;

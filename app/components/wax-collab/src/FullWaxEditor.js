@@ -30,10 +30,18 @@ import {
   TableToolGroupService,
   TextBlockLevelService,
   TextToolGroupService,
+  DisplayBlockLevelService,
 } from 'wax-prosemirror-services'
 import EditorElements from './EditorElements'
+import { KotahiBlockDropDownToolGroupService } from './CustomWaxToolGroups'
+import ExtendedHeadingService from './ExtendedHeaders'
 
 import './katex/katex.css'
+
+const updateTitle = title => {
+  // this gets fired when the title is changed in original version of this—not called now, but might still be needed
+  // console.log(`Title changed: ${title}`)
+}
 
 const waxConfig = () => ({
   EnableTrackChangeService: false, // This line is needed by NoteService
@@ -45,6 +53,9 @@ const waxConfig = () => ({
         {
           name: 'Base',
           exclude: ['Save'],
+        },
+        {
+          name: 'KotahiBlockDropDown',
         },
         {
           name: 'Annotations',
@@ -59,16 +70,16 @@ const waxConfig = () => ({
         },
         'SpecialCharacters',
         'Lists',
-        {
-          name: 'Text',
-          exclude: [
-            'Paragraph',
-            'ParagraphContinued',
-            'ExtractProse',
-            'ExtractPoetry',
-            'SourceNote',
-          ],
-        },
+        // {
+        //   name: 'Text',
+        //   exclude: [
+        //     'Paragraph',
+        //     'ParagraphContinued',
+        //     'ExtractProse',
+        //     'ExtractPoetry',
+        //     'SourceNote',
+        //   ],
+        // },
         'Notes',
         'Tables',
         'Images',
@@ -83,6 +94,8 @@ const waxConfig = () => ({
   PmPlugins: [columnResizing(), tableEditing()],
 
   RulesService: [emDash, ellipsis],
+
+  TitleService: { updateTitle },
 
   ShortCutsService: {},
 
@@ -109,24 +122,31 @@ const waxConfig = () => ({
     new TableToolGroupService(),
     new TextBlockLevelService(),
     new TextToolGroupService(),
+    new ExtendedHeadingService(),
+    new KotahiBlockDropDownToolGroupService(),
+    new DisplayBlockLevelService(),
   ],
 })
 
 const Grid = styled.div`
+  --menuHeight: 80px;
   display: grid;
   grid-template-areas: 'menu' 'editor';
-
   ${props =>
     props.readonly
       ? css`
           grid-template-rows: 0 1fr;
         `
       : css`
-          grid-template-rows: 40px 1fr;
+          grid-template-rows: var(--menuHeight) 1fr;
         `}
 
   position: relative;
   z-index: 0;
+
+  @media (min-width: 1673px) {
+    --menuHeight: 40px;
+  }
 
   :focus-within {
     z-index: 10000;
@@ -168,12 +188,19 @@ const Menu = styled.div`
   border: 1px solid ${th('colorBorder')};
   border-bottom: 1px solid ${th('colorFurniture')};
   display: flex;
+  flex-wrap: wrap;
   font-size: 80%;
   grid-area: menu;
+  max-width: 100%;
+  /* overflow-x: scroll; // this kills drop-downs! */
   position: sticky;
   top: -20px;
   user-select: none;
   z-index: 10;
+
+  & .Dropdown-placeholder {
+    white-space: nowrap;
+  }
 `
 
 const InfoContainer = styled.div`

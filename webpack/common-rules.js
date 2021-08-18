@@ -10,9 +10,11 @@ module.exports = [
     options: {
       presets: [['@babel/preset-env'], '@babel/preset-react'],
       plugins: [
-        ['@babel/plugin-proposal-decorators', { legacy: true }],
-        '@babel/plugin-proposal-class-properties',
         require.resolve('react-hot-loader/babel'),
+        ['@babel/plugin-proposal-decorators', { legacy: true }],
+        'babel-plugin-parameter-decorator',
+        'babel-plugin-styled-components',
+        ['@babel/plugin-proposal-class-properties', { loose: true }],
       ],
 
       env: {
