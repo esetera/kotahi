@@ -54,9 +54,7 @@ const waxConfig = () => ({
           name: 'Base',
           exclude: ['Save'],
         },
-        {
-          name: 'KotahiBlockDropDown',
-        },
+        'KotahiBlockDropDown',
         {
           name: 'Annotations',
           more: [
@@ -70,16 +68,6 @@ const waxConfig = () => ({
         },
         'SpecialCharacters',
         'Lists',
-        // {
-        //   name: 'Text',
-        //   exclude: [
-        //     'Paragraph',
-        //     'ParagraphContinued',
-        //     'ExtractProse',
-        //     'ExtractPoetry',
-        //     'SourceNote',
-        //   ],
-        // },
         'Notes',
         'Tables',
         'Images',
@@ -130,7 +118,6 @@ const waxConfig = () => ({
 })
 
 const Grid = styled.div`
-  --menuHeight: 80px;
   display: grid;
   grid-template-areas: 'menu' 'editor';
   ${props =>
@@ -139,15 +126,11 @@ const Grid = styled.div`
           grid-template-rows: 0 1fr;
         `
       : css`
-          grid-template-rows: var(--menuHeight) 1fr;
+          grid-template-rows: minmax(40px, auto) 1fr;
         `}
 
   position: relative;
   z-index: 0;
-
-  @media (min-width: 1673px) {
-    --menuHeight: 40px;
-  }
 
   :focus-within {
     z-index: 10000;
@@ -192,11 +175,16 @@ const Menu = styled.div`
   flex-wrap: wrap;
   font-size: 80%;
   grid-area: menu;
+  height: fit-content;
   max-width: 100%;
   position: sticky;
   top: -20px;
   user-select: none;
   z-index: 10;
+
+  & > div {
+    height: 36px;
+  }
 `
 
 const InfoContainer = styled.div`

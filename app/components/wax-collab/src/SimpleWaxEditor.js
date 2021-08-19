@@ -41,25 +41,13 @@ const waxConfig = () => ({
     {
       templateArea: 'topBar',
       toolGroups: [
-        {
-          name: 'KotahiBlockDropDown',
-        },
+        'KotahiBlockDropDown',
         {
           name: 'Annotations',
           exclude: ['StrikeThrough', 'Code'],
         },
         'SpecialCharacters',
         'Lists',
-        // {
-        //   name: 'Text',
-        //   exclude: [
-        //     'Paragraph',
-        //     'ParagraphContinued',
-        //     'ExtractProse',
-        //     'ExtractPoetry',
-        //     'SourceNote',
-        //   ],
-        // },
       ],
     },
     {
@@ -107,7 +95,7 @@ const Grid = styled.div`
           grid-template-rows: 0 1fr;
         `
       : css`
-          grid-template-rows: 40px 1fr;
+          grid-template-rows: minmax(40px, auto) 1fr;
         `}
 `
 
@@ -141,7 +129,9 @@ const Menu = styled.div`
   background: #fff;
   border-bottom: 1px solid ${th('colorFurniture')};
   display: flex;
+  flex-wrap: wrap;
   grid-area: menu;
+  height: fit-content;
   margin: 0 ${th('borderRadius')};
   max-width: 100%; /* this is to avoid spillover */
   /* overflow-x: scroll; this is not great! */
@@ -149,6 +139,10 @@ const Menu = styled.div`
   top: -20px;
   user-select: none;
   z-index: 1;
+
+  & > div {
+    height: 36px;
+  }
 
   :focus-within {
     z-index: 1000;

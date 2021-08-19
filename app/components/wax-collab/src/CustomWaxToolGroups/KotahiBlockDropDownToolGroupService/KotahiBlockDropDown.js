@@ -86,29 +86,17 @@ class KotahiBlockDropDown extends ToolGroup {
 
     const dropDownOptions = [
       { label: 'Title', value: '0', item: this._tools[0] },
-      // { label: 'author', value: '1', item: this._tools[1] },
-      // { label: 'Subtitle', value: '2', item: this._tools[2] },
-      // { label: 'Epigraph Prose', value: '3', item: this._tools[3] },
-      // { label: 'Epigraph Poetry', value: '4', item: this._tools[4] },
       { label: 'Heading 2', value: '5', item: this._tools[5] },
       { label: 'Heading 3', value: '6', item: this._tools[6] },
       { label: 'Heading 4', value: '7', item: this._tools[7] },
       { label: 'Heading 5', value: '14', item: this._tools[14] },
       { label: 'Heading 6', value: '15', item: this._tools[15] },
       { label: 'Paragraph', value: '8', item: this._tools[8] },
-      // { label: 'Paragraph Continued', value: '9', item: this._tools[9] },
-      // { label: 'Extract Prose', value: '10', item: this._tools[10] },
-      // { label: 'Extract Poetry', value: '11', item: this._tools[11] },
-      // { label: 'Source Note', value: '12', item: this._tools[12] },
       { label: 'Block quote', value: '13', item: this._tools[13] },
     ]
 
     const isDisabled = true // this was doing the weird thing with the title, disconnected for now.
-
-    // dropDownOptions[0].item.enable &&
-    // dropDownOptions[0].item.enable(state) &&
-    // dropDownOptions[0].item.select &&
-    // dropDownOptions[0].item.select(state, activeViewId)
+    // if we want to re-enable it, go look in the Wax code
 
     let found = ''
     dropDownOptions.forEach((item, i) => {
@@ -116,15 +104,13 @@ class KotahiBlockDropDown extends ToolGroup {
         found = item.item.label
       }
     })
-    console.log(dropDownOptions)
 
     return (
       <DropdownStyled
         key={uuidv4()}
         onChange={option => {
-          /* eslint-disable no-underscore-dangle */
+          /* eslint-disable-next-line no-underscore-dangle */
           this._tools[option.value].run(state, dispatch)
-          /* eslint-enable no-underscore-dangle */
         }}
         options={dropDownOptions}
         placeholder="Block Level"
