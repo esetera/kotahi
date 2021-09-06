@@ -44,5 +44,6 @@ module.exports = {
   },
   hypothesis: {
     apiKey: 'HYPOTHESIS_API_KEY',
+    group: 'HYPOTHESIS_GROUP',
   },
 }

@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 const TurndownService = require('turndown')
 const axios = require('axios')
+const config = require('config')
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 
 const headers = {
@@ -121,22 +122,11 @@ const publishToHypothesis = async manuscript => {
   const actions = {
     create: propName => {
       const requestBody = {
+        group: config.hypothesis.group,
+        permissions: { read: `group:${config.hypothesis.group}` },
         uri: manuscript.submission.biorxivURL,
         text: turndownService.turndown(manuscript.submission[propName]),
         tags: [propName === 'summary' ? 'evaluationSummary' : 'peerReview'],
-      }
-
-      if (process.env.NODE_ENV !== 'production') {
-        requestBody.permissions = {
-          read: ['group:__world__'],
-        }
-      }
-
-      if (process.env.NODE_ENV === 'production') {
-        requestBody.permissions = {
-          read: ['group:q5X6RWJ6'],
-        }
-        requestBody.group = 'q5X6RWJ6'
       }
 
       return () => {
@@ -147,22 +137,11 @@ const publishToHypothesis = async manuscript => {
     },
     update: propName => {
       const requestBody = {
+        group: config.hypothesis.group,
+        permissions: { read: `group:${config.hypothesis.group}` },
         uri: manuscript.submission.biorxivURL,
         text: turndownService.turndown(manuscript.submission[propName]),
         tags: [propName === 'summary' ? 'evaluationSummary' : 'peerReview'],
-      }
-
-      if (process.env.NODE_ENV !== 'production') {
-        requestBody.permissions = {
-          read: ['group:__world__'],
-        }
-      }
-
-      if (process.env.NODE_ENV === 'production') {
-        requestBody.permissions = {
-          read: ['group:q5X6RWJ6'],
-        }
-        requestBody.group = 'q5X6RWJ6'
       }
 
       return () => {

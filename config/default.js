@@ -221,6 +221,7 @@ module.exports = {
   },
   hypothesis: {
     apiKey: '',
+    group: '__world__',
   },
   schema: {},
   journal,
