@@ -42,4 +42,7 @@ module.exports = {
     region: 'S3_REGION',
     bucket: 'S3_BUCKET',
   },
+  hypothesis: {
+    apiKey: 'HYPOTHESIS_API_KEY',
+  },
 }

@@ -11,12 +11,13 @@ const headers = {
 
 const requestURL = `https://api.hypothes.is/api/annotations`
 
+/** DELETE a publication from Hypothesis via REST */
 const deletePublication = async publicationId => {
   try {
-    const response = await axios.delete(
-      `https://api.hypothes.is/api/annotations/${publicationId}`,
-      { ...headers, data: {} },
-    )
+    const response = await axios.delete(`${requestURL}/${publicationId}`, {
+      ...headers,
+      data: {},
+    })
 
     return response
   } catch (e) {
@@ -200,9 +201,6 @@ const publishToHypothesis = async manuscript => {
       ...curr,
     }
   }, {})
-
-  console.log('newHypothesisEvaluationMap')
-  console.log(newHypothesisEvaluationMap)
 
   return newHypothesisEvaluationMap
 }

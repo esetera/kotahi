@@ -199,7 +199,7 @@ module.exports = {
       'application/zip',
     ],
   },
-  /** These named configuration sections will be available to the client */
+  /** These named configuration sections will be available to webpack */
   publicKeys: [
     'pubsweet-client',
     'validations',
@@ -210,6 +210,7 @@ module.exports = {
     'journal',
     'teams',
     'client-features',
+    'hypothesis',
   ],
   s3: {
     accessKeyId: 'test',
@@ -217,6 +218,9 @@ module.exports = {
     endpoint: 'http://minio:9000',
     region: 'us-east-1',
     bucket: 'kotahi',
+  },
+  hypothesis: {
+    apiKey: '',
   },
   schema: {},
   journal,
