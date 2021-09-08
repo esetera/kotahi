@@ -4,11 +4,14 @@ module.exports = {
   // setupTestFrameworkScriptFile: '<rootDir>/test/helpers/jest-setup.js',
   // testEnvironment: 'node',
   // testRegex: '/test/authsome/.*.test.js$',
+  verbose: true,
+  testURL: 'http://localhost/',
+  testMatch: ['**/__tests__/**.test.js'],
   projects: [
     {
       displayName: 'models',
       testEnvironment: 'node',
-      testRegex: 'server/.*/__tests__/.*.test.js$',
+      testMatch: ['server/**/__tests__/**.test.js'],
     },
   ],
 }
