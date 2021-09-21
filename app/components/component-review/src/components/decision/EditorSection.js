@@ -3,7 +3,13 @@ import PropTypes from 'prop-types'
 import FullWaxEditor from '../../../../wax-collab/src/FullWaxEditor'
 import { Info } from '../style'
 
-const EditorSection = ({ manuscript, onChange, onBlur, readonly, currentUser }) => {
+const EditorSection = ({
+  manuscript,
+  onChange,
+  onBlur,
+  readonly,
+  currentUser,
+}) => {
   const manuscriptFile = manuscript?.files?.find(
     file => file.fileType === 'manuscript',
   )
@@ -28,9 +34,9 @@ const EditorSection = ({ manuscript, onChange, onBlur, readonly, currentUser }) 
       onBlur={readonly ? null : onBlur}
       onChange={readonly ? null : onChange}
       readonly={readonly}
-      value={manuscript.meta.source}
-      user={currentUser}
       useComments={currentUser.admin}
+      user={currentUser}
+      value={manuscript.meta.source}
     />
   )
 }

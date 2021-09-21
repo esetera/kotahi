@@ -41,12 +41,12 @@ const FullWaxEditor = ({
   ...rest
 }) => {
   const defaultUser = {
-    userId: user.id || "test",
+    userId: user.id || 'test',
     userColor: {
       addition: 'royalblue',
       deletion: 'indianred',
     },
-    username: user.defaultIdentity?.name || user.username || "demo",
+    username: user.defaultIdentity?.name || user.username || 'demo',
   }
 
   const ourUser = { ...defaultUser } // this is just to make sure we have a user object

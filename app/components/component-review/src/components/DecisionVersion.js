@@ -60,6 +60,7 @@ const DecisionVersion = ({
     return {
       content: (
         <EditorSection
+          currentUser={currentUser}
           manuscript={manuscript}
           onBlur={
             isThisReadOnly
@@ -69,7 +70,6 @@ const DecisionVersion = ({
                 }
           }
           readonly={isThisReadOnly}
-          currentUser={currentUser}
         />
       ),
       key: `editor_${manuscript.id}`,
@@ -162,7 +162,12 @@ const DecisionVersion = ({
     })
   }
 
-  const editorSection = addEditor(manuscript, 'Manuscript text', current, currentUser)
+  const editorSection = addEditor(
+    manuscript,
+    'Manuscript text',
+    current,
+    currentUser,
+  )
 
   const decisionSection = ({
     handleSubmit,

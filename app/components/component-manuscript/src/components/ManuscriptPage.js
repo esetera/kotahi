@@ -57,8 +57,8 @@ const ManuscriptPage = ({ match, ...props }) => {
     <Manuscript
       channel={manuscript.channels.find(c => c.type === 'all')}
       content={manuscript.meta?.source}
-      file={manuscript.files.find(file => file.fileType === 'manuscript') || {}}
       currentUser={currentUser}
+      file={manuscript.files.find(file => file.fileType === 'manuscript') || {}}
     />
   )
 }
