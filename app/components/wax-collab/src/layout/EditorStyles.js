@@ -119,7 +119,8 @@ export const EditorContainer = styled.div`
     padding: 10px;
 
     & .comment {
-      border-bottom-color: transparent;
+      border-bottom: 2px solid rgb(255, 215, 0);
+      border-radius: 3px 3px 0 0;
     }
   }
 `
@@ -136,7 +137,8 @@ export const FullEditorContainer = styled.div`
     padding: 10px;
 
     & .comment {
-      border-bottom-color: transparent;
+      border-bottom: 2px solid rgb(255, 215, 0);
+      border-radius: 3px 3px 0 0;
     }
   }
 `

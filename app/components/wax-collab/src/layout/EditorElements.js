@@ -276,7 +276,7 @@ export default css`
   }
 
   span.comment {
-    border-bottom: 2px solid #ffab20;
+    border-bottom: 2px solid rgb(255, 215, 0);
     border-radius: 3px 3px 0 0;
   }
 
