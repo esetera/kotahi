@@ -12,15 +12,16 @@ const EvaluationCompleteEmailTemplate = ({
   switch (process.env.INSTANCE_NAME) {
     case 'aperture':
       result.cc = 'aperture@humanbrainmapping.org'
-      result.subject = `The peer review of ${articleTitle} is complete.`
+      result.subject = `The peer review of "${articleTitle}" is complete.`
       result.content = `<p>
       <b>Dear ${receiverFirstName},</b>
       <br>
       <br>
-      <p>Thank you for your submission to Aperture Neuro. The peer review of ${articleTitle} is complete. Click on the link below to access your feedback.</p>
+      <p>Thank you for your submission to Aperture Neuro. The peer review of '${articleTitle}' is complete. Click on the link below to access your feedback.</p>
+      <p><a href="https://aperturedev.cloud68.co/login" target="_blank">https://aperturedev.cloud68.co/login</a></p>
       <br>
       <p>
-      Thank you, <br>
+      Thank you, <br><br>
       Kay Vanda <br>
       Journal Manager <br>
       Aperture Neuro
@@ -28,16 +29,14 @@ const EvaluationCompleteEmailTemplate = ({
     </p>`
       break
     case 'colab':
-      result.subject = `The peer review of ${articleTitle} is complete.`
+      result.subject = `The peer review of "${articleTitle}" is complete.`
       result.content = `<p>
       <b>Dear ${receiverFirstName},</b>
       <br>
       <br>
-      <p>The peer review of ${articleTitle} is complete. Click on the link below to access your feedback.</p>
-      <br>
+      <p>The peer review of '${articleTitle}' is complete. Click on the link below to access your feedback.</p>
       <br>
       <a href=${link} target="_blank">Insert manuscript link</a>
-      <br>
       <br>
       <p>
       Thanks, <br>
@@ -46,16 +45,14 @@ const EvaluationCompleteEmailTemplate = ({
     </p>`
       break
     default:
-      result.subject = `The peer review of ${articleTitle} is complete.`
+      result.subject = `The peer review of "${articleTitle}" is complete.`
       result.content = `<p>
       <b>Dear ${receiverFirstName},</b>
       <br>
       <br>
-      <p>The peer review of ${articleTitle} is complete. Click on the link below to access your feedback.</p>
-      <br>
+      <p>The peer review of '${articleTitle}' is complete. Click on the link below to access your feedback.</p>
       <br>
       <a href=${link} target="_blank">Insert manuscript link</a>
-      <br>
       <br>
       <p>
       Thanks, <br>
