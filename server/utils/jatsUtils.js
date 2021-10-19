@@ -101,7 +101,8 @@ const convertSmallCaps = markup => {
 }
 
 const convertCharacterEntities = markup => {
-  const entityRegex = /&[a-zA-Z#0-9]+;/g
+  // eslint-disable-next-line no-control-regex
+  const entityRegex = /&[a-zA-Z#0-9]+;|[^\x00-\x7f]/g // Match entities like '&copy;' and also non-ASCII characters like '©','大'
   let result = ''
   let lastIndex = 0
 
@@ -140,4 +141,4 @@ const getCitationsFromList = html => {
   return pContents
 }
 
-module.exports = { htmlToJats, getCitationsFromList }
+module.exports = { htmlToJats, getCitationsFromList, convertCharacterEntities }
