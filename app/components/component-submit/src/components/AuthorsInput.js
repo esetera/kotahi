@@ -17,12 +17,16 @@ const Author = styled.div`
   flex-wrap: wrap;
   gap: 10px;
   position: relative;
+  width: 600px;
+
+  @media only screen and (max-width:700px){
+    width:400px;
+  }
 
   & + & {
     margin-top: 10px;
   }
 `
-
 const InvalidLabel = styled.div`
   color: ${th('colorError')};
   font-size: 80%;
@@ -85,7 +89,7 @@ const AuthorsInput = ({ onChange, value }) => {
         plain
         type="button"
       >
-        Add another author
+      Add another person
       </Button>
     </>
   )
