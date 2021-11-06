@@ -19,14 +19,15 @@ const Author = styled.div`
   position: relative;
   width: 600px;
 
-  @media only screen and (max-width:700px){
-    width:400px;
+  @media only screen and (max-width: 700px) {
+    width: 400px;
   }
 
   & + & {
     margin-top: 10px;
   }
 `
+
 const InvalidLabel = styled.div`
   color: ${th('colorError')};
   font-size: 80%;
@@ -89,7 +90,7 @@ const AuthorsInput = ({ onChange, value }) => {
         plain
         type="button"
       >
-      Add another person
+        Add another person
       </Button>
     </>
   )

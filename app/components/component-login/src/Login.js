@@ -21,26 +21,26 @@ const getNextUrl = () => {
   return `${url.searchParams.get('next') || redirectLink}`
 }
 
-//Registeration Link for new User Login
+// Registeration Link for new User Login
 const RegisterLinkButton = styled.button`
-    display: inline-block;
-    font-size: 1em;
-    margin: 1em;
-    padding: 0.25em 1em;
-    border: 0px;
-    border-radius: 0px;
-    display: block;
-    font-weight:500;
+  display: inline-block;
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 0px;
+  border-radius: 0px;
+  display: block;
+  font-weight: 500;
 `
 
-//Registeration user info 
+// Registeration user info
 
-const RegisterInfoString =  styled.p`
-  font-size:1rem;
-  color:#33444d;
-  text-align:center;
+const RegisterInfoString = styled.p`
+  font-size: 1rem;
+  color: #33444d;
+  text-align: center;
   padding: 0.15em 1em;
-  font-weight:500;
+  font-weight: 500;
 `
 
 const LoginButton = styled(Button)`
@@ -139,19 +139,21 @@ const Login = ({ logo = null, ...props }) => {
         <Content>
           <img alt={brandConfig.brandName} src={brandConfig.logoPath} />
           <RegisterInfoString>
-            Kotahi uses ORCID <StyledORCIDIcon/> to identify authors and staff. 
-            {/* Login  with your ORCID account below or &nbsp;
-            <a href="https://sandbox.orcid.org/" target="_blank">
-              Register at the ORCID website.
-              </a> */}
+            Kotahi uses ORCID <StyledORCIDIcon /> to identify authors and staff.
           </RegisterInfoString>
           <LoginButton
             onClick={() => (window.location = '/auth/orcid')}
             primary
           >
             Login with ORCID
-          </LoginButton>  
-          <RegisterLinkButton as="a" href="https://sandbox.orcid.org/" target="_blank">Register with ORCID</RegisterLinkButton>
+          </LoginButton>
+          <RegisterLinkButton
+            as="a"
+            href="https://sandbox.orcid.org/"
+            target="_blank"
+          >
+            Register with ORCID
+          </RegisterLinkButton>
         </Content>
       </Centered>
     </Container>
