@@ -9,7 +9,9 @@ import { Tabs } from '../../shared'
 
 const MessageContainer = styled.section`
   background: rgb(255, 255, 255);
-  display: grid;
+  /* display: grid; */
+  display: flex;
+  flex-direction: column;
   min-width: 100%;
 
   ${props =>
@@ -65,6 +67,11 @@ const Container = ({ channelId, channels }) => {
       ) : (
         <>
           {' '}
+          <Tabs
+            background="colorBackgroundHue"
+            defaultActiveKey={' '}
+            sections={[{ label: 'Editorial discussion', key: ' ' }]}
+          />
           <Messages channelId={channelId} />
           <ChatInput channelId={channelId} />
         </>

@@ -93,8 +93,9 @@ const DecisionPage = ({ match }) => {
   let editorialChannelId, allChannelId
 
   if (Array.isArray(manuscript.channels) && manuscript.channels.length) {
-    editorialChannelId = manuscript.channels.find(c => c.type === 'editorial')
-      .id
+    editorialChannelId = manuscript.channels.find(
+      c => c.type === 'editorial',
+    ).id
     allChannelId = manuscript.channels.find(c => c.type === 'all').id
   }
 

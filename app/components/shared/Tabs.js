@@ -44,7 +44,7 @@ const TabContainer = styled.div.attrs(props => ({
 
 const Tabs = ({
   sections,
-  onChange,
+  onChange = null,
   defaultActiveKey = null,
   tabsContainerGridArea,
   background,
