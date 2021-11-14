@@ -9,7 +9,6 @@ import { Tabs } from '../../shared'
 
 const MessageContainer = styled.section`
   background: rgb(255, 255, 255);
-  /* display: grid; */
   display: flex;
   flex-direction: column;
   min-width: 100%;
