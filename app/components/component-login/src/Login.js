@@ -149,7 +149,7 @@ const Login = ({ logo = null, ...props }) => {
           </LoginButton>
           <RegisterLinkButton
             as="a"
-            href="https://sandbox.orcid.org/"
+            href="https://orcid.org/register"
             target="_blank"
           >
             Register with ORCID
