@@ -731,7 +731,7 @@ const makeJats = (html, articleMeta, journalMeta) => {
   const back = `<back>${appendices}${refList}${fnSection}</back>`
 
   // check if body or back are empty, don't pass if not there.
-  const jats = `<article xml:lang="en" xmlns:mml="http://www.w3.org/1998/Math/MathML"	xmlns:xlink="http://www.w3.org/1999/xlink" dtd-version="1.3">${front}${
+  const jats = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.3 20151215//EN" "https://jats.nlm.nih.gov/publishing/1.3/JATS-journalpublishing1.dtd"><article article-type="research-article" xml:lang="en" xmlns:mml="http://www.w3.org/1998/Math/MathML"	xmlns:xlink="http://www.w3.org/1999/xlink" dtd-version="1.3">${front}${
     body.length > 13 ? body : ''
   }${back.length > 13 ? back : ''}</article>`
 
