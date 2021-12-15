@@ -264,8 +264,8 @@ const ReviewPage = ({ match, ...props }) => {
     haspopup: 'false',
   }
 
-  const channelId = manuscript.channels.find(c => c.type === 'editorial')?.id
-  if (!channelId)
+  const channel = manuscript.channels.find(c => c.type === 'editorial')
+  if (!channel)
     console.error(
       `Malformed channels in manuscript ${manuscript.id}:`,
       manuscript.channels,
@@ -372,7 +372,7 @@ const ReviewPage = ({ match, ...props }) => {
     >
       {formikProps => (
         <ReviewLayout
-          channelId={channelId}
+          channels={[channel]}
           currentUser={currentUser}
           review={existingReview}
           status={status}

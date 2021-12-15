@@ -71,7 +71,7 @@ const Manuscript = ({
       <Info>No supported view of the file</Info>
     )}
     <Chat>
-      <MessageContainer channelId={channel.id} />
+      <MessageContainer channels={[channel]} />
     </Chat>
   </Columns>
 )

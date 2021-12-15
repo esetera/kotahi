@@ -36,39 +36,29 @@ const MessageContainer = styled.section`
         `}
 `
 
-const Container = ({ channelId, channels }) => {
-  if (!channelId && !channels) {
+const Container = ({ channels }) => {
+  if (!channels) {
     return null
   }
 
-  const tabs =
-    channels &&
-    channels.map(channel => ({
-      label: channel.name,
-      key: channel.id,
-      content: (
-        <>
-          <Messages channelId={channel.id} />
-          <ChatInput channelId={channel.id} />
-        </>
-      ),
-    }))
+  const tabs = channels.map(channel => ({
+    label: channel.name,
+    key: channel.id,
+    content: (
+      <>
+        <Messages channelId={channel.id} />
+        <ChatInput channelId={channel.id} />
+      </>
+    ),
+  }))
 
   return (
     <MessageContainer channels={channels}>
-      {tabs ? (
-        <Tabs
-          background="colorBackgroundHue"
-          defaultActiveKey={tabs[0].key}
-          sections={tabs}
-        />
-      ) : (
-        <>
-          {' '}
-          <Messages channelId={channelId} />
-          <ChatInput channelId={channelId} />
-        </>
-      )}
+      <Tabs
+        background="colorBackgroundHue"
+        defaultActiveKey={tabs[0].key}
+        sections={tabs}
+      />
     </MessageContainer>
   )
 }

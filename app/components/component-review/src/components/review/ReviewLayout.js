@@ -35,7 +35,7 @@ const ReviewLayout = ({
   status,
   updateReview,
   uploadFile,
-  channelId,
+  channel,
   submissionForm,
 }) => {
   const reviewSections = []
@@ -158,7 +158,7 @@ const ReviewLayout = ({
         />
       </Manuscript>
       <Chat>
-        <MessageContainer channelId={channelId} />
+        <MessageContainer channels={[channel]} />
       </Chat>
     </Columns>
   )
@@ -221,7 +221,7 @@ ReviewLayout.propTypes = {
   status: PropTypes.string,
   updateReview: PropTypes.func.isRequired,
   uploadFile: PropTypes.func,
-  channelId: PropTypes.string.isRequired,
+  channel: PropTypes.shape({}).isRequired,
   submissionForm: PropTypes.shape({
     children: PropTypes.arrayOf(
       PropTypes.shape({

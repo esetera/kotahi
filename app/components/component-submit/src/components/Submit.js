@@ -178,11 +178,7 @@ const Submit = ({
   })
 
   // Protect if channels don't exist for whatever reason
-  let channelId
-
-  if (Array.isArray(parent.channels) && parent.channels.length) {
-    channelId = parent.channels.find(c => c.type === 'all').id
-  }
+  const channels = parent?.channels?.filter(c => c.type === 'all') ?? []
 
   return (
     <Columns>
@@ -195,7 +191,7 @@ const Submit = ({
         </ErrorBoundary>
       </Manuscript>
       <Chat>
-        <MessageContainer channelId={channelId} />
+        <MessageContainer channels={channels} />
       </Chat>
     </Columns>
   )
