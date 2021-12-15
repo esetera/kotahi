@@ -7,7 +7,7 @@ import Messages from './Messages/Messages'
 import ChatInput from './SuperChatInput/SuperChatInput'
 import { Tabs } from '../../shared'
 
-const MessageContainer = styled.section`
+const InnerContainer = styled.section`
   background: rgb(255, 255, 255);
   display: grid;
   min-width: 100%;
@@ -36,7 +36,7 @@ const MessageContainer = styled.section`
         `}
 `
 
-const Container = ({ channels }) => {
+const MessageContainer = ({ channels }) => {
   if (!channels) {
     return null
   }
@@ -53,14 +53,14 @@ const Container = ({ channels }) => {
   }))
 
   return (
-    <MessageContainer channels={channels}>
+    <InnerContainer channels={channels}>
       <Tabs
         background="colorBackgroundHue"
         defaultActiveKey={tabs[0].key}
         sections={tabs}
       />
-    </MessageContainer>
+    </InnerContainer>
   )
 }
 
-export default Container
+export default MessageContainer
