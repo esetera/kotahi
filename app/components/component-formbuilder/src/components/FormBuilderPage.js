@@ -17,6 +17,11 @@ const updateFormMutation = gql`
   mutation($form: FormInput!) {
     updateForm(form: $form) {
       id
+      structure {
+        children {
+          id
+        }
+      }
     }
   }
 `
@@ -190,6 +195,34 @@ const FormBuilderPage = () => {
           structure: { ...form.structure, children: newFields },
         }),
       },
+      optimisticResponse: {
+        updateForm: {
+          id: form.id,
+          structure: {
+            children: newFields.map(f => ({
+              id: f.id,
+              __typename: 'FormElement',
+            })),
+            __typename: 'FormStructure',
+          },
+          __typename: 'Form',
+        },
+      },
+      /*update: (cache, { data }) => {
+        const form = data.updateForm
+        console.log(data)
+        cache.modify({
+          id: cache.identify(form),
+          fields: {
+            structure: priorStructure => ({
+              ...priorStructure,
+              children: newFields.map(f => ({
+                __ref: cache.identify(f),
+              })),
+            }),
+          },
+        })
+      },*/
     })
   }
 
