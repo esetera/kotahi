@@ -27,7 +27,7 @@ module.exports = `<!DOCTYPE html>
     {% set emailList = [] %}
 
     <section class="titlepage"> 
-      <!--<img class="logo" src="{{article.publicationMetadata.publisherLogo}}" alt="logo" >-->
+      <img class="logo" src="{{article.publicationMetadata.publisherLogo}}" alt="logo" >
       <header>
         <p id="researchLevel">
           {{article.parsedSubmission.objectType}}
@@ -38,7 +38,7 @@ module.exports = `<!DOCTYPE html>
           {% endfor %}
         </ul>
         <h1 class="tile">{{article.meta.title}}</h1>
-        <p class= "authors">
+        <p class="authors">
           <ul class="authors-list">
             {% for author in article.parsedSubmission.authors %}
                                                                                                                                                                                                        <li>

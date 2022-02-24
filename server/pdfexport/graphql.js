@@ -119,6 +119,7 @@ const pdfHandler = async manuscriptId => {
   const outHtml = applyTemplate(articleData)
 
   await fsPromised.appendFile(`${dirName}/index.html`, outHtml)
+
   await fsPromised.appendFile(`${dirName}/styles.css`, css)
 
   // 2 zip this.

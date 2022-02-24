@@ -1047,7 +1047,7 @@ const resolvers = {
         meta: m.meta,
         submission: JSON.stringify(m.submission),
         publishedDate: m.published,
-        styledHtml: applyTemplate(m?.meta?.source, true),
+        styledHtml: applyTemplate(m, true),
       }))
     },
     async publishedManuscript(_, { id }, ctx) {
@@ -1066,7 +1066,7 @@ const resolvers = {
         meta: m.meta,
         submission: JSON.stringify(m.submission),
         publishedDate: m.published,
-        styledHtml: applyTemplate(m?.meta?.source, true),
+        styledHtml: applyTemplate(m, true),
       }
     },
     async unreviewedPreprints(_, { token }, ctx) {
@@ -1327,6 +1327,7 @@ const typeDefs = `
     meta: ManuscriptMeta
     submission: String
     publishedDate: DateTime
+		styledHtml: String
   }
 `
 

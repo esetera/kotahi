@@ -11,7 +11,7 @@ const css = require('./pdfTemplates/styles')
 // 3. If there is a user template in /config/pdfTemplates, use that instead of the default one
 // 4. If there is a user stylesheet in /config/pdfTemplates, append that to the default stylesheet
 
-const applyTemplate = (articleData, includeCss = false) => {
+const applyTemplate = (articleData, includeCss) => {
   if (!articleData) {
     // Error handling: if there's no manuscript.meta.source, what should we return?
     return ''
@@ -19,11 +19,18 @@ const applyTemplate = (articleData, includeCss = false) => {
 
   const thisArticle = articleData
   thisArticle.publicationMetadata = publicationMetadata
-  const renderedHtml = nunjucks.renderString(template, { article: thisArticle })
+  let renderedHtml = nunjucks.renderString(template, { article: thisArticle })
 
   if (includeCss) {
-    renderedHtml.replace('</body>', `<style>${css}</style></body>`)
+    renderedHtml = renderedHtml.replace(
+      '</body>',
+      `<style>${css}</style></body>`,
+    )
   }
+
+  // TODO: why is this coming out over GraphQL with escaped newlines?
+
+  renderedHtml = renderedHtml.replace(/\n|\r|\t/g, '')
 
   return renderedHtml
 }
