@@ -1,6 +1,7 @@
 const nunjucks = require('nunjucks')
 const template = require('./pdfTemplates/article')
 const publicationMetadata = require('./pdfTemplates/publicationMetadata')
+const articleMetadata = require('./pdfTemplates/articleMetadata')
 const css = require('./pdfTemplates/styles')
 
 // applyTemplate.js
@@ -19,6 +20,7 @@ const applyTemplate = (articleData, includeCss) => {
 
   const thisArticle = articleData
   thisArticle.publicationMetadata = publicationMetadata
+  thisArticle.articleMetadata = articleMetadata(thisArticle)
   let renderedHtml = nunjucks.renderString(template, { article: thisArticle })
 
   if (includeCss) {
