@@ -3,6 +3,7 @@
 // Because every form is different, different users will need to make their own versions of this to suit their needs.
 
 // this should pull in (and be replaced by) a user version from config/exportsettings/articleMetadata.js
+const userArticleMetadata = require('../../../config/export/articleMetadata.js')
 
 export const articleMetadata = manuscript => {
   const meta = {}
@@ -39,6 +40,16 @@ export const articleMetadata = manuscript => {
         affiliation: manuscript.submission.authors[i].affiliation || '',
         id: manuscript.submission.authors[i].id || '',
       }
+    }
+  }
+
+  // replace things by what's in the user version if we need to.
+
+  const userKeys = Object.keys(userArticleMetadata)
+
+  for (let i = 0; i < userKeys.length; i += 1) {
+    if (userArticleMetadata[userKeys]) {
+      meta[userKeys] = userArticleMetadata[userKeys]
     }
   }
 
