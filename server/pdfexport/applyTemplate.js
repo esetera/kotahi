@@ -1,8 +1,8 @@
 const path = require('path')
+const fs = require('fs-extra').promises
 const nunjucks = require('nunjucks')
 const publicationMetadata = require('./pdfTemplates/publicationMetadata')
 const articleMetadata = require('./pdfTemplates/articleMetadata')
-const css = require('./pdfTemplates/styles')
 
 // applyTemplate.js
 
@@ -16,6 +16,25 @@ const userTemplatePath = path.resolve(
   __dirname,
   '../../../../../../config/export',
 )
+
+const generateCSS = async () => {
+  let outputCss = ''
+
+  const defaultCssBuffer = await fs.readFile(
+    `${defaultTemplatePath}/styles.css`,
+  )
+
+  outputCss = defaultCssBuffer.toString()
+
+  try {
+    const userCssBuffer = await fs.readFile(`${userTemplatePath}/styles.css`)
+    outputCss += userCssBuffer.toString()
+  } catch (e) {
+    console.error('No user stylesheet found', e)
+  }
+
+  return outputCss
+}
 
 const defaultTemplateEnv = nunjucks.configure(defaultTemplatePath, {
   autoescape: true,
@@ -36,7 +55,9 @@ try {
   template = defaultTemplateEnv.getTemplate('article.njk')
 }
 
-const applyTemplate = (articleData, includeCss) => {
+const applyTemplate = async (articleData, includeCss) => {
+  const theCss = await generateCSS()
+
   if (!articleData) {
     // Error handling: if there's no manuscript.meta.source, what should we return?
     return ''
@@ -52,7 +73,7 @@ const applyTemplate = (articleData, includeCss) => {
   if (includeCss) {
     renderedHtml = renderedHtml.replace(
       '</body>',
-      `<style>${css}</style></body>`,
+      `<style>${theCss}</style></body>`,
     )
   }
 
@@ -63,4 +84,4 @@ const applyTemplate = (articleData, includeCss) => {
   return renderedHtml
 }
 
-module.exports = applyTemplate
+module.exports = { applyTemplate, generateCSS }

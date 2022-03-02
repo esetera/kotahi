@@ -25,7 +25,7 @@ const importArticlesFromBiorxivWithFullTextSearch = require('../../import-articl
 const importArticlesFromPubmed = require('../../import-articles/pubmed-import')
 const publishToGoogleSpreadSheet = require('../../publishing/google-spreadsheet')
 const validateApiToken = require('../../utils/validateApiToken')
-const applyTemplate = require('../../pdfexport/applyTemplate')
+const { applyTemplate } = require('../../pdfexport/applyTemplate')
 
 const SUBMISSION_FIELD_PREFIX = 'submission'
 const META_FIELD_PREFIX = 'meta'

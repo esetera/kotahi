@@ -7,8 +7,7 @@ const axios = require('axios')
 const config = require('config')
 const { promisify } = require('util')
 const models = require('@pubsweet/models')
-const applyTemplate = require('./applyTemplate')
-const css = require('./pdfTemplates/styles')
+const { applyTemplate, generateCSS } = require('./applyTemplate')
 const makeZip = require('./ziputils.js')
 
 // THINGS TO KNOW ABOUT THIS:
@@ -120,6 +119,8 @@ const pdfHandler = async manuscriptId => {
 
   await fsPromised.appendFile(`${dirName}/index.html`, outHtml)
 
+  const css = await generateCSS()
+
   await fsPromised.appendFile(`${dirName}/styles.css`, css)
 
   // 2 zip this.
@@ -192,6 +193,8 @@ const htmlHandler = async manuscriptId => {
   // console.log("Directory name: ", dirName)
 
   const templatedHtml = applyTemplate(articleData)
+
+  const css = await generateCSS()
 
   const outHtml = templatedHtml
     .replace('</body>', `<style>${css}</style></body>`)
