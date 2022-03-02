@@ -5,7 +5,7 @@
 // this should pull in (and be replaced by) a user version from config/exportsettings/articleMetadata.js
 const userArticleMetadata = require('../../../config/export/articleMetadata.js')
 
-export const articleMetadata = manuscript => {
+const articleMetadata = manuscript => {
   const meta = {}
 
   if (manuscript && manuscript.meta && manuscript.meta.manuscriptId) {
@@ -56,4 +56,4 @@ export const articleMetadata = manuscript => {
   return meta
 }
 
-export default articleMetadata
+module.exports = articleMetadata

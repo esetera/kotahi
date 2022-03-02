@@ -1,5 +1,5 @@
+const path = require('path')
 const nunjucks = require('nunjucks')
-const template = require('./pdfTemplates/article')
 const publicationMetadata = require('./pdfTemplates/publicationMetadata')
 const articleMetadata = require('./pdfTemplates/articleMetadata')
 const css = require('./pdfTemplates/styles')
@@ -7,10 +7,34 @@ const css = require('./pdfTemplates/styles')
 // applyTemplate.js
 
 // TODO:
-// 1. Use actual .njk template rather than a string version of a template
 // 2. Sort out all the different CSSes and make sure that they are being applied correctly
-// 3. If there is a user template in /config/pdfTemplates, use that instead of the default one
 // 4. If there is a user stylesheet in /config/pdfTemplates, append that to the default stylesheet
+
+const defaultTemplatePath = path.resolve(__dirname, 'pdfTemplates')
+
+const userTemplatePath = path.resolve(
+  __dirname,
+  '../../../../../../config/export',
+)
+
+const defaultTemplateEnv = nunjucks.configure(defaultTemplatePath, {
+  autoescape: true,
+  cache: false,
+})
+
+const userTemplateEnv = nunjucks.configure(userTemplatePath, {
+  autoescape: true,
+  cache: false,
+})
+
+let template = {}
+
+try {
+  // If there is a user template, use that instead
+  template = userTemplateEnv.getTemplate('article.njk')
+} catch (e) {
+  template = defaultTemplateEnv.getTemplate('article.njk')
+}
 
 const applyTemplate = (articleData, includeCss) => {
   if (!articleData) {
@@ -21,7 +45,9 @@ const applyTemplate = (articleData, includeCss) => {
   const thisArticle = articleData
   thisArticle.publicationMetadata = publicationMetadata
   thisArticle.articleMetadata = articleMetadata(thisArticle)
-  let renderedHtml = nunjucks.renderString(template, { article: thisArticle })
+  let renderedHtml = nunjucks.renderString(template, {
+    article: thisArticle,
+  })
 
   if (includeCss) {
     renderedHtml = renderedHtml.replace(
