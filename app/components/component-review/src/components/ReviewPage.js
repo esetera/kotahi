@@ -295,6 +295,7 @@ const ReviewPage = ({ match, ...props }) => {
         id: existingReview.current.confidentialComment?.id,
         commentType: 'confidential',
         content: review.confidentialComment.content,
+        isHiddenReviewerName: true,
       },
       canBePublishedPublicly: review.canBePublishedPublicly,
     }
