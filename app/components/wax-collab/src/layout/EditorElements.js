@@ -3,9 +3,14 @@ import { css } from 'styled-components'
 import { darken, grid, th } from '@pubsweet/ui-toolkit'
 import lightenBy from '../../../../shared/lightenBy'
 
-/* All styles regarding ProseMirror surface and elements */
+import textStyles from '../../../../../server/pdfexport/pdfTemplates/textStyles.css'
+
+/* This should only include styles specific to the editor */
+/* Styles that are purely presentational for text should be in textStyles.css */
 
 export default css`
+  ${textStyles}
+
   .ProseMirror {
     counter-reset: footnote;
     font-family: ${props => props.theme.fontReading};
@@ -38,135 +43,6 @@ export default css`
       counter-increment: footnote;
       font-size: ${grid(3)};
     }
-  }
-
-  h1 {
-    font-size: 1.75em;
-    font-weight: 500;
-    margin: 1em 0;
-  }
-
-  h2 {
-    font-size: 1.625em;
-    font-weight: 500;
-    margin: 1em 0;
-  }
-
-  h3 {
-    font-size: 1.5em;
-    font-weight: 500;
-    margin: 1em 0;
-  }
-
-  h4 {
-    font-size: 1.375em;
-    font-weight: 500;
-    margin: 1em 0;
-  }
-
-  h5 {
-    font-size: 1.25em;
-    font-weight: 500;
-    margin: 1em 0;
-  }
-
-  h6 {
-    font-size: 1.125em;
-    font-weight: 500;
-    margin: 1em 0;
-  }
-
-  p {
-    margin-bottom: 1em;
-  }
-
-  hr {
-    border: none;
-    margin: 1em 0;
-    padding: 2px 10px;
-  }
-
-  hr:after {
-    background-color: silver;
-    content: '';
-    display: block;
-    height: 1px;
-    line-height: 2px;
-  }
-
-  ul,
-  ol {
-    padding-left: 30px;
-
-    & li p {
-      margin-bottom: 0.2em;
-    }
-
-    & li:last-child p {
-      margin-bottom: 1em;
-    }
-  }
-
-  u {
-    text-decoration: underline;
-  }
-
-  strong {
-    font-weight: bold;
-  }
-
-  em {
-    font-style: italic;
-  }
-
-  blockquote {
-    border-left: 3px solid #eee;
-    margin-left: 0;
-    margin-right: 0;
-    padding-left: 1em;
-  }
-
-  img {
-    cursor: default;
-    max-width: 100%;
-    object-fit: scale-down;
-  }
-
-  sup,
-  sub {
-    line-height: 0;
-  }
-
-  /* Tables */
-
-  table {
-    border: 1px solid #eee;
-    border-collapse: initial;
-    border-spacing: 0;
-    border-width: 0 thin thin 0;
-    margin: 0;
-    overflow: hidden;
-    page-break-inside: avoid;
-    table-layout: fixed;
-    width: 100%;
-  }
-
-  th,
-  td {
-    border: 1px solid #eee;
-    box-sizing: border-box;
-    /*width: 200px;*/
-    padding: 2px 5px;
-    position: relative;
-    vertical-align: top;
-  }
-
-  th {
-    background-color: ${lightenBy('colorPrimary', 0.7)};
-  }
-
-  .tableWrapper {
-    overflow-x: auto;
   }
 
   .column-resize-handle {

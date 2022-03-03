@@ -357,9 +357,9 @@
     border-left: 0.3ch;
     font-weight: 500
   } */
-    aside.marginData.bottom {
+    /* aside.marginData.bottom { */
       /* display: none; */
-    }
+    /* } */
     aside ul {
       padding-left: 30px;
     }

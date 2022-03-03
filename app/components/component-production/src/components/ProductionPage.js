@@ -36,8 +36,6 @@ const query = gql`
       admin
     }
 
-
-
     manuscript(id: $id) {
       ${fragmentFields}
     }
@@ -94,7 +92,7 @@ const DownloadPdfComponent = ({ manuscript, resetMakingPdf }) => {
 
       const link = document.createElement('a')
       link.href = pdfUrl
-      link.download = `${manuscript.meta.title || 'title'}.pdf`
+      link.download = `/${manuscript.meta.title || 'title'}.pdf` // initial slash added per Amnet's request
       link.click()
 
       // console.log(`Downloading ${link.download}`)

@@ -7,8 +7,12 @@ const articleMetadata = require('./pdfTemplates/articleMetadata')
 // applyTemplate.js
 
 // TODO:
-// 2. Sort out all the different CSSes and make sure that they are being applied correctly
-// 4. If there is a user stylesheet in /config/pdfTemplates, append that to the default stylesheet
+// 1. Sort out all the different CSSes and make sure that they are being applied correctly
+//    ./pdfTemplates/styles.css: this is from Julien & Harshna, used for PDF export
+//    /app/componetns/wax-collab/src/layout/EditorElements.js: this exports styles used inside of Wax; some of this should be overwritten.
+//			split this into base styles & editor styles
+//        for wax: import base styles, then editor styles
+//        for production: import base styles, then pagedjs styles
 
 const defaultTemplatePath = path.resolve(__dirname, 'pdfTemplates')
 
@@ -21,16 +25,35 @@ const generateCSS = async () => {
   let outputCss = ''
 
   const defaultCssBuffer = await fs.readFile(
-    `${defaultTemplatePath}/styles.css`,
+    `${defaultTemplatePath}/textStyles.css`,
   )
 
-  outputCss = defaultCssBuffer.toString()
+  outputCss += defaultCssBuffer.toString()
+
+  const pagedCssBuffer = await fs.readFile(
+    `${defaultTemplatePath}/pagedJsStyles.css`,
+  )
+
+  outputCss += pagedCssBuffer.toString()
 
   try {
-    const userCssBuffer = await fs.readFile(`${userTemplatePath}/styles.css`)
+    const userCssBuffer = await fs.readFile(
+      `${userTemplatePath}/textStyles.css`,
+    )
+
     outputCss += userCssBuffer.toString()
   } catch (e) {
-    console.error('No user stylesheet found', e)
+    console.error('No user text stylesheet found', e)
+  }
+
+  try {
+    const userCssBuffer = await fs.readFile(
+      `${userTemplatePath}/pagedJsStyles.css`,
+    )
+
+    outputCss += userCssBuffer.toString()
+  } catch (e) {
+    console.error('No user PagedJS stylesheet found', e)
   }
 
   return outputCss
