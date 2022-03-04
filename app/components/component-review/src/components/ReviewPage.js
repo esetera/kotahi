@@ -286,6 +286,8 @@ const ReviewPage = ({ match, ...props }) => {
     const reviewData = {
       recommendation: review.recommendation,
       manuscriptId: latestVersion.id,
+      isHiddenReviewerName: true,
+      isHiddenFromAuthor: true,
       reviewComment: review.reviewComment && {
         id: existingReview.current.reviewComment?.id,
         commentType: 'review',
@@ -295,7 +297,6 @@ const ReviewPage = ({ match, ...props }) => {
         id: existingReview.current.confidentialComment?.id,
         commentType: 'confidential',
         content: review.confidentialComment.content,
-        isHiddenReviewerName: true,
       },
       canBePublishedPublicly: review.canBePublishedPublicly,
     }
