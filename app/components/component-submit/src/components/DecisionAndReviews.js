@@ -108,7 +108,7 @@ const DecisionAndReviews = ({ manuscript }) => {
           ))
         ) : (
           <SectionRow>
-            {reviews.length ? 'Now reviews to show.' : 'No completed reviews.'}
+            {reviews.length ? 'No reviews to show.' : 'No completed reviews.'}
           </SectionRow>
         )}
       </SectionContent>
