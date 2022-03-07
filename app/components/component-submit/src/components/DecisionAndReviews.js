@@ -91,7 +91,7 @@ const DecisionAndReviews = ({ manuscript }) => {
           <Title>Reviews</Title>
         </SectionHeader>
 
-        {reviews && reviews.length && reviewsToShow.length ? (
+        {reviewsToShow.length ? (
           reviewsToShow.map((review, index) => (
             <SectionRow key={review.id}>
               <DecisionReview
@@ -117,4 +117,3 @@ const DecisionAndReviews = ({ manuscript }) => {
 }
 
 export default DecisionAndReviews
-
