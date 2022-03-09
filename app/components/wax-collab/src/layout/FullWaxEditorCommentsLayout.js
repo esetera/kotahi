@@ -115,7 +115,7 @@ const FullWaxEditorCommentsLayout = (readOnly, authorComments) => ({
         </Grid>
       ) : (
         <Grid>
-          <Menu>
+          <Menu className="waxmenu">
             <TopBar />
           </Menu>
           <FullWaxEditorGrid useComments>

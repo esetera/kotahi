@@ -12,11 +12,11 @@ import EditorSection from './decision/EditorSection'
 import Publish from './Publish'
 import { AdminSection } from './style'
 import {
-  Tabs,
   SectionContent,
   SectionHeader,
   SectionRow,
   Title,
+  HiddenTabs,
 } from '../../../shared'
 import DecisionAndReviews from '../../../component-submit/src/components/DecisionAndReviews'
 import FormTemplate from '../../../component-submit/src/components/FormTemplate'
@@ -323,7 +323,7 @@ const DecisionVersion = ({
       }}
     >
       {props => (
-        <Tabs
+        <HiddenTabs
           defaultActiveKey={version.id}
           sections={[
             decisionSection({ ...props }),
