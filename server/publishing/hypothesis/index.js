@@ -3,7 +3,12 @@ const TurndownService = require('turndown')
 const axios = require('axios')
 const config = require('config')
 const { get } = require('lodash')
-const { getFieldNamesAndTags, hasText } = require('./hypothesisTools')
+
+const {
+  getFieldNamesAndTags,
+  hasText,
+  normalizeUri,
+} = require('./hypothesisTools')
 
 const headers = {
   headers: {
@@ -58,6 +63,11 @@ const publishToHypothesis = async manuscript => {
   })
 
   const uri = manuscript.submission.biorxivURL || manuscript.submission.link
+
+  const title =
+    manuscript.meta.title ||
+    manuscript.submission.title ||
+    manuscript.submission.description
 
   const fields = await Promise.all(
     getFieldNamesAndTags(config.hypothesis.publishFields).map(async x => {
@@ -116,7 +126,8 @@ const publishToHypothesis = async manuscript => {
       const requestBody = {
         group: config.hypothesis.group,
         permissions: { read: [`group:${config.hypothesis.group}`] },
-        uri,
+        uri: normalizeUri(uri),
+        document: { title: [title] },
         text: turndownService.turndown(f.value),
         tags: f.tag ? [f.tag] : [],
       }
