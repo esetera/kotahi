@@ -21,10 +21,10 @@ const Tab = styled.div`
 `
 
 const HiddenTabsContainer = styled(TabsContainer)`
-  background-color: #f4f5f7; /* figure out what this is called in theme */
+  ${props => props.sticky && `background-color: ${th('colorBackgroundHue')};`}
   ${props => props.sticky && 'position: sticky;'}
   ${props => props.sticky && 'top: -16px;'}
-  z-index: 999;
+  ${props => props.sticky && 'z-index: 999;'}
 
   & ~ div .waxmenu {
     ${props => props.sticky && 'top: 23px;'};
