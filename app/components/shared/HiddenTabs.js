@@ -22,12 +22,12 @@ const Tab = styled.div`
 
 const HiddenTabsContainer = styled(TabsContainer)`
   background-color: #f4f5f7; /* figure out what this is called in theme */
-  position: sticky;
-  top: -16px;
+  ${props => props.sticky && 'position: sticky;'}
+  ${props => props.sticky && 'top: -16px;'}
   z-index: 999;
 
   & ~ div .waxmenu {
-    top: 23px;
+    ${props => props.sticky && 'top: 23px;'};
   }
 `
 
@@ -83,6 +83,7 @@ const HiddenTabs = ({
       <HiddenTabsContainer
         background={background}
         gridArea={tabsContainerGridArea}
+        sticky={false}
       >
         <div style={{ display: 'flex' }}>
           {sections.map(({ key, label }) => (
