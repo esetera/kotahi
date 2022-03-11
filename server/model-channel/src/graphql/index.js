@@ -10,7 +10,10 @@ const resolvers = {
     },
     teamByName: async (_, { name }, context) => {
       const Team = context.connectors.Team.model
-      return Team.query().where({ name }).eager('[channels, members]').first()
+      return Team.query()
+        .where({ name })
+        .withGraphJoined('[channels, members]')
+        .first()
     },
     channelsByTeamName: async (_, { teamName }, context) =>
       Channel.query().joinRelation('team').where({ 'team.name': teamName }),

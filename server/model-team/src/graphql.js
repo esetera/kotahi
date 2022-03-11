@@ -1,27 +1,15 @@
-const eager = '[members.[user, alias]]'
+const fetchedObjects = '[members.[user, alias]]'
 const models = require('@pubsweet/models')
 
 const resolvers = {
   Query: {
     team(_, { id }, ctx) {
-      return models.Team.query().findById(id).eager(eager)
+      return models.Team.query().findById(id).withGraphFetched(fetchedObjects)
     },
     teams(_, { where }, ctx) {
-      // eslint-disable-next-line no-param-reassign
-      where = where || {}
-      // if (where.users) {
-      //   const { users } = where
-      //   delete where.users
-      //   where._relations = [{ relation: 'users', ids: users }]
-      // }
-
-      // if (where.alias) {
-      //   const { alias } = where
-      //   delete where.alias
-      //   where._relations = [{ relation: 'aliases', object: alias }]
-      // }
-
-      return models.Team.query().where(where).eager(eager)
+      return models.Team.query()
+        .where(where || {})
+        .withGraphFetched(fetchedObjects)
     },
   },
   Mutation: {
@@ -29,25 +17,15 @@ const resolvers = {
       return models.Team.query().deleteById(id)
     },
     async createTeam(_, { input }, ctx) {
-      const options = {
-        relate: ['members.user'],
-        unrelate: ['members.user'],
-        allowUpsert: '[members, members.alias]',
-        eager: '[members.[user.teams, alias]]',
-      }
-
+      const options = { relate: ['members.user'] }
       return models.Team.query().insertGraphAndFetch(input, options)
     },
     async updateTeam(_, { id, input }, ctx) {
       return models.Team.query().upsertGraphAndFetch(
-        {
-          id,
-          ...input,
-        },
+        { id, ...input },
         {
           relate: ['members.user'],
           unrelate: ['members.user'],
-          eager: 'members.user.teams',
         },
       )
     },

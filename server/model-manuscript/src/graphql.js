@@ -421,7 +421,10 @@ const resolvers = {
           `Invalid action (reviewerResponse): Must be either "accepted" or "rejected"`,
         )
 
-      const team = await TeamModel.query().findById(teamId).eager('members')
+      const team = await TeamModel.query()
+        .findById(teamId)
+        .withGraphJoined('members')
+
       if (!team) throw new Error('No team was found')
 
       for (let i = 0; i < team.members.length; i += 1) {
@@ -684,7 +687,7 @@ const resolvers = {
           }).save()
         }
 
-        return existingTeam.$query().eager('members.[user]')
+        return existingTeam.$query().withGraphJoined('members.[user]')
       }
 
       // Create a new team of reviewers if it doesn't exist
@@ -712,13 +715,13 @@ const resolvers = {
         })
         .delete()
 
-      return reviewerTeam.$query().eager('members.[user]')
+      return reviewerTeam.$query().withGraphJoined('members.[user]')
     },
 
     async publishManuscript(_, { id }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(id)
-        .eager('reviews')
+        .withGraphJoined('reviews')
 
       const update = {} // This will collect any properties we may want to update in the DB
       update.published = new Date()

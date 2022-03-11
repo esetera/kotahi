@@ -49,8 +49,6 @@ const resolvers = {
         totalCount,
         users,
       }
-
-      // return models.User.fetchAll(where, ctx, { eager })
     },
     // Authentication
     async currentUser(_, vars, ctx) {
