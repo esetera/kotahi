@@ -1,7 +1,7 @@
-import React, { useRef } from 'react'
+import React, { useRef, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { ThemeProvider } from 'styled-components'
-// import { debounce } from 'lodash'
+import { debounce } from 'lodash'
 import { Wax } from 'wax-prosemirror-core'
 import waxTheme from './layout/waxTheme'
 import fixAstralUnicode from './fixAstralUnicode'
@@ -54,13 +54,13 @@ const FullWaxEditor = ({
 
   const editorRef = useRef(null)
 
-  // const debounceChange = useCallback(debounce(onChange ?? (() => {}), 1000), [])
+  const debounceBlur = useCallback(debounce(onBlur ?? (() => {}), 1000), [])
   return (
     <ThemeProvider theme={waxTheme}>
       <div
         className={validationStatus}
         onBlur={() => {
-          onBlur(editorRef.current.getContent())
+          debounceBlur(editorRef.current.getContent())
         }}
       >
         <Wax
@@ -76,7 +76,7 @@ const FullWaxEditor = ({
             // This only fires in read-only mode if an author comment has been added.
             // We don't need to debounce because the comment has been added to the editor content.
             if (readonly) {
-              onBlur(editorRef.current.getContent())
+              debounceBlur(editorRef.current.getContent())
             }
           }}
           // onBlur={val => {

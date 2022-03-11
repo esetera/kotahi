@@ -1,6 +1,6 @@
-import React, { useRef } from 'react'
+import React, { useRef, useCallback } from 'react'
 import PropTypes from 'prop-types'
-// import { debounce } from 'lodash'
+import { debounce } from 'lodash'
 import { Wax } from 'wax-prosemirror-core'
 import { ThemeProvider } from 'styled-components'
 import waxTheme from './layout/waxTheme'
@@ -51,14 +51,14 @@ const ProductionWaxEditor = ({
 
   const editorRef = useRef(null)
 
-  // const debounceChange = useCallback(debounce(onChange ?? (() => {}), 1000), [])
+  const debounceBlur = useCallback(debounce(onBlur ?? (() => {}), 1000), [])
 
   return (
     <ThemeProvider theme={waxTheme}>
       <div
         className={validationStatus}
         onBlur={() => {
-          onBlur(editorRef.current.getContent())
+          debounceBlur(editorRef.current.getContent())
         }}
       >
         <Wax
