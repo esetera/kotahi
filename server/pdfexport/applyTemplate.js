@@ -21,7 +21,7 @@ const userTemplatePath = path.resolve(
   '../../../../../../config/export',
 )
 
-const generateCSS = async () => {
+const generateCss = async () => {
   let outputCss = ''
 
   const defaultCssBuffer = await fs.readFile(
@@ -78,9 +78,7 @@ try {
   template = defaultTemplateEnv.getTemplate('article.njk')
 }
 
-const applyTemplate = async (articleData, includeCss) => {
-  const theCss = await generateCSS()
-
+const applyTemplate = async (articleData, includeFontLinks) => {
   if (!articleData) {
     // Error handling: if there's no manuscript.meta.source, what should we return?
     return ''
@@ -93,10 +91,13 @@ const applyTemplate = async (articleData, includeCss) => {
     article: thisArticle,
   })
 
-  if (includeCss) {
+  if (includeFontLinks) {
     renderedHtml = renderedHtml.replace(
-      '</body>',
-      `<style>${theCss}</style></body>`,
+      '</head>',
+      `<link rel="preconnect" href="https://fonts.googleapis.com">
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+			<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,700;1,300;1,700&display=swap" rel="stylesheet">
+	</head>`,
     )
   }
 
@@ -107,4 +108,4 @@ const applyTemplate = async (articleData, includeCss) => {
   return renderedHtml
 }
 
-module.exports = { applyTemplate, generateCSS }
+module.exports = { applyTemplate, generateCss }

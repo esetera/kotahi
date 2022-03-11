@@ -25,12 +25,18 @@ const importArticlesFromBiorxivWithFullTextSearch = require('../../import-articl
 const importArticlesFromPubmed = require('../../import-articles/pubmed-import')
 const publishToGoogleSpreadSheet = require('../../publishing/google-spreadsheet')
 const validateApiToken = require('../../utils/validateApiToken')
-const { applyTemplate } = require('../../pdfexport/applyTemplate')
+const { applyTemplate, generateCss } = require('../../pdfexport/applyTemplate')
+const publicationMetadata = require('../../pdfexport/pdfTemplates/publicationMetadata')
+const articleMetadata = require('../../pdfexport/pdfTemplates/articleMetadata')
 
 const SUBMISSION_FIELD_PREFIX = 'submission'
 const META_FIELD_PREFIX = 'meta'
 
 let isImportInProgress = false
+
+const getCss = async () => {
+  await generateCss()
+}
 
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
@@ -1048,6 +1054,9 @@ const resolvers = {
         submission: JSON.stringify(m.submission),
         publishedDate: m.published,
         styledHtml: applyTemplate(m, true),
+        css: getCss(),
+        publicationMetadata,
+        articleMetadata: articleMetadata(m),
       }))
     },
     async publishedManuscript(_, { id }, ctx) {
@@ -1067,6 +1076,9 @@ const resolvers = {
         submission: JSON.stringify(m.submission),
         publishedDate: m.published,
         styledHtml: applyTemplate(m, true),
+        css: getCss(),
+        publicationMetadata,
+        articleMetadata: articleMetadata(m),
       }
     },
     async unreviewedPreprints(_, { token }, ctx) {
