@@ -1128,7 +1128,6 @@ const resolvers = {
   // change our queries if the submission form changes. We still want to store it as JSONB
   // so that we can easily search through the information within.
   Manuscript: ManuscriptResolvers({ isVersion: false }),
-  ManuscriptVersion: ManuscriptResolvers({ isVersion: true }),
 }
 
 const typeDefs = `
@@ -1192,7 +1191,7 @@ const typeDefs = `
     parentId: ID
     created: DateTime!
     updated: DateTime
-    manuscriptVersions: [ManuscriptVersion]
+    manuscriptVersions: [Manuscript]
     shortId: Int!
     files: [File]
     teams: [Team]
@@ -1209,27 +1208,6 @@ const typeDefs = `
     published: DateTime
     evaluationsHypothesisMap: String
     currentRoles: [String]
-  }
-
-  type ManuscriptVersion implements Object {
-    id: ID!
-    created: DateTime!
-    updated: DateTime
-    shortId: Int!
-    files: [File]
-    teams: [Team]
-    reviews: [Review]
-    status: String
-    formState: String
-    decision: String
-    suggestions: Suggestions
-    authors: [Author]
-    meta: ManuscriptMeta
-    submission: String
-    submitter: User
-    published: DateTime
-    parentId: ID
-    evaluationsHypothesisMap: String
   }
 
   input ManuscriptInput {

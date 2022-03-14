@@ -276,6 +276,16 @@ const resolvers = {
       return identities
     },
   },
+  Object: {
+    __resolveType: object => {
+      if (object.fileType) return 'File'
+      if (object.shortId) return 'Manuscript'
+      if (object.notesType) return 'Note'
+      if (typeof object.isDecision === 'boolean') return 'Review'
+      if (typeof object.commentType === 'string') return 'ReviewComment'
+      return null
+    },
+  },
   // LocalIdentity: {
   //   __isTypeOf: (obj, context, info) => obj.type === 'local',
   //   async email(obj, args, ctx, info) {

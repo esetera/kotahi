@@ -365,7 +365,6 @@ const permissions = {
   User: isAuthenticated,
   PaginatedManuscripts: allow,
   Manuscript: allow,
-  ManuscriptVersion: allow,
   File: or(
     parentManuscriptIsPublished,
     or(
