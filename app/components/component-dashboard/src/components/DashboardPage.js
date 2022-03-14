@@ -50,7 +50,7 @@ const getRoles = (m, userId) =>
     .filter(t => t.members.some(member => member.user.id === userId))
     .map(t => t.role)
 
-const Dashboard = ({ history, ...props }) => {
+const DashboardPage = ({ history, ...props }) => {
   const { loading, data, error } = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
   })
@@ -186,8 +186,8 @@ const Dashboard = ({ history, ...props }) => {
   )
 }
 
-Dashboard.propTypes = {
+DashboardPage.propTypes = {
   history: ReactRouterPropTypes.history.isRequired,
 }
 
-export default Dashboard
+export default DashboardPage
