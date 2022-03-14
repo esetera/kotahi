@@ -124,7 +124,7 @@ const typeDefs = `
     sharedReviews(id: ID): [Review]
   }
 
-  type Review implements Object {
+  type Review {
     id: ID!
     created: DateTime!
     updated: DateTime
@@ -154,7 +154,7 @@ const typeDefs = `
     userId: String
   }
 
-  type ReviewComment implements Object {
+  type ReviewComment {
     id: ID!
     created: DateTime!
     updated: DateTime

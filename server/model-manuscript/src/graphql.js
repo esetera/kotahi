@@ -1186,7 +1186,7 @@ const typeDefs = `
     importManuscripts: Boolean!
   }
 
-  type Manuscript implements Object {
+  type Manuscript {
     id: ID!
     parentId: ID
     created: DateTime!
@@ -1301,7 +1301,7 @@ const typeDefs = `
     streamlinedReview: String
   }
 
-  type Note implements Object {
+  type Note {
     id: ID!
     created: DateTime!
     updated: DateTime

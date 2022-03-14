@@ -15,7 +15,7 @@ const typeDefs = `
     size: Int!
   }
 
-  type File implements Object  {
+  type File {
     id: ID!
     created: DateTime!
     updated: DateTime

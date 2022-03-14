@@ -276,26 +276,6 @@ const resolvers = {
       return identities
     },
   },
-  Object: {
-    __resolveType: object => {
-      if (object.fileType) return 'File'
-      if (object.shortId) return 'Manuscript'
-      if (object.notesType) return 'Note'
-      if (typeof object.isDecision === 'boolean') return 'Review'
-      if (typeof object.commentType === 'string') return 'ReviewComment'
-      return null
-    },
-  },
-  // LocalIdentity: {
-  //   __isTypeOf: (obj, context, info) => obj.type === 'local',
-  //   async email(obj, args, ctx, info) {
-  //     // Emails stored on user, but surfaced in local identity too
-  //     return (await ctx.loaders.User.load(obj.userId)).email
-  //   },
-  // },
-  // ExternalIdentity: {
-  //   __isTypeOf: (obj, context, info) => obj.type !== 'local',
-  // },
 }
 
 const typeDefs = `
@@ -427,13 +407,6 @@ const typeDefs = `
 
   # Common types
   scalar DateTime
-
-  interface Object {
-    id: ID!
-    created: DateTime!
-    updated: DateTime
-  }
-
 `
 
 module.exports = { resolvers, typeDefs }
