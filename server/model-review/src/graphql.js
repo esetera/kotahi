@@ -3,6 +3,14 @@
 const models = require('@pubsweet/models')
 const { get } = require('lodash')
 
+const delay = milisec => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve('')
+    }, milisec)
+  })
+}
+
 const resolvers = {
   Query: {
     async sharedReviews(_, { id }, ctx) {
@@ -50,6 +58,7 @@ const resolvers = {
   },
   Mutation: {
     async updateReview(_, { id, input }, ctx) {
+      await delay(3000)
       // We process comment fields into array
       const userId = input.userId ? input.userId : ctx.user
 
