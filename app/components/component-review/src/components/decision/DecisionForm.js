@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 // import { cloneDeep, omit } from 'lodash'
-import { Field, ErrorMessage } from 'formik'
+import { Formik, Field, ErrorMessage } from 'formik'
 import {
   Button,
   // Flexbox,
@@ -15,6 +15,7 @@ import { required } from '../../../../xpub-validators/src'
 import { FilesUpload, SectionContent } from '../../../../shared'
 import SimpleWaxEditor from '../../../../wax-collab/src/SimpleWaxEditor'
 import { reviewWithComment } from '../review/util'
+import FormTemplate from '../../../../component-submit/src/components/FormTemplate'
 
 import {
   Title,
@@ -213,6 +214,55 @@ const DecisionForm = ({
   )
 }
 
+const CustomDecisionForm = ({
+  manuscriptId,
+  handleSubmit,
+  updateReview,
+  isValid,
+  isSubmitting,
+  submitCount,
+  dirty,
+  deleteFile,
+  createFile,
+}) => {
+  return (
+    <SectionContent>
+      <SectionHeader>
+        <Title>Decision</Title>
+      </SectionHeader>
+      <Formik
+        displayName="submit"
+        onSubmit={handleSubmit}
+        validateOnBlur
+        validateOnChange={false}
+      >
+        {formProps => {
+          return (
+            <FormTemplate
+              // confirming={confirming}
+              createFile={createFile}
+              deleteFile={deleteFile}
+              // onChange={(value, path) => {
+              //   onChange(value, path, versionId)
+              // }}
+              // toggleConfirming={toggleConfirming}
+              {...formProps}
+              // client={client}
+              // displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+              // form={form}
+              // manuscript={version}
+              match={{ url: 'decision' }}
+              republish={() => null}
+              showEditorOnlyFields
+              // urlFrag={urlFrag}
+            />
+          )
+        }}
+      </Formik>
+    </SectionContent>
+  )
+}
+
 DecisionForm.propTypes = {
   manuscriptId: PropTypes.string.isRequired,
   handleSubmit: PropTypes.func.isRequired,
@@ -223,4 +273,6 @@ DecisionForm.propTypes = {
   dirty: PropTypes.bool.isRequired,
 }
 
+// Easily switch between Custom Decision Forms
 export default DecisionForm
+// export default CustomDecisionForm
