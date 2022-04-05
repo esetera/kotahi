@@ -3,8 +3,8 @@ import { useQuery, useMutation, gql } from '@apollo/client'
 import { cloneDeep, omitBy } from 'lodash'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import FormBuilderLayout from './FormBuilderLayout'
-import { Spinner, CommsErrorBanner } from '../../../shared'
-import pruneEmpty from '../../../../shared/pruneEmpty'
+import { Spinner, CommsErrorBanner } from '../../../../shared'
+import pruneEmpty from '../../../../../shared/pruneEmpty'
 
 const createFormMutation = gql`
   mutation($form: CreateFormInput!) {
@@ -51,12 +51,13 @@ const deleteFormMutation = gql`
 `
 
 const query = gql`
-  query {
-    forms {
+  query GET_FORM($category: String!) {
+    formsByCategory(category: $category) {
       id
       created
       updated
       purpose
+      category
       structure {
         name
         description
@@ -106,28 +107,31 @@ const prepareForSubmit = values => {
 }
 
 const FormBuilderPage = () => {
-  const { loading, data, error } = useQuery(query)
-  const cleanedForms = pruneEmpty(data?.forms)
+  const { loading, data, error } = useQuery(query, {
+    variables: { category: 'decision' },
+  })
+
+  const cleanedForms = pruneEmpty(data?.formsByCategory)
 
   // TODO Structure forms for graphql and retrieve IDs from these mutations to allow Apollo Cache to do its magic, rather than forcing refetch.
   const [deleteForm] = useMutation(deleteFormMutation, {
-    refetchQueries: [{ query }],
+    refetchQueries: [{ query, variables: { category: 'decision' } }],
   })
 
   const [deleteFormElement] = useMutation(deleteFormElementMutation, {
-    refetchQueries: [{ query }],
+    refetchQueries: [{ query, variables: { category: 'decision' } }],
   })
 
   const [updateForm] = useMutation(updateFormMutation, {
-    refetchQueries: [{ query }],
+    refetchQueries: [{ query, variables: { category: 'decision' } }],
   })
 
   const [updateFormElement] = useMutation(updateFormElementMutation, {
-    refetchQueries: [{ query }],
+    refetchQueries: [{ query, variables: { category: 'decision' } }],
   })
 
   const [createForm] = useMutation(createFormMutation, {
-    refetchQueries: [{ query }],
+    refetchQueries: [{ query, variables: { category: 'decision' } }],
   })
 
   const [activeFormId, setActiveFormId] = useState()
@@ -136,7 +140,7 @@ const FormBuilderPage = () => {
 
   useEffect(() => {
     setFormFeilds(cleanedForms)
-  }, [data?.forms])
+  }, [data?.formsByCategory])
 
   const moveFieldUp = (form, fieldId) => {
     const fields = form.structure.children
@@ -179,7 +183,7 @@ const FormBuilderPage = () => {
   }
 
   const dragField = form => {
-    const forms = pruneEmpty(data.forms)[0]
+    const forms = pruneEmpty(data.formsByCategory)[0]
 
     const fields = forms.structure.children
 
@@ -215,8 +219,8 @@ const FormBuilderPage = () => {
 
   useEffect(() => {
     if (!loading && data) {
-      if (data.forms.length) {
-        setActiveFormId(prevFormId => prevFormId ?? data.forms[0].id)
+      if (data.formsByCategory.length) {
+        setActiveFormId(prevFormId => prevFormId ?? data.formsByCategory[0].id)
       } else {
         setActiveFormId('new')
       }

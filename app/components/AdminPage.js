@@ -22,7 +22,9 @@ import ReviewersPage from './component-review/src/components/ReviewersPage'
 import ReviewPage from './component-review/src/components/ReviewPage'
 import ReviewPreviewPage from './component-review/src/components/ReviewPreviewPage'
 import DecisionPage from './component-review/src/components/DecisionPage'
-import FormBuilderPage from './component-formbuilder/src/components/FormBuilderPage'
+import SubmissionFormBuilderPage from './component-formbuilder/src/components/submission/FormBuilderPage'
+import ReviewFormBuilderPage from './component-formbuilder/src/components/review/FormBuilderPage'
+import DecisionFormBuilderPage from './component-formbuilder/src/components/decision/FormBuilderPage'
 import NewSubmissionPage from './component-submit/src/components/NewSubmissionPage'
 import ReportPage from './component-reporting/src/ReportPage'
 import { Profile } from './component-profile/src'
@@ -134,7 +136,9 @@ const AdminPage = () => {
   const { pathname } = history.location
   const showLinks = pathname.match(/^\/(submit|manuscript)/g)
   let links = []
-  const formBuilderLink = `${urlFrag}/admin/form-builder`
+  const submissionFormBuilderLink = `${urlFrag}/admin/submission-form-builder`
+  const reviewFormBuilderLink = `${urlFrag}/admin/review-form-builder`
+  const decisionFormBuilderLink = `${urlFrag}/admin/decision-form-builder`
   const homeLink = `${urlFrag}/dashboard`
   const profileLink = `${urlFrag}/profile`
   const manuscriptsLink = `${urlFrag}/admin/manuscripts`
@@ -166,7 +170,16 @@ const AdminPage = () => {
   }
 
   if (currentUser && currentUser.admin) {
-    links.push({ link: formBuilderLink, name: 'Forms', icon: 'check-square' })
+    links.push({
+      menu: 'Forms',
+      name: 'Forms',
+      icon: 'check-square',
+      links: [
+        { link: submissionFormBuilderLink, name: 'Submission' },
+        { link: reviewFormBuilderLink, name: 'Review' },
+        { link: decisionFormBuilderLink, name: 'Decision' },
+      ],
+    })
     links.push({ link: userAdminLink, name: 'Users', icon: 'users' })
     links.push({
       link: manuscriptsLink,
@@ -271,11 +284,35 @@ const AdminPage = () => {
         {currentUser &&
           currentUser.admin && [
             <PrivateRoute
-              component={FormBuilderPage}
+              component={SubmissionFormBuilderPage}
               currentUser={currentUser}
               exact
               key="form-builder"
               path={`${urlFrag}/admin/form-builder`}
+              redirectLink={redirectLink}
+            />,
+            <PrivateRoute
+              component={SubmissionFormBuilderPage}
+              currentUser={currentUser}
+              exact
+              key="submission-form-builder"
+              path={`${urlFrag}/admin/submission-form-builder`}
+              redirectLink={redirectLink}
+            />,
+            <PrivateRoute
+              component={ReviewFormBuilderPage}
+              currentUser={currentUser}
+              exact
+              key="review-form-builder"
+              path={`${urlFrag}/admin/review-form-builder`}
+              redirectLink={redirectLink}
+            />,
+            <PrivateRoute
+              component={DecisionFormBuilderPage}
+              currentUser={currentUser}
+              exact
+              key="decision-form-builder"
+              path={`${urlFrag}/admin/decision-form-builder`}
               redirectLink={redirectLink}
             />,
             <PrivateRoute

@@ -5,12 +5,14 @@ const typeDefs = `
     updated: DateTime
     purpose: String!
     structure: FormStructureInput!
+    category: String!
   }
 
   input CreateFormInput {
     created: DateTime
     purpose: String!
     structure: FormStructureInput!
+    category: String!
   }
 
   input FormStructureInput {
@@ -61,6 +63,7 @@ const typeDefs = `
     updated: DateTime
     purpose: String!
     structure: FormStructure!
+    category: String!
   }
 
   type FormStructure {
@@ -112,6 +115,7 @@ const typeDefs = `
   extend type Query {
     form(formId: String!): Form
     forms: [Form]
+    formsByCategory(category: String!): [Form]
     formForPurpose(purpose: String!): Form
   }
 
