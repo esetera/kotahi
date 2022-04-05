@@ -325,6 +325,7 @@ const permissions = {
     messages: isAuthenticated,
     form: isAuthenticated,
     forms: userIsAdmin,
+    formsByCategory: allow,
     formForPurpose: allow,
     user: isAuthenticated,
     users: isAuthenticated,

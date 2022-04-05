@@ -8,13 +8,17 @@ const resolvers = {
     },
     deleteFormElement: async (_, { formId, elementId }) => {
       const form = await Form.find(formId)
+
       if (!form) return null
       form.structure.children = form.structure.children.filter(
         child => child.id !== elementId,
       )
-      return Form.query().patchAndFetchById(formId, {
+
+      const formRes = await Form.query().patchAndFetchById(formId, {
         structure: form.structure,
       })
+
+      return formRes
     },
     createForm: async (_, { form }) => {
       return Form.query().insertAndFetch(form)
@@ -41,6 +45,8 @@ const resolvers = {
   Query: {
     form: async (_, { formId }) => Form.find(formId),
     forms: async () => Form.all(),
+    formsByCategory: async (_, { category }) =>
+      Form.findByField('category', category),
     formForPurpose: async (_, { purpose }) =>
       Form.findOneByField('purpose', purpose),
   },

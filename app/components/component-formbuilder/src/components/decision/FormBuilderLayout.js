@@ -4,18 +4,18 @@ import { forEach } from 'lodash'
 import styled, { withTheme } from 'styled-components'
 import { Tabs, Action, Icon, Button } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
-import { Columns, Details, Form } from './style'
-import ComponentProperties from './ComponentProperties'
-import FormProperties from './FormProperties'
-import FormBuilder from './FormBuilder'
+import { Columns, Details, Form } from '../style'
+import ComponentProperties from '../ComponentProperties'
+import FormProperties from '../FormProperties'
+import FormBuilder from '../FormBuilder'
 import {
   Container,
   HeadingWithAction,
   Heading,
   SectionContent,
   SectionRow,
-} from '../../../shared'
-import Modal from '../../../component-modal/src/index'
+} from '../../../../shared'
+import Modal from '../../../../component-modal/src/index'
 
 const ModalContainer = styled.div`
   background: ${th('colorBackground')};
@@ -137,6 +137,7 @@ const FormBuilderLayout = ({
 
   const activeForm = forms.find(f => f.id === activeFormId) ?? {
     purpose: '',
+    category: 'decision',
     structure: {
       children: [],
       name: '',
@@ -151,9 +152,9 @@ const FormBuilderLayout = ({
 
   return (
     <div>
-      <Container>
+      <Container style={{ height: '100vh' }}>
         <HeadingWithAction>
-          <Heading>Form Builder</Heading>
+          <Heading>Decision Form Builder</Heading>
         </HeadingWithAction>
         <Columns>
           <Form>
