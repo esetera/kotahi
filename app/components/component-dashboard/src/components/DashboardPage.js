@@ -8,6 +8,7 @@ import queries from '../graphql/queries'
 import mutations from '../graphql/mutations'
 import Dashboard from './Dashboard'
 import { Spinner, CommsErrorBanner } from '../../../shared'
+import prettyRoleText from '../../../../../shared/prettyRoleText'
 
 const getLatestVersion = manuscript => {
   if (
@@ -85,6 +86,11 @@ const DashboardPage = ({ history, ...props }) => {
   const urlFrag = config.journal.metadata.toplevel_urlfragment
   const instanceName = process.env.INSTANCE_NAME
 
+  const shouldShowShortId =
+    config['client-features'].displayShortIdAsIdentifier &&
+    config['client-features'].displayShortIdAsIdentifier.toLowerCase() ===
+      'true'
+
   return (
     <Dashboard
       authorLatestVersions={authorLatestVersions}
@@ -92,8 +98,11 @@ const DashboardPage = ({ history, ...props }) => {
       editorLatestVersions={editorLatestVersions}
       instanceName={instanceName}
       newSubmission={() => history.push(`${urlFrag}/newSubmission`)}
+      prettyRoleText={prettyRoleText}
       reviewerLatestVersions={reviewerLatestVersions}
       reviewerRespond={reviewerRespond}
+      shouldShowShortId={shouldShowShortId}
+      urlFrag={urlFrag}
     />
   )
 }

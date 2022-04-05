@@ -26,6 +26,9 @@ const Dashboard = ({
   currentUser,
   reviewerRespond,
   editorLatestVersions,
+  urlFrag,
+  shouldShowShortId,
+  prettyRoleText,
 }) => {
   return (
     <Container>
@@ -44,13 +47,16 @@ const Dashboard = ({
             authorLatestVersions.map(version => (
               // Links are based on the original/parent manuscript version
               <OwnerItem
-                key={version.id}
+                instanceName={instanceName}
                 // deleteManuscript={() =>
                 //   // eslint-disable-next-line no-alert
                 //   window.confirm(
                 //     'Are you sure you want to delete this submission?',
                 //   ) && deleteManuscript({ variables: { id: submission.id } })
                 // }
+                key={version.id}
+                shouldShowShortId={shouldShowShortId}
+                urlFrag={urlFrag}
                 version={version}
               />
             ))
@@ -72,6 +78,7 @@ const Dashboard = ({
                 currentUser={currentUser}
                 key={version.id}
                 reviewerRespond={reviewerRespond}
+                urlFrag={urlFrag}
                 version={version}
               />
             ))
@@ -92,6 +99,10 @@ const Dashboard = ({
             <SectionRow key={`manuscript-${manuscript.id}`}>
               <EditorItem
                 currentRoles={getRoles(manuscript, currentUser.id)}
+                instanceName={instanceName}
+                prettyRoleText={prettyRoleText}
+                shouldShowShortId={shouldShowShortId}
+                urlFrag={urlFrag}
                 version={manuscript}
               />
             </SectionRow>
