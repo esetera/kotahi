@@ -48,7 +48,7 @@ const EditorWrapper = styled.div`
     width: 100%;
     z-index: 99999;
     & > div {
-      display: block;
+      display: block; // this turns off grid for full screen and allows for scrolling
       & > div + div {
         position: fixed;
         top: 38px;
