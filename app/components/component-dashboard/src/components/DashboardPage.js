@@ -8,7 +8,7 @@ import queries from '../graphql/queries'
 import mutations from '../graphql/mutations'
 import Dashboard from './Dashboard'
 import { Spinner, CommsErrorBanner } from '../../../shared'
-import prettyRoleText from '../../../../../shared/prettyRoleText'
+import prettyRoleText from '../../../../shared/prettyRoleText'
 
 const getLatestVersion = manuscript => {
   if (
