@@ -209,7 +209,7 @@ module.exports = {
     pagedJsClientId: '',
     pagedJsClientSecret: '',
   },
-  /** These named configuration sections will be available to webpack */
+  /** These named configuration sections will be available to webpack. Do not include any secrets here, as they will be built into the client bundle! */
   publicKeys: [
     'pubsweet-client',
     'validations',
