@@ -220,11 +220,7 @@ module.exports = {
     'journal',
     'teams',
     'client-features',
-    'crossref',
-    'hypothesis',
     'review',
-    'notification-email',
-    'paged-js',
   ],
   s3: {
     accessKeyId: 'test',
