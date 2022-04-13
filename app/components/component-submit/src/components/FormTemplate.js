@@ -153,6 +153,7 @@ const FormTemplate = ({
   client,
   createFile,
   deleteFile,
+  isSubmission,
 }) => {
   const submitButton = (text, haspopup = false) => {
     return (
@@ -205,13 +206,17 @@ const FormTemplate = ({
   const showPopup = hasPopup && values.status !== 'revise'
 
   // this is whether or not to show a submit button
-  const showSubmitButton =
-    !isDecision &&
-    ((['aperture', 'colab'].includes(process.env.INSTANCE_NAME) &&
-      !['submitted', 'revise'].includes(values.status)) ||
-      (['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) &&
-        !['revise'].includes(values.status)) ||
-      values.status === 'revise')
+  let showSubmitButton
+
+  if (isSubmission) {
+    showSubmitButton =
+      !isDecision &&
+      ((['aperture', 'colab'].includes(process.env.INSTANCE_NAME) &&
+        !['submitted', 'revise'].includes(values.status)) ||
+        (['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) &&
+          !['revise'].includes(values.status)) ||
+        values.status === 'revise')
+  }
 
   return (
     <Container>
@@ -322,7 +327,7 @@ const FormTemplate = ({
             )
           })}
 
-        {filterFileManuscript(values.files || []).length > 0 ? (
+        {isSubmission && filterFileManuscript(values.files || []).length > 0 ? (
           <Section id="files.manuscript">
             <Legend space>Submitted Manuscript</Legend>
             <Attachment

@@ -16,6 +16,7 @@ const DecisionVersions = props => {
     allUsers,
     confirming,
     currentUser,
+    decisionForm,
     form,
     handleChange,
     toggleConfirming,
@@ -69,6 +70,7 @@ const DecisionVersions = props => {
                 createTeam={createTeam}
                 current={index === 0}
                 currentUser={currentUser}
+                decisionForm={decisionForm}
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
                 form={form}

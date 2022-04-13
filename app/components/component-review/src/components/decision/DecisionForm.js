@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 // import { cloneDeep, omit } from 'lodash'
-import { Field, ErrorMessage } from 'formik'
+import { Formik, Field, ErrorMessage } from 'formik'
 import {
   Button,
   // Flexbox,
@@ -10,11 +10,14 @@ import {
   // UploadButton,
   // UploadingFile,
 } from '@pubsweet/ui'
+import { useApolloClient } from '@apollo/client'
+import config from 'config'
 import { JournalContext } from '../../../../xpub-journal/src'
 import { required } from '../../../../xpub-validators/src'
 import { FilesUpload, SectionContent } from '../../../../shared'
 import SimpleWaxEditor from '../../../../wax-collab/src/SimpleWaxEditor'
 import { reviewWithComment } from '../review/util'
+import FormTemplate from '../../../../component-submit/src/components/FormTemplate'
 
 import {
   Title,
@@ -213,6 +216,62 @@ const DecisionForm = ({
   )
 }
 
+const versionValues = {
+  status: 'submitted',
+}
+
+const NewDecisionForm = ({
+  createFile,
+  dirty,
+  deleteFile,
+  decisionForm,
+  handleSubmit,
+  isValid,
+  isSubmitting,
+  manuscriptId,
+  submitCount,
+  updateReview,
+}) => {
+  const [confirming, setConfirming] = React.useState(false)
+
+  const toggleConfirming = () => {
+    setConfirming(confirm => !confirm)
+  }
+
+  return (
+    <SectionContent>
+      <Formik
+        displayName="submit"
+        initialValues={versionValues}
+        onSubmit={handleSubmit}
+        validateOnBlur
+        validateOnChange={false}
+      >
+        {formProps => {
+          return (
+            <FormTemplate
+              confirming={confirming}
+              createFile={createFile}
+              deleteFile={deleteFile}
+              isSubmission={false}
+              toggleConfirming={toggleConfirming}
+              {...formProps}
+              client={useApolloClient()}
+              form={decisionForm}
+              manuscript={{ status: 'submitted' }}
+              match={{ url: 'decision' }}
+              republish={() => null}
+              showEditorOnlyFields
+              submissionButtonText="Submit"
+              urlFrag={config.journal.metadata.toplevel_urlfragment}
+            />
+          )
+        }}
+      </Formik>
+    </SectionContent>
+  )
+}
+
 DecisionForm.propTypes = {
   manuscriptId: PropTypes.string.isRequired,
   handleSubmit: PropTypes.func.isRequired,
@@ -223,4 +282,5 @@ DecisionForm.propTypes = {
   dirty: PropTypes.bool.isRequired,
 }
 
-export default DecisionForm
+// export default DecisionForm
+export default NewDecisionForm

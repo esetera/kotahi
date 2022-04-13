@@ -115,6 +115,17 @@ const DecisionPage = ({ match }) => {
   const { loading, error, data } = useQuery(query, {
     variables: {
       id: match.params.version,
+      purpose: 'submit',
+      category: 'submission',
+    },
+    fetchPolicy: 'network-only', // TODO This prevents reviews sometimes having a null user. The whole graphql/caching in DecisionPage and DecisionVersion needs clean-up.
+  })
+
+  const decisionData = useQuery(query, {
+    variables: {
+      id: match.params.version,
+      purpose: 'decision',
+      category: 'decision',
     },
     fetchPolicy: 'network-only', // TODO This prevents reviews sometimes having a null user. The whole graphql/caching in DecisionPage and DecisionVersion needs clean-up.
   })
@@ -197,6 +208,14 @@ const DecisionPage = ({ match }) => {
     haspopup: 'false',
   }
 
+  const decisionForm = decisionData?.data?.formForPurposeAndCategory
+    ?.structure ?? {
+    name: '',
+    children: [],
+    description: '',
+    haspopup: 'false',
+  }
+
   const sendNotifyEmail = async emailData => {
     const response = await sendEmailMutation({
       variables: {
@@ -219,6 +238,7 @@ const DecisionPage = ({ match }) => {
       createFile={createFile}
       createTeam={createTeam}
       currentUser={currentUser}
+      decisionForm={decisionForm}
       deleteFile={deleteFile}
       displayShortIdAsIdentifier={
         config['client-features'].displayShortIdAsIdentifier &&
