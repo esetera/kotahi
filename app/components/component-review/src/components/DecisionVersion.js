@@ -30,6 +30,7 @@ const createBlankSubmissionBasedOnForm = form => {
 
 const DecisionVersion = ({
   allUsers,
+  decisionForm,
   form,
   current,
   currentUser,
@@ -156,6 +157,7 @@ const DecisionVersion = ({
                       confirming={confirming}
                       createFile={createFile}
                       deleteFile={deleteFile}
+                      isSubmission
                       onChange={(value, path) => {
                         onChange(value, path, versionId)
                       }}
@@ -267,6 +269,7 @@ const DecisionVersion = ({
             <AdminSection key="decision-form">
               <DecisionForm
                 createFile={createFile}
+                decisionForm={decisionForm}
                 deleteFile={deleteFile}
                 dirty={dirty}
                 handleSubmit={handleSubmit}

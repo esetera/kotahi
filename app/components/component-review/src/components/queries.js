@@ -124,7 +124,7 @@ const fragmentFields = `
 `
 
 export const query = gql`
-  query($id: ID!) {
+  query($id: ID!, $purpose: String!, $category: String!) {
     currentUser {
       id
       username
@@ -143,7 +143,7 @@ export const query = gql`
       }
     }
 
-    formForPurposeAndCategory(purpose: "submit", category: "submission") {
+    formForPurposeAndCategory(purpose: $purpose, category: $category) {
       structure {
         name
         description

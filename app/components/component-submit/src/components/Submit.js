@@ -123,6 +123,7 @@ const Submit = ({
                     confirming={confirming}
                     createFile={createFile}
                     deleteFile={deleteFile}
+                    isSubmission
                     onChange={(value, path) => {
                       onChange(value, path, versionId)
                     }}
