@@ -98,16 +98,19 @@ const mergeArrays = (destination, source) => {
 }
 
 const commonUpdateManuscript = async (id, input, ctx) => {
-  const msDelta = JSON.parse(input)
-  const ms = await models.Manuscript.query().findById(id)
+  // ms = manuscript
+  const msDelta = JSON.parse(input) // Convert the JSON input to JavaScript object
+  const ms = await models.Manuscript.query().findById(id) // Find the manuscript by id
   const updatedMs = mergeWith(ms, msDelta, mergeArrays)
 
+  // Create a date for new submissions
   if (
     updatedMs.status &&
     updatedMs.status !== 'new' &&
     !updatedMs.submittedDate
-  )
+  ) {
     updatedMs.submittedDate = new Date()
+  }
 
   if (['ncrc', 'colab'].includes(process.env.INSTANCE_NAME)) {
     updatedMs.submission.editDate = new Date().toISOString().split('T')[0]

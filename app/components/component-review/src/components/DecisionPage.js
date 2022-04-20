@@ -105,8 +105,13 @@ const DecisionPage = ({ match }) => {
 
   const handleChange = (value, path, versionId) => {
     const manuscriptDelta = {} // Only the changed fields
+
+    // Takes the $PATH (meta.title) and $VALUE (meta.title) -> { meta: { title: '$VALUE' } }
+    // String to Object conversion happens here
     set(manuscriptDelta, path, value)
+
     debouncers[path] = debouncers[path] || debounce(updateManuscript, 3000)
+
     return debouncers[path](versionId, manuscriptDelta)
   }
 
@@ -151,14 +156,13 @@ const DecisionPage = ({ match }) => {
     },
   })
 
-  const updateManuscript = (versionId, manuscriptDelta) => {
-    return update({
+  const updateManuscript = (versionId, manuscriptDelta) =>
+    update({
       variables: {
         id: versionId,
         input: JSON.stringify(manuscriptDelta),
       },
     })
-  }
 
   const updateReview = async (reviewId, reviewData, manuscriptId) => {
     return doUpdateReview({
