@@ -89,6 +89,7 @@ const typeDefs = `
     isHiddenFromAuthor: Boolean
     isHiddenReviewerName: Boolean
     canBePublishedPublicly: Boolean
+    jsonData: String
     userId: String
   }
 
@@ -102,6 +103,7 @@ const typeDefs = `
     isHiddenFromAuthor: Boolean
     isHiddenReviewerName: Boolean
     canBePublishedPublicly: Boolean
+    jsonData: String
     userId: String
   }
 
