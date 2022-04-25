@@ -21,10 +21,10 @@ class JatsSideMenu extends ToolGroup {
   toolGroups = []
 
   constructor(
-    @inject('FrontMatterList') frontmatterlist,
-    @inject('AppendixList') appendixlist,
-    @inject('CitationList') citationlist,
-    @inject('AcknowledgementsList') acknowledgementsList,
+    frontmatterlist,
+    appendixlist,
+    citationlist,
+    acknowledgementsList,
   ) {
     super()
 

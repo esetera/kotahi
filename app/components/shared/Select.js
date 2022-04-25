@@ -70,8 +70,8 @@ export const Select = ({
       isMulti={isMulti}
       options={options}
       {...otherProps}
-      styles={myStyles}
       menuPlacement="auto"
+      styles={myStyles}
       value={selectedOption}
     />
   )

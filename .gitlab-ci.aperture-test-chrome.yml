@@ -28,20 +28,19 @@ build:
       docker push $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
       docker push $IMAGE_ORG/$IMAGE_NAME:latest
 
+# lint js:
+#   stage: lint
+#   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+#   script:
+#     - cd $WORKDIR
+#     - yarn eslint .
 
-lint js:
-  stage: lint
-  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-  script:
-    - cd $WORKDIR
-    - yarn eslint .
-
-lint css:
-  stage: lint
-  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-  script:
-    - cd $WORKDIR
-    - yarn stylelint '{app,ui}/**/*.js'
+# lint css:
+#   stage: lint
+#   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+#   script:
+#     - cd $WORKDIR
+#     - yarn stylelint '{app,ui}/**/*.js'
 
 
 

@@ -7,10 +7,7 @@ class AppendixList extends ToolGroup {
   tools = []
   title = (<LeftMenuTitle title="Appendices" />)
 
-  constructor(
-    @inject('Appendix') appendix,
-    @inject('AppendixHeader') appendixHeader,
-  ) {
+  constructor(appendix, appendixHeader) {
     super()
     this.tools = [appendix, appendixHeader]
   }
@@ -20,11 +17,7 @@ class FrontMatterList extends ToolGroup {
   tools = []
   title = (<LeftMenuTitle title="Front Matter" />)
 
-  constructor(
-    @inject('FrontMatter') frontMatter,
-    @inject('Title') title,
-    @inject('Abstract') abstractSection,
-  ) {
+  constructor(frontMatter, title, abstractSection) {
     super()
     this.tools = [frontMatter, title, abstractSection]
   }
@@ -34,11 +27,7 @@ class CitationList extends ToolGroup {
   tools = []
   title = (<LeftMenuTitle title="Citations" />)
 
-  constructor(
-    @inject('MixedCitation') mixedCitation,
-    @inject('RefList') refList,
-    @inject('ReferenceHeader') referenceHeader,
-  ) {
+  constructor(mixedCitation, refList, referenceHeader) {
     super()
     this.tools = [refList, referenceHeader, mixedCitation]
   }
@@ -48,7 +37,7 @@ class AcknowledgementsList extends ToolGroup {
   tools = []
   title = (<LeftMenuTitle title="Acknowledgements" />)
 
-  constructor(@inject('AcknowledgementsSection') acknowledgementsSection) {
+  constructor(acknowledgementsSection) {
     super()
     this.tools = [acknowledgementsSection]
   }

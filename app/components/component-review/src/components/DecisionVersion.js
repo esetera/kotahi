@@ -61,7 +61,6 @@ const DecisionVersion = ({
 
     const handleSave = useCallback(
       debounce(source => {
-        console.log('updateManuscript firing in DecisionVersion.js')
         updateManuscript(manuscript.id, { meta: { source } })
       }, 2000),
     )

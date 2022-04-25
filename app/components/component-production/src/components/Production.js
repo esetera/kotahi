@@ -31,7 +31,6 @@ const Production = ({
   updateManuscript,
 }) => {
   const handleSave = debounce(source => {
-    console.log('firing update manuscript')
     updateManuscript(manuscript.id, { meta: { source } })
   }, 2000)
 
