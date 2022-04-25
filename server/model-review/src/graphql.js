@@ -1,9 +1,14 @@
 // const { flatten } = require('lodash')
 // const Review = require('./review')
 const models = require('@pubsweet/models')
-const File = require('@coko/server/src/models/file/file.model')
-const { get } = require('lodash')
+const File = require('../../model-file/src/file')
 const { getFilesWithUrl } = require('../../utils/fileStorageUtils')
+const { mergeWith, isArray } = require('lodash')
+
+const mergeArrays = (destination, source) => {
+  if (isArray(destination)) return source
+  return undefined
+}
 
 const resolvers = {
   Mutation: {
@@ -15,9 +20,20 @@ const resolvers = {
         id: userId,
       })
 
+      const reviewDelta = { jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
+      const existingReview = await models.Review.query().findById(id) // Find the existing review by id
+      const updatedReview = mergeWith(existingReview, reviewDelta, mergeArrays)
+
       const processedReview = { ...input, user: reviewUser }
+      updatedReview.user = reviewUser
 
       processedReview.comments = [
+        input.reviewComment,
+        input.confidentialComment,
+        input.decisionComment,
+      ].filter(Boolean)
+
+      updatedReview.comments = [
         input.reviewComment,
         input.confidentialComment,
         input.decisionComment,
@@ -27,10 +43,14 @@ const resolvers = {
       delete processedReview.confidentialComment
       delete processedReview.decisionComment
 
+      delete updatedReview.reviewComment
+      delete updatedReview.confidentialComment
+      delete updatedReview.decisionComment
+
       const review = await models.Review.query().upsertGraphAndFetch(
         {
           id,
-          ...processedReview,
+          ...updatedReview,
         },
         {
           relate: true,

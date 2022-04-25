@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { useQuery, useMutation, gql, useApolloClient } from '@apollo/client'
 import { set, debounce } from 'lodash'
 import config from 'config'
+import { v4 as uuid } from 'uuid'
 import DecisionVersions from './DecisionVersions'
 import { Spinner, CommsErrorBanner } from '../../../shared'
 import { fragmentFields } from '../../../component-submit/src/userManuscriptFormQuery'
@@ -19,7 +20,7 @@ import { CREATE_MESSAGE } from '../../../../queries'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
-export const updateMutation = gql`
+export const updateManuscriptMutation = gql`
   mutation($id: ID!, $input: String) {
     updateManuscript(id: $id, input: $input) {
       id
@@ -135,7 +136,7 @@ const DecisionPage = ({ match }) => {
     fetchPolicy: 'network-only', // TODO This prevents reviews sometimes having a null user. The whole graphql/caching in DecisionPage and DecisionVersion needs clean-up.
   })
 
-  const [update] = useMutation(updateMutation)
+  const [update] = useMutation(updateManuscriptMutation)
   const [sendEmailMutation] = useMutation(sendEmail)
   const [sendChannelMessage] = useMutation(CREATE_MESSAGE)
   const [makeDecision] = useMutation(makeDecisionMutation)
@@ -233,6 +234,31 @@ const DecisionPage = ({ match }) => {
   const sendChannelMessageCb = async messageData =>
     sendChannelMessage(messageData)
 
+  let currentReview
+  let currentUserHasReview
+
+  manuscript.reviews.forEach(review => {
+    currentUserHasReview = review.user.id === currentUser.id
+    currentReview = review
+  })
+
+  const onDecisionFormChange = (value, path) => {
+    const reviewId = currentUserHasReview ? currentReview.id : uuid()
+
+    const reviewDelta = {} // Only the changed fields
+
+    // Takes the $PATH (meta.title) and $VALUE (meta.title) -> { meta: { title: '$VALUE' } }
+    // String to Object conversion happens here
+    set(reviewDelta, path, value)
+
+    const reviewPayload = {
+      jsonData: JSON.stringify(reviewDelta),
+      manuscriptId: manuscript.id,
+    }
+
+    updateReview(reviewId, reviewPayload, manuscript.id)
+  }
+
   return (
     <DecisionVersions
       allUsers={users}
@@ -253,6 +279,7 @@ const DecisionPage = ({ match }) => {
       handleChange={handleChange}
       makeDecision={makeDecision}
       manuscript={manuscript}
+      onDecisionFormChange={onDecisionFormChange}
       publishManuscript={publishManuscript}
       reviewers={data?.manuscript?.reviews}
       sendChannelMessageCb={sendChannelMessageCb}

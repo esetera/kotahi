@@ -216,21 +216,13 @@ const DecisionForm = ({
   )
 }
 
-const versionValues = {
-  status: 'submitted',
-}
-
 const NewDecisionForm = ({
   createFile,
   dirty,
   deleteFile,
   decisionForm,
   handleSubmit,
-  isValid,
-  isSubmitting,
-  manuscriptId,
-  submitCount,
-  updateReview,
+  onChange,
 }) => {
   const [confirming, setConfirming] = React.useState(false)
 
@@ -242,7 +234,7 @@ const NewDecisionForm = ({
     <SectionContent>
       <Formik
         displayName="submit"
-        initialValues={versionValues}
+        initialValues={{}}
         onSubmit={handleSubmit}
         validateOnBlur
         validateOnChange={false}
@@ -260,6 +252,7 @@ const NewDecisionForm = ({
               form={decisionForm}
               manuscript={{ status: 'submitted' }}
               match={{ url: 'decision' }}
+              onChange={onChange}
               republish={() => null}
               showEditorOnlyFields
               submissionButtonText="Submit"
