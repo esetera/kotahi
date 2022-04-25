@@ -52,6 +52,7 @@ const DecisionVersion = ({
   canHideReviews,
   urlFrag,
   displayShortIdAsIdentifier,
+  onDecisionFormChange,
   client,
   createFile,
   deleteFile,
@@ -273,6 +274,7 @@ const DecisionVersion = ({
                 deleteFile={deleteFile}
                 dirty={dirty}
                 handleSubmit={handleSubmit}
+                onChange={onDecisionFormChange}
                 isSubmitting={isSubmitting}
                 isValid={isValid}
                 manuscriptId={version.id}

@@ -25,6 +25,7 @@ const DecisionVersions = props => {
     sendNotifyEmail,
     sendChannelMessageCb,
     makeDecision,
+    onDecisionFormChange,
     publishManuscript,
     updateTeam,
     createTeam,
@@ -77,6 +78,7 @@ const DecisionVersions = props => {
                 key={version.manuscript.id}
                 makeDecision={makeDecision}
                 onChange={handleChange}
+                onDecisionFormChange={onDecisionFormChange}
                 parent={manuscript}
                 publishManuscript={publishManuscript}
                 reviewers={reviewers}
