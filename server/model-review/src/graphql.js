@@ -24,6 +24,8 @@ const resolvers = {
           mergeArrays,
         )
 
+        updatedReview.jsonData = JSON.stringify(updatedReview.jsonData) // Convert the JavaScript object back to JSON
+
         delete updatedReview.reviewComment
         delete updatedReview.confidentialComment
         delete updatedReview.decisionComment
@@ -31,6 +33,9 @@ const resolvers = {
         review = await models.Review.query().upsertGraphAndFetch({
           id,
           ...updatedReview,
+          canBePublishedPublicly: false,
+          isHiddenFromAuthor: false,
+          isHiddenReviewerName: false,
         })
       } else {
         // We process comment fields into array
