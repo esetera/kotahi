@@ -38,22 +38,22 @@ class KotahiBlockDropDown extends ToolGroup {
   tools = []
 
   constructor(
-    title,
-    author,
-    subtitle,
-    epigraphprose,
-    epigraphpoetry,
-    heading2,
-    heading3,
-    heading4,
-    paragraph,
-    paragraphContinued,
-    extractProse,
-    extractPoetry,
-    sourceNote,
-    blockQuote,
-    heading5,
-    heading6,
+    @inject('Title') title,
+    @inject('Author') author,
+    @inject('SubTitle') subtitle,
+    @inject('EpigraphProse') epigraphprose,
+    @inject('EpigraphPoetry') epigraphpoetry,
+    @inject('Heading2') heading2,
+    @inject('Heading3') heading3,
+    @inject('Heading4') heading4,
+    @inject('Paragraph') paragraph,
+    @inject('ParagraphContinued') paragraphContinued,
+    @inject('ExtractProse') extractProse,
+    @inject('ExtractPoetry') extractPoetry,
+    @inject('SourceNote') sourceNote,
+    @inject('BlockQuote') blockQuote,
+    @inject('Heading5') heading5,
+    @inject('Heading6') heading6,
   ) {
     super()
 

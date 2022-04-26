@@ -74,14 +74,10 @@ const jatsHandler = async manuscriptId => {
   const articleMetadata = buildArticleMetadata(manuscript)
 
   const { jats } = makeJats(html, articleMetadata, publicationMetadata)
-<<<<<<< HEAD
 
   // check if the output is valid XML – this is NOT checking whether this is valid JATS
   let parseError = null
   const result = XMLValidator.validate(failXML ? errorJats : jats) // this returns true if it's valid, error object if not
-=======
-  const parseError = null
->>>>>>> 8e379b992e079e6e9dfe02d1d1a66539daa4ea6b
 
   if (typeof result === 'object') {
     parseError = result
