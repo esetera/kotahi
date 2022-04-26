@@ -13,51 +13,59 @@ const mergeArrays = (destination, source) => {
 const resolvers = {
   Mutation: {
     async updateReview(_, { id, input }, ctx) {
-      // We process comment fields into array
-      const userId = input.userId ? input.userId : ctx.user
+      const customReviewForms = true
+      let review
 
-      const reviewUser = await models.User.query().where({
-        id: userId,
-      })
+      if (customReviewForms) {
+        const reviewDelta = { jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
+        const existingReview = await models.Review.query().findById(id) // Find the existing review by id
 
-      const reviewDelta = { jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
-      const existingReview = await models.Review.query().findById(id) // Find the existing review by id
-      const updatedReview = mergeWith(existingReview, reviewDelta, mergeArrays)
+        const updatedReview = mergeWith(
+          existingReview,
+          reviewDelta,
+          mergeArrays,
+        )
 
-      const processedReview = { ...input, user: reviewUser }
-      updatedReview.user = reviewUser
+        delete updatedReview.reviewComment
+        delete updatedReview.confidentialComment
+        delete updatedReview.decisionComment
 
-      processedReview.comments = [
-        input.reviewComment,
-        input.confidentialComment,
-        input.decisionComment,
-      ].filter(Boolean)
-
-      updatedReview.comments = [
-        input.reviewComment,
-        input.confidentialComment,
-        input.decisionComment,
-      ].filter(Boolean)
-
-      delete processedReview.reviewComment
-      delete processedReview.confidentialComment
-      delete processedReview.decisionComment
-
-      delete updatedReview.reviewComment
-      delete updatedReview.confidentialComment
-      delete updatedReview.decisionComment
-
-      const review = await models.Review.query().upsertGraphAndFetch(
-        {
+        review = await models.Review.query().upsertGraphAndFetch({
           id,
           ...updatedReview,
-        },
-        {
-          relate: true,
-          noUnrelate: true,
-          noDelete: true,
-        },
-      )
+        })
+      } else {
+        // We process comment fields into array
+        const userId = input.userId ? input.userId : ctx.user
+
+        const reviewUser = await models.User.query().where({
+          id: userId,
+        })
+
+        const processedReview = { ...input, user: reviewUser }
+
+        processedReview.comments = [
+          input.reviewComment,
+          input.confidentialComment,
+          input.decisionComment,
+        ].filter(Boolean)
+
+        delete processedReview.reviewComment
+        delete processedReview.confidentialComment
+        delete processedReview.decisionComment
+
+        review = await models.Review.query().upsertGraphAndFetch(
+          {
+            id,
+            ...processedReview,
+          },
+          {
+            relate: true,
+            noUnrelate: true,
+            noDelete: true,
+          },
+        )
+      }
 
       return review
     },
