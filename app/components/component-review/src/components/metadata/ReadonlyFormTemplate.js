@@ -95,26 +95,30 @@ const filesToAttachment = file => ({
   url: file.url,
 })
 
-const ReviewMetadata = ({
+// TODO: Rename to Readonly Form
+const ReadonlyFormTemplate = ({
   form,
   manuscript: rawManuscript,
   showPreviewMetadataOnly,
   showEditorOnlyFields,
+  title,
   displayShortIdAsIdentifier,
 }) => {
   // Parse submission metadata JSON for display purposes
-  const manuscript = {
-    ...rawManuscript,
-    submission: JSON.parse(rawManuscript.submission),
-  }
+  // const manuscript = {
+  //   ...rawManuscript,
+  //   submission: JSON.parse(rawManuscript.submission),
+  // }
+
+  const manuscript = JSON.parse(rawManuscript.reviews[1].jsonData)
 
   return (
     <SectionContent>
-      {!showPreviewMetadataOnly && (
+      {title ? (
         <SectionHeader>
-          <Title>Metadata</Title>
+          <Title>{title}</Title>
         </SectionHeader>
-      )}
+      ) : null}
 
       {displayShortIdAsIdentifier && (
         <SectionRowGrid>
@@ -145,7 +149,7 @@ const ReviewMetadata = ({
           <SectionRowGrid>
             <Heading>Special Instructions</Heading>
             <Cell>
-              {getNote(manuscript.meta.notes || [], 'specialInstructions')
+              {getNote(manuscript?.meta?.notes || [], 'specialInstructions')
                 .content || 'None'}
             </Cell>
           </SectionRowGrid>
@@ -199,7 +203,7 @@ const ReviewMetadata = ({
   )
 }
 
-ReviewMetadata.propTypes = {
+ReadonlyFormTemplate.propTypes = {
   form: PropTypes.shape({
     children: PropTypes.arrayOf(
       PropTypes.shape({
@@ -231,8 +235,8 @@ ReviewMetadata.propTypes = {
   showEditorOnlyFields: PropTypes.bool.isRequired,
 }
 
-ReviewMetadata.defaultProps = {
+ReadonlyFormTemplate.defaultProps = {
   showPreviewMetadataOnly: false,
 }
 
-export default ReviewMetadata
+export default ReadonlyFormTemplate

@@ -20,6 +20,7 @@ export const reviewFields = `
   id
   created
   updated
+  jsonData
   decisionComment {
     ${commentFields}
   }
@@ -140,7 +141,9 @@ const query = gql`
       }
     }
 
-    formForPurposeAndCategory(purpose: "submit", category: "submission") {
+    forms {
+      purpose
+      category
       structure {
         name
         description

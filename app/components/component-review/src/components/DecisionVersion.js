@@ -7,7 +7,7 @@ import DecisionReviews from './decision/DecisionReviews'
 import AssignEditorsReviewers from './assignEditors/AssignEditorsReviewers'
 import AssignEditor from './assignEditors/AssignEditor'
 import EmailNotifications from './emailNotifications'
-import ReviewMetadata from './metadata/ReviewMetadata'
+import ReadonlyFormTemplate from './metadata/ReadonlyFormTemplate'
 import EditorSection from './decision/EditorSection'
 import Publish from './Publish'
 import { AdminSection } from './style'
@@ -137,7 +137,7 @@ const DecisionVersion = ({
       content: (
         <>
           {!current ? (
-            <ReviewMetadata
+            <ReadonlyFormTemplate
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
               form={form}
               manuscript={version}

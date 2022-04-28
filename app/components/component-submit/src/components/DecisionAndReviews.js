@@ -5,6 +5,7 @@ import { Attachment } from '@pubsweet/ui'
 import DecisionReview from '../../../component-review/src/components/decision/DecisionReview'
 import { UserAvatar } from '../../../component-avatar/src'
 import useCurrentUser from '../../../../hooks/useCurrentUser'
+import ReadOnlyFormTemplate from '../../../component-review/src/components/metadata/ReadonlyFormTemplate'
 
 import {
   SectionHeader,
@@ -48,7 +49,15 @@ const Decision = ({ decision, editor }) =>
     <SectionRow>Pending.</SectionRow>
   )
 
-const DecisionAndReviews = ({ manuscript }) => {
+const NewDecision = ({ decisionForm, manuscript }) => {
+  return manuscript ? (
+    <ReadOnlyFormTemplate form={decisionForm} manuscript={manuscript} />
+  ) : (
+    <SectionRow>Pending.</SectionRow>
+  )
+}
+
+const DecisionAndReviews = ({ manuscript, forms }) => {
   const currentUser = useCurrentUser()
 
   const decision =
@@ -78,13 +87,26 @@ const DecisionAndReviews = ({ manuscript }) => {
     review => !review.isHiddenFromAuthor && isCurrentUserAuthor,
   )
 
+  const decisionForm = forms.find(
+    form => form.category === 'decision' && form.purpose === 'decision',
+  )
+
+  // const reviewForm = forms.find(
+  //   form => form.category === 'review' && form.purpose === 'review',
+  // )
+
   return (
     <>
       <SectionContent>
         <SectionHeader>
           <Title>Decision</Title>
         </SectionHeader>
-        <Decision decision={decision} editor={decision?.user} />
+        {/* Swap Decision and NewDecision depending on the version you want to use */}
+        <NewDecision
+          decisionForm={decisionForm}
+          editor={decision?.user}
+          manuscript={manuscript}
+        />
       </SectionContent>
       <SectionContent>
         <SectionHeader>

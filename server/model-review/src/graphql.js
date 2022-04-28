@@ -70,7 +70,23 @@ const resolvers = {
         )
       }
 
-      return review
+      return {
+        id: review.id,
+        created: review.created,
+        updated: review.updated,
+        recommendation: review.recommendation,
+        isDecision: review.isDecision,
+        open: review.open,
+        user: review.user,
+        reviewComment: review.reviewComment,
+        confidentialComment: review.confidentialComment,
+        decisionComment: review.decisionComment,
+        isHiddenFromAuthor: review.isHiddenFromAuthor,
+        isHiddenReviewerName: review.isHiddenReviewerName,
+        canBePublishedPublicly: review.canBePublishedPublicly,
+        jsonData: JSON.stringify(review.jsonData),
+        userId: review.userId,
+      }
     },
 
     async completeReview(_, { id }, ctx) {

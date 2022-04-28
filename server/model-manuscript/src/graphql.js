@@ -40,8 +40,13 @@ const ManuscriptResolvers = ({ isVersion }) => {
       return JSON.stringify(parent.evaluationsHypothesisMap)
     },
     async reviews(parent, _, ctx) {
+      const stringifiedReviews = parent.reviews.map(review => ({
+        ...review,
+        jsonData: JSON.stringify(review.jsonData),
+      }))
+
       return parent.reviews
-        ? parent.reviews
+        ? stringifiedReviews
         : (await models.Manuscript.query().findById(parent.id)).$relatedQuery(
             'reviews',
           )
