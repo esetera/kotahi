@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { set, debounce } from 'lodash'
 import DecisionAndReviews from './DecisionAndReviews'
 import CreateANewVersion from './CreateANewVersion'
-import ReviewMetadata from '../../../component-review/src/components/metadata/ReviewMetadata'
+import ReadonlyFormTemplate from '../../../component-review/src/components/metadata/ReadonlyFormTemplate'
 import MessageContainer from '../../../component-chat/src/MessageContainer'
 
 import {
@@ -30,7 +30,7 @@ const createBlankSubmissionBasedOnForm = form => {
 
 const Submit = ({
   versions = [],
-  form,
+  forms,
   createNewVersion,
   currentUser,
   toggleConfirming,
@@ -49,7 +49,11 @@ const Submit = ({
 
   const currentVersion = versions[0]
 
-  const submissionValues = createBlankSubmissionBasedOnForm(form)
+  const submissionForm = forms.find(
+    form => form.category === 'submission' && form.purpose === 'submit',
+  )
+
+  const submissionValues = createBlankSubmissionBasedOnForm(submissionForm)
 
   versions.forEach((version, index) => {
     const { manuscript, label } = version
@@ -118,11 +122,14 @@ const Submit = ({
       decisionSection = {
         content: (
           <>
-            {hasDecision && <DecisionAndReviews manuscript={manuscript} />}
-            <ReviewMetadata
-              form={form}
+            {hasDecision && (
+              <DecisionAndReviews forms={forms} manuscript={manuscript} />
+            )}
+            <ReadonlyFormTemplate
+              form={submissionForm}
               manuscript={manuscript}
               showEditorOnlyFields={false}
+              title="Metadata"
             />
           </>
         ),

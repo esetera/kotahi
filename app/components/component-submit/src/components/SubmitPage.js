@@ -68,6 +68,7 @@ const urlFrag = config.journal.metadata.toplevel_urlfragment
 
 const cleanForm = form => {
   if (!form) return form
+
   // Remove any form items that are incomplete/invalid
   return { ...form, children: form.children.filter(f => f.component && f.name) }
 }
@@ -124,8 +125,28 @@ const SubmitPage = ({ match, history }) => {
   if (error) return <CommsErrorBanner error={error} />
 
   const currentUser = data?.currentUser
-  const manuscript = data?.manuscript
-  const form = cleanForm(data?.formForPurposeAndCategory?.structure)
+  let manuscript = data?.manuscript
+
+  // TODO: Figure out why this data does not get to DecisionAndReview
+  // Parse the jsonData in the reviews
+  const parsedReviews = manuscript.reviews.map(review => {
+    const parsedJsonData = JSON.parse(review.jsonData)
+
+    return {
+      ...review,
+      parsedJsonData,
+    }
+  })
+
+  manuscript = { ...manuscript, parsedReviews }
+
+  const forms = data?.forms.map(currentForm => {
+    return {
+      ...cleanForm(currentForm?.structure),
+      category: currentForm?.category,
+      purpose: currentForm?.purpose,
+    }
+  })
 
   const updateManuscript = (versionId, manuscriptDelta) => {
     return update({
@@ -224,7 +245,7 @@ const SubmitPage = ({ match, history }) => {
       createNewVersion={createNewVersion}
       currentUser={currentUser}
       deleteFile={deleteFile}
-      form={pruneEmpty(form)}
+      forms={pruneEmpty(forms)}
       match={match}
       onChange={handleChange}
       onSubmit={onSubmit}

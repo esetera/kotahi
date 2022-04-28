@@ -7,7 +7,7 @@ import { Tabs } from '@pubsweet/ui'
 import styled from 'styled-components'
 import { th } from '@pubsweet/ui-toolkit'
 import ReviewForm from './ReviewForm'
-import ReviewMetadata from '../metadata/ReviewMetadata'
+import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
 import Review from './Review'
 import EditorSection from '../decision/EditorSection'
 import { Columns, Manuscript, Chat } from '../../../../shared'
@@ -82,7 +82,7 @@ const ReviewLayout = ({
           {hasManuscriptFile(msVersion) && (
             <EditorSection manuscript={msVersion} readonly />
           )}
-          <ReviewMetadata
+          <ReadonlyFormTemplate
             form={submissionForm}
             manuscript={msVersion}
             showEditorOnlyFields={false}
@@ -116,7 +116,7 @@ const ReviewLayout = ({
           {hasManuscriptFile(latestVersion) && (
             <EditorSection manuscript={latestVersion} readonly />
           )}
-          <ReviewMetadata
+          <ReadonlyFormTemplate
             form={submissionForm}
             manuscript={latestVersion}
             showEditorOnlyFields={false}
