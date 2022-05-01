@@ -6,6 +6,7 @@ import { Menu } from '../../page-object/page-component/menu'
 import { ManuscriptsPage } from '../../page-object/manuscripts-page'
 import { ControlPage } from '../../page-object/control-page'
 import { dashboard } from '../../support/routes'
+import NewSubmissionPage from '../../page-object/new-submission-page'
 
 describe('URL submission test', () => {
   it('can submit a URL and some metadata', () => {
@@ -32,26 +33,33 @@ describe('URL submission test', () => {
     // Click on new submission
     cy.get('button').contains('＋ New submission').click()
 
-    // Click on submit URL instead
-    cy.get('button').contains('Submit a URL instead').click()
+    // Click on Upload manuscript
+    // cy.get('class').contains('UploadManuscript').click()
+    // eslint-disable-next-line no-console
+    NewSubmissionPage.clickUploadManuscript()
+    // upload the file
+    // cy.readFile('Upload Manuscript')
+    // cy.fixture('data.json').as('test-docx')
+
+    cy.get('input[type=file]').attachFile('test-docx.docx')
 
     // complete the submission form
 
     cy.fixture('submission_form_data').then(data => {
-      SubmissionFormPage.fillInUrl(0, data.doi)
-      SubmissionFormPage.fillInUrl(0, data.git)
+      // SubmissionFormPage.fillInUrl(0, data.doi)
+      // SubmissionFormPage.fillInUrl(0, data.git)
       SubmissionFormPage.fillInTitle(data.title)
-      SubmissionFormPage.fillInAbstract(data.abstract)
-      SubmissionFormPage.fillInFirstAuthor(data.firstAuthor)
-      SubmissionFormPage.fillInOurTake(data.ourTake)
-      SubmissionFormPage.fillInMainFindings(data.mainFindings)
-      SubmissionFormPage.fillInStudyStrengths(data.studyStrengths)
-      SubmissionFormPage.fillInLimitations(data.limitations)
-      SubmissionFormPage.fillInDatePublished(data.datePublished)
-      SubmissionFormPage.fillInLink(data.link)
-      SubmissionFormPage.fillInKeywords(data.keywords)
-      SubmissionFormPage.fillInJournal(data.journal)
-      SubmissionFormPage.fillInReviewCreator(data.reviewCreator)
+      // SubmissionFormPage.fillInAbstract(data.abstract)
+      // SubmissionFormPage.fillInFirstAuthor(data.firstAuthor)
+      // SubmissionFormPage.fillInOurTake(data.ourTake)
+      // SubmissionFormPage.fillInMainFindings(data.mainFindings)
+      // SubmissionFormPage.fillInStudyStrengths(data.studyStrengths)
+      // SubmissionFormPage.fillInLimitations(data.limitations)
+      // SubmissionFormPage.fillInDatePublished(data.datePublished)
+      // SubmissionFormPage.fillInLink(data.link)
+      // SubmissionFormPage.fillInKeywords(data.keywords)
+      // SubmissionFormPage.fillInJournal(data.journal)
+      // SubmissionFormPage.fillInReviewCreator(data.reviewCreator)
       SubmissionFormPage.clickSubmitResearch()
 
       // Submit your form

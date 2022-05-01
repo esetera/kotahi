@@ -241,6 +241,10 @@ CREATE TABLE public.files (
 
 ALTER TABLE public.files OWNER TO kotahidev;
 
+
+ALTER TABLE public.files
+ADD COLUMN name VARCHAR not null;
+
 --
 -- Name: forms; Type: TABLE; Schema: public; Owner: kotahidev
 --
@@ -948,3 +952,43 @@ UPDATE public.forms SET category = 'submission';
 --
 -- PostgreSQL database dump complete
 --
+
+-- -------------------------------------------------------------
+-- TablePlus 4.6.4(414)
+--
+-- https://tableplus.com/
+--
+-- Database: kotahidev
+-- Generation Time: 2022-04-30 21:37:21.7640
+-- -------------------------------------------------------------
+
+
+DROP TABLE IF EXISTS "public"."files";
+-- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
+
+-- Table Definition
+CREATE TABLE "public"."files" (
+    "id" uuid NOT NULL,
+    "created" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated" timestamptz,
+    "type" text NOT NULL,
+    "name" text NOT NULL,
+    "stored_objects" jsonb NOT NULL,
+    "tags" jsonb DEFAULT '[]'::jsonb,
+    "reference_id" uuid,
+    "object_id" uuid,
+    "alt" text,
+    "upload_status" text,
+    "caption" text,
+    PRIMARY KEY ("id")
+);
+
+
+ELETE FROM public.files WHERE manuscript_id IS NULL OR file_type IS NULL OR filename IS NULL OR url IS NULL OR size IS NULL;
+
+ALTER TABLE public.files ALTER manuscript_id SET NOT NULL;
+ALTER TABLE public.files ALTER file_type SET NOT NULL;
+ALTER TABLE public.files ALTER filename SET NOT NULL;
+ALTER TABLE public.files ALTER url SET NOT NULL;
+ALTER TABLE public.files ALTER size SET NOT NULL;
+

@@ -33,3 +33,5 @@ const NewSubmissionPage = {
     return cy.get(SUBMISSION_MESSAGE).invoke('text')
   },
 }
+
+export default NewSubmissionPage

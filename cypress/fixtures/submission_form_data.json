@@ -16,6 +16,7 @@
   "humanMRIother": "7T",
   "otherPackages": "Jupyter, Stencila",
   "references": "Hyde, 2020",
+  "docx": "test-docx.docx",
   "pdf": "test-pdf.pdf",
   "processinPackages": {
     "text1": "SPM",
