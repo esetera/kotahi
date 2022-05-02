@@ -42,6 +42,8 @@ describe('URL submission test', () => {
     // cy.fixture('data.json').as('test-docx')
 
     cy.get('input[type=file]').attachFile('test-docx.docx')
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(60000)
 
     // complete the submission form
 

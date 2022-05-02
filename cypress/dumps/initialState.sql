@@ -227,6 +227,7 @@ CREATE TABLE public.files (
     id uuid NOT NULL,
     created timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated timestamp with time zone,
+    object_id UUID,
     label text,
     file_type text NOT NULL,
     filename text NOT NULL,
@@ -963,32 +964,22 @@ UPDATE public.forms SET category = 'submission';
 -- -------------------------------------------------------------
 
 
-DROP TABLE IF EXISTS "public"."files";
+DROP TABLE IF EXISTS public.files;
 -- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
 
 -- Table Definition
-CREATE TABLE "public"."files" (
-    "id" uuid NOT NULL,
-    "created" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated" timestamptz,
-    "type" text NOT NULL,
-    "name" text NOT NULL,
-    "stored_objects" jsonb NOT NULL,
-    "tags" jsonb DEFAULT '[]'::jsonb,
-    "reference_id" uuid,
-    "object_id" uuid,
-    "alt" text,
-    "upload_status" text,
-    "caption" text,
-    PRIMARY KEY ("id")
+CREATE TABLE public.files (
+    id uuid NOT NULL,
+    created timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated timestamptz,
+    type text NOT NULL,
+    name text NOT NULL,
+    stored_objects jsonb NOT NULL,
+    tags jsonb DEFAULT '[]'::jsonb,
+    reference_id uuid,
+    object_id uuid,
+    alt text,
+    upload_status text,
+    caption text,
+    PRIMARY KEY (id)
 );
-
-
-ELETE FROM public.files WHERE manuscript_id IS NULL OR file_type IS NULL OR filename IS NULL OR url IS NULL OR size IS NULL;
-
-ALTER TABLE public.files ALTER manuscript_id SET NOT NULL;
-ALTER TABLE public.files ALTER file_type SET NOT NULL;
-ALTER TABLE public.files ALTER filename SET NOT NULL;
-ALTER TABLE public.files ALTER url SET NOT NULL;
-ALTER TABLE public.files ALTER size SET NOT NULL;
-

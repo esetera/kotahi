@@ -3,7 +3,7 @@ CREATE TABLE files (
     created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT current_timestamp,
     updated TIMESTAMP WITH TIME ZONE,
     -- object_type TEXT,
-    -- object_id UUID,
+    object_id UUID,
     label TEXT,
     file_type TEXT,
     filename TEXT,
