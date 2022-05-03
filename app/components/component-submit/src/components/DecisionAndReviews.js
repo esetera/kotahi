@@ -5,7 +5,7 @@ import { Attachment } from '@pubsweet/ui'
 import DecisionReview from '../../../component-review/src/components/decision/DecisionReview'
 import { UserAvatar } from '../../../component-avatar/src'
 import useCurrentUser from '../../../../hooks/useCurrentUser'
-import ReadOnlyFormTemplate from '../../../component-review/src/components/metadata/ReadonlyFormTemplate'
+import ReadonlyFormTemplate from '../../../component-review/src/components/metadata/ReadonlyFormTemplate'
 
 import {
   SectionHeader,
@@ -50,8 +50,21 @@ const Decision = ({ decision, editor }) =>
   )
 
 const NewDecision = ({ decisionForm, manuscript }) => {
-  return manuscript ? (
-    <ReadOnlyFormTemplate form={decisionForm} manuscript={manuscript} />
+  const decisionDataString = manuscript.reviews.find(r => r.isDecision)
+    ?.jsonData
+
+  const decisionData = decisionDataString
+    ? JSON.parse(decisionDataString)
+    : null
+
+  console.log('decisionData:', decisionData)
+
+  return decisionData ? (
+    <ReadonlyFormTemplate
+      form={decisionForm}
+      formData={decisionData}
+      manuscript={manuscript}
+    />
   ) : (
     <SectionRow>Pending.</SectionRow>
   )

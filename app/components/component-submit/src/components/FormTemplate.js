@@ -150,7 +150,7 @@ const FormTemplate = ({
   showEditorOnlyFields,
   urlFrag,
   displayShortIdAsIdentifier,
-  client,
+  client, // TODO refactor query to top-level component, and pass a validateDoi function instead
   createFile,
   deleteFile,
   isSubmission,
@@ -315,7 +315,7 @@ const FormTemplate = ({
                         JSON.parse(
                           element.doiValidation ? element.doiValidation : false,
                         ),
-                        client,
+                        client, // TODO refactor query to top-level component, and pass a validateDoi function instead
                         element.component,
                       )}
                       values={values}

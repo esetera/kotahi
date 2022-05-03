@@ -99,7 +99,7 @@ const Submit = ({
 
       const submissionProps = {
         versionValues,
-        form,
+        form: submissionForm,
         onSubmit,
         versionId,
         toggleConfirming,
@@ -127,6 +127,10 @@ const Submit = ({
             )}
             <ReadonlyFormTemplate
               form={submissionForm}
+              formData={{
+                ...manuscript,
+                submission: JSON.parse(manuscript.submission),
+              }}
               manuscript={manuscript}
               showEditorOnlyFields={false}
               title="Metadata"

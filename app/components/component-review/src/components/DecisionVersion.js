@@ -140,6 +140,10 @@ const DecisionVersion = ({
             <ReadonlyFormTemplate
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
               form={form}
+              formData={{
+                ...version,
+                submission: JSON.parse(version.submission),
+              }}
               manuscript={version}
               showEditorOnlyFields
             />
@@ -274,15 +278,15 @@ const DecisionVersion = ({
                 deleteFile={deleteFile}
                 dirty={dirty}
                 handleSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+                isValid={isValid}
+                manuscriptId={version.id}
                 meta={{
                   manuscriptId: version.id,
                   status: version.status,
                   reviewCommentId: 'qwdawdaqwd',
                 }}
                 onChange={onDecisionFormChange}
-                isSubmitting={isSubmitting}
-                isValid={isValid}
-                manuscriptId={version.id}
                 submitCount={submitCount}
                 updateReview={updateReviewForVersion(version.id)}
               />

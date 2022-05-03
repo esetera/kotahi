@@ -70,6 +70,16 @@ const ReviewLayout = ({
         msVersion.reviews,
       )
 
+    const reviewForCurrentUser = msVersion.reviews?.find(
+      r => r.user?.id === currentUser.id && !r.isDecision,
+    )
+
+    const reviewData = reviewForCurrentUser?.jsonData
+      ? JSON.parse(reviewForCurrentUser.jsonData)
+      : {}
+
+    console.log('reviewData:', reviewData)
+
     const label = moment().format('YYYY-MM-DD')
     reviewSections.push({
       content: (
@@ -84,6 +94,7 @@ const ReviewLayout = ({
           )}
           <ReadonlyFormTemplate
             form={submissionForm}
+            formData={reviewData}
             manuscript={msVersion}
             showEditorOnlyFields={false}
           />
@@ -91,11 +102,7 @@ const ReviewLayout = ({
             manuscript={msVersion}
             reviewerId={currentUser.id}
           />
-          <Review
-            review={msVersion.reviews?.find(
-              r => r.user?.id === currentUser.id && !r.isDecision,
-            )}
-          />
+          <Review review={reviewForCurrentUser} />
         </div>
       ),
       key: msVersion.id,
@@ -104,7 +111,16 @@ const ReviewLayout = ({
   }, [])
 
   if (latestVersion.status !== 'revising') {
+    const reviewForCurrentUser = latestVersion.reviews?.find(
+      r => r.user?.id === currentUser.id && !r.isDecision,
+    )
+
+    const reviewData = reviewForCurrentUser?.jsonData
+      ? JSON.parse(reviewForCurrentUser.jsonData)
+      : {}
+
     const label = moment().format('YYYY-MM-DD')
+
     reviewSections.push({
       content: (
         <div key={latestVersion.id}>
@@ -116,8 +132,9 @@ const ReviewLayout = ({
           {hasManuscriptFile(latestVersion) && (
             <EditorSection manuscript={latestVersion} readonly />
           )}
-          <ReadonlyFormTemplate
+          <ReadonlyFormTemplate // TODO shouldn't this use FormTemplate, not ReadonlyFormTemplate?
             form={submissionForm}
+            formData={reviewData} // TODO I'm not sure what we actually should pass in here.
             manuscript={latestVersion}
             showEditorOnlyFields={false}
           />

@@ -31,6 +31,10 @@ const ReviewPreview = ({ manuscript, submissionForm }) => {
       <Title>{manuscript.meta.title}</Title>
       <ReadonlyFormTemplate
         form={submissionForm}
+        formData={{
+          ...manuscript,
+          submission: JSON.parse(manuscript.submission),
+        }}
         manuscript={manuscript}
         showEditorOnlyFields={false}
         showPreviewMetadataOnly

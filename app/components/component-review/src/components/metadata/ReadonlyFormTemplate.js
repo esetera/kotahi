@@ -102,20 +102,13 @@ const filesToAttachment = file => ({
 // TODO: Rename to Readonly Form
 const ReadonlyFormTemplate = ({
   form,
-  manuscript: rawManuscript,
+  formData,
+  manuscript,
   showPreviewMetadataOnly,
   showEditorOnlyFields,
   title,
   displayShortIdAsIdentifier,
 }) => {
-  // Parse submission metadata JSON for display purposes
-  // const manuscript = {
-  //   ...rawManuscript,
-  //   submission: JSON.parse(rawManuscript.submission),
-  // }
-
-  const manuscript = JSON.parse(rawManuscript.reviews[1].jsonData)
-
   return (
     <SectionContent>
       {title ? (
@@ -127,7 +120,7 @@ const ReadonlyFormTemplate = ({
       {displayShortIdAsIdentifier && (
         <SectionRowGrid>
           <Heading>Manuscript Number</Heading>
-          <Cell>{rawManuscript.shortId}</Cell>
+          <Cell>{manuscript.shortId}</Cell>
         </SectionRowGrid>
       )}
 
@@ -144,7 +137,7 @@ const ReadonlyFormTemplate = ({
           shouldShowInPreview(element.name, form) ? (
             <SectionRowGrid key={element.id}>
               <Heading>{element.shortDescription || element.title}</Heading>
-              <Cell>{showFieldData(manuscript, element.name, form)}</Cell>
+              <Cell>{showFieldData(formData, element.name, form)}</Cell>
             </SectionRowGrid>
           ) : null,
         )}
@@ -157,6 +150,7 @@ const ReadonlyFormTemplate = ({
                 .content || 'None'}
             </Cell>
           </SectionRowGrid>
+          {/* TODO refactor the following sections for code reuse */}
           {getSupplementaryFiles(manuscript.files).length > 0 && (
             <SectionRowGrid>
               <Heading>

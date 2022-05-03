@@ -231,6 +231,7 @@ const NewDecisionForm = ({
     setConfirming(confirm => !confirm)
   }
 
+  // TODO set initialValues?
   return (
     <SectionContent>
       <Formik

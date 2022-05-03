@@ -8,7 +8,7 @@ export const validateFormField = (
   valueField = {},
   fieldName,
   doiValidation = false,
-  client,
+  client, // TODO refactor query to top-level component, and pass a validateDoi function instead
   componentType,
 ) => value => {
   const validator = vld || []
@@ -48,6 +48,7 @@ export const validateFormField = (
     fieldName === 'submission.articleURL' &&
     doiValidation
   ) {
+    // TODO refactor query to top-level component, and pass a validateDoi function instead
     return client
       .query({
         query: VALIDATE_DOI,
@@ -55,8 +56,8 @@ export const validateFormField = (
           articleURL: value,
         },
       })
-      .then(res => {
-        if (!res.data.validateDOI.isDOIValid) {
+      .then(result => {
+        if (!result.data.validateDOI.isDOIValid) {
           return 'DOI is invalid'
         }
 

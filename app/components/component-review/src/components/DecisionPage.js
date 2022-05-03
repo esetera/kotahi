@@ -118,20 +118,11 @@ const DecisionPage = ({ match }) => {
 
   // end of code from submit page to handle possible form changes
 
+  const [idOfReviewByCurrentUser, setIdOfReviewByCurrentUser] = useState(uuid())
+
   const { loading, error, data } = useQuery(query, {
     variables: {
       id: match.params.version,
-      purpose: 'submit',
-      category: 'submission',
-    },
-    fetchPolicy: 'network-only', // TODO This prevents reviews sometimes having a null user. The whole graphql/caching in DecisionPage and DecisionVersion needs clean-up.
-  })
-
-  const decisionData = useQuery(query, {
-    variables: {
-      id: match.params.version,
-      purpose: 'decision',
-      category: 'decision',
     },
     fetchPolicy: 'network-only', // TODO This prevents reviews sometimes having a null user. The whole graphql/caching in DecisionPage and DecisionVersion needs clean-up.
   })
@@ -204,17 +195,22 @@ const DecisionPage = ({ match }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const { manuscript, formForPurposeAndCategory, currentUser, users } = data
+  const {
+    manuscript,
+    submissionForm,
+    decisionForm: decisionFormOuter,
+    currentUser,
+    users,
+  } = data
 
-  const form = formForPurposeAndCategory?.structure ?? {
+  const form = submissionForm?.structure ?? {
     name: '',
     children: [],
     description: '',
     haspopup: 'false',
   }
 
-  const decisionForm = decisionData?.data?.formForPurposeAndCategory
-    ?.structure ?? {
+  const decisionForm = decisionFormOuter?.structure ?? {
     name: '',
     children: [],
     description: '',
@@ -234,21 +230,15 @@ const DecisionPage = ({ match }) => {
   const sendChannelMessageCb = async messageData =>
     sendChannelMessage(messageData)
 
-  let currentReview
-  let currentUserHasReview
+  const reviewByCurrentUser = manuscript.reviews.find(
+    r => r.user.id === currentUser.id,
+  )
 
-  manuscript.reviews.forEach(review => {
-    currentUserHasReview = review.user.id === currentUser.id
-    currentReview = review
-  })
+  if (reviewByCurrentUser) setIdOfReviewByCurrentUser(reviewByCurrentUser.id)
 
   const onDecisionFormChange = (value, path) => {
-    const reviewId = currentUserHasReview ? currentReview.id : uuid()
-
     const reviewDelta = {} // Only the changed fields
-
-    // Takes the $PATH (meta.title) and $VALUE (meta.title) -> { meta: { title: '$VALUE' } }
-    // String to Object conversion happens here
+    // E.g. if path is 'meta.title' and value is 'Foo' this gives { meta: { title: 'Foo' } }
     set(reviewDelta, path, value)
 
     const reviewPayload = {
@@ -256,7 +246,7 @@ const DecisionPage = ({ match }) => {
       manuscriptId: manuscript.id,
     }
 
-    updateReview(reviewId, reviewPayload, manuscript.id)
+    updateReview(idOfReviewByCurrentUser, reviewPayload, manuscript.id)
   }
 
   return (

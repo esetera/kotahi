@@ -127,8 +127,46 @@ const fragmentFields = `
   published
 `
 
+const formFields = `
+  structure {
+    name
+    description
+    haspopup
+    popuptitle
+    popupdescription
+    children {
+      title
+      shortDescription
+      id
+      component
+      name
+      description
+      doiValidation
+      placeholder
+      includeInReviewerPreview
+      parse
+      format
+      options {
+        id
+        label
+        value
+      }
+      validate {
+        id
+        label
+        value
+      }
+      validateValue {
+        minChars
+        maxChars
+        minSize
+      }
+    }
+  }
+`
+
 export const query = gql`
-  query($id: ID!, $purpose: String!, $category: String!) {
+  query($id: ID!) {
     currentUser {
       id
       username
@@ -147,42 +185,12 @@ export const query = gql`
       }
     }
 
-    formForPurposeAndCategory(purpose: $purpose, category: $category) {
-      structure {
-        name
-        description
-        haspopup
-        popuptitle
-        popupdescription
-        children {
-          title
-          shortDescription
-          id
-          component
-          name
-          description
-          doiValidation
-          placeholder
-          includeInReviewerPreview
-          parse
-          format
-          options {
-            id
-            label
-            value
-          }
-          validate {
-            id
-            label
-            value
-          }
-          validateValue {
-            minChars
-            maxChars
-            minSize
-          }
-        }
-      }
+    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission") {
+      ${formFields}
+    }
+
+    decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision") {
+      ${formFields}
     }
 
     users {
