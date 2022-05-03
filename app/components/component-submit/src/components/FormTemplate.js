@@ -257,6 +257,7 @@ const FormTemplate = ({
                     deleteFile={deleteFile}
                     fileType="supplementary"
                     manuscriptId={manuscript.id}
+                    reviewCommentId={manuscript.reviewCommentId}
                   />
                 )}
                 {element.component === 'VisualAbstract' && (

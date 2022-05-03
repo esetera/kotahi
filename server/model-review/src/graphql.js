@@ -1,9 +1,9 @@
 // const { flatten } = require('lodash')
 // const Review = require('./review')
 const models = require('@pubsweet/models')
+const { mergeWith, isArray } = require('lodash')
 const File = require('../../model-file/src/file')
 const { getFilesWithUrl } = require('../../utils/fileStorageUtils')
-const { mergeWith, isArray } = require('lodash')
 
 const mergeArrays = (destination, source) => {
   if (isArray(destination)) return source
@@ -18,6 +18,7 @@ const resolvers = {
 
       if (customReviewForms) {
         const reviewDelta = { jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
+
         const existingReview = await models.Review.query().findById(id) // Find the existing review by id
 
         const updatedReview = mergeWith(
@@ -32,13 +33,16 @@ const resolvers = {
         delete updatedReview.confidentialComment
         delete updatedReview.decisionComment
 
-        review = await models.Review.query().upsertGraphAndFetch({
-          id,
-          ...updatedReview,
-          canBePublishedPublicly: false,
-          isHiddenFromAuthor: false,
-          isHiddenReviewerName: false,
-        })
+        review = await models.Review.query().upsertGraphAndFetch(
+          {
+            id,
+            ...updatedReview,
+            canBePublishedPublicly: false,
+            isHiddenFromAuthor: false,
+            isHiddenReviewerName: false,
+          },
+          // { insertMissing: true },
+        )
       } else {
         // We process comment fields into array
         const userId = input.userId ? input.userId : ctx.user

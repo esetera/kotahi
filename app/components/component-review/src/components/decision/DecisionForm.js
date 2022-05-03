@@ -223,6 +223,7 @@ const NewDecisionForm = ({
   decisionForm,
   handleSubmit,
   onChange,
+  meta,
 }) => {
   const [confirming, setConfirming] = React.useState(false)
 
@@ -250,7 +251,11 @@ const NewDecisionForm = ({
               {...formProps}
               client={useApolloClient()}
               form={decisionForm}
-              manuscript={{ status: 'submitted' }}
+              manuscript={{
+                status: meta.status,
+                id: meta.manuscriptId,
+                reviewCommentId: meta.reviewCommentId,
+              }}
               match={{ url: 'decision' }}
               onChange={onChange}
               republish={() => null}

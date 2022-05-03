@@ -274,6 +274,11 @@ const DecisionVersion = ({
                 deleteFile={deleteFile}
                 dirty={dirty}
                 handleSubmit={handleSubmit}
+                meta={{
+                  manuscriptId: version.id,
+                  status: version.status,
+                  reviewCommentId: 'qwdawdaqwd',
+                }}
                 onChange={onDecisionFormChange}
                 isSubmitting={isSubmitting}
                 isValid={isValid}
