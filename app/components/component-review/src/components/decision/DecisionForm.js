@@ -256,7 +256,6 @@ const NewDecisionForm = ({
                 id: meta.manuscriptId,
                 reviewCommentId: meta.reviewCommentId,
               }}
-              match={{ url: 'decision' }}
               onChange={onChange}
               republish={() => null}
               showEditorOnlyFields
