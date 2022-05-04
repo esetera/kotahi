@@ -148,6 +148,10 @@ const SubmitPage = ({ match, history }) => {
     }
   })
 
+  const submissionForm = forms.find(
+    f => f.category === 'submission' && f.purpose === 'submit',
+  )
+
   const updateManuscript = (versionId, manuscriptDelta) => {
     return update({
       variables: {
@@ -187,7 +191,7 @@ const SubmitPage = ({ match, history }) => {
           ...JSON.parse(manuscript.submission),
           ...manuscriptChangedFields.submission,
         },
-        form,
+        submissionForm,
         client,
       ),
     )

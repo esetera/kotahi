@@ -200,31 +200,33 @@ Submit.propTypes = {
       label: PropTypes.string,
     }),
   ).isRequired,
-  form: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    children: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired,
-        sectioncss: PropTypes.string,
-        id: PropTypes.string.isRequired,
-        component: PropTypes.string.isRequired,
-        group: PropTypes.string,
-        placeholder: PropTypes.string,
-        validate: PropTypes.arrayOf(PropTypes.object.isRequired),
-        validateValue: PropTypes.objectOf(
-          PropTypes.oneOfType([
-            PropTypes.string.isRequired,
-            PropTypes.number.isRequired,
-          ]).isRequired,
-        ),
-      }).isRequired,
-    ).isRequired,
-    popuptitle: PropTypes.string,
-    popupdescription: PropTypes.string,
-    haspopup: PropTypes.string.isRequired, // bool as string
-  }).isRequired,
+  forms: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      description: PropTypes.string,
+      children: PropTypes.arrayOf(
+        PropTypes.shape({
+          name: PropTypes.string.isRequired,
+          title: PropTypes.string.isRequired,
+          sectioncss: PropTypes.string,
+          id: PropTypes.string.isRequired,
+          component: PropTypes.string.isRequired,
+          group: PropTypes.string,
+          placeholder: PropTypes.string,
+          validate: PropTypes.arrayOf(PropTypes.object.isRequired),
+          validateValue: PropTypes.objectOf(
+            PropTypes.oneOfType([
+              PropTypes.string.isRequired,
+              PropTypes.number.isRequired,
+            ]).isRequired,
+          ),
+        }).isRequired,
+      ).isRequired,
+      popuptitle: PropTypes.string,
+      popupdescription: PropTypes.string,
+      haspopup: PropTypes.string.isRequired, // bool as string
+    }).isRequired,
+  ).isRequired,
   createNewVersion: PropTypes.func.isRequired,
   currentUser: PropTypes.shape({
     admin: PropTypes.bool.isRequired,
