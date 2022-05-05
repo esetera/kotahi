@@ -11,6 +11,7 @@ import { publishManuscriptMutation } from '../../../component-review/src/compone
 import pruneEmpty from '../../../../shared/pruneEmpty'
 import { validateManuscript } from '../../../../shared/manuscriptUtils'
 import CommsErrorBanner from '../../../shared/CommsErrorBanner'
+import { VALIDATE_DOI } from '../../../../queries'
 
 export const updateMutation = gql`
   mutation($id: ID!, $input: String) {
@@ -124,6 +125,22 @@ const SubmitPage = ({ match, history }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
+  const validateDoi = value =>
+    client
+      .query({
+        query: VALIDATE_DOI,
+        variables: {
+          articleURL: value,
+        },
+      })
+      .then(result => {
+        if (!result.data.validateDOI.isDOIValid) {
+          return 'DOI is invalid'
+        }
+
+        return undefined
+      })
+
   const currentUser = data?.currentUser
   let manuscript = data?.manuscript
 
@@ -192,7 +209,7 @@ const SubmitPage = ({ match, history }) => {
           ...manuscriptChangedFields.submission,
         },
         submissionForm,
-        client,
+        validateDoi,
       ),
     )
 
@@ -243,7 +260,6 @@ const SubmitPage = ({ match, history }) => {
 
   return (
     <Submit
-      client={client}
       confirming={confirming}
       createFile={createFile}
       createNewVersion={createNewVersion}
@@ -257,6 +273,7 @@ const SubmitPage = ({ match, history }) => {
       republish={republish}
       toggleConfirming={toggleConfirming}
       updateManuscript={updateManuscript}
+      validateDoi={validateDoi}
       versions={versions}
     />
   )

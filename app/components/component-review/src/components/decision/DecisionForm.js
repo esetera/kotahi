@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 // import { cloneDeep, omit } from 'lodash'
-import { Formik, Field, ErrorMessage } from 'formik'
+import { Field, ErrorMessage } from 'formik'
 import {
   Button,
   // Flexbox,
@@ -10,7 +10,6 @@ import {
   // UploadButton,
   // UploadingFile,
 } from '@pubsweet/ui'
-import { useApolloClient } from '@apollo/client'
 import config from 'config'
 import { JournalContext } from '../../../../xpub-journal/src'
 import { required } from '../../../../xpub-validators/src'
@@ -224,6 +223,7 @@ const NewDecisionForm = ({
   handleSubmit,
   onChange,
   meta,
+  validateDoi,
 }) => {
   const [confirming, setConfirming] = React.useState(false)
 
@@ -234,38 +234,26 @@ const NewDecisionForm = ({
   // TODO set initialValues?
   return (
     <SectionContent>
-      <Formik
-        displayName="submit"
+      <FormTemplate
+        confirming={confirming}
+        createFile={createFile}
+        deleteFile={deleteFile}
+        form={decisionForm}
         initialValues={{}}
-        onSubmit={handleSubmit}
-        validateOnBlur
-        validateOnChange={false}
-      >
-        {formProps => {
-          return (
-            <FormTemplate
-              confirming={confirming}
-              createFile={createFile}
-              deleteFile={deleteFile}
-              isSubmission={false}
-              toggleConfirming={toggleConfirming}
-              {...formProps}
-              client={useApolloClient()}
-              form={decisionForm}
-              manuscript={{
-                status: meta.status,
-                id: meta.manuscriptId,
-                reviewCommentId: meta.reviewCommentId,
-              }}
-              onChange={onChange}
-              republish={() => null}
-              showEditorOnlyFields
-              submissionButtonText="Submit"
-              urlFrag={config.journal.metadata.toplevel_urlfragment}
-            />
-          )
+        isSubmission={false}
+        manuscript={{
+          status: meta.status,
+          id: meta.manuscriptId,
+          reviewCommentId: meta.reviewCommentId,
         }}
-      </Formik>
+        onChange={onChange}
+        republish={() => null}
+        showEditorOnlyFields
+        submissionButtonText="Submit"
+        toggleConfirming={toggleConfirming}
+        urlFrag={config.journal.metadata.toplevel_urlfragment}
+        validateDoi={validateDoi}
+      />
     </SectionContent>
   )
 }

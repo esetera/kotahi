@@ -41,9 +41,9 @@ const Submit = ({
   onSubmit,
   match,
   updateManuscript,
-  client,
   createFile,
   deleteFile,
+  validateDoi,
 }) => {
   const decisionSections = []
 
@@ -107,10 +107,10 @@ const Submit = ({
         onChange,
         republish,
         match,
-        client,
         manuscript,
         createFile,
         deleteFile,
+        validateDoi,
       }
 
       decisionSection = {

@@ -58,6 +58,7 @@ const NewDecision = ({ decisionForm, manuscript }) => {
     : null
 
   console.log('decisionData:', decisionData)
+  console.log('decisionForm:', decisionForm)
 
   return decisionData ? (
     <ReadonlyFormTemplate

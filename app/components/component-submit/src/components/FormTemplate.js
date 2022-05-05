@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
+import { Formik } from 'formik'
 import { unescape, set } from 'lodash'
 import {
   TextField,
@@ -129,32 +130,30 @@ const prepareFieldProps = rawField => ({
     rawField.options.map(e => ({ ...e, color: e.labelColor })),
 })
 
-const FormTemplate = ({
+const InnerFormTemplate = ({
   form,
-  handleSubmit,
-  journal,
+  handleSubmit, // formik
   toggleConfirming,
   confirming,
   manuscript,
-  setTouched,
-  values,
-  setFieldValue,
+  setTouched, // formik
+  values, // formik
+  setFieldValue, // formik
   submissionButtonText,
-  createSupplementaryFile,
   onChange,
   republish,
-  onSubmit,
-  submitSubmission,
-  errors,
-  validateForm,
+  errors, // formik
+  validateForm, // formik
   showEditorOnlyFields,
   urlFrag,
   displayShortIdAsIdentifier,
-  client, // TODO refactor query to top-level component, and pass a validateDoi function instead
+  validateDoi,
   createFile,
   deleteFile,
   isSubmission,
 }) => {
+  console.log(isSubmission)
+
   const submitButton = (text, haspopup = false) => {
     return (
       <div>
@@ -315,7 +314,7 @@ const FormTemplate = ({
                         JSON.parse(
                           element.doiValidation ? element.doiValidation : false,
                         ),
-                        client, // TODO refactor query to top-level component, and pass a validateDoi function instead
+                        validateDoi,
                         element.component,
                       )}
                       values={values}
@@ -356,6 +355,56 @@ const FormTemplate = ({
   )
 }
 
+const FormTemplate = ({
+  form,
+  initialValues,
+  toggleConfirming,
+  confirming,
+  manuscript,
+  submissionButtonText,
+  onChange,
+  republish,
+  onSubmit,
+  showEditorOnlyFields,
+  urlFrag,
+  displayShortIdAsIdentifier,
+  validateDoi,
+  createFile,
+  deleteFile,
+  isSubmission,
+}) => {
+  console.log('initialValues', initialValues)
+  return (
+    <Formik
+      displayName={form.name}
+      initialValues={initialValues}
+      onSubmit={onSubmit ?? (() => null)}
+      validateOnBlur
+      validateOnChange={false}
+    >
+      {formProps => (
+        <InnerFormTemplate
+          confirming={confirming}
+          createFile={createFile}
+          deleteFile={deleteFile}
+          isSubmission={isSubmission}
+          onChange={onChange}
+          toggleConfirming={toggleConfirming}
+          {...formProps}
+          displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+          form={form}
+          manuscript={manuscript}
+          republish={republish}
+          showEditorOnlyFields={showEditorOnlyFields}
+          submissionButtonText={submissionButtonText}
+          urlFrag={urlFrag}
+          validateDoi={validateDoi}
+        />
+      )}
+    </Formik>
+  )
+}
+
 FormTemplate.propTypes = {
   form: PropTypes.shape({
     name: PropTypes.string.isRequired,
@@ -383,17 +432,13 @@ FormTemplate.propTypes = {
     popupdescription: PropTypes.string,
     haspopup: PropTypes.string.isRequired, // bool as string
   }).isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  journal: PropTypes.any, // currently unused
   toggleConfirming: PropTypes.func.isRequired,
   confirming: PropTypes.bool.isRequired,
   manuscript: PropTypes.shape({
     id: PropTypes.string.isRequired,
     status: PropTypes.string,
   }).isRequired,
-  setTouched: PropTypes.func.isRequired,
-  values: PropTypes.shape({
+  initialValues: PropTypes.shape({
     files: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string,
@@ -403,23 +448,14 @@ FormTemplate.propTypes = {
     ).isRequired,
     status: PropTypes.string,
   }).isRequired,
-  setFieldValue: PropTypes.func.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  createSupplementaryFile: PropTypes.any, // currently unused
   onChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func,
   republish: PropTypes.func.isRequired,
-  submitSubmission: PropTypes.func,
   submissionButtonText: PropTypes.string,
-  errors: PropTypes.objectOf(PropTypes.any).isRequired,
-  validateForm: PropTypes.func.isRequired,
   showEditorOnlyFields: PropTypes.bool.isRequired,
 }
 FormTemplate.defaultProps = {
-  journal: undefined,
   onSubmit: undefined,
-  submitSubmission: undefined,
-  createSupplementaryFile: undefined,
   submissionButtonText: '',
 }
 

@@ -7,7 +7,7 @@ import { SectionContent } from '../../../../shared'
 /** Some reviewers may be marked as 'shared', meaning they can see each other's reviews. Non-'shared' reviewers cannot see or be seen by this group.
  * This displays completed reviews by other shared reviewers IF the current user is in the shared group.
  */
-const SharedReviewerGroupReviews = ({ manuscript, reviewerId }) => {
+const SharedReviewerGroupReviews = ({ manuscript, reviewerId, reviewForm }) => {
   const membersInSharedGroup = manuscript.teams
     ?.find(t => t.role === 'reviewer')
     ?.members?.filter(m => m.isShared)
@@ -38,7 +38,7 @@ const SharedReviewerGroupReviews = ({ manuscript, reviewerId }) => {
       </SectionHeader>
       {otherSharedReviews.map(r => (
         <SectionRow key={r.id}>
-          <Review review={r} />
+          <Review review={r} reviewForm={reviewForm} />
         </SectionRow>
       ))}
     </SectionContent>

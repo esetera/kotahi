@@ -16,7 +16,7 @@ import {
   publishManuscriptMutation,
 } from './queries'
 
-import { CREATE_MESSAGE } from '../../../../queries'
+import { CREATE_MESSAGE, VALIDATE_DOI } from '../../../../queries'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -156,6 +156,22 @@ const DecisionPage = ({ match }) => {
       },
     })
 
+  const validateDoi = value =>
+    client
+      .query({
+        query: VALIDATE_DOI,
+        variables: {
+          articleURL: value,
+        },
+      })
+      .then(result => {
+        if (!result.data.validateDOI.isDOIValid) {
+          return 'DOI is invalid'
+        }
+
+        return undefined
+      })
+
   const updateReview = async (reviewId, reviewData, manuscriptId) => {
     return doUpdateReview({
       variables: { id: reviewId || undefined, input: reviewData },
@@ -253,7 +269,6 @@ const DecisionPage = ({ match }) => {
     <DecisionVersions
       allUsers={users}
       canHideReviews={config.review.hide === 'true'}
-      client={client}
       confirming={confirming}
       createFile={createFile}
       createTeam={createTeam}
@@ -280,6 +295,7 @@ const DecisionPage = ({ match }) => {
       updateReview={updateReview}
       updateTeam={updateTeam}
       urlFrag={urlFrag}
+      validateDoi={validateDoi}
     />
   )
 }

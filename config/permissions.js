@@ -391,7 +391,7 @@ const permissions = {
     publishedManuscript: allow,
     messages: isAuthenticated,
     form: isAuthenticated,
-    forms: userIsAdmin,
+    forms: allow,
     formsByCategory: allow,
     formForPurposeAndCategory: allow,
     user: isAuthenticated,
@@ -401,7 +401,7 @@ const permissions = {
   Mutation: {
     upload: isAuthenticated,
     createManuscript: isAuthenticated,
-    updateManuscript: userIsAuthor,
+    updateManuscript: or(userIsAuthor, userIsAdmin),
     submitManuscript: userIsAuthor,
     createMessage: userIsAllowedToChat,
     updateReview: or(

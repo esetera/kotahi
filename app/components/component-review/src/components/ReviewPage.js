@@ -156,6 +156,43 @@ const fragmentFields = `
   }
 `
 
+const formStructure = `
+  structure {
+    name
+    description
+    haspopup
+    popuptitle
+    popupdescription
+    children {
+      title
+      shortDescription
+      id
+      component
+      name
+      description
+      doiValidation
+      placeholder
+      parse
+      format
+      options {
+        id
+        label
+        value
+      }
+      validate {
+        id
+        label
+        value
+      }
+      validateValue {
+        minChars
+        maxChars
+        minSize
+      }
+    }
+  }
+`
+
 const query = gql`
   query($id: ID!) {
     currentUser {
@@ -177,41 +214,12 @@ const query = gql`
       }
     }
 
-    formForPurposeAndCategory(purpose: "submit", category: "submission") {
-      structure {
-        name
-        description
-        haspopup
-        popuptitle
-        popupdescription
-        children {
-          title
-          shortDescription
-          id
-          component
-          name
-          description
-          doiValidation
-          placeholder
-          parse
-          format
-          options {
-            id
-            label
-            value
-          }
-          validate {
-            id
-            label
-            value
-          }
-          validateValue {
-            minChars
-            maxChars
-            minSize
-          }
-        }
-      }
+    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission") {
+      ${formStructure}
+    }
+
+    reviewForm: formForPurposeAndCategory(purpose: "review", category: "review") {
+      ${formStructure}
     }
   }
 `
@@ -289,7 +297,7 @@ const ReviewPage = ({ match, ...props }) => {
     )
   }
 
-  const { manuscript, formForPurposeAndCategory } = data
+  const { manuscript } = data
 
   // We shouldn't arrive at this page with a subsequent/child manuscript ID. If we do, redirect to the parent/original ID
   if (manuscript.parentId)
@@ -303,7 +311,14 @@ const ReviewPage = ({ match, ...props }) => {
     refetch()
   }
 
-  const submissionForm = formForPurposeAndCategory?.structure ?? {
+  const submissionForm = data.submissionForm?.structure ?? {
+    name: '',
+    children: [],
+    description: '',
+    haspopup: 'false',
+  }
+
+  const reviewForm = data.reviewForm?.structure ?? {
     name: '',
     children: [],
     description: '',
@@ -421,6 +436,7 @@ const ReviewPage = ({ match, ...props }) => {
           channelId={channelId}
           currentUser={currentUser}
           review={existingReview}
+          reviewForm={reviewForm}
           status={status}
           submissionForm={submissionForm}
           updateReview={updateReview}

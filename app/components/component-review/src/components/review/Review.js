@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { Attachment } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import SimpleWaxEditor from '../../../../wax-collab/src/SimpleWaxEditor'
+import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
 
 const Heading = styled.h4``
 
@@ -44,7 +45,7 @@ const ReviewComments = (review, type) => (
   </Note>
 )
 
-const Review = ({ review, user, showUserInfo = true }) => (
+const Review = ({ review, reviewForm, user, showUserInfo = true }) => (
   <Container>
     {!review.isHiddenReviewerName && showUserInfo && (
       <div>
@@ -63,6 +64,13 @@ const Review = ({ review, user, showUserInfo = true }) => (
       </div>
     )}
 
+    <ReadonlyFormTemplate
+      form={reviewForm}
+      formData={JSON.parse(review.jsonData ?? '{}')}
+      showEditorOnlyFields={user.admin}
+    />
+
+    {/*
     {review?.reviewComment && (
       <>
         <Heading>Review</Heading>
@@ -81,6 +89,7 @@ const Review = ({ review, user, showUserInfo = true }) => (
         <Recommendation>{review.recommendation}</Recommendation>
       </div>
     )}
+    */}
   </Container>
 )
 

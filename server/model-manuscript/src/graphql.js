@@ -48,10 +48,12 @@ const ManuscriptResolvers = ({ isVersion }) => {
       return JSON.stringify(parent.evaluationsHypothesisMap)
     },
     async reviews(parent, _, ctx) {
-      const stringifiedReviews = parent.reviews.map(review => ({
-        ...review,
-        jsonData: JSON.stringify(review.jsonData),
-      }))
+      const stringifiedReviews = (parent.reviews ? parent.reviews : []).map(
+        review => ({
+          ...review,
+          jsonData: JSON.stringify(review.jsonData),
+        }),
+      )
 
       return parent.reviews
         ? stringifiedReviews
@@ -122,7 +124,7 @@ const commonUpdateManuscript = async (id, input, ctx) => {
   }
 
   const { source } = updatedMs.meta
-  const images = base64Images(source)
+  const images = source ? base64Images(source) : []
 
   if (images.length > 0) {
     const uploadedImages = []

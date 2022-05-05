@@ -53,7 +53,7 @@ const DecisionVersion = ({
   urlFrag,
   displayShortIdAsIdentifier,
   onDecisionFormChange,
-  client,
+  validateDoi,
   createFile,
   deleteFile,
 }) => {
@@ -149,37 +149,25 @@ const DecisionVersion = ({
             />
           ) : (
             <SectionContent>
-              <Formik
-                displayName="submit"
+              <FormTemplate
+                confirming={confirming}
+                createFile={createFile}
+                deleteFile={deleteFile}
+                displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+                form={form}
                 initialValues={versionValues}
-                onSubmit={() => null}
-                validateOnBlur
-                validateOnChange={false}
-              >
-                {formProps => {
-                  return (
-                    <FormTemplate
-                      confirming={confirming}
-                      createFile={createFile}
-                      deleteFile={deleteFile}
-                      isSubmission
-                      onChange={(value, path) => {
-                        onChange(value, path, versionId)
-                      }}
-                      toggleConfirming={toggleConfirming}
-                      {...formProps}
-                      client={client}
-                      displayShortIdAsIdentifier={displayShortIdAsIdentifier}
-                      form={form}
-                      manuscript={version}
-                      match={{ url: 'decision' }}
-                      republish={() => null}
-                      showEditorOnlyFields
-                      urlFrag={urlFrag}
-                    />
-                  )
+                isSubmission
+                manuscript={version}
+                match={{ url: 'decision' }}
+                onChange={(value, path) => {
+                  onChange(value, path, versionId)
                 }}
-              </Formik>
+                republish={() => null}
+                showEditorOnlyFields
+                toggleConfirming={toggleConfirming}
+                urlFrag={urlFrag}
+                validateDoi={validateDoi}
+              />
             </SectionContent>
           )}
         </>
@@ -289,6 +277,7 @@ const DecisionVersion = ({
                 onChange={onDecisionFormChange}
                 submitCount={submitCount}
                 updateReview={updateReviewForVersion(version.id)}
+                validateDoi={validateDoi}
               />
             </AdminSection>
           )}

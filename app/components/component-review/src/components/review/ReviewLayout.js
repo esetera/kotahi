@@ -10,10 +10,11 @@ import ReviewForm from './ReviewForm'
 import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
 import Review from './Review'
 import EditorSection from '../decision/EditorSection'
-import { Columns, Manuscript, Chat } from '../../../../shared'
+import { Columns, Manuscript, Chat, SectionContent } from '../../../../shared'
 import MessageContainer from '../../../../component-chat/src/MessageContainer'
 import ArticleEvaluationSummaryPage from '../../../../component-decision-viewer'
 import SharedReviewerGroupReviews from './SharedReviewerGroupReviews'
+import FormTemplate from '../../../../component-submit/src/components/FormTemplate'
 
 const Reviewerdisclaimer = styled.span`
   color: ${th('colorTextPlaceholder')};
@@ -30,6 +31,7 @@ const ReviewLayout = ({
   currentUser,
   versions,
   review,
+  reviewForm,
   handleSubmit,
   isValid,
   status,
@@ -39,7 +41,14 @@ const ReviewLayout = ({
   submissionForm,
   createFile,
   deleteFile,
+  validateDoi,
 }) => {
+  const [confirming, setConfirming] = React.useState(false)
+
+  const toggleConfirming = () => {
+    setConfirming(confirm => !confirm)
+  }
+
   const reviewSections = []
   const latestVersion = versions[0]
   const priorVersions = versions.slice(1)
@@ -101,8 +110,9 @@ const ReviewLayout = ({
           <SharedReviewerGroupReviews
             manuscript={msVersion}
             reviewerId={currentUser.id}
+            reviewForm={reviewForm}
           />
-          <Review review={reviewForCurrentUser} />
+          <Review review={reviewForCurrentUser} reviewForm={reviewForm} />
         </div>
       ),
       key: msVersion.id,
@@ -132,9 +142,12 @@ const ReviewLayout = ({
           {hasManuscriptFile(latestVersion) && (
             <EditorSection manuscript={latestVersion} readonly />
           )}
-          <ReadonlyFormTemplate // TODO shouldn't this use FormTemplate, not ReadonlyFormTemplate?
+          <ReadonlyFormTemplate // Display manuscript metadata
             form={submissionForm}
-            formData={reviewData} // TODO I'm not sure what we actually should pass in here.
+            formData={{
+              ...latestVersion,
+              submission: JSON.parse(latestVersion.submission),
+            }}
             manuscript={latestVersion}
             showEditorOnlyFields={false}
           />
@@ -145,7 +158,25 @@ const ReviewLayout = ({
           {status === 'completed' ? (
             <Review review={review} />
           ) : (
-            <ReviewForm
+            <SectionContent>
+              <FormTemplate
+                confirming={confirming}
+                createFile={createFile}
+                deleteFile={deleteFile}
+                form={reviewForm}
+                initialValues={reviewData}
+                manuscript={latestVersion}
+                onChange={(value, path) => null}
+                onSubmit={() => null}
+                republish={() => null}
+                showEditorOnlyFields={false}
+                submissionButtonText="submit"
+                toggleConfirming={toggleConfirming}
+                validateDoi={validateDoi}
+              />
+            </SectionContent>
+
+            /* <ReviewForm
               createFile={createFile}
               deleteFile={deleteFile}
               handleSubmit={handleSubmit}
@@ -153,7 +184,8 @@ const ReviewLayout = ({
               manuscriptId={latestVersion.id}
               updateReview={updateReview}
               uploadFile={uploadFile}
-            />
+              validateDoi={validateDoi}
+            /> */
           )}
           {['colab'].includes(process.env.INSTANCE_NAME) && (
             <ArticleEvaluationSummaryPage

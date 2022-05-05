@@ -37,7 +37,7 @@ const DecisionVersions = props => {
     displayShortIdAsIdentifier,
     deleteFile,
     createFile,
-    client,
+    validateDoi,
   } = props
 
   const versions = gatherManuscriptVersions(manuscript)
@@ -65,7 +65,6 @@ const DecisionVersions = props => {
               <DecisionVersion
                 allUsers={allUsers}
                 canHideReviews={canHideReviews}
-                client={client}
                 confirming={confirming}
                 createFile={createFile}
                 createTeam={createTeam}
@@ -90,6 +89,7 @@ const DecisionVersions = props => {
                 updateReview={updateReview}
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}
+                validateDoi={validateDoi}
                 version={version.manuscript}
               />
             ))}

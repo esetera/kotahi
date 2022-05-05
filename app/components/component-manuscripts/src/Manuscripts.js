@@ -56,7 +56,7 @@ const FlexRow = styled.div`
 
 const Manuscripts = ({ history, ...props }) => {
   const {
-    client,
+    validateDoi,
     setReadyToEvaluateLabels,
     deleteManuscriptMutations,
     importManuscripts,
@@ -175,7 +175,7 @@ const Manuscripts = ({ history, ...props }) => {
     const hasInvalidFields = await validateManuscript(
       manuscript.submission,
       fieldDefinitions,
-      client,
+      validateDoi,
     )
 
     if (hasInvalidFields.filter(Boolean).length === 0) {
