@@ -260,6 +260,7 @@ const DecisionPage = ({ match }) => {
     const reviewPayload = {
       jsonData: JSON.stringify(reviewDelta),
       manuscriptId: manuscript.id,
+      userId: currentUser.id,
     }
 
     updateReview(idOfReviewByCurrentUser, reviewPayload, manuscript.id)

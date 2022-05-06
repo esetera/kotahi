@@ -445,7 +445,7 @@ FormTemplate.propTypes = {
         tags: PropTypes.arrayOf(PropTypes.string.isRequired),
         storedObjects: PropTypes.arrayOf(PropTypes.object),
       }).isRequired,
-    ).isRequired,
+    ),
     status: PropTypes.string,
   }).isRequired,
   onChange: PropTypes.func.isRequired,

@@ -18,7 +18,14 @@ const resolvers = {
 
       if (customReviewForms) {
         const reviewDelta = { jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
-        const existingReview = await models.Review.query().findById(id) // Find the existing review by id
+
+        let existingReview
+        try {
+          existingReview = await models.Review.query().findById(id) // Find the existing review by id
+        } catch (e) {
+          existingReview = {}
+          console.log('No existing reivew found.')
+        }
 
         const updatedReview = mergeWith(
           existingReview,
@@ -39,8 +46,10 @@ const resolvers = {
             canBePublishedPublicly: false,
             isHiddenFromAuthor: false,
             isHiddenReviewerName: false,
+            manuscriptId: input.manuscriptId,
+            userId: input.userId,
           },
-          // { insertMissing: true },
+          { insertMissing: true },
         )
       } else {
         // We process comment fields into array
