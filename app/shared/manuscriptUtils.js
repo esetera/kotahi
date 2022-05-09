@@ -5,7 +5,7 @@ import { convertTimestampToDate } from './time-formatting'
 import { StatusBadge } from '../components/shared'
 
 // TODO: rename validateManuscriptSubmission. This is only intended for validating the manuscript.submission object, nothing else.
-export const validateManuscript = (submission, fieldDefinitions, client) =>
+export const validateManuscript = (submission, fieldDefinitions, validateDoi) =>
   Object.entries(fieldDefinitions)
     .filter(([key, element]) => element?.name)
     .map(([key, element]) =>
@@ -14,7 +14,7 @@ export const validateManuscript = (submission, fieldDefinitions, client) =>
         element.validateValue,
         element.name,
         JSON.parse(element.doiValidation ? element.doiValidation : false),
-        client,
+        validateDoi,
         element.component,
       )(submission[element.name.split('.')[1]]),
     )
