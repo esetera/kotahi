@@ -250,7 +250,8 @@ const DecisionPage = ({ match }) => {
     r => r.user.id === currentUser.id,
   )
 
-  if (reviewByCurrentUser) setIdOfReviewByCurrentUser(reviewByCurrentUser.id)
+  if (reviewByCurrentUser && !idOfReviewByCurrentUser)
+    setIdOfReviewByCurrentUser(reviewByCurrentUser.id)
 
   const onDecisionFormChange = (value, path) => {
     const reviewDelta = {} // Only the changed fields
