@@ -170,7 +170,7 @@ const ReviewLayout = ({
                 onSubmit={() => null}
                 republish={() => null}
                 showEditorOnlyFields={false}
-                submissionButtonText="submit"
+                submissionButtonText="Submit"
                 toggleConfirming={toggleConfirming}
                 validateDoi={validateDoi}
               />

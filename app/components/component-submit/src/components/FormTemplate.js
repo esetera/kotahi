@@ -189,9 +189,6 @@ const InnerFormTemplate = ({
     )
   }
 
-  // this is true if it's the decision page, not if it's the submit page
-  const isDecision = submissionButtonText === ''
-
   // this is what the submit button will say
   const submitButtonText =
     manuscript.status === articleStatuses.published
@@ -205,17 +202,13 @@ const InnerFormTemplate = ({
   const showPopup = hasPopup && values.status !== 'revise'
 
   // this is whether or not to show a submit button
-  let showSubmitButton
-
-  if (isSubmission) {
-    showSubmitButton =
-      !isDecision &&
-      ((['aperture', 'colab'].includes(process.env.INSTANCE_NAME) &&
-        !['submitted', 'revise'].includes(values.status)) ||
+  const showSubmitButton =
+    submissionButtonText &&
+    (isSubmission
+      ? !['submitted', 'revise'].includes(values.status) ||
         (['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) &&
-          !['revise'].includes(values.status)) ||
-        values.status === 'revise')
-  }
+          values.status === 'submitted')
+      : true) // TODO What are the conditions for showing the submit button in review and decision pages?
 
   return (
     <Container>
