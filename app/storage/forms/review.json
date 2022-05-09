@@ -3,7 +3,7 @@
   "children": [
     {
       "id": "78a82745-2aa7-4725-b42d-d54809dd7926",
-      "name": "meta.abstract",
+      "name": "comment",
       "title": "Comments to the Author",
       "component": "AbstractEditor",
       "description": "<p class=\"paragraph\">Text field for comments to the author.</p>",
@@ -11,14 +11,14 @@
     },
     {
       "id": "19893e6e-aca6-40ec-9a0a-34c490ba22ac",
-      "name": "authorFileName",
-      "title": "authorFiles",
+      "name": "files",
+      "title": "Files",
       "component": "SupplementaryFiles",
       "description": "<p class=\"paragraph\">Drag and drop your files here</p>"
     },
     {
       "id": "e169b0fa-377a-43a4-9365-ce7e9b1f8f38",
-      "name": "meta.abstract",
+      "name": "confidentialComment",
       "title": "Confidential comments to editor (optional)",
       "component": "AbstractEditor",
       "description": "<p class=\"paragraph\">Confidential note for the editor</p>",
@@ -27,14 +27,14 @@
     },
     {
       "id": "78a94bf5-05c9-411d-bc97-5f84d2f686a2",
-      "name": "fileName",
+      "name": "confidentialFiles",
       "title": "Files",
       "component": "SupplementaryFiles",
       "description": "<p class=\"paragraph\">Drag and drop your files here</p>"
     },
     {
       "id": "5705067e-3ee0-41ae-a953-87167b171c3f",
-      "name": "submission.status",
+      "name": "verdict",
       "title": "Decision Status",
       "inline": "false",
       "options": [

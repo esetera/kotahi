@@ -3,7 +3,7 @@
   "children": [
     {
       "id": "74cf4404-3d04-46cb-a3da-e7d70d47db0a",
-      "name": "meta.abstract",
+      "name": "comment",
       "title": "Decision",
       "component": "AbstractEditor",
       "description": "<p class=\"paragraph\">Text field for decisions.</p>",
@@ -11,14 +11,14 @@
     },
     {
       "id": "78a94bf5-05c9-411d-bc97-5f84d2f686a2",
-      "name": "fileName",
+      "name": "files",
       "title": "Files",
       "component": "SupplementaryFiles",
       "description": "<p class=\"paragraph\">Drag and drop your files here</p>"
     },
     {
       "id": "5705067e-3ee0-41ae-a953-87167b171c3f",
-      "name": "submission.status",
+      "name": "verdict",
       "title": "Decision Status",
       "inline": "false",
       "options": [
