@@ -1,5 +1,5 @@
 ALTER TABLE reviews RENAME TO reviews_old;
-ALTER TABLE reviews_old DROP CONSTRAINT reviews_pkey;
+ALTER TABLE reviews_old DROP CONSTRAINT reviews_pkey CASCADE;
 ALTER TABLE reviews_old DROP CONSTRAINT reviews_manuscript_id_fkey;
 
 CREATE TABLE reviews (
