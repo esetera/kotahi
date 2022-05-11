@@ -222,6 +222,7 @@ const NewDecisionForm = ({
   decisionForm,
   handleSubmit,
   onChange,
+  reviewByCurrentUser,
   meta,
   validateDoi,
 }) => {
@@ -239,7 +240,11 @@ const NewDecisionForm = ({
         createFile={createFile}
         deleteFile={deleteFile}
         form={decisionForm}
-        initialValues={{}}
+        initialValues={
+          reviewByCurrentUser?.jsonData
+            ? JSON.parse(reviewByCurrentUser?.jsonData)
+            : null
+        }
         isSubmission={false}
         manuscript={{
           status: meta.status,

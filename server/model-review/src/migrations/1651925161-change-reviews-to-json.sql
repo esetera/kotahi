@@ -4,7 +4,7 @@ UPDATE files SET object_id = rc.review_id FROM review_comments rc WHERE files.ob
 
 -- Move the old schema reviews table out of the way
 ALTER TABLE reviews RENAME TO reviews_old;
-ALTER TABLE reviews_old DROP CONSTRAINT reviews_pkey CASCADE;
+ALTER TABLE reviews_old DROP CONSTRAINT reviews_pkey;
 ALTER TABLE reviews_old DROP CONSTRAINT reviews_manuscript_id_fkey;
 
 -- Create new reviews table 

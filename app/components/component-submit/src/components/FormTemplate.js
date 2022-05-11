@@ -152,8 +152,6 @@ const InnerFormTemplate = ({
   deleteFile,
   isSubmission,
 }) => {
-  console.log(isSubmission)
-
   const submitButton = (text, haspopup = false) => {
     return (
       <div>
@@ -249,6 +247,7 @@ const InnerFormTemplate = ({
                     deleteFile={deleteFile}
                     fileType="supplementary"
                     manuscriptId={manuscript.id}
+                    onChange={onChange}
                     reviewCommentId={manuscript.reviewCommentId}
                   />
                 )}
@@ -260,6 +259,7 @@ const InnerFormTemplate = ({
                     fileType="visualAbstract"
                     manuscriptId={manuscript.id}
                     mimeTypesToAccept="image/*"
+                    onChange={onChange}
                   />
                 )}
                 {element.component !== 'SupplementaryFiles' &&
@@ -366,7 +366,6 @@ const FormTemplate = ({
   deleteFile,
   isSubmission,
 }) => {
-  console.log('initialValues', initialValues)
   return (
     <Formik
       displayName={form.name}

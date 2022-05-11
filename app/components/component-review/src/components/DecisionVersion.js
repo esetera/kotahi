@@ -47,6 +47,7 @@ const DecisionVersion = ({
   updateTeam,
   createTeam,
   updateReview,
+  reviewByCurrentUser,
   reviewers,
   teamLabels,
   canHideReviews,
@@ -272,9 +273,9 @@ const DecisionVersion = ({
                 meta={{
                   manuscriptId: version.id,
                   status: version.status,
-                  reviewCommentId: 'qwdawdaqwd',
                 }}
                 onChange={onDecisionFormChange}
+                reviewByCurrentUser={reviewByCurrentUser}
                 submitCount={submitCount}
                 updateReview={updateReviewForVersion(version.id)}
                 validateDoi={validateDoi}

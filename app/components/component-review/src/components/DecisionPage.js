@@ -118,8 +118,6 @@ const DecisionPage = ({ match }) => {
 
   // end of code from submit page to handle possible form changes
 
-  const [idOfReviewByCurrentUser, setIdOfReviewByCurrentUser] = useState(uuid())
-
   const { loading, error, data } = useQuery(query, {
     variables: {
       id: match.params.version,
@@ -250,8 +248,7 @@ const DecisionPage = ({ match }) => {
     r => r.user.id === currentUser.id,
   )
 
-  if (reviewByCurrentUser && !idOfReviewByCurrentUser)
-    setIdOfReviewByCurrentUser(reviewByCurrentUser.id)
+  const idOfReviewByCurrentUser = reviewByCurrentUser?.id ?? uuid()
 
   const onDecisionFormChange = (value, path) => {
     const reviewDelta = {} // Only the changed fields
@@ -288,6 +285,7 @@ const DecisionPage = ({ match }) => {
       manuscript={manuscript}
       onDecisionFormChange={onDecisionFormChange}
       publishManuscript={publishManuscript}
+      reviewByCurrentUser={reviewByCurrentUser}
       reviewers={data?.manuscript?.reviews}
       sendChannelMessageCb={sendChannelMessageCb}
       sendNotifyEmail={sendNotifyEmail}

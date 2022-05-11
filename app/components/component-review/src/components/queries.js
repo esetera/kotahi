@@ -22,6 +22,7 @@ const reviewFields = `
   id
   created
   updated
+  jsonData
   decisionComment {
     ${commentFields}
   }
