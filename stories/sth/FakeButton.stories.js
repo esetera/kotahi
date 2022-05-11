@@ -31,7 +31,7 @@ export const NonPrimary = () => (
     <iframe
       allowFullScreen
       height={350}
-      src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FuDxsjgDWxjiof0qSNFLelr%2FKotahi-storybook%3Fnode-id%3D1%253A85"
+      src="https://www.figma.com/file/uDxsjgDWxjiof0qSNFLelr?embed_host=share&kind=&node-id=2674%3A2056&viewer=1"
       style={{ border: '1px solid rgba(0, 0, 0, 0.1)' }}
       title="figma embed"
       width={800}
