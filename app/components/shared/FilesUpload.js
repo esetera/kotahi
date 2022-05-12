@@ -50,6 +50,7 @@ const DropzoneAndList = ({
 }) => {
   // Disable the input in case we want a single file upload
   // and a file has already been uploaded
+  // TODO: REMOVE console.log
   console.log(values, fieldName)
 
   const files = cloneDeep(get(values, fieldName) || [])

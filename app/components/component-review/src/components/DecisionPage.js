@@ -5,7 +5,7 @@ import { set, debounce } from 'lodash'
 import config from 'config'
 import { v4 as uuid } from 'uuid'
 import DecisionVersions from './DecisionVersions'
-import { Spinner, CommsErrorBanner, Manuscript } from '../../../shared'
+import { Spinner, CommsErrorBanner } from '../../../shared'
 import { fragmentFields } from '../../../component-submit/src/userManuscriptFormQuery'
 
 import {

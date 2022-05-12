@@ -21,6 +21,7 @@ const resolvers = {
 
         let existingReview
 
+        // TODO: Refacotr
         try {
           existingReview = await models.Review.query().findById(id) // Find the existing review by id
         } catch (e) {
