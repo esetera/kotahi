@@ -19,15 +19,8 @@ const resolvers = {
       if (customReviewForms) {
         const reviewDelta = { jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
 
-        let existingReview
-
-        // TODO: Refacotr
-        try {
-          existingReview = await models.Review.query().findById(id) // Find the existing review by id
-        } catch (e) {
-          existingReview = {}
-          console.log('No existing reivew found.')
-        }
+        let existingReview = await models.Review.query().findById(id)
+        if (!existingReview) existingReview = {}
 
         const updatedReview = mergeWith(
           existingReview,
