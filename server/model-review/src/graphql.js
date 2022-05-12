@@ -20,6 +20,7 @@ const resolvers = {
         const reviewDelta = { jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
 
         let existingReview
+
         try {
           existingReview = await models.Review.query().findById(id) // Find the existing review by id
         } catch (e) {

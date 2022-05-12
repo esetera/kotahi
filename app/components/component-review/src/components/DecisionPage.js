@@ -5,7 +5,7 @@ import { set, debounce } from 'lodash'
 import config from 'config'
 import { v4 as uuid } from 'uuid'
 import DecisionVersions from './DecisionVersions'
-import { Spinner, CommsErrorBanner } from '../../../shared'
+import { Spinner, CommsErrorBanner, Manuscript } from '../../../shared'
 import { fragmentFields } from '../../../component-submit/src/userManuscriptFormQuery'
 
 import {
@@ -117,8 +117,6 @@ const DecisionPage = ({ match }) => {
   }
 
   // end of code from submit page to handle possible form changes
-
-  const [idOfReviewByCurrentUser, setIdOfReviewByCurrentUser] = useState(uuid())
 
   const { loading, error, data } = useQuery(query, {
     variables: {
@@ -250,8 +248,7 @@ const DecisionPage = ({ match }) => {
     r => r.user.id === currentUser.id,
   )
 
-  if (reviewByCurrentUser && !idOfReviewByCurrentUser)
-    setIdOfReviewByCurrentUser(reviewByCurrentUser.id)
+  const idOfReviewByCurrentUser = reviewByCurrentUser?.id ?? uuid()
 
   const onDecisionFormChange = (value, path) => {
     const reviewDelta = {} // Only the changed fields
@@ -288,6 +285,7 @@ const DecisionPage = ({ match }) => {
       manuscript={manuscript}
       onDecisionFormChange={onDecisionFormChange}
       publishManuscript={publishManuscript}
+      reviewByCurrentUser={reviewByCurrentUser}
       reviewers={data?.manuscript?.reviews}
       sendChannelMessageCb={sendChannelMessageCb}
       sendNotifyEmail={sendNotifyEmail}

@@ -30,6 +30,7 @@ const DecisionVersions = props => {
     updateTeam,
     createTeam,
     updateReview,
+    reviewByCurrentUser,
     reviewers,
     teamLabels,
     canHideReviews,
@@ -80,6 +81,7 @@ const DecisionVersions = props => {
                 onDecisionFormChange={onDecisionFormChange}
                 parent={manuscript}
                 publishManuscript={publishManuscript}
+                reviewByCurrentUser={reviewByCurrentUser}
                 reviewers={reviewers}
                 sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
