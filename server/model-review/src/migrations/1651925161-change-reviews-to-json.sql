@@ -1,3 +1,20 @@
+-- Record the old object_ids in case we need to roll back
+CREATE TABLE files_old (
+    id uuid NOT NULL,
+    created timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated timestamp with time zone,
+    type text NOT NULL,
+    name text NOT NULL,
+    stored_objects JSONB NOT NULL,
+    tags JSONB,
+    reference_id uuid,
+    object_id uuid,
+    alt text,
+    upload_status text,
+    caption text
+);
+INSERT INTO files_old SELECT * FROM files;
+
 -- files previously belonged to an intermediate reviewComment object;
 -- we will discard that object so they are directly owned by the review.
 UPDATE files SET object_id = rc.review_id FROM review_comments rc WHERE files.object_id = rc.id;
