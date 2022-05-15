@@ -140,7 +140,7 @@ const InnerFormTemplate = ({
   values, // formik
   setFieldValue, // formik
   submissionButtonText,
-  onChange,
+  updateReviewJsonData,
   republish,
   errors, // formik
   validateForm, // formik
@@ -247,8 +247,9 @@ const InnerFormTemplate = ({
                     deleteFile={deleteFile}
                     fileType="supplementary"
                     manuscriptId={manuscript.id}
-                    onChange={onChange}
                     reviewCommentId={manuscript.reviewCommentId}
+                    updateReviewJsonData={updateReviewJsonData}
+                    values={values}
                   />
                 )}
                 {element.component === 'VisualAbstract' && (
@@ -259,7 +260,8 @@ const InnerFormTemplate = ({
                     fileType="visualAbstract"
                     manuscriptId={manuscript.id}
                     mimeTypesToAccept="image/*"
-                    onChange={onChange}
+                    updateReviewJsonData={updateReviewJsonData}
+                    values={values}
                   />
                 )}
                 {element.component !== 'SupplementaryFiles' &&
@@ -295,7 +297,7 @@ const InnerFormTemplate = ({
                         }
 
                         setFieldValue(element.name, val, false)
-                        onChange(val, element.name)
+                        updateReviewJsonData(val, element.name)
                       }}
                       readonly={element.name === 'submission.editDate'}
                       setTouched={setTouched}
@@ -355,7 +357,7 @@ const FormTemplate = ({
   confirming,
   manuscript,
   submissionButtonText,
-  onChange,
+  updateReviewJsonData,
   republish,
   onSubmit,
   showEditorOnlyFields,
@@ -380,8 +382,8 @@ const FormTemplate = ({
           createFile={createFile}
           deleteFile={deleteFile}
           isSubmission={isSubmission}
-          onChange={onChange}
           toggleConfirming={toggleConfirming}
+          updateReviewJsonData={updateReviewJsonData}
           {...formProps}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
           form={form}
@@ -439,8 +441,9 @@ FormTemplate.propTypes = {
       }).isRequired,
     ),
     status: PropTypes.string,
-  }).isRequired,
-  onChange: PropTypes.func.isRequired,
+  }),
+  updateReviewJsonData: PropTypes.func,
+  onChange: PropTypes.func,
   onSubmit: PropTypes.func,
   republish: PropTypes.func.isRequired,
   submissionButtonText: PropTypes.string,
@@ -448,6 +451,9 @@ FormTemplate.propTypes = {
 }
 FormTemplate.defaultProps = {
   onSubmit: undefined,
+  updateReviewJsonData: undefined,
+  onChange: undefined,
+  initialValues: null,
   submissionButtonText: '',
 }
 

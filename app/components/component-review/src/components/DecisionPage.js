@@ -250,7 +250,7 @@ const DecisionPage = ({ match }) => {
 
   const idOfReviewByCurrentUser = reviewByCurrentUser?.id ?? uuid()
 
-  const onDecisionFormChange = (value, path) => {
+  const updateReviewJsonData = (value, path) => {
     const reviewDelta = {} // Only the changed fields
     // E.g. if path is 'meta.title' and value is 'Foo' this gives { meta: { title: 'Foo' } }
     set(reviewDelta, path, value)
@@ -283,7 +283,6 @@ const DecisionPage = ({ match }) => {
       handleChange={handleChange}
       makeDecision={makeDecision}
       manuscript={manuscript}
-      onDecisionFormChange={onDecisionFormChange}
       publishManuscript={publishManuscript}
       reviewByCurrentUser={reviewByCurrentUser}
       reviewers={data?.manuscript?.reviews}
@@ -293,6 +292,7 @@ const DecisionPage = ({ match }) => {
       toggleConfirming={toggleConfirming}
       updateManuscript={updateManuscript}
       updateReview={updateReview}
+      updateReviewJsonData={updateReviewJsonData}
       updateTeam={updateTeam}
       urlFrag={urlFrag}
       validateDoi={validateDoi}

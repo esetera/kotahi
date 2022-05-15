@@ -50,9 +50,6 @@ const DropzoneAndList = ({
 }) => {
   // Disable the input in case we want a single file upload
   // and a file has already been uploaded
-  // TODO: REMOVE console.log
-  console.log(values, fieldName)
-
   const files = cloneDeep(get(values, fieldName) || [])
     .map((file, index) => {
       // This is so that we preserve the location of the file in the top-level
@@ -114,7 +111,7 @@ const DropzoneAndList = ({
 
 DropzoneAndList.propTypes = {
   form: PropTypes.shape({
-    values: PropTypes.shape({}).isRequired,
+    values: PropTypes.shape({}),
     setFieldValue: PropTypes.func.isRequired,
   }).isRequired,
   push: PropTypes.func.isRequired,
@@ -146,8 +143,15 @@ const FilesUpload = ({
   mimeTypesToAccept,
   createFile: createF,
   deleteFile: deleteF,
-  onChange,
+  updateReviewJsonData,
+  values,
 }) => {
+  let existingFiles = []
+
+  if (values?.files) {
+    existingFiles = values?.files
+  }
+
   const createFile = async file => {
     const meta = {
       fileType,
@@ -165,7 +169,8 @@ const FilesUpload = ({
       },
     })
 
-    onChange(data.createFile.id, `${data.createFile.tags[0]}Files`)
+    // Merge the new and existing files
+    updateReviewJsonData([...existingFiles, data.createFile], fieldName)
 
     return data
   }
@@ -173,6 +178,14 @@ const FilesUpload = ({
   const deleteFile = async (file, index, remove) => {
     const { data } = await deleteF({ variables: { id: file.id } })
     remove(index)
+
+    const filteredFiles = existingFiles.filter(
+      currFile => currFile.id !== file.id,
+    )
+
+    // Update the new array with the file deleted
+    updateReviewJsonData([filteredFiles], fieldName)
+
     return data
   }
 

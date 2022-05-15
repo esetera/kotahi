@@ -53,7 +53,7 @@ const DecisionVersion = ({
   canHideReviews,
   urlFrag,
   displayShortIdAsIdentifier,
-  onDecisionFormChange,
+  updateReviewJsonData,
   validateDoi,
   createFile,
   deleteFile,
@@ -274,10 +274,10 @@ const DecisionVersion = ({
                   manuscriptId: version.id,
                   status: version.status,
                 }}
-                onChange={onDecisionFormChange}
                 reviewByCurrentUser={reviewByCurrentUser}
                 submitCount={submitCount}
                 updateReview={updateReviewForVersion(version.id)}
+                updateReviewJsonData={updateReviewJsonData}
                 validateDoi={validateDoi}
               />
             </AdminSection>
