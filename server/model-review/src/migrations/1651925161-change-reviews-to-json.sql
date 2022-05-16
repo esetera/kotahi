@@ -1,7 +1,13 @@
+-- files previously belonged to an intermediate reviewComment object;
+-- we will discard that object so they are directly owned by the review.
+UPDATE files SET object_id = rc.review_id FROM review_comments rc WHERE files.object_id = rc.id;
+
+-- Move the old schema reviews table out of the way
 ALTER TABLE reviews RENAME TO reviews_old;
 ALTER TABLE reviews_old DROP CONSTRAINT reviews_pkey;
 ALTER TABLE reviews_old DROP CONSTRAINT reviews_manuscript_id_fkey;
 
+-- Create new reviews table 
 CREATE TABLE reviews (
     id uuid NOT NULL,
     created timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -19,6 +25,7 @@ ALTER TABLE reviews ADD CONSTRAINT reviews_pkey PRIMARY KEY (id);
 ALTER TABLE reviews ADD CONSTRAINT reviews_manuscript_id_fkey FOREIGN KEY (manuscript_id)
   REFERENCES manuscripts(id) ON DELETE CASCADE;
 
+-- Insert records with JSONB generated
 INSERT INTO reviews (
   SELECT r.id, r.created, r.updated, r.is_decision,
     r.user_id, r.manuscript_id, r.type, r.is_hidden_from_author,
@@ -28,7 +35,7 @@ INSERT INTO reviews (
       json_build_object(
         'comment', d.content,
         'files', (SELECT json_agg(x) FROM (
-          SELECT id FROM files WHERE object_id = r.id and tags ? 'decision'
+          SELECT id FROM files WHERE object_id = r.id and tags @> '"decision"'
         ) x),
         'verdict', r.recommendation
       )::JSONB 
@@ -36,11 +43,11 @@ INSERT INTO reviews (
       json_build_object(
         'comment', c.content,
         'files', (SELECT json_agg(y) FROM (
-          SELECT id FROM files WHERE object_id = r.id and tags ? 'review'
+          SELECT id FROM files WHERE object_id = r.id and tags @> '"review"'
         ) y),
         'confidentialComment', conf_c.content,
         'confidentialFiles', (SELECT json_agg(z) FROM (
-          SELECT id FROM files WHERE object_id = r.id and tags ? 'confidential'
+          SELECT id FROM files WHERE object_id = r.id and tags @> '"confidential"'
         ) z),
         'verdict', r.recommendation
       )::JSONB 
