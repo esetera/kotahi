@@ -140,7 +140,7 @@ const InnerFormTemplate = ({
   values, // formik
   setFieldValue, // formik
   submissionButtonText,
-  onChange,
+  updateReviewJsonData,
   republish,
   errors, // formik
   validateForm, // formik
@@ -247,8 +247,8 @@ const InnerFormTemplate = ({
                     deleteFile={deleteFile}
                     fileType="supplementary"
                     manuscriptId={manuscript.id}
-                    onChange={onChange}
                     reviewCommentId={manuscript.reviewCommentId}
+                    updateReviewJsonData={updateReviewJsonData}
                   />
                 )}
                 {element.component === 'VisualAbstract' && (
@@ -259,7 +259,7 @@ const InnerFormTemplate = ({
                     fileType="visualAbstract"
                     manuscriptId={manuscript.id}
                     mimeTypesToAccept="image/*"
-                    onChange={onChange}
+                    updateReviewJsonData={updateReviewJsonData}
                   />
                 )}
                 {element.component !== 'SupplementaryFiles' &&
@@ -295,7 +295,7 @@ const InnerFormTemplate = ({
                         }
 
                         setFieldValue(element.name, val, false)
-                        onChange(val, element.name)
+                        updateReviewJsonData(val, element.name)
                       }}
                       readonly={element.name === 'submission.editDate'}
                       setTouched={setTouched}
@@ -355,7 +355,7 @@ const FormTemplate = ({
   confirming,
   manuscript,
   submissionButtonText,
-  onChange,
+  updateReviewJsonData,
   republish,
   onSubmit,
   showEditorOnlyFields,
@@ -380,8 +380,8 @@ const FormTemplate = ({
           createFile={createFile}
           deleteFile={deleteFile}
           isSubmission={isSubmission}
-          onChange={onChange}
           toggleConfirming={toggleConfirming}
+          updateReviewJsonData={updateReviewJsonData}
           {...formProps}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
           form={form}

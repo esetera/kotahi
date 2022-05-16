@@ -221,7 +221,7 @@ const NewDecisionForm = ({
   deleteFile,
   decisionForm,
   handleSubmit,
-  onChange,
+  updateReviewJsonData,
   reviewByCurrentUser,
   meta,
   validateDoi,
@@ -251,11 +251,11 @@ const NewDecisionForm = ({
           id: meta.manuscriptId,
           reviewCommentId: meta.reviewCommentId,
         }}
-        onChange={onChange}
         republish={() => null}
         showEditorOnlyFields
         submissionButtonText="Submit"
         toggleConfirming={toggleConfirming}
+        updateReviewJsonData={updateReviewJsonData}
         urlFrag={config.journal.metadata.toplevel_urlfragment}
         validateDoi={validateDoi}
       />

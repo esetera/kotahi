@@ -50,9 +50,6 @@ const DropzoneAndList = ({
 }) => {
   // Disable the input in case we want a single file upload
   // and a file has already been uploaded
-  // TODO: REMOVE console.log
-  console.log(values, fieldName)
-
   const files = cloneDeep(get(values, fieldName) || [])
     .map((file, index) => {
       // This is so that we preserve the location of the file in the top-level
@@ -146,7 +143,7 @@ const FilesUpload = ({
   mimeTypesToAccept,
   createFile: createF,
   deleteFile: deleteF,
-  onChange,
+  updateReviewJsonData,
 }) => {
   const createFile = async file => {
     const meta = {
@@ -165,7 +162,8 @@ const FilesUpload = ({
       },
     })
 
-    onChange(data.createFile.id, `${data.createFile.tags[0]}Files`)
+    // TODO: Modify for Multiple Files
+    updateReviewJsonData([data.createFile], fieldName)
 
     return data
   }
