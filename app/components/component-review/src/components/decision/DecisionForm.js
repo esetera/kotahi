@@ -232,7 +232,6 @@ const NewDecisionForm = ({
     setConfirming(confirm => !confirm)
   }
 
-  // TODO set initialValues?
   return (
     <SectionContent>
       <FormTemplate
@@ -243,7 +242,7 @@ const NewDecisionForm = ({
         initialValues={
           reviewByCurrentUser?.jsonData
             ? JSON.parse(reviewByCurrentUser?.jsonData)
-            : null
+            : {}
         }
         isSubmission={false}
         manuscript={{

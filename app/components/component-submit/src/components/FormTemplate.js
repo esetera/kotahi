@@ -249,6 +249,7 @@ const InnerFormTemplate = ({
                     manuscriptId={manuscript.id}
                     reviewCommentId={manuscript.reviewCommentId}
                     updateReviewJsonData={updateReviewJsonData}
+                    values={values}
                   />
                 )}
                 {element.component === 'VisualAbstract' && (
@@ -260,6 +261,7 @@ const InnerFormTemplate = ({
                     manuscriptId={manuscript.id}
                     mimeTypesToAccept="image/*"
                     updateReviewJsonData={updateReviewJsonData}
+                    values={values}
                   />
                 )}
                 {element.component !== 'SupplementaryFiles' &&
@@ -439,8 +441,9 @@ FormTemplate.propTypes = {
       }).isRequired,
     ),
     status: PropTypes.string,
-  }).isRequired,
-  onChange: PropTypes.func.isRequired,
+  }),
+  updateReviewJsonData: PropTypes.func,
+  onChange: PropTypes.func,
   onSubmit: PropTypes.func,
   republish: PropTypes.func.isRequired,
   submissionButtonText: PropTypes.string,
@@ -448,6 +451,9 @@ FormTemplate.propTypes = {
 }
 FormTemplate.defaultProps = {
   onSubmit: undefined,
+  updateReviewJsonData: undefined,
+  onChange: undefined,
+  initialValues: null,
   submissionButtonText: '',
 }
 

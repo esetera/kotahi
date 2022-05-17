@@ -111,7 +111,7 @@ const DropzoneAndList = ({
 
 DropzoneAndList.propTypes = {
   form: PropTypes.shape({
-    values: PropTypes.shape({}).isRequired,
+    values: PropTypes.shape({}),
     setFieldValue: PropTypes.func.isRequired,
   }).isRequired,
   push: PropTypes.func.isRequired,
@@ -144,7 +144,14 @@ const FilesUpload = ({
   createFile: createF,
   deleteFile: deleteF,
   updateReviewJsonData,
+  values,
 }) => {
+  let existingFiles = []
+
+  if (values?.files) {
+    existingFiles = values?.files
+  }
+
   const createFile = async file => {
     const meta = {
       fileType,
@@ -162,8 +169,8 @@ const FilesUpload = ({
       },
     })
 
-    // TODO: Modify for Multiple Files
-    updateReviewJsonData([data.createFile], fieldName)
+    // Merge the new and existing files
+    updateReviewJsonData([...existingFiles, data.createFile], fieldName)
 
     return data
   }
@@ -171,6 +178,14 @@ const FilesUpload = ({
   const deleteFile = async (file, index, remove) => {
     const { data } = await deleteF({ variables: { id: file.id } })
     remove(index)
+
+    const filteredFiles = existingFiles.filter(
+      currFile => currFile.id !== file.id,
+    )
+
+    // Update the new array with the file deleted
+    updateReviewJsonData([filteredFiles], fieldName)
+
     return data
   }
 
