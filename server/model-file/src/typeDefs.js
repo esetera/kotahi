@@ -14,7 +14,7 @@ const typeDefs = `
   input FileMetaInput {
     fileType: String!
     manuscriptId: ID!
-    reviewCommentId: ID
+    reviewId: ID
   }
 
  type File implements Object {

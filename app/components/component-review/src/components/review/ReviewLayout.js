@@ -6,7 +6,6 @@ import { Tabs } from '@pubsweet/ui'
 
 import styled from 'styled-components'
 import { th } from '@pubsweet/ui-toolkit'
-import ReviewForm from './ReviewForm'
 import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
 import Review from './Review'
 import EditorSection from '../decision/EditorSection'
@@ -165,7 +164,9 @@ const ReviewLayout = ({
                 deleteFile={deleteFile}
                 form={reviewForm}
                 initialValues={reviewData}
-                manuscript={latestVersion}
+                manuscriptId={latestVersion.id}
+                manuscriptShortId={latestVersion.shortId}
+                manuscriptStatus={latestVersion.status}
                 onChange={(value, path) => null}
                 onSubmit={() => null}
                 republish={() => null}
@@ -175,17 +176,6 @@ const ReviewLayout = ({
                 validateDoi={validateDoi}
               />
             </SectionContent>
-
-            /* <ReviewForm
-              createFile={createFile}
-              deleteFile={deleteFile}
-              handleSubmit={handleSubmit}
-              isValid={isValid}
-              manuscriptId={latestVersion.id}
-              updateReview={updateReview}
-              uploadFile={uploadFile}
-              validateDoi={validateDoi}
-            /> */
           )}
           {['colab'].includes(process.env.INSTANCE_NAME) && (
             <ArticleEvaluationSummaryPage
@@ -224,29 +214,7 @@ ReviewLayout.propTypes = {
   versions: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      reviews: PropTypes.arrayOf(
-        PropTypes.shape({
-          reviewComment: PropTypes.shape({
-            content: PropTypes.string.isRequired,
-            files: PropTypes.arrayOf(
-              PropTypes.shape({
-                name: PropTypes.string.isRequired,
-                storedObjects: PropTypes.arrayOf(PropTypes.object.isRequired),
-              }).isRequired,
-            ).isRequired,
-          }),
-          confidentialComment: PropTypes.shape({
-            content: PropTypes.string.isRequired,
-            files: PropTypes.arrayOf(
-              PropTypes.shape({
-                name: PropTypes.string.isRequired,
-                storedObjects: PropTypes.arrayOf(PropTypes.object.isRequired),
-              }).isRequired,
-            ).isRequired,
-          }),
-          recommendation: PropTypes.string,
-        }),
-      ),
+      reviews: PropTypes.arrayOf(PropTypes.shape({})),
       status: PropTypes.string.isRequired,
       meta: PropTypes.shape({
         notes: PropTypes.arrayOf(
@@ -264,11 +232,7 @@ ReviewLayout.propTypes = {
       ).isRequired,
     }).isRequired,
   ).isRequired,
-  review: PropTypes.shape({
-    reviewComment: PropTypes.string,
-    confidentialComment: PropTypes.string,
-    recommendation: PropTypes.string,
-  }),
+  review: PropTypes.shape({}),
   handleSubmit: PropTypes.func.isRequired,
   isValid: PropTypes.bool.isRequired,
   status: PropTypes.string,

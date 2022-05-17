@@ -76,19 +76,21 @@ const publishToHypothesis = async manuscript => {
       if (x.fieldName.startsWith('review#')) {
         const index = parseInt(x.fieldName.split('#')[1], 10)
 
-        const reviews = manuscript.reviews.filter(
-          r => !r.isDecision && r.canBePublishedPublicly && r.reviewComment,
-        )
+        const reviews = manuscript.reviews
+          .map(r => ({ ...r, jsonData: JSON.parse(r.jsonData) }))
+          .filter(
+            r => !r.isDecision && r.canBePublishedPublicly, // TODO check that at least one field is !hideFromUser and has a value
+          )
 
         value =
-          reviews.length > index ? reviews[index].reviewComment.content : null
+          reviews.length > index ? reviews[index].reviewComment.content : null // TODO Value should concatenate all !hideFromUser fields
       } else if (x.fieldName === 'decision') {
         const decisions = manuscript.reviews.filter(
           r => r.isDecision && r.decisionComment,
         )
 
         value =
-          decisions.length > 0 ? decisions[0].decisionComment.content : null
+          decisions.length > 0 ? decisions[0].decisionComment.content : null // TODO Should concatenate all !hideFromUser fields.
       } else {
         value = get(manuscript, x.fieldName)
       }

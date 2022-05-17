@@ -25,7 +25,9 @@ const SubmissionForm = ({
         deleteFile={deleteFile}
         form={form}
         initialValues={versionValues}
-        manuscript={manuscript}
+        manuscriptId={manuscript.id}
+        manuscriptShortId={manuscript.shortId}
+        manuscriptStatus={manuscript.status}
         onChange={(value, path) => {
           onChange(value, path, versionId)
         }}

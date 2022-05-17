@@ -115,8 +115,8 @@ const rejectProps = (obj, keys) =>
       {},
     )
 
-const link = (urlFrag, manuscript) =>
-  String.raw`<a href=${urlFrag}/versions/${manuscript.id}/manuscript>view here</a>`
+const link = (urlFrag, manuscriptId) =>
+  String.raw`<a href=${urlFrag}/versions/${manuscriptId}/manuscript>view here</a>`
 
 const createMarkup = encodedHtml => ({
   __html: unescape(encodedHtml),
@@ -135,7 +135,9 @@ const InnerFormTemplate = ({
   handleSubmit, // formik
   toggleConfirming,
   confirming,
-  manuscript,
+  manuscriptId,
+  manuscriptShortId,
+  manuscriptStatus,
   setTouched, // formik
   values, // formik
   setFieldValue, // formik
@@ -151,14 +153,15 @@ const InnerFormTemplate = ({
   createFile,
   deleteFile,
   isSubmission,
+  reviewId,
 }) => {
   const submitButton = (text, haspopup = false) => {
     return (
       <div>
         <Button
           onClick={async () => {
-            if (manuscript.status === articleStatuses.published) {
-              republish(manuscript.id)
+            if (manuscriptStatus === articleStatuses.published) {
+              republish(manuscriptId)
 
               return
             }
@@ -189,7 +192,7 @@ const InnerFormTemplate = ({
 
   // this is what the submit button will say
   const submitButtonText =
-    manuscript.status === articleStatuses.published
+    manuscriptStatus === articleStatuses.published
       ? 'Re-Publish'
       : submissionButtonText
 
@@ -214,7 +217,7 @@ const InnerFormTemplate = ({
         <NoteRight>
           Manuscript number
           <br />
-          {manuscript.shortId}
+          {manuscriptShortId}
         </NoteRight>
       )}
       <Heading1>{form.name}</Heading1>
@@ -222,7 +225,7 @@ const InnerFormTemplate = ({
         dangerouslySetInnerHTML={createMarkup(
           (form.description || '').replace(
             '###link###',
-            link(urlFrag, manuscript),
+            link(urlFrag, manuscriptId),
           ),
         )}
       />
@@ -246,8 +249,8 @@ const InnerFormTemplate = ({
                     createFile={createFile}
                     deleteFile={deleteFile}
                     fileType="supplementary"
-                    manuscriptId={manuscript.id}
-                    reviewCommentId={manuscript.reviewCommentId}
+                    manuscriptId={manuscriptId}
+                    reviewId={reviewId}
                     updateReviewJsonData={updateReviewJsonData}
                     values={values}
                   />
@@ -258,7 +261,7 @@ const InnerFormTemplate = ({
                     createFile={createFile}
                     deleteFile={deleteFile}
                     fileType="visualAbstract"
-                    manuscriptId={manuscript.id}
+                    manuscriptId={manuscriptId}
                     mimeTypesToAccept="image/*"
                     updateReviewJsonData={updateReviewJsonData}
                     values={values}
@@ -355,7 +358,9 @@ const FormTemplate = ({
   initialValues,
   toggleConfirming,
   confirming,
-  manuscript,
+  manuscriptId,
+  manuscriptShortId,
+  manuscriptStatus,
   submissionButtonText,
   updateReviewJsonData,
   republish,
@@ -367,6 +372,7 @@ const FormTemplate = ({
   createFile,
   deleteFile,
   isSubmission,
+  reviewId,
 }) => {
   return (
     <Formik
@@ -387,8 +393,11 @@ const FormTemplate = ({
           {...formProps}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
           form={form}
-          manuscript={manuscript}
+          manuscriptId={manuscriptId}
+          manuscriptShortId={manuscriptShortId}
+          manuscriptStatus={manuscriptStatus}
           republish={republish}
+          reviewId={reviewId}
           showEditorOnlyFields={showEditorOnlyFields}
           submissionButtonText={submissionButtonText}
           urlFrag={urlFrag}
@@ -428,10 +437,9 @@ FormTemplate.propTypes = {
   }).isRequired,
   toggleConfirming: PropTypes.func.isRequired,
   confirming: PropTypes.bool.isRequired,
-  manuscript: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    status: PropTypes.string,
-  }).isRequired,
+  manuscriptId: PropTypes.string.isRequired,
+  manuscriptShortId: PropTypes.number.isRequired,
+  manuscriptStatus: PropTypes.string,
   initialValues: PropTypes.shape({
     files: PropTypes.arrayOf(
       PropTypes.shape({
@@ -455,6 +463,7 @@ FormTemplate.defaultProps = {
   onChange: undefined,
   initialValues: null,
   submissionButtonText: '',
+  manuscriptStatus: null,
 }
 
 export default FormTemplate

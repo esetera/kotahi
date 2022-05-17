@@ -64,16 +64,6 @@ SharedReviewerGroupReviews.propTypes = {
       PropTypes.shape({
         isDecision: PropTypes.bool.isRequired,
         user: PropTypes.shape({ id: PropTypes.string.isRequired }).isRequired,
-        reviewComment: PropTypes.shape({
-          content: PropTypes.string,
-          files: PropTypes.arrayOf(
-            PropTypes.shape({
-              name: PropTypes.string.isRequired,
-              storedObjects: PropTypes.arrayOf(PropTypes.object.isRequired),
-            }).isRequired,
-          ),
-        }),
-        recommendation: PropTypes.string,
       }).isRequired,
     ).isRequired,
   }).isRequired,

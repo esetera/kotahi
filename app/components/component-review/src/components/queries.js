@@ -1,42 +1,14 @@
 import { gql } from '@apollo/client'
 
-const commentFields = `
-  id
-  commentType
-  content
-  files {
-    id
-    created
-    updated
-    name
-    tags
-    storedObjects {
-      key
-      mimetype
-      url
-    }
-  }
-`
-
 const reviewFields = `
   id
   created
   updated
   jsonData
-  decisionComment {
-    ${commentFields}
-  }
-  reviewComment {
-    ${commentFields}
-  }
-  confidentialComment {
-    ${commentFields}
-  }
   isDecision
   isHiddenFromAuthor
   isHiddenReviewerName
   canBePublishedPublicly
-  recommendation
   user {
     id
     username

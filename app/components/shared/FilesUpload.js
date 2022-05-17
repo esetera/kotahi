@@ -137,8 +137,8 @@ const FilesUpload = ({
   fileType,
   fieldName = 'files',
   manuscriptId,
-  reviewCommentId,
-  initializeReviewComment,
+  reviewId,
+  initializeReview,
   acceptMultiple = true,
   mimeTypesToAccept,
   createFile: createF,
@@ -156,11 +156,11 @@ const FilesUpload = ({
     const meta = {
       fileType,
       manuscriptId,
-      reviewCommentId,
+      reviewId,
     }
 
-    if (!meta.reviewCommentId && initializeReviewComment)
-      meta.reviewCommentId = (await initializeReviewComment()) || null
+    if (!meta.reviewId && initializeReview)
+      meta.reviewId = (await initializeReview()) || null
 
     const { data } = await createF({
       variables: {
@@ -214,12 +214,12 @@ FilesUpload.propTypes = {
   /** All files belong to a manuscript */
   manuscriptId: PropTypes.string.isRequired,
   /** Some files may be attached to a review comment (or review decision).
-   * If the review comment hasn't been started yet there may not be an ID
-   * assigned for it yet, in which case initializeReviewComment will be
+   * If the review hasn't been started yet there may not be an ID
+   * assigned for it yet, in which case initializeReview will be
    * called to create a new record in the DB. */
-  reviewCommentId: PropTypes.string,
-  /** Function to create a new record in DB in case there is no reviewCommentId yet */
-  initializeReviewComment: PropTypes.func,
+  reviewId: PropTypes.string,
+  /** Function to create a new record in DB in case there is no reviewId yet */
+  initializeReview: PropTypes.func,
   /** Allow multiple drag/drop or multiple selection in file dialog */
   acceptMultiple: PropTypes.bool,
   mimeTypesToAccept: PropTypes.oneOfType([
@@ -230,8 +230,8 @@ FilesUpload.propTypes = {
 
 FilesUpload.defaultProps = {
   fieldName: 'files',
-  reviewCommentId: null,
-  initializeReviewComment: undefined,
+  reviewId: null,
+  initializeReview: undefined,
   acceptMultiple: true,
   mimeTypesToAccept: undefined,
 }

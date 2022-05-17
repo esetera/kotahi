@@ -13,88 +13,40 @@ const mergeArrays = (destination, source) => {
 const resolvers = {
   Mutation: {
     async updateReview(_, { id, input }, ctx) {
-      const customReviewForms = true
-      let review
+      const reviewDelta = { jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
+      const existingReview = (await models.Review.query().findById(id)) || {}
+      const updatedReview = mergeWith(existingReview, reviewDelta, mergeArrays)
 
-      if (customReviewForms) {
-        const reviewDelta = { jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
+      updatedReview.jsonData = JSON.stringify(updatedReview.jsonData) // Convert the JavaScript object back to JSON
 
-        let existingReview = await models.Review.query().findById(id)
-        if (!existingReview) existingReview = {}
+      const review = await models.Review.query().upsertGraphAndFetch(
+        {
+          id,
+          ...updatedReview,
+          canBePublishedPublicly: false,
+          isHiddenFromAuthor: false,
+          isHiddenReviewerName: false,
+          manuscriptId: input.manuscriptId,
+          userId: input.userId,
+        },
+        { insertMissing: true },
+      )
 
-        const updatedReview = mergeWith(
-          existingReview,
-          reviewDelta,
-          mergeArrays,
-        )
-
-        updatedReview.jsonData = JSON.stringify(updatedReview.jsonData) // Convert the JavaScript object back to JSON
-
-        delete updatedReview.reviewComment
-        delete updatedReview.confidentialComment
-        delete updatedReview.decisionComment
-
-        review = await models.Review.query().upsertGraphAndFetch(
-          {
-            id,
-            ...updatedReview,
-            canBePublishedPublicly: false,
-            isHiddenFromAuthor: false,
-            isHiddenReviewerName: false,
-            manuscriptId: input.manuscriptId,
-            userId: input.userId,
-          },
-          { insertMissing: true },
-        )
-      } else {
-        // We process comment fields into array
-        const userId = input.userId ? input.userId : ctx.user
-
-        const reviewUser = await models.User.query().where({
-          id: userId,
-        })
-
-        const processedReview = { ...input, user: reviewUser }
-
-        processedReview.comments = [
-          input.reviewComment,
-          input.confidentialComment,
-          input.decisionComment,
-        ].filter(Boolean)
-
-        delete processedReview.reviewComment
-        delete processedReview.confidentialComment
-        delete processedReview.decisionComment
-
-        review = await models.Review.query().upsertGraphAndFetch(
-          {
-            id,
-            ...processedReview,
-          },
-          {
-            relate: true,
-            noUnrelate: true,
-            noDelete: true,
-          },
-        )
-      }
+      const files = await File.query().where({ objectId: review.id })
 
       return {
         id: review.id,
         created: review.created,
         updated: review.updated,
-        recommendation: review.recommendation,
         isDecision: review.isDecision,
         open: review.open,
         user: review.user,
-        reviewComment: review.reviewComment,
-        confidentialComment: review.confidentialComment,
-        decisionComment: review.decisionComment,
         isHiddenFromAuthor: review.isHiddenFromAuthor,
         isHiddenReviewerName: review.isHiddenReviewerName,
         canBePublishedPublicly: review.canBePublishedPublicly,
         jsonData: JSON.stringify(review.jsonData),
         userId: review.userId,
+        files: getFilesWithUrl(files),
       }
     },
 
@@ -119,12 +71,6 @@ const resolvers = {
       return member.save()
     },
   },
-  ReviewComment: {
-    async files(parent, _, ctx) {
-      const files = await File.query().where({ objectId: parent.id })
-      return getFilesWithUrl(files)
-    },
-  },
 }
 
 const typeDefs = `
@@ -137,25 +83,18 @@ const typeDefs = `
     id: ID!
     created: DateTime!
     updated: DateTime
-    recommendation: String
     isDecision: Boolean
     open: Boolean
     user: User
-    reviewComment: ReviewComment
-    confidentialComment: ReviewComment
-    decisionComment: ReviewComment
     isHiddenFromAuthor: Boolean
     isHiddenReviewerName: Boolean
     canBePublishedPublicly: Boolean
     jsonData: String
     userId: String
+    files: [File]
   }
 
   input ReviewInput {
-    reviewComment: ReviewCommentInput
-    confidentialComment: ReviewCommentInput
-    decisionComment: ReviewCommentInput
-    recommendation: String
     isDecision: Boolean
     manuscriptId: ID!
     isHiddenFromAuthor: Boolean
@@ -163,21 +102,6 @@ const typeDefs = `
     canBePublishedPublicly: Boolean
     jsonData: String
     userId: String
-  }
-
-  type ReviewComment implements Object {
-    id: ID!
-    created: DateTime!
-    updated: DateTime
-    commentType: String
-    content: String
-    files: [File]
-  }
-
-  input ReviewCommentInput {
-    id: ID
-    commentType: String
-    content: String
   }
 `
 

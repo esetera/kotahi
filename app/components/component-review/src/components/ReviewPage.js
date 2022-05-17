@@ -35,40 +35,13 @@ const deleteFileMutation = gql`
   }
 `
 
-const commentFields = `
-id
-commentType
-content
-files {
-  id
-  created
-  updated
-  name
-  tags
-  storedObjects {
-    key
-    mimetype
-    url
-  }
-}
-`
-
 const reviewFields = `
   id
   created
   updated
-  reviewComment {
-    ${commentFields}
-  }
-  confidentialComment {
-    ${commentFields}
-  }
-  decisionComment {
-    ${commentFields}
-  }
+  jsonData
   isDecision
   isHiddenReviewerName
-  recommendation
   canBePublishedPublicly
   user {
     id
@@ -340,19 +313,9 @@ const ReviewPage = ({ match, ...props }) => {
 
   const updateReview = review => {
     const reviewData = {
-      recommendation: review.recommendation,
       manuscriptId: latestVersion.id,
-      reviewComment: review.reviewComment && {
-        id: existingReview.current.reviewComment?.id,
-        commentType: 'review',
-        content: review.reviewComment.content,
-      },
-      confidentialComment: review.confidentialComment && {
-        id: existingReview.current.confidentialComment?.id,
-        commentType: 'confidential',
-        content: review.confidentialComment.content,
-      },
       canBePublishedPublicly: review.canBePublishedPublicly,
+      jsonData: JSON.stringify(review.jsonData),
     }
 
     return updateReviewMutation({
@@ -400,13 +363,17 @@ const ReviewPage = ({ match, ...props }) => {
     history.push(`${urlFrag}/dashboard`)
   }
 
+  const preexistingReview = latestVersion.reviews?.find(
+    review => review?.user?.id === currentUser?.id && !review.isDecision,
+  )
+
+  if (preexistingReview)
+    preexistingReview.jsonData = JSON.parse(preexistingReview.jsonData)
+
   const initialValues = {
-    ...(latestVersion.reviews?.find(
-      review => review?.user?.id === currentUser?.id && !review.isDecision,
-    ) || {
+    ...(preexistingReview || {
       id: null,
-      comments: [],
-      recommendation: null,
+      jsonData: {},
     }),
   }
 

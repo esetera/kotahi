@@ -158,7 +158,9 @@ const DecisionVersion = ({
                 form={form}
                 initialValues={versionValues}
                 isSubmission
-                manuscript={version}
+                manuscriptId={version.id}
+                manuscriptShortId={version.shortId}
+                manuscriptStatus={version.status}
                 match={{ url: 'decision' }}
                 onChange={(value, path) => {
                   onChange(value, path, versionId)
@@ -270,10 +272,8 @@ const DecisionVersion = ({
                 isSubmitting={isSubmitting}
                 isValid={isValid}
                 manuscriptId={version.id}
-                meta={{
-                  manuscriptId: version.id,
-                  status: version.status,
-                }}
+                manuscriptShortId={version.shortId}
+                manuscriptStatus={version.status}
                 reviewByCurrentUser={reviewByCurrentUser}
                 submitCount={submitCount}
                 updateReview={updateReviewForVersion(version.id)}

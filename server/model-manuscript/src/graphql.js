@@ -158,7 +158,15 @@ const commonUpdateManuscript = async (id, input, ctx) => {
     updatedMs.meta.source = $.html()
   }
 
-  return models.Manuscript.query().updateAndFetchById(id, updatedMs)
+  const rawMs = models.Manuscript.query().updateAndFetchById(id, updatedMs)
+
+  return {
+    ...rawMs,
+    reviews: rawMs.reviews.map(review => ({
+      ...review,
+      jsonData: JSON.stringify(review.jsonData),
+    })),
+  }
 }
 
 /** Get evaluations as [ [submission.review1, submission.review1date], [submission.review2, submission.review2date], ..., [submission.summary, submission.summarydate] ] */
