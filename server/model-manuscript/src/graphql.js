@@ -124,38 +124,41 @@ const commonUpdateManuscript = async (id, input, ctx) => {
   }
 
   const { source } = updatedMs.meta
-  const images = source ? base64Images(source) : []
 
-  if (images.length > 0) {
-    const uploadedImages = []
+  if (typeof source === 'string') {
+    const images = base64Images(source)
 
-    await Promise.all(
-      map(images, async image => {
-        if (image.blob) {
-          const uploadedImage = await uploadImage(image, updatedMs.id)
-          uploadedImages.push(uploadedImage)
-        }
-      }),
-    )
+    if (images.length > 0) {
+      const uploadedImages = []
 
-    const uploadedImagesWithUrl = await getFilesWithUrl(uploadedImages)
-
-    const $ = cheerio.load(source)
-
-    map(images, (image, index) => {
-      const elem = $('img').get(image.index)
-      const $elem = $(elem)
-      $elem.attr('data-fileid', uploadedImagesWithUrl[index].id)
-      $elem.attr('alt', uploadedImagesWithUrl[index].name)
-      $elem.attr(
-        'src',
-        uploadedImagesWithUrl[index].storedObjects.find(
-          storedObject => storedObject.type === 'medium',
-        ).url,
+      await Promise.all(
+        map(images, async image => {
+          if (image.blob) {
+            const uploadedImage = await uploadImage(image, updatedMs.id)
+            uploadedImages.push(uploadedImage)
+          }
+        }),
       )
-    })
 
-    updatedMs.meta.source = $.html()
+      const uploadedImagesWithUrl = await getFilesWithUrl(uploadedImages)
+
+      const $ = cheerio.load(source)
+
+      map(images, (image, index) => {
+        const elem = $('img').get(image.index)
+        const $elem = $(elem)
+        $elem.attr('data-fileid', uploadedImagesWithUrl[index].id)
+        $elem.attr('alt', uploadedImagesWithUrl[index].name)
+        $elem.attr(
+          'src',
+          uploadedImagesWithUrl[index].storedObjects.find(
+            storedObject => storedObject.type === 'medium',
+          ).url,
+        )
+      })
+
+      updatedMs.meta.source = $.html()
+    }
   }
 
   const rawMs = models.Manuscript.query().updateAndFetchById(id, updatedMs)
@@ -380,22 +383,14 @@ const resolvers = {
       } else if (process.env.INSTANCE_NAME === 'colab') {
         promises.push(
           importArticlesFromBiorxivWithFullTextSearch(ctx, [
-            'membrane protein',
-            'ion channel',
-            'transporter',
-            'pump',
+            'transporter*',
+            'pump*',
             'gpcr',
-            'G protein-coupled receptor',
-            'exchanger',
-            'uniporter',
-            'symporter',
-            'antiporter',
-            'solute carrier',
-            'atpase',
-            'rhodopsin',
-            'patch-clamp',
-            'voltage-clamp',
-            'single-channel',
+            'gating',
+            '*-gated',
+            '*-selective',
+            '*-pumping',
+            'protein translocation',
           ]),
         )
       }
@@ -1021,7 +1016,24 @@ const resolvers = {
         query.offset(offset)
       }
 
-      const manuscripts = await query
+      let manuscripts = await query
+
+      manuscripts = manuscripts.map(async m => {
+        const manuscript = m
+
+        manuscript.files = await getFilesWithUrl(manuscript.files)
+
+        if (typeof manuscript.meta.source === 'string') {
+          manuscript.meta.source = await replaceImageSrc(
+            manuscript.meta.source,
+            manuscript.files,
+            'medium',
+          )
+        }
+
+        return manuscript
+      })
+
       return {
         totalCount,
         manuscripts,

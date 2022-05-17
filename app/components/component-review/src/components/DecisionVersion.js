@@ -64,7 +64,6 @@ const DecisionVersion = ({
 
     const handleSave = useCallback(
       debounce(source => {
-        console.log('updateManuscript firing in DecisionVersion.js')
         updateManuscript(manuscript.id, { meta: { source } })
       }, 2000),
     )
@@ -110,7 +109,13 @@ const DecisionVersion = ({
       },
     }
 
-    return updateReview(existingReview.current.id, reviewData, manuscriptId)
+    const results = updateReview(
+      existingReview.current.id,
+      reviewData,
+      manuscriptId,
+    )
+
+    return results
   }
 
   const editorSection = addEditor(

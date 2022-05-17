@@ -2,7 +2,7 @@
 // const Review = require('./review')
 const models = require('@pubsweet/models')
 const { mergeWith, isArray } = require('lodash')
-// const File = require('../../model-file/src/file')
+// const File = require('@coko/server/src/models/file/file.model')
 // const { getFilesWithUrl } = require('../../utils/fileStorageUtils')
 
 const mergeArrays = (destination, source) => {
