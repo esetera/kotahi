@@ -2,8 +2,8 @@
 // const Review = require('./review')
 const models = require('@pubsweet/models')
 const { mergeWith, isArray } = require('lodash')
-const File = require('../../model-file/src/file')
-const { getFilesWithUrl } = require('../../utils/fileStorageUtils')
+// const File = require('../../model-file/src/file')
+// const { getFilesWithUrl } = require('../../utils/fileStorageUtils')
 
 const mergeArrays = (destination, source) => {
   if (isArray(destination)) return source
@@ -32,7 +32,11 @@ const resolvers = {
         { insertMissing: true },
       )
 
-      const files = await File.query().where({ objectId: review.id })
+      const userId = input.userId ? input.userId : ctx.user
+      const reviewUser = await models.User.query().findById(userId)
+      // TODO insert files into correct location in jsonData
+      // const files = await File.query().where({ objectId: review.id })
+      // files: getFilesWithUrl(files),
 
       return {
         id: review.id,
@@ -40,13 +44,12 @@ const resolvers = {
         updated: review.updated,
         isDecision: review.isDecision,
         open: review.open,
-        user: review.user,
+        user: reviewUser,
         isHiddenFromAuthor: review.isHiddenFromAuthor,
         isHiddenReviewerName: review.isHiddenReviewerName,
         canBePublishedPublicly: review.canBePublishedPublicly,
         jsonData: JSON.stringify(review.jsonData),
-        userId: review.userId,
-        files: getFilesWithUrl(files),
+        manuscriptId: review.manuscriptId,
       }
     },
 

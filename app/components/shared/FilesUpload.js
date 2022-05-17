@@ -184,7 +184,7 @@ const FilesUpload = ({
     )
 
     // Update the new array with the file deleted
-    updateReviewJsonData([filteredFiles], fieldName)
+    updateReviewJsonData(filteredFiles, fieldName)
 
     return data
   }
