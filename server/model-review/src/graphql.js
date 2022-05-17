@@ -16,6 +16,10 @@ const resolvers = {
       const customReviewForms = true
       let review
 
+      const userId = input.userId ? input.userId : ctx.user
+
+      const reviewUser = await models.User.query().findById(userId)
+
       if (customReviewForms) {
         const reviewDelta = { jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
 
@@ -43,17 +47,12 @@ const resolvers = {
             isHiddenReviewerName: false,
             manuscriptId: input.manuscriptId,
             userId: input.userId,
+            // user: reviewUser,
           },
           { insertMissing: true },
         )
       } else {
         // We process comment fields into array
-        const userId = input.userId ? input.userId : ctx.user
-
-        const reviewUser = await models.User.query().where({
-          id: userId,
-        })
-
         const processedReview = { ...input, user: reviewUser }
 
         processedReview.comments = [
@@ -86,7 +85,7 @@ const resolvers = {
         recommendation: review.recommendation,
         isDecision: review.isDecision,
         open: review.open,
-        user: review.user,
+        user: reviewUser,
         reviewComment: review.reviewComment,
         confidentialComment: review.confidentialComment,
         decisionComment: review.decisionComment,
@@ -94,7 +93,7 @@ const resolvers = {
         isHiddenReviewerName: review.isHiddenReviewerName,
         canBePublishedPublicly: review.canBePublishedPublicly,
         jsonData: JSON.stringify(review.jsonData),
-        userId: review.userId,
+        manuscriptId: review.manuscriptId,
       }
     },
 

@@ -89,6 +89,8 @@ const createTeamMutation = gql`
 let debouncers = {}
 
 const DecisionPage = ({ match }) => {
+  const [newId] = useState(uuid())
+
   // start of code from submit page to handle possible form changes
   const client = useApolloClient()
 
@@ -244,11 +246,13 @@ const DecisionPage = ({ match }) => {
   const sendChannelMessageCb = async messageData =>
     sendChannelMessage(messageData)
 
+  // TODO: Check isDecision: true
   const reviewByCurrentUser = manuscript.reviews.find(
     r => r.user.id === currentUser.id,
   )
 
-  const idOfReviewByCurrentUser = reviewByCurrentUser?.id ?? uuid()
+  // Manuscript Reviews is not getting updated
+  const idOfReviewByCurrentUser = reviewByCurrentUser?.id ?? newId
 
   const updateReviewJsonData = (value, path) => {
     const reviewDelta = {} // Only the changed fields
