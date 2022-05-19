@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { cloneDeep, get } from 'lodash'
+import { cloneDeep, get, isArray } from 'lodash'
 import { FieldArray } from 'formik'
 import { grid, th } from '@pubsweet/ui-toolkit'
 import styled from 'styled-components'
@@ -58,7 +58,13 @@ const DropzoneAndList = ({
       file.originalIndex = index
       return file
     })
-    .filter(val => (fileType ? val.tags.includes(fileType) : true))
+    .filter(val => {
+      if (!isArray(val)) {
+        return fileType ? val.tags.includes(fileType) : true
+      }
+
+      return false
+    })
 
   const disabled = !acceptMultiple && !!files.length
 
