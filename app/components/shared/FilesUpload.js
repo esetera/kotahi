@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { cloneDeep, get, isArray } from 'lodash'
+import { cloneDeep, get } from 'lodash'
 import { FieldArray } from 'formik'
 import { grid, th } from '@pubsweet/ui-toolkit'
 import styled from 'styled-components'
@@ -58,13 +58,7 @@ const DropzoneAndList = ({
       file.originalIndex = index
       return file
     })
-    .filter(val => {
-      if (!isArray(val)) {
-        return fileType ? val.tags.includes(fileType) : true
-      }
-
-      return false
-    })
+    .filter(val => (fileType ? val.tags.includes(fileType) : true))
 
   const disabled = !acceptMultiple && !!files.length
 
@@ -190,7 +184,7 @@ const FilesUpload = ({
     )
 
     // Update the new array with the file deleted
-    updateReviewJsonData([filteredFiles], fieldName)
+    updateReviewJsonData(filteredFiles, fieldName)
 
     return data
   }
