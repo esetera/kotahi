@@ -363,22 +363,13 @@ const ReviewPage = ({ match, ...props }) => {
     history.push(`${urlFrag}/dashboard`)
   }
 
-  const preexistingReview = latestVersion.reviews?.find(
-    review => review?.user?.id === currentUser?.id && !review.isDecision,
-  )
-
-  if (preexistingReview)
-    preexistingReview.jsonData = JSON.parse(preexistingReview.jsonData)
-
   const initialValues = {
-    ...(preexistingReview || {
-      id: null,
-      jsonData: {},
-    }),
+    ...(latestVersion.reviews?.find(
+      review => review?.user?.id === currentUser?.id && !review.isDecision,
+    ) || { id: null, jsonData: '{}', canBePublishedPublicly: false }),
   }
 
-  if (!initialValues.canBePublishedPublicly)
-    initialValues.canBePublishedPublicly = false
+  initialValues.jsonData = JSON.parse(initialValues.jsonData)
 
   return (
     <Formik
@@ -389,14 +380,9 @@ const ReviewPage = ({ match, ...props }) => {
           history: props.history,
         })
       }
-      validateOnMount={review => {
-        if (!review.id) return false
-        const hasRecommendation = review.recommendation !== null
-        const comment = review.decisionComment?.content
-        const isCommented = comment !== null && comment !== ''
-
-        return isCommented && hasRecommendation
-      }}
+      validateOnMount={review =>
+        !!review.id && !!review.comment && !!review.verdict
+      }
     >
       {formikProps => (
         <ReviewLayout

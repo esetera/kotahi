@@ -13,9 +13,16 @@ const mergeArrays = (destination, source) => {
 const resolvers = {
   Mutation: {
     async updateReview(_, { id, input }, ctx) {
-      const reviewDelta = { jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
+      const reviewDelta = { ...input, jsonData: JSON.parse(input.jsonData) } // Convert the JSON input to JavaScript object
       const existingReview = (await models.Review.query().findById(id)) || {}
       const updatedReview = mergeWith(existingReview, reviewDelta, mergeArrays)
+
+      // Prevent reassignment of userId, manuscriptId or isDecision
+      if (existingReview.userId) updatedReview.userId = existingReview.userId
+      if (existingReview.manuscriptId)
+        updatedReview.manuscriptId = existingReview.manuscriptId
+      if (typeof existingReview.isDecision === 'boolean')
+        updatedReview.isDecision = existingReview.isDecision
 
       updatedReview.jsonData = JSON.stringify(updatedReview.jsonData) // Convert the JavaScript object back to JSON
 

@@ -66,7 +66,7 @@ const filterFileManuscript = files =>
 /** Definitions for available field types */
 const elements = {
   TextField,
-  RadioGroup: SafeRadioGroup,
+  RadioGroup: SafeRadioGroup, // TODO Create our own RadioGroup that shows colors
   CheckboxGroup,
   AuthorsInput,
   Select,
@@ -142,7 +142,7 @@ const InnerFormTemplate = ({
   values, // formik
   setFieldValue, // formik
   submissionButtonText,
-  updateReviewJsonData,
+  onChange,
   republish,
   errors, // formik
   validateForm, // formik
@@ -250,8 +250,8 @@ const InnerFormTemplate = ({
                     deleteFile={deleteFile}
                     fileType="supplementary"
                     manuscriptId={manuscriptId}
+                    onChange={onChange}
                     reviewId={reviewId}
-                    updateReviewJsonData={updateReviewJsonData}
                     values={values}
                   />
                 )}
@@ -263,7 +263,7 @@ const InnerFormTemplate = ({
                     fileType="visualAbstract"
                     manuscriptId={manuscriptId}
                     mimeTypesToAccept="image/*"
-                    updateReviewJsonData={updateReviewJsonData}
+                    onChange={onChange}
                     values={values}
                   />
                 )}
@@ -300,7 +300,7 @@ const InnerFormTemplate = ({
                         }
 
                         setFieldValue(element.name, val, false)
-                        updateReviewJsonData(val, element.name)
+                        onChange(val, element.name)
                       }}
                       readonly={element.name === 'submission.editDate'}
                       setTouched={setTouched}
@@ -362,7 +362,7 @@ const FormTemplate = ({
   manuscriptShortId,
   manuscriptStatus,
   submissionButtonText,
-  updateReviewJsonData,
+  onChange,
   republish,
   onSubmit,
   showEditorOnlyFields,
@@ -389,13 +389,13 @@ const FormTemplate = ({
           deleteFile={deleteFile}
           isSubmission={isSubmission}
           toggleConfirming={toggleConfirming}
-          updateReviewJsonData={updateReviewJsonData}
           {...formProps}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
           form={form}
           manuscriptId={manuscriptId}
           manuscriptShortId={manuscriptShortId}
           manuscriptStatus={manuscriptStatus}
+          onChange={onChange}
           republish={republish}
           reviewId={reviewId}
           showEditorOnlyFields={showEditorOnlyFields}
@@ -450,8 +450,7 @@ FormTemplate.propTypes = {
     ),
     status: PropTypes.string,
   }),
-  updateReviewJsonData: PropTypes.func,
-  onChange: PropTypes.func,
+  onChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func,
   republish: PropTypes.func.isRequired,
   submissionButtonText: PropTypes.string,
@@ -459,8 +458,6 @@ FormTemplate.propTypes = {
 }
 FormTemplate.defaultProps = {
   onSubmit: undefined,
-  updateReviewJsonData: undefined,
-  onChange: undefined,
   initialValues: null,
   submissionButtonText: '',
   manuscriptStatus: null,

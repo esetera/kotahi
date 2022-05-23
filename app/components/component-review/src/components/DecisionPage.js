@@ -89,7 +89,7 @@ const createTeamMutation = gql`
 let debouncers = {}
 
 const DecisionPage = ({ match }) => {
-  const [newId] = useState(uuid())
+  const [initialValues, setInitialValue] = useState(null)
 
   // start of code from submit page to handle possible form changes
   const client = useApolloClient()
@@ -175,16 +175,6 @@ const DecisionPage = ({ match }) => {
   const updateReview = async (reviewId, reviewData, manuscriptId) => {
     doUpdateReview({
       variables: { id: reviewId || undefined, input: reviewData },
-      // Check/uncheck delay fix
-      optimisticResponse: {
-        __typename: 'Mutation',
-        updateReview: {
-          id: reviewId,
-          __typename: 'Review',
-          isHiddenFromAuthor: reviewData.isHiddenFromAuthor,
-          isHiddenReviewerName: reviewData.isHiddenReviewerName,
-        },
-      },
       update: (cache, { data: { updateReview: updatedReview } }) => {
         cache.modify({
           id: cache.identify({
@@ -256,26 +246,27 @@ const DecisionPage = ({ match }) => {
   const sendChannelMessageCb = async messageData =>
     sendChannelMessage(messageData)
 
-  // TODO: Check isDecision: true
-  const reviewByCurrentUser = manuscript.reviews.find(
-    r => r.user.id === currentUser.id,
-  )
+  if (!initialValues)
+    setInitialValue(
+      manuscript.reviews.find(
+        r => r.user.id === currentUser.id && r.isDecision,
+      ) || { id: uuid(), isDecision: true, userId: currentUser.id },
+    )
 
-  // Manuscript Reviews is not getting updated
-  const idOfReviewByCurrentUser = reviewByCurrentUser?.id ?? newId
-
+  /** This will only send the modified field, not the entire review object */
   const updateReviewJsonData = (value, path) => {
     const reviewDelta = {} // Only the changed fields
     // E.g. if path is 'meta.title' and value is 'Foo' this gives { meta: { title: 'Foo' } }
     set(reviewDelta, path, value)
 
     const reviewPayload = {
+      isDecision: true,
       jsonData: JSON.stringify(reviewDelta),
       manuscriptId: manuscript.id,
       userId: currentUser.id,
     }
 
-    updateReview(idOfReviewByCurrentUser, reviewPayload, manuscript.id)
+    updateReview(initialValues.id, reviewPayload, manuscript.id)
   }
 
   return (
@@ -298,7 +289,7 @@ const DecisionPage = ({ match }) => {
       makeDecision={makeDecision}
       manuscript={manuscript}
       publishManuscript={publishManuscript}
-      reviewByCurrentUser={reviewByCurrentUser}
+      reviewByCurrentUser={initialValues}
       reviewers={data?.manuscript?.reviews}
       sendChannelMessageCb={sendChannelMessageCb}
       sendNotifyEmail={sendNotifyEmail}

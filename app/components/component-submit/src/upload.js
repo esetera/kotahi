@@ -84,7 +84,6 @@ const createManuscriptMutation = gql`
       status
       reviews {
         open
-        recommendation
         created
         user {
           id

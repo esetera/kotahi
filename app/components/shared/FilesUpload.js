@@ -143,7 +143,7 @@ const FilesUpload = ({
   mimeTypesToAccept,
   createFile: createF,
   deleteFile: deleteF,
-  updateReviewJsonData,
+  onChange,
   values,
 }) => {
   let existingFiles = []
@@ -170,7 +170,7 @@ const FilesUpload = ({
     })
 
     // Merge the new and existing files
-    updateReviewJsonData([...existingFiles, data.createFile], fieldName)
+    onChange([...existingFiles, data.createFile], fieldName)
 
     return data
   }
@@ -184,7 +184,7 @@ const FilesUpload = ({
     )
 
     // Update the new array with the file deleted
-    updateReviewJsonData(filteredFiles, fieldName)
+    onChange(filteredFiles, fieldName)
 
     return data
   }

@@ -3,12 +3,12 @@ import config from 'config'
 import { SectionContent } from '../../../../shared'
 import FormTemplate from '../../../../component-submit/src/components/FormTemplate'
 
+// TODO Get rid of this component and use FormTemplate directly from DecisionVersion
 const DecisionForm = ({
   createFile,
-  dirty,
   deleteFile,
   decisionForm,
-  handleSubmit,
+  onSubmit,
   updateReviewJsonData,
   reviewByCurrentUser,
   manuscriptId,
@@ -38,13 +38,14 @@ const DecisionForm = ({
         manuscriptId={manuscriptId}
         manuscriptShortId={manuscriptShortId}
         manuscriptStatus={manuscriptStatus}
+        onChange={updateReviewJsonData}
+        onSubmit={onSubmit}
         republish={() => null}
         reviewId={reviewByCurrentUser.id}
         showEditorOnlyFields
         submissionButtonText="Submit"
         toggleConfirming={toggleConfirming}
-        updateReviewJsonData={updateReviewJsonData}
-        urlFrag={config.journal.metadata.toplevel_urlfragment}
+        urlFrag={config.journal.metadata.toplevel_urlfragment} // TODO pass from higher up rather than import config in this file
         validateDoi={validateDoi}
       />
     </SectionContent>

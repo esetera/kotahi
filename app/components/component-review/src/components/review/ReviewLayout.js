@@ -4,8 +4,6 @@ import PropTypes from 'prop-types'
 import moment from 'moment'
 import { Tabs } from '@pubsweet/ui'
 
-import styled from 'styled-components'
-import { th } from '@pubsweet/ui-toolkit'
 import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
 import Review from './Review'
 import EditorSection from '../decision/EditorSection'
@@ -14,14 +12,6 @@ import MessageContainer from '../../../../component-chat/src/MessageContainer'
 import ArticleEvaluationSummaryPage from '../../../../component-decision-viewer'
 import SharedReviewerGroupReviews from './SharedReviewerGroupReviews'
 import FormTemplate from '../../../../component-submit/src/components/FormTemplate'
-
-const Reviewerdisclaimer = styled.span`
-  color: ${th('colorTextPlaceholder')};
-  display: grid;
-  font-size: 14px;
-  padding: 0 5px;
-  place-items: center;
-`
 
 const hasManuscriptFile = manuscript =>
   !!manuscript?.files?.find(file => file.tags.includes('manuscript'))
@@ -86,17 +76,10 @@ const ReviewLayout = ({
       ? JSON.parse(reviewForCurrentUser.jsonData)
       : {}
 
-    console.log('reviewData:', reviewData)
-
     const label = moment().format('YYYY-MM-DD')
     reviewSections.push({
       content: (
         <div key={msVersion.id}>
-          <Reviewerdisclaimer>
-            By completing this review, you agree that you do not have any
-            conflict of interests to declare. For any questions about what
-            constitutes a conflict of interest, contact the administrator.
-          </Reviewerdisclaimer>
           {hasManuscriptFile(msVersion) && (
             <EditorSection manuscript={msVersion} readonly />
           )}
@@ -133,11 +116,6 @@ const ReviewLayout = ({
     reviewSections.push({
       content: (
         <div key={latestVersion.id}>
-          <Reviewerdisclaimer>
-            By completing this review, you agree that you do not have any
-            conflict of interests to declare. For any questions about what
-            constitutes a conflict of interest, contact the administrator.
-          </Reviewerdisclaimer>
           {hasManuscriptFile(latestVersion) && (
             <EditorSection manuscript={latestVersion} readonly />
           )}
@@ -178,7 +156,7 @@ const ReviewLayout = ({
             </SectionContent>
           )}
           {['colab'].includes(process.env.INSTANCE_NAME) && (
-            <ArticleEvaluationSummaryPage
+            <ArticleEvaluationSummaryPage // TODO Why do we need this extra evaluation?
               decisionComment={formatDecisionComment(decisionComment)}
               decisionRadio={decisionRadio}
               updateReview={updateReview}

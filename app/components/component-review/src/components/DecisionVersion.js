@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { Formik } from 'formik'
 import { set, debounce } from 'lodash'
 import DecisionForm from './decision/DecisionForm'
 import DecisionReviews from './decision/DecisionReviews'
@@ -40,7 +39,7 @@ const DecisionVersion = ({
   onChange, // To handle form editing
   confirming,
   toggleConfirming,
-  makeDecision = {},
+  makeDecision,
   sendNotifyEmail,
   sendChannelMessageCb,
   publishManuscript,
@@ -84,9 +83,7 @@ const DecisionVersion = ({
 
   const reviewOrInitial = manuscript =>
     manuscript?.reviews?.find(review => review.isDecision) || {
-      decisionComment: {},
       isDecision: true,
-      recommendation: null,
     }
 
   // Find an existing review or create a placeholder, and hold a ref to it
@@ -99,14 +96,8 @@ const DecisionVersion = ({
 
   const updateReviewForVersion = manuscriptId => review => {
     const reviewData = {
-      recommendation: review.recommendation,
       manuscriptId,
       isDecision: true,
-      decisionComment: review.decisionComment && {
-        id: existingReview.current.decisionComment?.id,
-        commentType: 'decision',
-        content: review.decisionComment.content,
-      },
     }
 
     const results = updateReview(
@@ -185,15 +176,8 @@ const DecisionVersion = ({
     }
   }
 
-  const decisionSection = ({
-    handleSubmit,
-    dirty,
-    isValid,
-    submitCount,
-    isSubmitting,
-  }) => {
+  const decisionSection = () => {
     // this is only used if current version & hence editable
-
     return {
       content: (
         <>
@@ -272,15 +256,19 @@ const DecisionVersion = ({
                 createFile={createFile}
                 decisionForm={decisionForm}
                 deleteFile={deleteFile}
-                dirty={dirty}
-                handleSubmit={handleSubmit}
-                isSubmitting={isSubmitting}
-                isValid={isValid}
                 manuscriptId={version.id}
                 manuscriptShortId={version.shortId}
                 manuscriptStatus={version.status}
+                onSubmit={async (values, actions) => {
+                  await makeDecision({
+                    variables: {
+                      id: version.id,
+                      decision: values.verdict,
+                    },
+                  })
+                  actions.setSubmitting(false)
+                }}
                 reviewByCurrentUser={reviewByCurrentUser}
-                submitCount={submitCount}
                 updateReview={updateReviewForVersion(version.id)}
                 updateReviewJsonData={updateReviewJsonData}
                 validateDoi={validateDoi}
@@ -303,45 +291,10 @@ const DecisionVersion = ({
   }
 
   return (
-    <Formik
-      displayName="decision"
-      initialValues={reviewOrInitial(version)}
-      onSubmit={async (values, actions) => {
-        await makeDecision({
-          variables: {
-            id: version.id,
-            decision: values.recommendation,
-          },
-        })
-        actions.setSubmitting(false)
-      }}
-      validate={(values, props) => {
-        const errors = {}
-
-        if (
-          ['', '<p></p>', undefined].includes(values.decisionComment?.content)
-        ) {
-          errors.decisionComment = 'Decision letter is required'
-        }
-
-        if (values.recommendation === null) {
-          errors.recommendation = 'Decision is required'
-        }
-
-        return errors
-      }}
-    >
-      {props => (
-        <HiddenTabs
-          defaultActiveKey={version.id}
-          sections={[
-            decisionSection({ ...props }),
-            editorSection,
-            metadataSection({ ...props }),
-          ]}
-        />
-      )}
-    </Formik>
+    <HiddenTabs
+      defaultActiveKey={version.id}
+      sections={[decisionSection(), editorSection, metadataSection()]}
+    />
   )
 }
 
@@ -390,7 +343,6 @@ DecisionVersion.propTypes = {
             identifier: PropTypes.string.isRequired,
           }),
         }).isRequired,
-        recommendation: PropTypes.string,
       }).isRequired,
     ).isRequired,
   }).isRequired,

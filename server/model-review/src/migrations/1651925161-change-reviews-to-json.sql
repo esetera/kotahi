@@ -1,5 +1,5 @@
 -- Record the old object_ids in case we need to roll back
-CREATE TABLE files_old (
+CREATE TABLE files_old_2 (
     id uuid NOT NULL,
     created timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated timestamp with time zone,
@@ -13,7 +13,7 @@ CREATE TABLE files_old (
     upload_status text,
     caption text
 );
-INSERT INTO files_old SELECT * FROM files;
+INSERT INTO files_old_2 SELECT * FROM files;
 
 -- files previously belonged to an intermediate reviewComment object;
 -- we will discard that object so they are directly owned by the review.
@@ -21,7 +21,7 @@ UPDATE files SET object_id = rc.review_id FROM review_comments rc WHERE files.ob
 
 -- Move the old schema reviews table out of the way
 ALTER TABLE reviews RENAME TO reviews_old;
-ALTER TABLE reviews_old DROP CONSTRAINT reviews_pkey;
+ALTER TABLE reviews_old DROP CONSTRAINT reviews_pkey CASCADE;
 ALTER TABLE reviews_old DROP CONSTRAINT reviews_manuscript_id_fkey;
 
 -- Create new reviews table 
