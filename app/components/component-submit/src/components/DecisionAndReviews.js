@@ -57,13 +57,11 @@ const NewDecision = ({ decisionForm, manuscript }) => {
     ? JSON.parse(decisionDataString)
     : null
 
-  console.log('decisionData:', decisionData)
-  console.log('decisionForm:', decisionForm)
-
   return decisionData ? (
     <ReadonlyFormTemplate
       form={decisionForm}
       formData={decisionData}
+      hideSpecialInstructions
       manuscript={manuscript}
     />
   ) : (
