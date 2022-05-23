@@ -64,9 +64,26 @@ const Submit = ({
       (['new', 'revising'].includes(manuscript.status) ||
         (currentUser.admin && manuscript.status !== 'rejected'))
 
-    const hasDecision = !['new', 'submitted', 'revising'].includes(
-      manuscript.status,
-    )
+    let decision
+
+    manuscript.reviews.forEach(review => {
+      if (review.isDecision === true) {
+        decision = review
+      }
+    })
+
+    const hasDecision = Boolean(decision)
+
+    // TODO: Factor in Manuscript Status for determining decision
+
+    // const decisionVerdict = JSON.parse(decision.jsonData).verdict
+    // const hasDecision = !['new', 'submitted', 'revising'].includes(
+    //   decisionVerdict,
+    // )
+
+    // const hasDecision = !['new', 'submitted', 'revising'].includes(
+    //   manuscript.status,
+    // )
 
     const handleSave = useCallback(
       debounce(source => {

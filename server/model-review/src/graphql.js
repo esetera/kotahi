@@ -47,6 +47,7 @@ const resolvers = {
             isHiddenReviewerName: false,
             manuscriptId: input.manuscriptId,
             userId: input.userId,
+            isDecision: input.isDecision,
             // user: reviewUser,
           },
           { insertMissing: true },

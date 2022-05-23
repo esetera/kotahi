@@ -103,6 +103,7 @@ const filesToAttachment = file => ({
 const ReadonlyFormTemplate = ({
   form,
   formData,
+  hideSpecialInstructions,
   manuscript,
   showPreviewMetadataOnly,
   showEditorOnlyFields,
@@ -143,13 +144,15 @@ const ReadonlyFormTemplate = ({
         )}
       {!showPreviewMetadataOnly && (
         <>
-          <SectionRowGrid>
-            <Heading>Special Instructions</Heading>
-            <Cell>
-              {getNote(manuscript?.meta?.notes || [], 'specialInstructions')
-                .content || 'None'}
-            </Cell>
-          </SectionRowGrid>
+          {!hideSpecialInstructions && (
+            <SectionRowGrid>
+              <Heading>Special Instructions</Heading>
+              <Cell>
+                {getNote(manuscript?.meta?.notes || [], 'specialInstructions')
+                  .content || 'None'}
+              </Cell>
+            </SectionRowGrid>
+          )}
           {/* TODO refactor the following sections for code reuse */}
           {getSupplementaryFiles(manuscript.files).length > 0 && (
             <SectionRowGrid>
