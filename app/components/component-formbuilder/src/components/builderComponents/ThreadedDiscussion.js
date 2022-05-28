@@ -1,8 +1,11 @@
 import React from 'react'
 import SimpleWaxEditor from '../../../../wax-collab/src/SimpleWaxEditor'
 import { SimpleWaxEditorWrapper } from '../style'
-
 import ThreadedComment from '../ThreadedComment'
+
+import {
+  Button,
+} from '@pubsweet/ui'
 
 const ThreadedDiscussion = props => {
   const {
@@ -15,11 +18,19 @@ const ThreadedDiscussion = props => {
     ...SimpleWaxEditorProps
   } = props
 
+  const [newComment, setNewComment] = React.useState();
+
   const lastComment = comments ? comments[comments.length - 1] : null
+
+  const lastCommentByCurrentUser = lastComment ? lastComment.userId === user.id : null
+
+  const onClickComment = () => {
+    alert(newComment);
+  };
 
   return (
     <>
-      {comments.map(comment => {
+      {comments && comments.map(comment => {
         return (
           <ThreadedComment
             comment={comment}
@@ -30,11 +41,26 @@ const ThreadedDiscussion = props => {
         )
       })}
 
-      {(lastComment ? lastComment.author.id : '') !== user.id && (
+      {!lastCommentByCurrentUser &&
+      (
+        <>
         <SimpleWaxEditorWrapper>
-          <SimpleWaxEditor {...SimpleWaxEditorProps} />
+          <SimpleWaxEditor
+            {...SimpleWaxEditorProps}
+            onChange={content => setNewComment(content)} />
         </SimpleWaxEditorWrapper>
-      )}
+            <Button
+              disabled={false}
+              primary
+              type="button"
+              onClick={onClickComment}
+            >
+              Submit
+            </Button>
+            
+        </>
+      )
+      }
     </>
   )
 }

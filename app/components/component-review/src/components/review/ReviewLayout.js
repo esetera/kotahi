@@ -143,6 +143,7 @@ const ReviewLayout = ({
               decisionComment={formatDecisionComment(decisionComment)}
               decisionRadio={decisionRadio}
               updateReview={updateReview}
+              currentUser={currentUser}
             />
           )}
         </div>

@@ -78,13 +78,14 @@ const ArticleEvaluationSummaryPage = ({
   updateReview,
   decisionComment,
   decisionRadio,
+  currentUser
 }) => (
   <SectionContent>
     <SectionHeader>
       <Title>Evaluation Summary</Title>
     </SectionHeader>
     <SectionRow>
-      <NoteDecision content={decisionComment} updateReview={updateReview} />
+      <NoteDecision currentUser={currentUser} content={decisionComment} updateReview={updateReview} />
     </SectionRow>
     <SectionRowGrid>
       <Field

@@ -27,6 +27,7 @@ import {
   ErrorWrap,
   RecommendationInputContainer,
 } from '../style'
+import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
 
 // This solves issue #38, which caused the entire page to blank in chrome upon selection change, due to strange styling of radio buttons.
 const RadioGroup = styled(UnstableRadioGroup)`
@@ -167,6 +168,7 @@ const DecisionForm = ({
   dirty,
   deleteFile,
   createFile,
+  currentUser,
 }) => {
   let status = null
 
@@ -188,6 +190,7 @@ const DecisionForm = ({
             deleteFile={deleteFile}
             manuscriptId={manuscriptId}
             updateReview={updateReview}
+            currentUser={currentUser}
           />
         </SectionRow>
         <SectionRowGrid>

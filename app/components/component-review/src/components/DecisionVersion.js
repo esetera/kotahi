@@ -280,6 +280,7 @@ const DecisionVersion = ({
                 manuscriptId={version.id}
                 submitCount={submitCount}
                 updateReview={updateReviewForVersion(version.id)}
+                currentUser={currentUser}
               />
             </AdminSection>
           )}

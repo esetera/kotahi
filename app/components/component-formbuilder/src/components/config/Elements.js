@@ -308,6 +308,15 @@ const elements = {
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
   },
+  ThreadedDiscussion: {
+    title: requiredTextField,
+    name: nameField,
+    description: editorfield,
+    shortDescription: shortDescriptionField,
+    validate: validateOther,
+    includeInReviewerPreview: reviewerPreviewField,
+    hideFromAuthors: hideFromAuthorsField,
+  },
 }
 
 export default elements
