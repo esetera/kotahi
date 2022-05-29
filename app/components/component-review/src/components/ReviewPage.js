@@ -1,10 +1,9 @@
 import React, { useRef, useEffect } from 'react'
 import { useMutation, useQuery, gql } from '@apollo/client'
-import { Formik } from 'formik'
-// import { cloneDeep } from 'lodash'
 import config from 'config'
 import { Redirect } from 'react-router-dom'
 import ReactRouterPropTypes from 'react-router-prop-types'
+import { set } from 'lodash'
 import ReviewLayout from './review/ReviewLayout'
 import { Heading, Page, Spinner } from '../../../shared'
 import useCurrentUser from '../../../../hooks/useCurrentUser'
@@ -311,6 +310,53 @@ const ReviewPage = ({ match, ...props }) => {
         .status || []
     ).find(statusTemp => statusTemp.user === currentUser?.id) || {}
 
+  const updateReviewJsonData = (value, path) => {
+    const reviewDelta = {} // Only the changed fields
+    // E.g. if path is 'foo.bar' and value is 'Baz' this gives { foo: { bar: 'Baz' } }
+    set(reviewDelta, path, value)
+
+    const reviewPayload = {
+      isDecision: false,
+      jsonData: JSON.stringify(reviewDelta),
+      manuscriptId: latestVersion.id,
+      userId: currentUser.id,
+    }
+
+    return updateReviewMutation({
+      variables: { id: existingReview.current.id, input: reviewPayload },
+      update: (cache, { data: { updateReview: updateReviewTemp } }) => {
+        cache.modify({
+          id: cache.identify({
+            __typename: 'Manuscript',
+            id: latestVersion.id,
+          }),
+          fields: {
+            reviews(existingReviewRefs = [], { readField }) {
+              const newReviewRef = cache.writeFragment({
+                data: updateReviewTemp,
+                fragment: gql`
+                  fragment NewReview on Review {
+                    id
+                  }
+                `,
+              })
+
+              if (
+                existingReviewRefs.some(
+                  ref => readField('id', ref) === updateReviewTemp.id,
+                )
+              ) {
+                return existingReviewRefs
+              }
+
+              return [...existingReviewRefs, newReviewRef]
+            },
+          },
+        })
+      },
+    })
+  }
+
   const updateReview = review => {
     const reviewData = {
       manuscriptId: latestVersion.id,
@@ -363,43 +409,26 @@ const ReviewPage = ({ match, ...props }) => {
     history.push(`${urlFrag}/dashboard`)
   }
 
-  const initialValues = {
-    ...(latestVersion.reviews?.find(
-      review => review?.user?.id === currentUser?.id && !review.isDecision,
-    ) || { id: null, jsonData: '{}', canBePublishedPublicly: false }),
-  }
-
-  initialValues.jsonData = JSON.parse(initialValues.jsonData)
-
   return (
-    <Formik
-      initialValues={initialValues}
+    <ReviewLayout
+      channelId={channelId}
+      createFile={createFile}
+      currentUser={currentUser}
+      deleteFile={deleteFile}
       onSubmit={values =>
         handleSubmit({
           reviewId: existingReview.current.id,
           history: props.history,
         })
       }
-      validateOnMount={review =>
-        !!review.id && !!review.comment && !!review.verdict
-      }
-    >
-      {formikProps => (
-        <ReviewLayout
-          channelId={channelId}
-          currentUser={currentUser}
-          review={existingReview}
-          reviewForm={reviewForm}
-          status={status}
-          submissionForm={submissionForm}
-          updateReview={updateReview}
-          versions={versions}
-          {...formikProps}
-          createFile={createFile}
-          deleteFile={deleteFile}
-        />
-      )}
-    </Formik>
+      review={existingReview}
+      reviewForm={reviewForm}
+      status={status}
+      submissionForm={submissionForm}
+      updateReview={updateReview}
+      updateReviewJsonData={updateReviewJsonData}
+      versions={versions}
+    />
   )
 }
 

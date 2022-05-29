@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import moment from 'moment'
 import { Tabs } from '@pubsweet/ui'
+import { Formik } from 'formik'
 
 import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
 import Review from './Review'
@@ -21,10 +22,11 @@ const ReviewLayout = ({
   versions,
   review,
   reviewForm,
-  handleSubmit,
-  isValid,
+  onSubmit,
+  // isValid,
   status,
   updateReview,
+  updateReviewJsonData,
   uploadFile,
   channelId,
   submissionForm,
@@ -43,23 +45,17 @@ const ReviewLayout = ({
   const priorVersions = versions.slice(1)
   priorVersions.reverse() // Convert to chronological order (was reverse-chron)
 
-  const decisionComment =
+  const decision =
     latestVersion.reviews.find(
       reviewIsDecision => reviewIsDecision.isDecision,
     ) || {}
 
+  const decisionJson = JSON.parse(decision?.jsonData || '{}')
+  let decisionComment = decisionJson.comment || null
+  if (!decisionComment || decisionComment === '<p class="paragraph"></p>')
+    decisionComment = '<i>No evaluation summary found</i>'
+
   const decisionRadio = latestVersion.status
-
-  const formatDecisionComment = input => {
-    const comment = input.decisionComment ? input.decisionComment.content : ''
-    const placeholder = '"<i>The evaluation summary will appear here.</i>"'
-
-    if (comment === '<p class="paragraph"></p>' || comment === '') {
-      return placeholder
-    }
-
-    return comment
-  }
 
   priorVersions.forEach(msVersion => {
     if (msVersion.reviews?.some(r => !r.user))
@@ -107,9 +103,7 @@ const ReviewLayout = ({
       r => r.user?.id === currentUser.id && !r.isDecision,
     )
 
-    const reviewData = reviewForCurrentUser?.jsonData
-      ? JSON.parse(reviewForCurrentUser.jsonData)
-      : {}
+    const reviewData = JSON.parse(reviewForCurrentUser?.jsonData || '{}')
 
     const label = moment().format('YYYY-MM-DD')
 
@@ -145,9 +139,8 @@ const ReviewLayout = ({
                 manuscriptId={latestVersion.id}
                 manuscriptShortId={latestVersion.shortId}
                 manuscriptStatus={latestVersion.status}
-                onChange={(value, path) => null}
-                onSubmit={() => null}
-                republish={() => null}
+                onChange={updateReviewJsonData}
+                onSubmit={onSubmit}
                 showEditorOnlyFields={false}
                 submissionButtonText="Submit"
                 toggleConfirming={toggleConfirming}
@@ -156,11 +149,21 @@ const ReviewLayout = ({
             </SectionContent>
           )}
           {['colab'].includes(process.env.INSTANCE_NAME) && (
-            <ArticleEvaluationSummaryPage // TODO Why do we need this extra evaluation?
-              decisionComment={formatDecisionComment(decisionComment)}
-              decisionRadio={decisionRadio}
-              updateReview={updateReview}
-            />
+            <Formik
+              initialValues={{}}
+              onSubmit={values =>
+                console.log('ArticleEvaluationSummaryPage submit')
+              }
+              validateOnMount={revw =>
+                !!revw.id && !!revw.comment && !!revw.verdict
+              }
+            >
+              <ArticleEvaluationSummaryPage // TODO Why do we need this extra evaluation?
+                decisionComment={decisionComment}
+                decisionRadio={decisionRadio}
+                updateReview={updateReview}
+              />
+            </Formik>
           )}
         </div>
       ),
@@ -211,8 +214,7 @@ ReviewLayout.propTypes = {
     }).isRequired,
   ).isRequired,
   review: PropTypes.shape({}),
-  handleSubmit: PropTypes.func.isRequired,
-  isValid: PropTypes.bool.isRequired,
+  onSubmit: PropTypes.func,
   status: PropTypes.string,
   updateReview: PropTypes.func.isRequired,
   uploadFile: PropTypes.func,
@@ -230,6 +232,7 @@ ReviewLayout.propTypes = {
 }
 
 ReviewLayout.defaultProps = {
+  onSubmit: () => {},
   review: undefined,
   status: undefined,
   uploadFile: undefined,

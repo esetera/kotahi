@@ -160,9 +160,8 @@ const InnerFormTemplate = ({
       <div>
         <Button
           onClick={async () => {
-            if (manuscriptStatus === articleStatuses.published) {
+            if (republish && manuscriptStatus === articleStatuses.published) {
               republish(manuscriptId)
-
               return
             }
 
@@ -452,13 +451,14 @@ FormTemplate.propTypes = {
   }),
   onChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func,
-  republish: PropTypes.func.isRequired,
+  republish: PropTypes.func,
   submissionButtonText: PropTypes.string,
   showEditorOnlyFields: PropTypes.bool.isRequired,
 }
 FormTemplate.defaultProps = {
   onSubmit: undefined,
   initialValues: null,
+  republish: null,
   submissionButtonText: '',
   manuscriptStatus: null,
 }
