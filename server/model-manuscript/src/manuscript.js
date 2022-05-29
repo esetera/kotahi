@@ -68,11 +68,11 @@ class Manuscript extends BaseModel {
 
     const manuscripts = await Manuscript.query()
       .where('parent_id', id)
-      .withGraphFetched('[teams, teams.members, reviews.[user], files]')
+      .withGraphFetched('[teams.members, reviews.user, files]')
 
     const firstManuscript = await Manuscript.query()
       .findById(id)
-      .withGraphFetched('[teams, teams.members, reviews.[user], files]')
+      .withGraphFetched('[teams.members, reviews.user, files]')
 
     manuscripts.push(firstManuscript)
 
