@@ -82,8 +82,8 @@ const userIsAdmin = rule({ cache: 'contextual' })(
 
 const isPublicFileFromPublishedManuscript = rule({ cache: 'contextual' })(
   async (parent, args, ctx, info) => {
-    if (parent.tags.includes('confidential')) return false
-    const manuscript = await getManuscriptOfFile(parent)
+    if (parent.tags && parent.tags.includes('confidential')) return false
+    const manuscript = await getManuscriptOfFile(parent, ctx)
     return !!(manuscript && manuscript.published)
   },
 )
