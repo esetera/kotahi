@@ -21,6 +21,7 @@ import {
 } from '../style'
 
 import { SectionContent, FilesUpload } from '../../../../shared'
+// import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
 
 // See issue #38
 const RadioGroup = styled(UnstableRadioGroup)`
@@ -122,6 +123,10 @@ const ReviewComment = ({
           {formikBag => (
             <>
               <NoteInput updateReview={updateReview} {...formikBag} />
+              {/* <ThreadedDiscussion 
+            thread={sampleThread}
+            currentUser={currentUser}
+          /> */}
               <FilesUpload
                 createFile={createFile}
                 deleteFile={deleteFile}

@@ -34,17 +34,30 @@ const RadioGroup = styled(UnstableRadioGroup)`
   position: relative;
 `
 
+const sampleThread = {
+  "id": "8055458e-cc9d-4a58-a4c4-2918cae2df7e",
+  "created": "2022-05-24 10:52:54.443+00",
+  "updated": "2022-05-24 10:52:54.443+00",
+  "manuscript_id": "359e7168-9657-4cb8-b094-c5f00cb62b53",
+  "threads": "[{\"id\": \"8055458e-cc9d-4a58-a4c4-2918cae2df7e\", \"created\": \"2022-05-24 10:52:54.443+00\", \"updated\": \"2022-05-24 10:52:54.443+00\", \"comments\": [{\"id\": \"8055458e-cc9d-4a58-a4c4-2918cae2df7e\", \"created\": \"2022-05-24 10:52:54.443+00\", \"updated\": \"2022-05-24 10:52:54.443+00\", \"commentVersions\": [{\"id\": \"8055458e-cc9d-4a58-a4c4-2918cae2df7e\", \"userId\": \"8055458e-cc9d-4a58-a4c4-2918cae2df7e\", \"comment\": \"Thanks for the feedback. I was not able to follow what you meant by blah blah blah. Can you elaborate on that, please?\", \"created\": \"2022-05-24 10:52:54.443+00\", \"updated\": \"2022-05-24 10:52:54.443+00\"}], \"pendingVersions\": []}]}]"
+};
+
 const NoteDecision = ({
   manuscriptId,
   updateReview,
   deleteFile,
   createFile,
+  currentUser,
 }) => (
   <>
     <Field name="decisionComment">
       {formikBag => (
         <>
           <NoteInput updateReview={updateReview} {...formikBag} />
+          <ThreadedDiscussion 
+            thread={sampleThread}
+            currentUser={currentUser}
+          />
           <FilesUpload
             createFile={createFile}
             deleteFile={deleteFile}
