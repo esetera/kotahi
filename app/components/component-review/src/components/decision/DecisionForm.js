@@ -34,28 +34,20 @@ const RadioGroup = styled(UnstableRadioGroup)`
   position: relative;
 `
 
-const sampleThread = {
-  id: '8055458e-cc9d-4a58-a4c4-2918cae2df7e',
-  created: '2022-05-24 10:52:54.443+00',
-  updated: '2022-05-24 10:52:54.443+00',
-  manuscript_id: '359e7168-9657-4cb8-b094-c5f00cb62b53',
-  threads:
-    '[{"id": "8055458e-cc9d-4a58-a4c4-2918cae2df7e", "created": "2022-05-24 10:52:54.443+00", "updated": "2022-05-24 10:52:54.443+00", "comments": [{"id": "8055458e-cc9d-4a58-a4c4-2918cae2df7e", "created": "2022-05-24 10:52:54.443+00", "updated": "2022-05-24 10:52:54.443+00", "commentVersions": [{"id": "8055458e-cc9d-4a58-a4c4-2918cae2df7e", "userId": "8055458e-cc9d-4a58-a4c4-2918cae2df7e", "comment": "Thanks for the feedback. I was not able to follow what you meant by blah blah blah. Can you elaborate on that, please?", "created": "2022-05-24 10:52:54.443+00", "updated": "2022-05-24 10:52:54.443+00"}], "pendingVersions": []}]}]',
-}
-
 const NoteDecision = ({
   manuscriptId,
   updateReview,
   deleteFile,
   createFile,
   currentUser,
+  threadedDiscussions,
 }) => (
   <>
     <Field name="decisionComment">
       {formikBag => (
         <>
           <NoteInput updateReview={updateReview} {...formikBag} />
-          <ThreadedDiscussion currentUser={currentUser} thread={sampleThread} />
+          <ThreadedDiscussion currentUser={currentUser} threadedDiscussions={threadedDiscussions} />
           <FilesUpload
             createFile={createFile}
             deleteFile={deleteFile}
@@ -180,6 +172,7 @@ const DecisionForm = ({
   deleteFile,
   createFile,
   currentUser,
+  threadedDiscussions,
 }) => {
   let status = null
 
@@ -202,6 +195,7 @@ const DecisionForm = ({
             deleteFile={deleteFile}
             manuscriptId={manuscriptId}
             updateReview={updateReview}
+            threadedDiscussions={threadedDiscussions}
           />
         </SectionRow>
         <SectionRowGrid>

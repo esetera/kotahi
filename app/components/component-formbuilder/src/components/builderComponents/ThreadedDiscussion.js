@@ -15,6 +15,7 @@ const ThreadedDiscussion = props => {
     value,
     key,
     comments,
+    threadedDiscussions,
     ...SimpleWaxEditorProps
   } = props
 

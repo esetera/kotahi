@@ -54,6 +54,7 @@ const DecisionVersion = ({
   client,
   createFile,
   deleteFile,
+  threadedDiscussions,
 }) => {
   // Hooks from the old world
   const addEditor = (manuscript, label, isCurrent, user) => {
@@ -281,6 +282,7 @@ const DecisionVersion = ({
                 submitCount={submitCount}
                 updateReview={updateReviewForVersion(version.id)}
                 currentUser={currentUser}
+                threadedDiscussions={threadedDiscussions}
               />
             </AdminSection>
           )}

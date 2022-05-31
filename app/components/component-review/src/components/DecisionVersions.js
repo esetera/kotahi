@@ -36,8 +36,8 @@ const DecisionVersions = props => {
     deleteFile,
     createFile,
     client,
+    threadedDiscussions,
   } = props
-
   const versions = gatherManuscriptVersions(manuscript)
 
   // Protect if channels don't exist for whatever reason
@@ -87,6 +87,7 @@ const DecisionVersions = props => {
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}
                 version={version.manuscript}
+                threadedDiscussions={threadedDiscussions}
               />
             ))}
           </VersionSwitcher>
