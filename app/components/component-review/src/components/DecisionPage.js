@@ -93,7 +93,7 @@ const GET_THREADED_DISCUSSIONS = gql`
       threads
     }
   }
-`;
+`
 
 let debouncers = {}
 
@@ -139,9 +139,7 @@ const DecisionPage = ({ match }) => {
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
 
-
   const ThreadedDiscussions = () => useQuery(GET_THREADED_DISCUSSIONS)
-
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -258,12 +256,12 @@ const DecisionPage = ({ match }) => {
       sendChannelMessageCb={sendChannelMessageCb}
       sendNotifyEmail={sendNotifyEmail}
       teamLabels={config.teams}
+      threadedDiscussions={ThreadedDiscussions}
       toggleConfirming={toggleConfirming}
       updateManuscript={updateManuscript}
       updateReview={updateReview}
       updateTeam={updateTeam}
       urlFrag={urlFrag}
-      threadedDiscussions={ThreadedDiscussions}
     />
   )
 }

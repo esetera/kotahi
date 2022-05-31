@@ -273,6 +273,7 @@ const DecisionVersion = ({
             <AdminSection key="decision-form">
               <DecisionForm
                 createFile={createFile}
+                currentUser={currentUser}
                 deleteFile={deleteFile}
                 dirty={dirty}
                 handleSubmit={handleSubmit}
@@ -280,9 +281,8 @@ const DecisionVersion = ({
                 isValid={isValid}
                 manuscriptId={version.id}
                 submitCount={submitCount}
-                updateReview={updateReviewForVersion(version.id)}
-                currentUser={currentUser}
                 threadedDiscussions={threadedDiscussions}
+                updateReview={updateReviewForVersion(version.id)}
               />
             </AdminSection>
           )}

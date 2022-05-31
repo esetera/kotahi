@@ -1,11 +1,8 @@
 import React from 'react'
+import { Button } from '@pubsweet/ui'
 import SimpleWaxEditor from '../../../../wax-collab/src/SimpleWaxEditor'
 import { SimpleWaxEditorWrapper } from '../style'
 import ThreadedComment from '../ThreadedComment'
-
-import {
-  Button,
-} from '@pubsweet/ui'
 
 const ThreadedDiscussion = props => {
   const {
@@ -19,49 +16,50 @@ const ThreadedDiscussion = props => {
     ...SimpleWaxEditorProps
   } = props
 
-  const [newComment, setNewComment] = React.useState();
+  const [newComment, setNewComment] = React.useState()
 
   const lastComment = comments ? comments[comments.length - 1] : null
 
-  const lastCommentByCurrentUser = lastComment ? lastComment.userId === user.id : null
+  const lastCommentByCurrentUser = lastComment
+    ? lastComment.userId === user.id
+    : null
 
   const onClickComment = () => {
-    alert(newComment);
-  };
+    alert(newComment)
+  }
 
   return (
     <>
-      {comments && comments.map(comment => {
-        return (
-          <ThreadedComment
-            comment={comment}
-            currentUserId={user.id}
-            key={comment.id}
-            simpleWaxEditorProps={SimpleWaxEditorProps}
-          />
-        )
-      })}
+      {comments &&
+        comments.map(comment => {
+          return (
+            <ThreadedComment
+              comment={comment}
+              currentUserId={user.id}
+              key={comment.id}
+              simpleWaxEditorProps={SimpleWaxEditorProps}
+            />
+          )
+        })}
 
-      {!lastCommentByCurrentUser &&
-      (
+      {!lastCommentByCurrentUser && (
         <>
-        <SimpleWaxEditorWrapper>
-          <SimpleWaxEditor
-            {...SimpleWaxEditorProps}
-            onChange={content => setNewComment(content)} />
-        </SimpleWaxEditorWrapper>
-            <Button
-              disabled={false}
-              primary
-              type="button"
-              onClick={onClickComment}
-            >
-              Submit
-            </Button>
-            
+          <SimpleWaxEditorWrapper>
+            <SimpleWaxEditor
+              {...SimpleWaxEditorProps}
+              onChange={content => setNewComment(content)}
+            />
+          </SimpleWaxEditorWrapper>
+          <Button
+            disabled={false}
+            onClick={onClickComment}
+            primary
+            type="button"
+          >
+            Submit
+          </Button>
         </>
-      )
-      }
+      )}
     </>
   )
 }

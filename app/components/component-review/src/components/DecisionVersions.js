@@ -38,6 +38,7 @@ const DecisionVersions = props => {
     client,
     threadedDiscussions,
   } = props
+
   const versions = gatherManuscriptVersions(manuscript)
 
   // Protect if channels don't exist for whatever reason
@@ -81,13 +82,13 @@ const DecisionVersions = props => {
                 sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
                 teamLabels={teamLabels}
+                threadedDiscussions={threadedDiscussions}
                 toggleConfirming={toggleConfirming}
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}
                 version={version.manuscript}
-                threadedDiscussions={threadedDiscussions}
               />
             ))}
           </VersionSwitcher>
