@@ -99,7 +99,6 @@ const filesToAttachment = file => ({
   url: file.storedObjects[0].url,
 })
 
-// TODO: Rename to Readonly Form
 const ReadonlyFormTemplate = ({
   form,
   formData,
