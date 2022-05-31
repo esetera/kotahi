@@ -1,5 +1,4 @@
 import React from 'react'
-import config from 'config'
 import { SectionContent } from '../../../../shared'
 import FormTemplate from '../../../../component-submit/src/components/FormTemplate'
 
@@ -14,6 +13,7 @@ const DecisionForm = ({
   manuscriptId,
   manuscriptShortId,
   manuscriptStatus,
+  urlFrag,
   validateDoi,
 }) => {
   const [confirming, setConfirming] = React.useState(false)
@@ -45,7 +45,7 @@ const DecisionForm = ({
         showEditorOnlyFields
         submissionButtonText="Submit"
         toggleConfirming={toggleConfirming}
-        urlFrag={config.journal.metadata.toplevel_urlfragment} // TODO pass from higher up rather than import config in this file
+        urlFrag={urlFrag}
         validateDoi={validateDoi}
       />
     </SectionContent>

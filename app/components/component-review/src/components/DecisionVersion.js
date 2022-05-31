@@ -271,6 +271,7 @@ const DecisionVersion = ({
                 reviewByCurrentUser={reviewByCurrentUser}
                 updateReview={updateReviewForVersion(version.id)}
                 updateReviewJsonData={updateReviewJsonData}
+                urlFrag={urlFrag}
                 validateDoi={validateDoi}
               />
             </AdminSection>
