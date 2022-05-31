@@ -94,12 +94,6 @@ const DecisionPage = ({ match }) => {
   // start of code from submit page to handle possible form changes
   const client = useApolloClient()
 
-  const [confirming, setConfirming] = useState(false)
-
-  const toggleConfirming = () => {
-    setConfirming(confirm => !confirm)
-  }
-
   useEffect(() => {
     return () => {
       debouncers = {}
@@ -273,7 +267,6 @@ const DecisionPage = ({ match }) => {
     <DecisionVersions
       allUsers={users}
       canHideReviews={config.review.hide === 'true'}
-      confirming={confirming}
       createFile={createFile}
       createTeam={createTeam}
       currentUser={currentUser}
@@ -294,7 +287,6 @@ const DecisionPage = ({ match }) => {
       sendChannelMessageCb={sendChannelMessageCb}
       sendNotifyEmail={sendNotifyEmail}
       teamLabels={config.teams}
-      toggleConfirming={toggleConfirming}
       updateManuscript={updateManuscript}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}

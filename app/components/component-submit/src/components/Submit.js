@@ -33,8 +33,6 @@ const Submit = ({
   forms,
   createNewVersion,
   currentUser,
-  toggleConfirming,
-  confirming,
   parent,
   onChange,
   republish,
@@ -111,8 +109,6 @@ const Submit = ({
         form: submissionForm,
         onSubmit,
         versionId,
-        toggleConfirming,
-        confirming,
         onChange,
         republish,
         match,
@@ -240,8 +236,6 @@ Submit.propTypes = {
   currentUser: PropTypes.shape({
     admin: PropTypes.bool.isRequired,
   }),
-  toggleConfirming: PropTypes.func.isRequired,
-  confirming: PropTypes.bool.isRequired,
   parent: PropTypes.shape({
     channels: PropTypes.arrayOf(
       PropTypes.shape({

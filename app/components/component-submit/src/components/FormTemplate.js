@@ -355,8 +355,6 @@ const InnerFormTemplate = ({
 const FormTemplate = ({
   form,
   initialValues,
-  toggleConfirming,
-  confirming,
   manuscriptId,
   manuscriptShortId,
   manuscriptStatus,
@@ -373,6 +371,12 @@ const FormTemplate = ({
   isSubmission,
   reviewId,
 }) => {
+  const [confirming, setConfirming] = React.useState(false)
+
+  const toggleConfirming = () => {
+    setConfirming(confirm => !confirm)
+  }
+
   return (
     <Formik
       displayName={form.name}
@@ -434,8 +438,6 @@ FormTemplate.propTypes = {
     popupdescription: PropTypes.string,
     haspopup: PropTypes.string.isRequired, // bool as string
   }).isRequired,
-  toggleConfirming: PropTypes.func.isRequired,
-  confirming: PropTypes.bool.isRequired,
   manuscriptId: PropTypes.string.isRequired,
   manuscriptShortId: PropTypes.number.isRequired,
   manuscriptStatus: PropTypes.string,

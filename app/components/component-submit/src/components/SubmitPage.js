@@ -77,7 +77,6 @@ const cleanForm = form => {
 let debouncers = {}
 
 const SubmitPage = ({ match, history }) => {
-  const [confirming, setConfirming] = useState(false)
   const [isPublishingBlocked, setIsPublishingBlocked] = useState(false)
 
   useEffect(() => {
@@ -85,10 +84,6 @@ const SubmitPage = ({ match, history }) => {
       debouncers = {}
     }
   }, [])
-
-  const toggleConfirming = () => {
-    setConfirming(confirm => !confirm)
-  }
 
   const { data, loading, error } = useQuery(
     query,
@@ -260,7 +255,6 @@ const SubmitPage = ({ match, history }) => {
 
   return (
     <Submit
-      confirming={confirming}
       createFile={createFile}
       createNewVersion={createNewVersion}
       currentUser={currentUser}
@@ -271,7 +265,6 @@ const SubmitPage = ({ match, history }) => {
       onSubmit={onSubmit}
       parent={manuscript}
       republish={republish}
-      toggleConfirming={toggleConfirming}
       updateManuscript={updateManuscript}
       validateDoi={validateDoi}
       versions={versions}

@@ -14,12 +14,10 @@ import MessageContainer from '../../../component-chat/src/MessageContainer'
 const DecisionVersions = props => {
   const {
     allUsers,
-    confirming,
     currentUser,
     decisionForm,
     form,
     handleChange,
-    toggleConfirming,
     updateManuscript,
     manuscript,
     sendNotifyEmail,
@@ -66,7 +64,6 @@ const DecisionVersions = props => {
               <DecisionVersion
                 allUsers={allUsers}
                 canHideReviews={canHideReviews}
-                confirming={confirming}
                 createFile={createFile}
                 createTeam={createTeam}
                 current={index === 0}
@@ -85,7 +82,6 @@ const DecisionVersions = props => {
                 sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
                 teamLabels={teamLabels}
-                toggleConfirming={toggleConfirming}
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}
                 updateReviewJsonData={updateReviewJsonData}

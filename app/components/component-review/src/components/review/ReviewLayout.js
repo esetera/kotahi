@@ -34,12 +34,6 @@ const ReviewLayout = ({
   deleteFile,
   validateDoi,
 }) => {
-  const [confirming, setConfirming] = React.useState(false)
-
-  const toggleConfirming = () => {
-    setConfirming(confirm => !confirm)
-  }
-
   const reviewSections = []
   const latestVersion = versions[0]
   const priorVersions = versions.slice(1)
@@ -131,7 +125,6 @@ const ReviewLayout = ({
           ) : (
             <SectionContent>
               <FormTemplate
-                confirming={confirming}
                 createFile={createFile}
                 deleteFile={deleteFile}
                 form={reviewForm}
@@ -143,7 +136,6 @@ const ReviewLayout = ({
                 onSubmit={onSubmit}
                 showEditorOnlyFields={false}
                 submissionButtonText="Submit"
-                toggleConfirming={toggleConfirming}
                 validateDoi={validateDoi}
               />
             </SectionContent>
@@ -151,8 +143,8 @@ const ReviewLayout = ({
           {['colab'].includes(process.env.INSTANCE_NAME) && (
             <Formik
               initialValues={{}}
-              onSubmit={values =>
-                console.log('ArticleEvaluationSummaryPage submit')
+              onSubmit={
+                values => console.log('ArticleEvaluationSummaryPage submit') // TODO
               }
               validateOnMount={revw =>
                 !!revw.id && !!revw.comment && !!revw.verdict

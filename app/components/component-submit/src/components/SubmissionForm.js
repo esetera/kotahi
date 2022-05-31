@@ -7,8 +7,6 @@ const SubmissionForm = ({
   form,
   onSubmit,
   versionId,
-  toggleConfirming,
-  confirming,
   onChange,
   republish,
   match,
@@ -20,7 +18,6 @@ const SubmissionForm = ({
   return (
     <SectionContent>
       <FormTemplate
-        confirming={confirming}
         createFile={createFile}
         deleteFile={deleteFile}
         form={form}
@@ -45,7 +42,6 @@ const SubmissionForm = ({
             ? 'Submit Evaluation'
             : 'Submit your research object'
         }
-        toggleConfirming={toggleConfirming}
         validateDoi={validateDoi}
       />
     </SectionContent>

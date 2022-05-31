@@ -16,16 +16,9 @@ const DecisionForm = ({
   urlFrag,
   validateDoi,
 }) => {
-  const [confirming, setConfirming] = React.useState(false)
-
-  const toggleConfirming = () => {
-    setConfirming(confirm => !confirm)
-  }
-
   return (
     <SectionContent>
       <FormTemplate
-        confirming={confirming}
         createFile={createFile}
         deleteFile={deleteFile}
         form={decisionForm}
@@ -40,11 +33,9 @@ const DecisionForm = ({
         manuscriptStatus={manuscriptStatus}
         onChange={updateReviewJsonData}
         onSubmit={onSubmit}
-        republish={() => null}
         reviewId={reviewByCurrentUser.id}
         showEditorOnlyFields
         submissionButtonText="Submit"
-        toggleConfirming={toggleConfirming}
         urlFrag={urlFrag}
         validateDoi={validateDoi}
       />

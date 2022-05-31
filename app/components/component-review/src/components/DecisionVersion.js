@@ -37,8 +37,6 @@ const DecisionVersion = ({
   parent,
   updateManuscript, // To handle manuscript editing
   onChange, // To handle form editing
-  confirming,
-  toggleConfirming,
   makeDecision,
   sendNotifyEmail,
   sendChannelMessageCb,
@@ -147,7 +145,6 @@ const DecisionVersion = ({
           ) : (
             <SectionContent>
               <FormTemplate
-                confirming={confirming}
                 createFile={createFile}
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
@@ -163,7 +160,6 @@ const DecisionVersion = ({
                 }}
                 republish={() => null}
                 showEditorOnlyFields
-                toggleConfirming={toggleConfirming}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}
               />
@@ -312,8 +308,6 @@ DecisionVersion.propTypes = {
     ).isRequired,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  toggleConfirming: PropTypes.func.isRequired,
-  confirming: PropTypes.bool.isRequired,
   current: PropTypes.bool.isRequired,
   version: PropTypes.shape({
     id: PropTypes.string.isRequired,
