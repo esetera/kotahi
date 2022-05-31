@@ -90,7 +90,12 @@ const GET_THREADED_DISCUSSIONS = gql`
   query GetThreadedDiscussions {
     threadedDiscussions {
       id
-      threads
+      created
+      updated
+      manuscriptId
+      threads {
+        id
+      }
     }
   }
 `

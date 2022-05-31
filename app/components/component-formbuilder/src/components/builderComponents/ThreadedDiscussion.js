@@ -28,8 +28,13 @@ const ThreadedDiscussion = props => {
     alert(newComment)
   }
 
+  const {data, error, loading} = threadedDiscussions();
+
   return (
     <>
+      {loading && 'loading dicussion...'}
+      {error && 'some error occurred while trying to load'}
+      {data && JSON.stringify(data)}
       {comments &&
         comments.map(comment => {
           return (
