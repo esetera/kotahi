@@ -28,7 +28,7 @@ const ThreadedDiscussion = props => {
     alert(newComment)
   }
 
-  const {data, error, loading} = threadedDiscussions();
+  const { data, error, loading } = threadedDiscussions()
 
   return (
     <>
