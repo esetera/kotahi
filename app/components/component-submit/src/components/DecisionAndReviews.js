@@ -14,6 +14,7 @@ import {
   SectionContent,
 } from '../../../shared'
 
+// TODO remove, and rename NewDecision to Decision.
 const Decision = ({ decision, editor }) =>
   decision ? (
     <>
@@ -103,9 +104,9 @@ const DecisionAndReviews = ({ manuscript, forms }) => {
     form => form.category === 'decision' && form.purpose === 'decision',
   )
 
-  // const reviewForm = forms.find(
-  //   form => form.category === 'review' && form.purpose === 'review',
-  // )
+  const reviewForm = forms.find(
+    form => form.category === 'review' && form.purpose === 'review',
+  )
 
   return (
     <>
@@ -136,6 +137,7 @@ const DecisionAndReviews = ({ manuscript, forms }) => {
                   ordinal: index + 1,
                   user: review.user,
                 }}
+                reviewForm={reviewForm}
                 teams={manuscript.teams}
               />
             </SectionRow>

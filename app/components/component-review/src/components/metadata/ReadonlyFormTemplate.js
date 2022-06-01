@@ -1,49 +1,19 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import styled from 'styled-components'
 import { get } from 'lodash'
-import { Attachment } from '@pubsweet/ui'
-import { th } from '@pubsweet/ui-toolkit'
-import lightenBy from '../../../../../shared/lightenBy'
 import SimpleWaxEditor from '../../../../wax-collab/src/SimpleWaxEditor'
-import { Title, SectionHeader, SectionRowGrid } from '../style'
+import {
+  Title,
+  SectionHeader,
+  SectionRowGrid,
+  Heading,
+  Cell,
+  Affiliation,
+  Email,
+} from '../style'
 import { SectionContent } from '../../../../shared'
-
-const Heading = styled.span`
-  font-weight: inherit;
-  overflow: hidden;
-  padding: 0 1em 0 0;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`
-
-const Cell = styled.span`
-  grid-column: span 2 / span 2;
-  padding: 0;
-`
-
-const Affiliation = styled.span`
-  color: ${lightenBy('colorText', 0.3)};
-  margin-left: 0.5em;
-`
-
-const Email = styled.span`
-  color: ${th('colorPrimary')};
-  margin-left: 1em;
-`
-
-const getNote = (notes, type) =>
-  notes.find(note => note.notesType === type) || {}
-
-const getSupplementaryFiles = supplementary =>
-  (supplementary || []).filter(file => file.tags.includes('supplementary')) ||
-  []
-
-const getManuscriptImageFiles = image =>
-  (image || []).filter(file => file.tags.includes('manuscriptImage')) || []
-
-const getManuscriptFiles = files =>
-  (files || []).filter(file => file.tags.includes('manuscript')) || []
+import ManuscriptFilesList from './ManuscriptFilesList'
+import SpecialInstructions from './SpecialInstructions'
 
 const showFieldData = (manuscript, fieldName, form) => {
   const data = get(manuscript, fieldName)
@@ -91,14 +61,6 @@ const shouldShowInPreview = (fieldName, form) => {
   return fieldDefinition.includeInReviewerPreview
 }
 
-// Due to migration to new Data Model
-// Attachement component needs different data structure to work
-// needs to change the pubsweet ui Attachement to support the new Data Model
-const filesToAttachment = file => ({
-  name: file.name,
-  url: file.storedObjects[0].url,
-})
-
 const ReadonlyFormTemplate = ({
   form,
   formData,
@@ -144,82 +106,9 @@ const ReadonlyFormTemplate = ({
       {!showPreviewMetadataOnly && (
         <>
           {!hideSpecialInstructions && (
-            <SectionRowGrid>
-              <Heading>Special Instructions</Heading>
-              <Cell>
-                {getNote(manuscript?.meta?.notes || [], 'specialInstructions')
-                  .content || 'None'}
-              </Cell>
-            </SectionRowGrid>
+            <SpecialInstructions manuscript={manuscript} />
           )}
-          {/* TODO refactor the following sections for code reuse */}
-          {getSupplementaryFiles(manuscript.files).length > 0 && (
-            <SectionRowGrid>
-              <Heading>
-                {getSupplementaryFiles(manuscript.files).length} supplementary{' '}
-                {getSupplementaryFiles(manuscript.files).length === 1
-                  ? 'file'
-                  : 'files'}
-                :
-              </Heading>
-              {!!getSupplementaryFiles(manuscript.files).length && (
-                <Cell>
-                  {getSupplementaryFiles(manuscript.files).map(file => (
-                    <Attachment
-                      file={filesToAttachment(file)}
-                      key={file.storedObjects[0].url}
-                      uploaded
-                    />
-                  ))}
-                </Cell>
-              )}
-            </SectionRowGrid>
-          )}
-          {getManuscriptFiles(manuscript.files).length > 0 && (
-            <SectionRowGrid>
-              <Heading>
-                {getManuscriptFiles(manuscript.files).length} manuscript{' '}
-                {getManuscriptFiles(manuscript.files).length === 1
-                  ? 'file'
-                  : 'files'}
-                :
-              </Heading>
-              {!!getManuscriptFiles(manuscript.files).length && (
-                <Cell>
-                  {getManuscriptFiles(manuscript.files).map(file => (
-                    <Attachment
-                      file={filesToAttachment(file)}
-                      key={file.storedObjects[0].url}
-                      uploaded
-                    />
-                  ))}
-                </Cell>
-              )}
-            </SectionRowGrid>
-          )}
-          {getManuscriptImageFiles(manuscript.files).length > 0 && (
-            <SectionRowGrid>
-              <Heading>
-                {getManuscriptImageFiles(manuscript.files).length} manuscript
-                image{' '}
-                {getManuscriptImageFiles(manuscript.files).length === 1
-                  ? 'file'
-                  : 'files'}
-                :
-              </Heading>
-              {!!getManuscriptImageFiles(manuscript.files).length && (
-                <Cell>
-                  {getManuscriptImageFiles(manuscript.files).map(file => (
-                    <Attachment
-                      file={filesToAttachment(file)}
-                      key={file.storedObjects[0].url}
-                      uploaded
-                    />
-                  ))}
-                </Cell>
-              )}
-            </SectionRowGrid>
-          )}
+          <ManuscriptFilesList files={manuscript.files} />
         </>
       )}
     </SectionContent>

@@ -29,6 +29,7 @@ const DecisionVersions = props => {
     createTeam,
     updateReview,
     reviewByCurrentUser,
+    reviewForm,
     reviewers,
     teamLabels,
     canHideReviews,
@@ -79,6 +80,7 @@ const DecisionVersions = props => {
                 publishManuscript={publishManuscript}
                 reviewByCurrentUser={reviewByCurrentUser}
                 reviewers={reviewers}
+                reviewForm={reviewForm}
                 sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
                 teamLabels={teamLabels}

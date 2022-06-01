@@ -209,6 +209,7 @@ const DecisionPage = ({ match }) => {
     manuscript,
     submissionForm,
     decisionForm: decisionFormOuter,
+    reviewForm: reviewFormOuter,
     currentUser,
     users,
   } = data
@@ -221,6 +222,13 @@ const DecisionPage = ({ match }) => {
   }
 
   const decisionForm = decisionFormOuter?.structure ?? {
+    name: '',
+    children: [],
+    description: '',
+    haspopup: 'false',
+  }
+
+  const reviewForm = reviewFormOuter?.structure ?? {
     name: '',
     children: [],
     description: '',
@@ -284,6 +292,7 @@ const DecisionPage = ({ match }) => {
       publishManuscript={publishManuscript}
       reviewByCurrentUser={initialValues}
       reviewers={data?.manuscript?.reviews}
+      reviewForm={reviewForm}
       sendChannelMessageCb={sendChannelMessageCb}
       sendNotifyEmail={sendNotifyEmail}
       teamLabels={config.teams}

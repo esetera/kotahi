@@ -166,6 +166,10 @@ export const query = gql`
       ${formFields}
     }
 
+    reviewForm: formForPurposeAndCategory(purpose: "review", category: "review") {
+      ${formFields}
+    }
+
     users {
       id
       username

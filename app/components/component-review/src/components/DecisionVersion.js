@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { set, debounce } from 'lodash'
-import DecisionForm from './decision/DecisionForm'
 import DecisionReviews from './decision/DecisionReviews'
 import AssignEditorsReviewers from './assignEditors/AssignEditorsReviewers'
 import AssignEditor from './assignEditors/AssignEditor'
@@ -45,6 +44,7 @@ const DecisionVersion = ({
   createTeam,
   updateReview,
   reviewByCurrentUser,
+  reviewForm,
   reviewers,
   teamLabels,
   canHideReviews,
@@ -91,21 +91,6 @@ const DecisionVersion = ({
   useEffect(() => {
     existingReview.current = reviewOrInitial(version)
   }, [version.reviews])
-
-  const updateReviewForVersion = manuscriptId => review => {
-    const reviewData = {
-      manuscriptId,
-      isDecision: true,
-    }
-
-    const results = updateReview(
-      existingReview.current.id,
-      reviewData,
-      manuscriptId,
-    )
-
-    return results
-  }
 
   const editorSection = addEditor(
     version,
@@ -241,6 +226,7 @@ const DecisionVersion = ({
                 canHideReviews={canHideReviews}
                 manuscript={version}
                 reviewers={reviewers}
+                reviewForm={reviewForm}
                 updateReview={updateReview}
                 urlFrag={urlFrag}
               />
@@ -248,28 +234,37 @@ const DecisionVersion = ({
           )}
           {current && (
             <AdminSection key="decision-form">
-              <DecisionForm
-                createFile={createFile}
-                decisionForm={decisionForm}
-                deleteFile={deleteFile}
-                manuscriptId={version.id}
-                manuscriptShortId={version.shortId}
-                manuscriptStatus={version.status}
-                onSubmit={async (values, actions) => {
-                  await makeDecision({
-                    variables: {
-                      id: version.id,
-                      decision: values.verdict,
-                    },
-                  })
-                  actions.setSubmitting(false)
-                }}
-                reviewByCurrentUser={reviewByCurrentUser}
-                updateReview={updateReviewForVersion(version.id)}
-                updateReviewJsonData={updateReviewJsonData}
-                urlFrag={urlFrag}
-                validateDoi={validateDoi}
-              />
+              <SectionContent>
+                <FormTemplate
+                  createFile={createFile}
+                  deleteFile={deleteFile}
+                  form={decisionForm}
+                  initialValues={
+                    reviewByCurrentUser?.jsonData
+                      ? JSON.parse(reviewByCurrentUser?.jsonData)
+                      : {}
+                  }
+                  isSubmission={false}
+                  manuscriptId={version.id}
+                  manuscriptShortId={version.shortId}
+                  manuscriptStatus={version.status}
+                  onChange={updateReviewJsonData}
+                  onSubmit={async (values, actions) => {
+                    await makeDecision({
+                      variables: {
+                        id: version.id,
+                        decision: values.verdict,
+                      },
+                    })
+                    actions.setSubmitting(false)
+                  }}
+                  reviewId={reviewByCurrentUser.id}
+                  showEditorOnlyFields
+                  submissionButtonText="Submit"
+                  urlFrag={urlFrag}
+                  validateDoi={validateDoi}
+                />
+              </SectionContent>
             </AdminSection>
           )}
           {current && (
