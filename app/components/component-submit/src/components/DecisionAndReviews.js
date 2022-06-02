@@ -1,9 +1,7 @@
 import React from 'react'
-import { Attachment } from '@pubsweet/ui'
 
 // TODO: Sort out the imports, perhaps make DecisionReview a shared component?
 import DecisionReview from '../../../component-review/src/components/decision/DecisionReview'
-import { UserAvatar } from '../../../component-avatar/src'
 import useCurrentUser from '../../../../hooks/useCurrentUser'
 import ReadonlyFormTemplate from '../../../component-review/src/components/metadata/ReadonlyFormTemplate'
 
@@ -14,43 +12,7 @@ import {
   SectionContent,
 } from '../../../shared'
 
-// TODO remove, and rename NewDecision to Decision.
-const Decision = ({ decision, editor }) =>
-  decision ? (
-    <>
-      <SectionRow>
-        <p>Decision: {decision.recommendation}.</p>
-      </SectionRow>
-      <SectionRow>
-        <p>Comment:</p>
-        <p
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{
-            __html: decision?.decisionComment?.content,
-          }}
-        />
-      </SectionRow>
-      {decision?.decisionComment?.files?.length > 0 && (
-        <SectionRow>
-          {decision.decisionComment.files.map(f => (
-            <Attachment
-              file={{ ...f, url: f.storedObjects[0].url }}
-              key={f.storedObjects[0].url}
-              uploaded
-            />
-          ))}
-        </SectionRow>
-      )}
-      <SectionRow>
-        <UserAvatar username={editor?.username} />
-        Written by {editor?.username}
-      </SectionRow>
-    </>
-  ) : (
-    <SectionRow>Pending.</SectionRow>
-  )
-
-const NewDecision = ({ decisionForm, manuscript }) => {
+const Decision = ({ decisionForm, manuscript }) => {
   const decisionDataString = manuscript.reviews.find(r => r.isDecision)
     ?.jsonData
 
@@ -114,8 +76,7 @@ const DecisionAndReviews = ({ manuscript, forms }) => {
         <SectionHeader>
           <Title>Decision</Title>
         </SectionHeader>
-        {/* Swap Decision and NewDecision depending on the version you want to use */}
-        <NewDecision
+        <Decision
           decisionForm={decisionForm}
           editor={decision?.user}
           manuscript={manuscript}
