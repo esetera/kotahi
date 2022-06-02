@@ -122,6 +122,7 @@ const formFields = `
       options {
         id
         label
+        labelColor
         value
       }
       validate {
