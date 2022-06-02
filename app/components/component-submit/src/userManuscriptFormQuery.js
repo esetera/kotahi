@@ -31,8 +31,11 @@ export const fragmentFields = `
     name
     tags
     storedObjects {
+      extension
       key
       mimetype
+      size
+      type
       url
     }
   }

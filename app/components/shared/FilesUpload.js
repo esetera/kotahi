@@ -169,8 +169,7 @@ const FilesUpload = ({
       },
     })
 
-    // Merge the new and existing files
-    onChange([...existingFiles, data.createFile], fieldName)
+    // No need for onChange.
 
     return data
   }
