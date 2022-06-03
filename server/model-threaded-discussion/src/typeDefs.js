@@ -37,6 +37,16 @@ type ThreadedCommentVersion {
   userId: ID!
   comment: String!
 }
+
+input CreateThreadedDiscussionsInput {
+  created: DateTime
+  comment: String
+  manuscriptId: ID!
+}
+
+extend type Mutation {
+  createThreadedDiscussions(threadedDiscussion: CreateThreadedDiscussionsInput!): ThreadedDiscussion
+}
 `
 
 module.exports = typeDefs

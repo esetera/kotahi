@@ -152,6 +152,7 @@ const DecisionPage = ({ match }) => {
         __typename: 'File',
         id: fileToDelete,
       })
+      
 
       cache.evict({ id })
     },

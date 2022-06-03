@@ -1,4 +1,5 @@
 import { required } from '../../../../xpub-validators/src'
+// import { ThreadedDiscussion } from '../builderComponents'
 
 const textfield = {
   component: 'TextField',
@@ -303,15 +304,6 @@ const elements = {
     options: optionfield,
     inline: radiofield,
     sectioncss: textarea,
-    shortDescription: shortDescriptionField,
-    validate: validateOther,
-    includeInReviewerPreview: reviewerPreviewField,
-    hideFromAuthors: hideFromAuthorsField,
-  },
-  ThreadedDiscussion: {
-    title: requiredTextField,
-    name: nameField,
-    description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
     includeInReviewerPreview: reviewerPreviewField,
