@@ -72,37 +72,27 @@ const updateAndRepackageForGraphql = async ms => {
   return repackageForGraphql(updatedMs)
 }
 
-const regenerateFileUrisInReviews = async (reviews, forms) => {
-  return Promise.all(
-    reviews.map(async review => {
-      const form = review.isDecision
-        ? forms.find(f => f.purpose === 'decision' && f.category === 'decision')
-        : forms.find(f => f.purpose === 'review' && f.category === 'review')
+/* eslint-disable no-restricted-syntax, no-await-in-loop */
+const regenerateFileUrisInReviews = async (manuscript, forms) => {
+  for (const review of manuscript.reviews) {
+    const form = review.isDecision
+      ? forms.find(f => f.purpose === 'decision' && f.category === 'decision')
+      : forms.find(f => f.purpose === 'review' && f.category === 'review')
 
-      const fileFieldNames = form.structure.children
-        .filter(field => field.component === 'SupplementaryFiles')
-        .map(field => field.name)
+    const fileFieldNames = form.structure.children
+      .filter(field => field.component === 'SupplementaryFiles')
+      .map(field => field.name)
 
-      const newReview = { ...review, jsonData: { ...review.jsonData } }
-
-      // eslint-disable-next-line no-restricted-syntax
-      for (const [key, value] of Object.entries(review.jsonData)) {
-        if (fileFieldNames.includes(key) && value.length) {
-          const val =
-            typeof value[0] === 'string' ? value : value.map(v => v.id) // TODO store files in form as IDs only, then this is not needed.
-
-          // eslint-disable-next-line no-await-in-loop
-          const files = await models.File.query().findByIds(val)
-
-          // eslint-disable-next-line no-await-in-loop
-          newReview.jsonData[key] = await getFilesWithUrl(files)
-        }
+    for (const [key, value] of Object.entries(review.jsonData)) {
+      if (fileFieldNames.includes(key) && value.length) {
+        const val = typeof value[0] === 'string' ? value : value.map(v => v.id) // TODO store files in form as IDs only, then this is not needed.
+        const files = await models.File.query().findByIds(val)
+        review.jsonData[key] = await getFilesWithUrl(files)
       }
-
-      return newReview
-    }),
-  )
+    }
+  }
 }
+/* eslint-enable no-restricted-syntax, no-await-in-loop */
 
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
@@ -984,11 +974,7 @@ const resolvers = {
       manuscript.files = await getFilesWithUrl(manuscript.files)
 
       const forms = await models.Form.query()
-      manuscript.reviews = await regenerateFileUrisInReviews(
-        manuscript.reviews,
-        forms,
-      )
-      // TODO also getFilesWithUrl for reviews files in jsonData
+      await regenerateFileUrisInReviews(manuscript, forms)
 
       if (typeof manuscript.meta.source === 'string') {
         manuscript.meta.source = await replaceImageSrc(
