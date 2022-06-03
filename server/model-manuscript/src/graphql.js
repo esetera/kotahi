@@ -53,12 +53,55 @@ const repackageForGraphql = ms => {
 }
 
 const updateAndRepackageForGraphql = async ms => {
+  const groomedMs = {
+    ...ms,
+    files: (ms.files || []).map(f => ({
+      id: f.id,
+      name: f.name,
+      tags: f.tags || [],
+      storedObjects: f.storedObjects,
+      // type, extension, size,
+    })),
+  }
+
   const updatedMs = await models.Manuscript.query().updateAndFetchById(
-    ms.id,
-    ms,
+    groomedMs.id,
+    groomedMs,
   )
 
   return repackageForGraphql(updatedMs)
+}
+
+const regenerateFileUrisInReviews = async (reviews, forms) => {
+  return Promise.all(
+    reviews.map(async review => {
+      const form = review.isDecision
+        ? forms.find(f => f.purpose === 'decision' && f.category === 'decision')
+        : forms.find(f => f.purpose === 'review' && f.category === 'review')
+
+      const fileFieldNames = form.structure.children
+        .filter(field => field.component === 'SupplementaryFiles')
+        .map(field => field.name)
+
+      const newReview = { ...review, jsonData: { ...review.jsonData } }
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const [key, value] of Object.entries(review.jsonData)) {
+        if (fileFieldNames.includes(key) && value.length) {
+          const val =
+            typeof value[0] === 'string' ? value : value.map(v => v.id) // TODO store files in form as IDs only, then this is not needed.
+
+          // eslint-disable-next-line no-await-in-loop
+          const files = await models.File.query().findByIds(val)
+
+          // eslint-disable-next-line no-await-in-loop
+          newReview.jsonData[key] = await getFilesWithUrl(files)
+        }
+      }
+
+      return newReview
+    }),
+  )
 }
 
 const ManuscriptResolvers = ({ isVersion }) => {
@@ -192,8 +235,7 @@ const commonUpdateManuscript = async (id, input, ctx) => {
     updatedMs.submission.editDate = new Date().toISOString().split('T')[0]
   }
 
-  uploadAndConvertBase64ImagesInManuscript(updatedMs)
-
+  await uploadAndConvertBase64ImagesInManuscript(updatedMs)
   return updateAndRepackageForGraphql(updatedMs)
 }
 
@@ -940,6 +982,13 @@ const resolvers = {
       }
 
       manuscript.files = await getFilesWithUrl(manuscript.files)
+
+      const forms = await models.Form.query()
+      manuscript.reviews = await regenerateFileUrisInReviews(
+        manuscript.reviews,
+        forms,
+      )
+      // TODO also getFilesWithUrl for reviews files in jsonData
 
       if (typeof manuscript.meta.source === 'string') {
         manuscript.meta.source = await replaceImageSrc(
