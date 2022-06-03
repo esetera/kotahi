@@ -128,12 +128,14 @@ const ReviewLayout = ({
                 createFile={createFile}
                 deleteFile={deleteFile}
                 form={reviewForm}
+                initializeReview={null}
                 initialValues={reviewData}
                 manuscriptId={latestVersion.id}
                 manuscriptShortId={latestVersion.shortId}
                 manuscriptStatus={latestVersion.status}
                 onChange={updateReviewJsonData}
                 onSubmit={onSubmit}
+                shouldStoreFilesInForm
                 showEditorOnlyFields={false}
                 submissionButtonText="Submit"
                 validateDoi={validateDoi}

@@ -135,7 +135,7 @@ DropzoneAndList.defaultProps = {
 
 const FilesUpload = ({
   fileType,
-  fieldName = 'files',
+  fieldName,
   manuscriptId,
   reviewId,
   initializeReview,
@@ -169,7 +169,7 @@ const FilesUpload = ({
       },
     })
 
-    // No need for onChange.
+    if (onChange) onChange([...existingFiles, data.createFile.id], fieldName)
 
     return data
   }
@@ -178,12 +178,14 @@ const FilesUpload = ({
     const { data } = await deleteF({ variables: { id: file.id } })
     remove(index)
 
-    const filteredFiles = existingFiles.filter(
-      currFile => currFile.id !== file.id,
-    )
+    if (onChange) {
+      const filteredFiles = existingFiles.filter(
+        currFile => currFile !== file.id,
+      )
 
-    // Update the new array with the file deleted
-    onChange(filteredFiles, fieldName)
+      // Update the new array with the file deleted
+      onChange(filteredFiles, fieldName)
+    }
 
     return data
   }
@@ -209,9 +211,12 @@ const FilesUpload = ({
 FilesUpload.propTypes = {
   /** The type of attachment, e.g. 'manuscript' (for embedded images), or 'supplementary', 'visualAbstract', 'review', 'confidential', 'decision' */
   fileType: PropTypes.string.isRequired,
-  fieldName: PropTypes.string,
+  fieldName: PropTypes.string.isRequired,
   /** All files belong to a manuscript */
   manuscriptId: PropTypes.string.isRequired,
+  /** only supply onChange if you want the field data to contain the list of file IDs.
+   * For submissions we don't store these in the form. */
+  onChange: PropTypes.func,
   /** Some files may be attached to a review comment (or review decision).
    * If the review hasn't been started yet there may not be an ID
    * assigned for it yet, in which case initializeReview will be
@@ -228,10 +233,10 @@ FilesUpload.propTypes = {
 }
 
 FilesUpload.defaultProps = {
-  fieldName: 'files',
   reviewId: null,
   initializeReview: undefined,
   acceptMultiple: true,
+  onChange: null,
   mimeTypesToAccept: undefined,
 }
 

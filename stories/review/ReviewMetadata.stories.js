@@ -3,7 +3,7 @@ import { JournalProvider } from '../../app/components/xpub-journal/src'
 import { XpubProvider } from '../../app/components/xpub-with-context/src'
 import * as journal from '../../config/journal'
 import DesignEmbed from '../common/utils'
-import ReviewMetadata from '../../app/components/component-review/src/components/metadata/ReviewMetadata'
+import ReadOnlyFormTemplate from '../../app/components/component-review/src/components/metadata/ReadonlyFormTemplate'
 
 export const Base = args => (
   <XpubProvider>
@@ -23,7 +23,7 @@ export const Base = args => (
             <h2 style={{ color: '#333333' }}>Component</h2>
           </>
         )}
-        <ReviewMetadata {...args} />
+        <ReadOnlyFormTemplate {...args} />
       </>
     </JournalProvider>
   </XpubProvider>
@@ -1269,7 +1269,7 @@ EmptyReviewMetadaForm.args = {
 
 export default {
   title: 'Review/ReviewMetadata',
-  component: ReviewMetadata,
+  component: ReadOnlyFormTemplate,
   parameters: {
     docs: {
       page: () => (

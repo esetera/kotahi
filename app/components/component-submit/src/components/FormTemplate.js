@@ -154,6 +154,8 @@ const InnerFormTemplate = ({
   deleteFile,
   isSubmission,
   reviewId,
+  shouldStoreFilesInForm,
+  initializeReview,
 }) => {
   const submitButton = (text, haspopup = false) => {
     return (
@@ -247,9 +249,11 @@ const InnerFormTemplate = ({
                   <FilesUpload
                     createFile={createFile}
                     deleteFile={deleteFile}
+                    fieldName={element.name}
                     fileType="supplementary"
+                    initializeReview={initializeReview}
                     manuscriptId={manuscriptId}
-                    onChange={onChange}
+                    onChange={shouldStoreFilesInForm ? onChange : null}
                     reviewId={reviewId}
                     values={values}
                   />
@@ -259,10 +263,12 @@ const InnerFormTemplate = ({
                     acceptMultiple={false}
                     createFile={createFile}
                     deleteFile={deleteFile}
+                    fieldName={element.name}
                     fileType="visualAbstract"
+                    initializeReview={initializeReview}
                     manuscriptId={manuscriptId}
                     mimeTypesToAccept="image/*"
-                    onChange={onChange}
+                    onChange={shouldStoreFilesInForm ? onChange : null}
                     values={values}
                   />
                 )}
@@ -370,6 +376,8 @@ const FormTemplate = ({
   deleteFile,
   isSubmission,
   reviewId,
+  shouldStoreFilesInForm,
+  initializeReview,
 }) => {
   const [confirming, setConfirming] = React.useState(false)
 
@@ -395,12 +403,14 @@ const FormTemplate = ({
           {...formProps}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
           form={form}
+          initializeReview={initializeReview}
           manuscriptId={manuscriptId}
           manuscriptShortId={manuscriptShortId}
           manuscriptStatus={manuscriptStatus}
           onChange={onChange}
           republish={republish}
           reviewId={reviewId}
+          shouldStoreFilesInForm={shouldStoreFilesInForm}
           showEditorOnlyFields={showEditorOnlyFields}
           submissionButtonText={submissionButtonText}
           urlFrag={urlFrag}
@@ -456,6 +466,8 @@ FormTemplate.propTypes = {
   republish: PropTypes.func,
   submissionButtonText: PropTypes.string,
   showEditorOnlyFields: PropTypes.bool.isRequired,
+  shouldStoreFilesInForm: PropTypes.bool,
+  initializeReview: PropTypes.func,
 }
 FormTemplate.defaultProps = {
   onSubmit: undefined,
@@ -463,6 +475,8 @@ FormTemplate.defaultProps = {
   republish: null,
   submissionButtonText: '',
   manuscriptStatus: null,
+  shouldStoreFilesInForm: false,
+  initializeReview: null,
 }
 
 export default FormTemplate
