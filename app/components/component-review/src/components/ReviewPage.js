@@ -149,6 +149,7 @@ const formStructure = `
       options {
         id
         label
+        labelColor
         value
       }
       validate {
@@ -191,6 +192,10 @@ const query = gql`
     }
 
     reviewForm: formForPurposeAndCategory(purpose: "review", category: "review") {
+      ${formStructure}
+    }
+
+    decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision") {
       ${formStructure}
     }
   }
@@ -291,6 +296,13 @@ const ReviewPage = ({ match, ...props }) => {
   }
 
   const reviewForm = data.reviewForm?.structure ?? {
+    name: '',
+    children: [],
+    description: '',
+    haspopup: 'false',
+  }
+
+  const decisionForm = data.decisionForm?.structure ?? {
     name: '',
     children: [],
     description: '',
@@ -414,6 +426,7 @@ const ReviewPage = ({ match, ...props }) => {
       channelId={channelId}
       createFile={createFile}
       currentUser={currentUser}
+      decisionForm={decisionForm}
       deleteFile={deleteFile}
       onSubmit={values =>
         handleSubmit({

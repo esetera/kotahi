@@ -3,14 +3,12 @@ import PropTypes from 'prop-types'
 
 import moment from 'moment'
 import { Tabs } from '@pubsweet/ui'
-import { Formik } from 'formik'
 
 import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
 import Review from './Review'
 import EditorSection from '../decision/EditorSection'
 import { Columns, Manuscript, Chat, SectionContent } from '../../../../shared'
 import MessageContainer from '../../../../component-chat/src/MessageContainer'
-import ArticleEvaluationSummaryPage from '../../../../component-decision-viewer'
 import SharedReviewerGroupReviews from './SharedReviewerGroupReviews'
 import FormTemplate from '../../../../component-submit/src/components/FormTemplate'
 
@@ -33,23 +31,19 @@ const ReviewLayout = ({
   createFile,
   deleteFile,
   validateDoi,
+  decisionForm,
 }) => {
   const reviewSections = []
   const latestVersion = versions[0]
   const priorVersions = versions.slice(1)
   priorVersions.reverse() // Convert to chronological order (was reverse-chron)
 
-  const decision =
-    latestVersion.reviews.find(
-      reviewIsDecision => reviewIsDecision.isDecision,
-    ) || {}
+  const decision = latestVersion.reviews.find(r => r.isDecision) || {}
 
   const decisionJson = JSON.parse(decision?.jsonData || '{}')
   let decisionComment = decisionJson.comment || null
   if (!decisionComment || decisionComment === '<p class="paragraph"></p>')
     decisionComment = '<i>No evaluation summary found</i>'
-
-  const decisionRadio = latestVersion.status
 
   priorVersions.forEach(msVersion => {
     if (msVersion.reviews?.some(r => !r.user))
@@ -143,21 +137,12 @@ const ReviewLayout = ({
             </SectionContent>
           )}
           {['colab'].includes(process.env.INSTANCE_NAME) && (
-            <Formik
-              initialValues={{}}
-              onSubmit={
-                values => console.log('ArticleEvaluationSummaryPage submit') // TODO
-              }
-              validateOnMount={revw =>
-                !!revw.id && !!revw.comment && !!revw.verdict
-              }
-            >
-              <ArticleEvaluationSummaryPage // TODO Why do we need this extra evaluation?
-                decisionComment={decisionComment}
-                decisionRadio={decisionRadio}
-                updateReview={updateReview}
-              />
-            </Formik>
+            <ReadonlyFormTemplate
+              form={decisionForm}
+              formData={JSON.parse(decision.jsonData || '{}')}
+              manuscript={latestVersion}
+              title="Evaluation summary"
+            />
           )}
         </div>
       ),
