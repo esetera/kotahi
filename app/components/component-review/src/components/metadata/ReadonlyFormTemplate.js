@@ -145,11 +145,12 @@ ReadonlyFormTemplate.propTypes = {
     ),
   }).isRequired,
   showPreviewMetadataOnly: PropTypes.bool,
-  showEditorOnlyFields: PropTypes.bool.isRequired,
+  showEditorOnlyFields: PropTypes.bool,
 }
 
 ReadonlyFormTemplate.defaultProps = {
   showPreviewMetadataOnly: false,
+  showEditorOnlyFields: false,
 }
 
 export default ReadonlyFormTemplate

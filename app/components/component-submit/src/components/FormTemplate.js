@@ -3,16 +3,15 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
 import { unescape, set } from 'lodash'
-import {
-  TextField,
-  RadioGroup,
-  CheckboxGroup,
-  Button,
-  Attachment,
-} from '@pubsweet/ui'
+import { TextField, RadioGroup, CheckboxGroup, Button } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
-import { Section as Container, Select, FilesUpload } from '../../../shared'
+import {
+  Section as Container,
+  Select,
+  FilesUpload,
+  Attachment,
+} from '../../../shared'
 import { Heading1, Section, Legend, SubNote } from '../style'
 import AuthorsInput from './AuthorsInput'
 import LinksInput from './LinksInput'
@@ -49,11 +48,6 @@ const NoteRight = styled.div`
   line-height: ${th('lineHeightBaseSmall')};
   text-align: right;
 `
-
-const filesToAttachment = file => ({
-  name: file.name,
-  url: file.storedObjects[0].url,
-})
 
 const filterFileManuscript = files =>
   files.filter(
@@ -212,6 +206,11 @@ const InnerFormTemplate = ({
           values.status === 'submitted')
       : true) // TODO What are the conditions for showing the submit button in review and decision pages?
 
+  const manuscriptFiles = filterFileManuscript(values.files || [])
+
+  const submittedManuscriptFile =
+    isSubmission && manuscriptFiles.length ? manuscriptFiles[0] : null
+
   return (
     <Container>
       {displayShortIdAsIdentifier && (
@@ -330,12 +329,12 @@ const InnerFormTemplate = ({
             )
           })}
 
-        {isSubmission && filterFileManuscript(values.files || []).length > 0 ? (
+        {submittedManuscriptFile ? (
           <Section id="files.manuscript">
             <Legend space>Submitted Manuscript</Legend>
             <Attachment
-              file={filesToAttachment(filterFileManuscript(values.files)[0])}
-              key={filterFileManuscript(values.files)[0].storedObjects[0].url}
+              file={submittedManuscriptFile}
+              key={submittedManuscriptFile.storedObjects[0].url}
               uploaded
             />
           </Section>

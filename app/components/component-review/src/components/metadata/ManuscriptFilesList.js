@@ -1,15 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Attachment } from '@pubsweet/ui'
+import { Attachment } from '../../../../shared'
 import { SectionRowGrid, Heading, Cell } from '../style'
-
-// Due to migration to new Data Model
-// Attachement component needs different data structure to work
-// TODO change the pubsweet ui Attachement to support the new Data Model
-const filesToAttachment = file => ({
-  name: file.name,
-  url: file.storedObjects[0].url,
-})
 
 const FilesList = ({ files, tag, name }) => {
   const filesWithTag = (files || []).filter(file => file.tags.includes(tag))
@@ -23,11 +15,7 @@ const FilesList = ({ files, tag, name }) => {
       </Heading>
       <Cell>
         {filesWithTag.map(file => (
-          <Attachment
-            file={filesToAttachment(file)}
-            key={file.storedObjects[0].url}
-            uploaded
-          />
+          <Attachment file={file} key={file.storedObjects[0].url} uploaded />
         ))}
       </Cell>
     </SectionRowGrid>
