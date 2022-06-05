@@ -60,7 +60,7 @@ const filterFileManuscript = files =>
 /** Definitions for available field types */
 const elements = {
   TextField,
-  RadioGroup: SafeRadioGroup, // TODO Create our own RadioGroup that shows colors
+  RadioGroup: SafeRadioGroup,
   CheckboxGroup,
   AuthorsInput,
   Select,
@@ -204,7 +204,7 @@ const InnerFormTemplate = ({
       ? !['submitted', 'revise'].includes(values.status) ||
         (['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) &&
           values.status === 'submitted')
-      : true) // TODO What are the conditions for showing the submit button in review and decision pages?
+      : true)
 
   const manuscriptFiles = filterFileManuscript(values.files || [])
 

@@ -62,15 +62,6 @@ const Submit = ({
       (['new', 'revising'].includes(manuscript.status) ||
         (currentUser.admin && manuscript.status !== 'rejected'))
 
-    // const hasDecision = !!manuscript.reviews.find(r => r.isDecision) // TODO unsafe, since this will also find unsubmitted decisions
-
-    // TODO: Factor in Manuscript Status for determining decision
-
-    // const decisionVerdict = JSON.parse(decision.jsonData).verdict
-    // const hasDecision = !['new', 'submitted', 'revising'].includes(
-    //   decisionVerdict,
-    // )
-
     const hasDecision = !['new', 'submitted', 'revising'].includes(
       manuscript.status,
     )
