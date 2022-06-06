@@ -1,28 +1,13 @@
 const models = require('@pubsweet/models')
-const { mergeWith, isArray } = require('lodash')
 const File = require('@coko/server/src/models/file/file.model')
 const { getFilesWithUrl } = require('../../utils/fileStorageUtils')
+const { deepMergeObjectsReplacingArrays } = require('../../utils/objectUtils')
+const { getReviewForm } = require('./reviewCommsUtils')
 
 const {
   convertFilesToIdsOnly,
   convertFilesToFullObjects,
 } = require('./reviewUtils')
-
-const mergeArrays = (destination, source) => {
-  if (isArray(destination)) return source
-  return undefined
-}
-
-const getForm = async isDecision => {
-  const form = await models.Form.query().where({
-    category: isDecision ? 'decision' : 'review',
-    purpose: isDecision ? 'decision' : 'review',
-  })
-
-  if (!form || !form.length)
-    throw new Error(`No form found for "${isDecision ? 'decision' : 'review'}"`)
-  return form[0]
-}
 
 const resolvers = {
   Mutation: {
@@ -31,9 +16,13 @@ const resolvers = {
       if (input.jsonData) reviewDelta.jsonData = JSON.parse(input.jsonData) // Convert the JSON input to JavaScript object
       const existingReview = (await models.Review.query().findById(id)) || {}
 
-      const form = await getForm(existingReview.isDecision)
+      const form = await getReviewForm(existingReview.isDecision)
       await convertFilesToIdsOnly(reviewDelta, form)
-      const updatedReview = mergeWith(existingReview, reviewDelta, mergeArrays)
+
+      const updatedReview = deepMergeObjectsReplacingArrays(
+        existingReview,
+        reviewDelta,
+      )
 
       // Prevent reassignment of userId, manuscriptId or isDecision
       if (existingReview.userId) updatedReview.userId = existingReview.userId

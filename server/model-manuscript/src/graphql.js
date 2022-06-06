@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 const { ref } = require('objection')
 const axios = require('axios')
-const { mergeWith, isArray, map } = require('lodash')
+const { map } = require('lodash')
 const config = require('config')
 const { pubsubManager } = require('@coko/server')
 const models = require('@pubsweet/models')
@@ -34,6 +34,7 @@ const importArticlesFromBiorxivWithFullTextSearch = require('../../import-articl
 const importArticlesFromPubmed = require('../../import-articles/pubmed-import')
 const publishToGoogleSpreadSheet = require('../../publishing/google-spreadsheet')
 const validateApiToken = require('../../utils/validateApiToken')
+const { deepMergeObjectsReplacingArrays } = require('../../utils/objectUtils')
 
 const SUBMISSION_FIELD_PREFIX = 'submission'
 const META_FIELD_PREFIX = 'meta'
@@ -161,11 +162,6 @@ const ManuscriptResolvers = ({ isVersion }) => {
   return resolvers
 }
 
-const mergeArrays = (destination, source) => {
-  if (isArray(destination)) return source
-  return undefined
-}
-
 /** Modifies the supplied manuscript by replacing all inlined base64 images
  *  with actual images stored to file storage */
 const uploadAndConvertBase64ImagesInManuscript = async manuscript => {
@@ -217,7 +213,7 @@ const commonUpdateManuscript = async (id, input, ctx) => {
     .findById(id)
     .withGraphFetched('reviews')
 
-  const updatedMs = mergeWith(ms, msDelta, mergeArrays)
+  const updatedMs = deepMergeObjectsReplacingArrays(ms, msDelta)
 
   // Create a date for new submissions
   if (
@@ -1531,5 +1527,4 @@ const typeDefs = `
 module.exports = {
   typeDefs,
   resolvers,
-  mergeArrays,
 }
