@@ -5,7 +5,7 @@ import * as AbstractField from './AbstractField'
 import * as CheckBox from './CheckBox'
 import * as RadioBox from './RadioBox'
 import * as TextArea from './TextArea'
-import * as ThreadedDiscussion from './ThreadedDiscussion'
+import ThreadedDiscussion from './ThreadedDiscussion'
 import { Select } from '../../../../shared'
 
 export {

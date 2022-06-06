@@ -116,7 +116,7 @@ const ReviewMetadata = ({
 
   return (
     <>
-      <ThreadedDiscussion currentUser={currentUser} />
+      <ThreadedDiscussion currentUser = {currentUser} />
       <SectionContent>
         {!showPreviewMetadataOnly && (
           <SectionHeader>
