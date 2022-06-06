@@ -1,13 +1,27 @@
-// const { flatten } = require('lodash')
-// const Review = require('./review')
 const models = require('@pubsweet/models')
 const { mergeWith, isArray } = require('lodash')
-// const File = require('@coko/server/src/models/file/file.model')
-// const { getFilesWithUrl } = require('../../utils/fileStorageUtils')
+const File = require('@coko/server/src/models/file/file.model')
+const { getFilesWithUrl } = require('../../utils/fileStorageUtils')
+
+const {
+  convertFilesToIdsOnly,
+  convertFilesToFullObjects,
+} = require('./reviewUtils')
 
 const mergeArrays = (destination, source) => {
   if (isArray(destination)) return source
   return undefined
+}
+
+const getForm = async isDecision => {
+  const form = await models.Form.query().where({
+    category: isDecision ? 'decision' : 'review',
+    purpose: isDecision ? 'decision' : 'review',
+  })
+
+  if (!form || !form.length)
+    throw new Error(`No form found for "${isDecision ? 'decision' : 'review'}"`)
+  return form[0]
 }
 
 const resolvers = {
@@ -16,6 +30,9 @@ const resolvers = {
       const reviewDelta = { ...input }
       if (input.jsonData) reviewDelta.jsonData = JSON.parse(input.jsonData) // Convert the JSON input to JavaScript object
       const existingReview = (await models.Review.query().findById(id)) || {}
+
+      const form = await getForm(existingReview.isDecision)
+      await convertFilesToIdsOnly(reviewDelta, form)
       const updatedReview = mergeWith(existingReview, reviewDelta, mergeArrays)
 
       // Prevent reassignment of userId, manuscriptId or isDecision
@@ -25,12 +42,11 @@ const resolvers = {
       if (typeof existingReview.isDecision === 'boolean')
         updatedReview.isDecision = existingReview.isDecision
 
-      updatedReview.jsonData = JSON.stringify(updatedReview.jsonData) // Convert the JavaScript object back to JSON
-
       const review = await models.Review.query().upsertGraphAndFetch(
         {
           id,
           ...updatedReview,
+          jsonData: JSON.stringify(updatedReview.jsonData),
           canBePublishedPublicly: false,
           isHiddenFromAuthor: false,
           isHiddenReviewerName: false,
@@ -42,9 +58,15 @@ const resolvers = {
 
       const userId = input.userId ? input.userId : ctx.user
       const reviewUser = await models.User.query().findById(userId)
-      // TODO insert files into correct location in jsonData
-      // const files = await File.query().where({ objectId: review.id })
-      // files: getFilesWithUrl(files),
+
+      await convertFilesToFullObjects(
+        updatedReview,
+        form,
+        async ids => File.query().findByIds(ids),
+        getFilesWithUrl,
+      )
+
+      updatedReview.jsonData = JSON.stringify(updatedReview.jsonData) // Convert the JavaScript object back to JSON
 
       return {
         id: review.id,

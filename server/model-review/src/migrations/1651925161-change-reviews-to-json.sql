@@ -75,17 +75,3 @@ INSERT INTO reviews (
   LEFT JOIN review_comments conf_c ON (conf_c.review_id = r.id AND conf_c.type = 'confidential')
   LEFT JOIN review_comments d ON (d.review_id = r.id AND d.type = 'decision')
 );
-
--- TODO should files have the following JSON structure?
---  files {
---    id
---    created
---    updated
---    name
---    tags
---    storedObjects {
---      key
---      mimetype
---      url
---    }
---  }

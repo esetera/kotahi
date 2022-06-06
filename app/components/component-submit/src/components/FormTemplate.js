@@ -248,7 +248,7 @@ const InnerFormTemplate = ({
                   <FilesUpload
                     createFile={createFile}
                     deleteFile={deleteFile}
-                    fieldName={element.name}
+                    fieldName={shouldStoreFilesInForm ? element.name : 'files'} // TODO Store files in form for submissions too: should simplify code both frontend and back.
                     fileType="supplementary"
                     initializeReview={initializeReview}
                     manuscriptId={manuscriptId}
@@ -262,7 +262,7 @@ const InnerFormTemplate = ({
                     acceptMultiple={false}
                     createFile={createFile}
                     deleteFile={deleteFile}
-                    fieldName={element.name}
+                    fieldName={shouldStoreFilesInForm ? element.name : 'files'}
                     fileType="visualAbstract"
                     initializeReview={initializeReview}
                     manuscriptId={manuscriptId}
