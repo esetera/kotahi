@@ -47,9 +47,7 @@ const NoteDecision = ({
       {formikBag => (
         <>
           <NoteInput updateReview={updateReview} {...formikBag} />
-          <ThreadedDiscussion
-            currentUser={currentUser}
-          />
+          <ThreadedDiscussion currentUser={currentUser} />
           <FilesUpload
             createFile={createFile}
             deleteFile={deleteFile}

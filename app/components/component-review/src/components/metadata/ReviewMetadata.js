@@ -8,7 +8,7 @@ import lightenBy from '../../../../../shared/lightenBy'
 import SimpleWaxEditor from '../../../../wax-collab/src/SimpleWaxEditor'
 import { Title, SectionHeader, SectionRowGrid } from '../style'
 import { SectionContent } from '../../../../shared'
-import {ThreadedDiscussion} from '../../../../component-formbuilder/src/components/builderComponents'
+import { ThreadedDiscussion } from '../../../../component-formbuilder/src/components/builderComponents'
 
 const Heading = styled.span`
   font-weight: inherit;
@@ -108,7 +108,6 @@ const ReviewMetadata = ({
   displayShortIdAsIdentifier,
   currentUser,
 }) => {
-
   // Parse submission metadata JSON for display purposes
   const manuscript = {
     ...rawManuscript,
@@ -116,9 +115,8 @@ const ReviewMetadata = ({
   }
 
   return (
-    <div>
-   <ThreadedDiscussion
-      currentUser={currentUser}/>
+    <>
+      <ThreadedDiscussion currentUser={currentUser} />
       <SectionContent>
         {!showPreviewMetadataOnly && (
           <SectionHeader>
@@ -135,19 +133,22 @@ const ReviewMetadata = ({
 
         {form.children
           .filter(element => {
-            const includeInPreview = element.includeInReviewerPreview !== 'false'
+            const includeInPreview =
+              element.includeInReviewerPreview !== 'false'
+
             return (
               includeInPreview &&
               (showEditorOnlyFields || element.hideFromAuthors !== 'true')
             )
           })
-          .map(element => !showPreviewMetadataOnly ||
+          .map(element =>
+            !showPreviewMetadataOnly ||
             shouldShowInPreview(element.name, form) ? (
-            <SectionRowGrid key={element.id}>
-              <Heading>{element.shortDescription || element.title}</Heading>
-              <Cell>{showFieldData(manuscript, element.name, form)}</Cell>
-            </SectionRowGrid>
-          ) : null
+              <SectionRowGrid key={element.id}>
+                <Heading>{element.shortDescription || element.title}</Heading>
+                <Cell>{showFieldData(manuscript, element.name, form)}</Cell>
+              </SectionRowGrid>
+            ) : null,
           )}
         {!showPreviewMetadataOnly && (
           <>
@@ -173,7 +174,8 @@ const ReviewMetadata = ({
                       <Attachment
                         file={filesToAttachment(file)}
                         key={file.storedObjects[0].url}
-                        uploaded />
+                        uploaded
+                      />
                     ))}
                   </Cell>
                 )}
@@ -194,7 +196,8 @@ const ReviewMetadata = ({
                       <Attachment
                         file={filesToAttachment(file)}
                         key={file.storedObjects[0].url}
-                        uploaded />
+                        uploaded
+                      />
                     ))}
                   </Cell>
                 )}
@@ -216,17 +219,17 @@ const ReviewMetadata = ({
                       <Attachment
                         file={filesToAttachment(file)}
                         key={file.storedObjects[0].url}
-                        uploaded />
+                        uploaded
+                      />
                     ))}
                   </Cell>
                 )}
-
               </SectionRowGrid>
             )}
           </>
         )}
       </SectionContent>
-      </div>
+    </>
   )
 }
 

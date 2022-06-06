@@ -44,7 +44,7 @@ const Submit = ({
   client,
   createFile,
   deleteFile,
-  threadedDiscussions
+  threadedDiscussions,
 }) => {
   const decisionSections = []
 
@@ -121,10 +121,10 @@ const Submit = ({
           <>
             {hasDecision && <DecisionAndReviews manuscript={manuscript} />}
             <ReviewMetadata
+              currentUser={currentUser}
               form={form}
               manuscript={manuscript}
               showEditorOnlyFields={false}
-              currentUser={currentUser}
             />
           </>
         ),

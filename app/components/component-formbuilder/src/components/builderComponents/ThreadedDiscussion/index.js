@@ -1,10 +1,10 @@
 import React from 'react'
 import { Button } from '@pubsweet/ui'
+import { useQuery } from '@apollo/client'
 import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 import { SimpleWaxEditorWrapper } from '../../style'
 import ThreadedComment from './ThreadedComment'
-import {GET_THREADED_DISCUSSIONS} from './queries'
-import { useQuery } from '@apollo/client'
+import { GET_THREADED_DISCUSSIONS } from './queries'
 
 const ThreadedDiscussion = props => {
   const {

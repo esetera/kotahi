@@ -128,13 +128,13 @@ const DecisionPage = ({ match }) => {
   const [createTeam] = useMutation(createTeamMutation)
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
+
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
       const id = cache.identify({
         __typename: 'File',
         id: fileToDelete,
       })
-      
 
       cache.evict({ id })
     },

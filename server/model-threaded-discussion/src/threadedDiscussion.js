@@ -27,7 +27,7 @@ class ThreadedDiscussion extends BaseModel {
           default: [],
           properties: {
             id: { type: 'string', format: 'uuid' },
-          }
+          },
         },
       },
     }
