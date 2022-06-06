@@ -79,8 +79,15 @@ const regenerateFileUrisInReviews = async (manuscript, forms) => {
       ? forms.find(f => f.purpose === 'decision' && f.category === 'decision')
       : forms.find(f => f.purpose === 'review' && f.category === 'review')
 
+    if (!form)
+      throw new Error(
+        `No form found for "${review.isDecision ? 'decision' : 'review'}"`,
+      )
+
     const fileFieldNames = form.structure.children
-      .filter(field => field.component === 'SupplementaryFiles')
+      .filter(field =>
+        ['SupplementaryFiles', 'VisualAbstract'].includes(field.component),
+      )
       .map(field => field.name)
 
     for (const [key, value] of Object.entries(review.jsonData)) {
