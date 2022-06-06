@@ -281,7 +281,6 @@ const DecisionVersion = ({
                 isValid={isValid}
                 manuscriptId={version.id}
                 submitCount={submitCount}
-                threadedDiscussions={threadedDiscussions}
                 updateReview={updateReviewForVersion(version.id)}
               />
             </AdminSection>

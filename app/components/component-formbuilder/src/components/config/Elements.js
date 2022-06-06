@@ -1,5 +1,4 @@
 import { required } from '../../../../xpub-validators/src'
-// import { ThreadedDiscussion } from '../builderComponents'
 
 const textfield = {
   component: 'TextField',

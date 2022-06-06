@@ -21,7 +21,6 @@ import {
 } from '../style'
 
 import { SectionContent, FilesUpload } from '../../../../shared'
-// import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
 
 // See issue #38
 const RadioGroup = styled(UnstableRadioGroup)`

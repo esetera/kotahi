@@ -85,21 +85,6 @@ const createTeamMutation = gql`
   }
 `
 
-// Move this to `app/components/component-threaded-discussions/src/components/queries.js`
-const GET_THREADED_DISCUSSIONS = gql`
-  query GetThreadedDiscussions {
-    threadedDiscussions {
-      id
-      created
-      updated
-      manuscriptId
-      threads {
-        id
-      }
-    }
-  }
-`
-
 let debouncers = {}
 
 const DecisionPage = ({ match }) => {
@@ -143,9 +128,6 @@ const DecisionPage = ({ match }) => {
   const [createTeam] = useMutation(createTeamMutation)
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
-
-  const ThreadedDiscussions = () => useQuery(GET_THREADED_DISCUSSIONS)
-
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
       const id = cache.identify({
@@ -262,7 +244,6 @@ const DecisionPage = ({ match }) => {
       sendChannelMessageCb={sendChannelMessageCb}
       sendNotifyEmail={sendNotifyEmail}
       teamLabels={config.teams}
-      threadedDiscussions={ThreadedDiscussions}
       toggleConfirming={toggleConfirming}
       updateManuscript={updateManuscript}
       updateReview={updateReview}

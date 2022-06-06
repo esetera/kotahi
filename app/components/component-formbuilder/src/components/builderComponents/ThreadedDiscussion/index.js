@@ -1,8 +1,10 @@
 import React from 'react'
 import { Button } from '@pubsweet/ui'
-import SimpleWaxEditor from '../../../../wax-collab/src/SimpleWaxEditor'
-import { SimpleWaxEditorWrapper } from '../style'
-import ThreadedComment from '../ThreadedComment'
+import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
+import { SimpleWaxEditorWrapper } from '../../style'
+import ThreadedComment from './ThreadedComment'
+import {GET_THREADED_DISCUSSIONS} from './queries'
+import { useQuery } from '@apollo/client'
 
 const ThreadedDiscussion = props => {
   const {
@@ -28,7 +30,7 @@ const ThreadedDiscussion = props => {
     alert(newComment)
   }
 
-  const { data, error, loading } = threadedDiscussions()
+  const { data, error, loading } = useQuery(GET_THREADED_DISCUSSIONS)
 
   return (
     <>

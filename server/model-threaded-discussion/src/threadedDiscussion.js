@@ -21,8 +21,14 @@ class ThreadedDiscussion extends BaseModel {
   static get schema() {
     return {
       properties: {
-        manuscript_id: { type: 'id' },
-        threads: { type: 'jsonb' },
+        manuscript_id: { type: 'string', format: 'uuid' },
+        threads: {
+          type: 'array',
+          default: [],
+          properties: {
+            id: { type: 'string', format: 'uuid' },
+          }
+        },
       },
     }
   }

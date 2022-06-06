@@ -44,6 +44,7 @@ const Submit = ({
   client,
   createFile,
   deleteFile,
+  threadedDiscussions
 }) => {
   const decisionSections = []
 
@@ -123,6 +124,7 @@ const Submit = ({
               form={form}
               manuscript={manuscript}
               showEditorOnlyFields={false}
+              currentUser={currentUser}
             />
           </>
         ),

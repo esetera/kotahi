@@ -36,7 +36,6 @@ const DecisionVersions = props => {
     deleteFile,
     createFile,
     client,
-    threadedDiscussions,
   } = props
 
   const versions = gatherManuscriptVersions(manuscript)
@@ -82,7 +81,6 @@ const DecisionVersions = props => {
                 sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
                 teamLabels={teamLabels}
-                threadedDiscussions={threadedDiscussions}
                 toggleConfirming={toggleConfirming}
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}

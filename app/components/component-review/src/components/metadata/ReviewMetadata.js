@@ -8,6 +8,7 @@ import lightenBy from '../../../../../shared/lightenBy'
 import SimpleWaxEditor from '../../../../wax-collab/src/SimpleWaxEditor'
 import { Title, SectionHeader, SectionRowGrid } from '../style'
 import { SectionContent } from '../../../../shared'
+import {ThreadedDiscussion} from '../../../../component-formbuilder/src/components/builderComponents'
 
 const Heading = styled.span`
   font-weight: inherit;
@@ -105,7 +106,9 @@ const ReviewMetadata = ({
   showPreviewMetadataOnly,
   showEditorOnlyFields,
   displayShortIdAsIdentifier,
+  currentUser,
 }) => {
+
   // Parse submission metadata JSON for display purposes
   const manuscript = {
     ...rawManuscript,
@@ -113,116 +116,117 @@ const ReviewMetadata = ({
   }
 
   return (
-    <SectionContent>
-      {!showPreviewMetadataOnly && (
-        <SectionHeader>
-          <Title>Metadata</Title>
-        </SectionHeader>
-      )}
+    <div>
+   <ThreadedDiscussion
+      currentUser={currentUser}/>
+      <SectionContent>
+        {!showPreviewMetadataOnly && (
+          <SectionHeader>
+            <Title>Metadata</Title>
+          </SectionHeader>
+        )}
 
-      {displayShortIdAsIdentifier && (
-        <SectionRowGrid>
-          <Heading>Manuscript Number</Heading>
-          <Cell>{rawManuscript.shortId}</Cell>
-        </SectionRowGrid>
-      )}
+        {displayShortIdAsIdentifier && (
+          <SectionRowGrid>
+            <Heading>Manuscript Number</Heading>
+            <Cell>{rawManuscript.shortId}</Cell>
+          </SectionRowGrid>
+        )}
 
-      {form.children
-        .filter(element => {
-          const includeInPreview = element.includeInReviewerPreview !== 'false'
-          return (
-            includeInPreview &&
-            (showEditorOnlyFields || element.hideFromAuthors !== 'true')
-          )
-        })
-        .map(element =>
-          !showPreviewMetadataOnly ||
-          shouldShowInPreview(element.name, form) ? (
+        {form.children
+          .filter(element => {
+            const includeInPreview = element.includeInReviewerPreview !== 'false'
+            return (
+              includeInPreview &&
+              (showEditorOnlyFields || element.hideFromAuthors !== 'true')
+            )
+          })
+          .map(element => !showPreviewMetadataOnly ||
+            shouldShowInPreview(element.name, form) ? (
             <SectionRowGrid key={element.id}>
               <Heading>{element.shortDescription || element.title}</Heading>
               <Cell>{showFieldData(manuscript, element.name, form)}</Cell>
             </SectionRowGrid>
-          ) : null,
+          ) : null
+          )}
+        {!showPreviewMetadataOnly && (
+          <>
+            <SectionRowGrid>
+              <Heading>Special Instructions</Heading>
+              <Cell>
+                {getNote(manuscript.meta.notes || [], 'specialInstructions')
+                  .content || 'None'}
+              </Cell>
+            </SectionRowGrid>
+            {getSupplementaryFiles(manuscript.files).length > 0 && (
+              <SectionRowGrid>
+                <Heading>
+                  {getSupplementaryFiles(manuscript.files).length} supplementary{' '}
+                  {getSupplementaryFiles(manuscript.files).length === 1
+                    ? 'file'
+                    : 'files'}
+                  :
+                </Heading>
+                {!!getSupplementaryFiles(manuscript.files).length && (
+                  <Cell>
+                    {getSupplementaryFiles(manuscript.files).map(file => (
+                      <Attachment
+                        file={filesToAttachment(file)}
+                        key={file.storedObjects[0].url}
+                        uploaded />
+                    ))}
+                  </Cell>
+                )}
+              </SectionRowGrid>
+            )}
+            {getManuscriptFiles(manuscript.files).length > 0 && (
+              <SectionRowGrid>
+                <Heading>
+                  {getManuscriptFiles(manuscript.files).length} manuscript{' '}
+                  {getManuscriptFiles(manuscript.files).length === 1
+                    ? 'file'
+                    : 'files'}
+                  :
+                </Heading>
+                {!!getManuscriptFiles(manuscript.files).length && (
+                  <Cell>
+                    {getManuscriptFiles(manuscript.files).map(file => (
+                      <Attachment
+                        file={filesToAttachment(file)}
+                        key={file.storedObjects[0].url}
+                        uploaded />
+                    ))}
+                  </Cell>
+                )}
+              </SectionRowGrid>
+            )}
+            {getManuscriptImageFiles(manuscript.files).length > 0 && (
+              <SectionRowGrid>
+                <Heading>
+                  {getManuscriptImageFiles(manuscript.files).length} manuscript
+                  image{' '}
+                  {getManuscriptImageFiles(manuscript.files).length === 1
+                    ? 'file'
+                    : 'files'}
+                  :
+                </Heading>
+                {!!getManuscriptImageFiles(manuscript.files).length && (
+                  <Cell>
+                    {getManuscriptImageFiles(manuscript.files).map(file => (
+                      <Attachment
+                        file={filesToAttachment(file)}
+                        key={file.storedObjects[0].url}
+                        uploaded />
+                    ))}
+                  </Cell>
+                )}
+
+              </SectionRowGrid>
+            )}
+          </>
         )}
-      {!showPreviewMetadataOnly && (
-        <>
-          <SectionRowGrid>
-            <Heading>Special Instructions</Heading>
-            <Cell>
-              {getNote(manuscript.meta.notes || [], 'specialInstructions')
-                .content || 'None'}
-            </Cell>
-          </SectionRowGrid>
-          {getSupplementaryFiles(manuscript.files).length > 0 && (
-            <SectionRowGrid>
-              <Heading>
-                {getSupplementaryFiles(manuscript.files).length} supplementary{' '}
-                {getSupplementaryFiles(manuscript.files).length === 1
-                  ? 'file'
-                  : 'files'}
-                :
-              </Heading>
-              {!!getSupplementaryFiles(manuscript.files).length && (
-                <Cell>
-                  {getSupplementaryFiles(manuscript.files).map(file => (
-                    <Attachment
-                      file={filesToAttachment(file)}
-                      key={file.storedObjects[0].url}
-                      uploaded
-                    />
-                  ))}
-                </Cell>
-              )}
-            </SectionRowGrid>
-          )}
-          {getManuscriptFiles(manuscript.files).length > 0 && (
-            <SectionRowGrid>
-              <Heading>
-                {getManuscriptFiles(manuscript.files).length} manuscript{' '}
-                {getManuscriptFiles(manuscript.files).length === 1
-                  ? 'file'
-                  : 'files'}
-                :
-              </Heading>
-              {!!getManuscriptFiles(manuscript.files).length && (
-                <Cell>
-                  {getManuscriptFiles(manuscript.files).map(file => (
-                    <Attachment
-                      file={filesToAttachment(file)}
-                      key={file.storedObjects[0].url}
-                      uploaded
-                    />
-                  ))}
-                </Cell>
-              )}
-            </SectionRowGrid>
-          )}
-          {getManuscriptImageFiles(manuscript.files).length > 0 && (
-            <SectionRowGrid>
-              <Heading>
-                {getManuscriptImageFiles(manuscript.files).length} manuscript
-                image{' '}
-                {getManuscriptImageFiles(manuscript.files).length === 1
-                  ? 'file'
-                  : 'files'}
-                :
-              </Heading>
-              {!!getManuscriptImageFiles(manuscript.files).length && (
-                <Cell>
-                  {getManuscriptImageFiles(manuscript.files).map(file => (
-                    <Attachment
-                      file={filesToAttachment(file)}
-                      key={file.storedObjects[0].url}
-                      uploaded
-                    />
-                  ))}
-                </Cell>
-              )}
-            </SectionRowGrid>
-          )}
-        </>
-      )}
-    </SectionContent>
+      </SectionContent>
+      </div>
   )
 }
 

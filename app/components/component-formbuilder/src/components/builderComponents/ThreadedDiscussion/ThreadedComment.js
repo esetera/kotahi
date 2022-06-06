@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Moment from 'react-moment'
 import { Button } from '@pubsweet/ui'
-import Tooltip from '../../../component-reporting/src/Tooltip'
+import Tooltip from '../../../../../component-reporting/src/Tooltip'
 import {
   DateWrapper,
   CommentMetaWrapper,
@@ -15,11 +15,11 @@ import {
   ModalContainer,
   CancelButton,
   CommentContainer,
-} from './style'
-import { Icon } from '../../../shared'
-import { UserAvatar } from '../../../component-avatar/src'
-import Modal from '../../../component-modal/src'
-import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
+} from '../../style'
+import { Icon } from '../../../../../shared'
+import { UserAvatar } from '../../../../../component-avatar/src'
+import Modal from '../../../../../component-modal/src'
+import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 
 const ThreadedComment = props => {
   const { comment, simpleWaxEditorProps, currentUserId } = props

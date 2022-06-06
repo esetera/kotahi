@@ -49,7 +49,6 @@ const NoteDecision = ({
           <NoteInput updateReview={updateReview} {...formikBag} />
           <ThreadedDiscussion
             currentUser={currentUser}
-            threadedDiscussions={threadedDiscussions}
           />
           <FilesUpload
             createFile={createFile}
@@ -197,7 +196,6 @@ const DecisionForm = ({
             currentUser={currentUser}
             deleteFile={deleteFile}
             manuscriptId={manuscriptId}
-            threadedDiscussions={threadedDiscussions}
             updateReview={updateReview}
           />
         </SectionRow>
