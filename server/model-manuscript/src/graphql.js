@@ -3,7 +3,7 @@ const { ref } = require('objection')
 const axios = require('axios')
 const { map } = require('lodash')
 const config = require('config')
-const { pubsubManager } = require('@coko/server')
+const { pubsubManager, File } = require('@coko/server')
 const models = require('@pubsweet/models')
 const cheerio = require('cheerio')
 
@@ -11,7 +11,11 @@ const { getPubsub } = pubsubManager
 const Form = require('../../model-form/src/form')
 const Message = require('../../model-message/src/message')
 const publishToCrossref = require('../../publishing/crossref')
-const { stripSensitiveItems } = require('./manuscriptUtils')
+
+const {
+  stripSensitiveItems,
+  fixMissingValuesInFiles,
+} = require('./manuscriptUtils')
 
 const {
   getFilesWithUrl,
@@ -36,13 +40,20 @@ const publishToGoogleSpreadSheet = require('../../publishing/google-spreadsheet'
 const validateApiToken = require('../../utils/validateApiToken')
 const { deepMergeObjectsReplacingArrays } = require('../../utils/objectUtils')
 
+const {
+  convertFilesToFullObjects,
+} = require('../../model-review/src/reviewUtils')
+
+const { getReviewForm } = require('../../model-review/src/reviewCommsUtils')
+
 const SUBMISSION_FIELD_PREFIX = 'submission'
 const META_FIELD_PREFIX = 'meta'
 
 let isImportInProgress = false
 
-const repackageForGraphql = ms => {
-  const result = { ...ms }
+const repackageForGraphql = async ms => {
+  const result = { ...fixMissingValuesInFiles(ms) }
+  await regenerateAllFileUris(result)
 
   if (result.reviews && typeof result.reviews !== 'string')
     result.reviews = result.reviews.map(review => ({
@@ -54,27 +65,50 @@ const repackageForGraphql = ms => {
 }
 
 const updateAndRepackageForGraphql = async ms => {
-  const groomedMs = {
-    ...ms,
-    files: (ms.files || []).map(f => ({
-      id: f.id,
-      name: f.name,
-      tags: f.tags || [],
-      storedObjects: f.storedObjects,
-      // type, extension, size,
-    })),
-  }
-
   const updatedMs = await models.Manuscript.query().updateAndFetchById(
-    groomedMs.id,
-    groomedMs,
+    ms.id,
+    ms,
   )
 
   return repackageForGraphql(updatedMs)
 }
 
+/* eslint-disable no-param-reassign, no-restricted-syntax, no-await-in-loop */
+const regenerateAllFileUris = async manuscript => {
+  const reviewForm = await getReviewForm(false)
+  const decisionForm = await getReviewForm(true)
+  manuscript.files = await getFilesWithUrl(manuscript.files)
+
+  if (manuscript.reviews) {
+    for (const review of manuscript.reviews)
+      await convertFilesToFullObjects(
+        review,
+        review.isDecision ? decisionForm : reviewForm,
+        async ids => File.query().findByIds(ids),
+        getFilesWithUrl,
+      )
+  }
+
+  if (manuscript.manuscriptVersions) {
+    for (const v of manuscript.manuscriptVersions) {
+      v.files = await getFilesWithUrl(v.files)
+
+      if (v.reviews) {
+        for (const review of v.reviews)
+          await convertFilesToFullObjects(
+            review,
+            review.isDecision ? decisionForm : reviewForm,
+            async ids => File.query().findByIds(ids),
+            getFilesWithUrl,
+          )
+      }
+    }
+  }
+}
+/* eslint-enable no-param-reassign, no-restricted-syntax, no-await-in-loop */
+
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-const regenerateFileUrisInReviews = async (manuscript, forms) => {
+/* const regenerateFileUrisInReviews = async (manuscript, forms) => {
   for (const review of manuscript.reviews) {
     const form = review.isDecision
       ? forms.find(f => f.purpose === 'decision' && f.category === 'decision')
@@ -99,7 +133,7 @@ const regenerateFileUrisInReviews = async (manuscript, forms) => {
       }
     }
   }
-}
+} */
 /* eslint-enable no-restricted-syntax, no-await-in-loop */
 
 const ManuscriptResolvers = ({ isVersion }) => {
@@ -111,18 +145,31 @@ const ManuscriptResolvers = ({ isVersion }) => {
       return JSON.stringify(parent.evaluationsHypothesisMap)
     },
     async reviews(parent, _, ctx) {
-      const stringifiedReviews = (parent.reviews ? parent.reviews : []).map(
-        review => ({
-          ...review,
-          jsonData: JSON.stringify(review.jsonData),
-        }),
-      )
+      const reviewForm = await getReviewForm(false)
+      const decisionForm = await getReviewForm(true)
 
-      return parent.reviews
-        ? stringifiedReviews
-        : (await models.Manuscript.query().findById(parent.id)).$relatedQuery(
-            'reviews',
-          )
+      const reviews =
+        parent.reviews ||
+        (await models.Manuscript.query().findById(parent.id)).$relatedQuery(
+          'reviews',
+        ) ||
+        []
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const review of reviews) {
+        // eslint-disable-next-line no-await-in-loop
+        await convertFilesToFullObjects(
+          review,
+          review.isDecision ? decisionForm : reviewForm,
+          async ids => File.query().findByIds(ids),
+          getFilesWithUrl,
+        )
+      }
+
+      return reviews.map(review => ({
+        ...review,
+        jsonData: JSON.stringify(review.jsonData),
+      }))
     },
     async teams(parent, _, ctx) {
       return parent.teams
@@ -398,11 +445,6 @@ const resolvers = {
           },
         ],
         files: files.map(file => {
-          // In order to match the behaviour of the createFile mutation, we add a prefix to the URL.
-          // This gives the URL required for download from the client (see app.js).
-          // TODO We should really be storing the URL from the point of view of the server (prefix is 'uploads/'), not of the client.
-          // TODO We can then convert to the client-centric URL at the point of passing a file object to the client.
-          // TODO This should be changed both here and for the createFile query, and we'll need a migration to convert all existing URLs in the DB.
           return {
             ...file,
           }
@@ -523,6 +565,7 @@ const resolvers = {
 
       return id
     },
+    // TODO Rename to something like 'setReviewerResponse'
     async reviewerResponse(_, { action, teamId }, context) {
       const {
         Team: TeamModel,
@@ -646,7 +689,8 @@ const resolvers = {
 
     async createNewVersion(_, { id }, ctx) {
       const manuscript = await models.Manuscript.query().findById(id)
-      return manuscript.createNewVersion()
+      const newVersion = manuscript.createNewVersion()
+      return repackageForGraphql(newVersion)
     },
     async submitManuscript(_, { id, input }, ctx) {
       if (config['notification-email'].automated === 'true') {
@@ -700,7 +744,7 @@ const resolvers = {
         }
       }
 
-      return commonUpdateManuscript(id, input, ctx) // Currently submitManuscript and updateManuscript have identical action
+      return commonUpdateManuscript(id, input, ctx)
     },
 
     async makeDecision(_, { id, decision: decisionString }, ctx) {
@@ -945,7 +989,7 @@ const resolvers = {
         update,
       )
 
-      return { manuscript: updatedManuscript, steps }
+      return { manuscript: await repackageForGraphql(updatedManuscript), steps }
     },
   },
   Subscription: {
@@ -974,10 +1018,9 @@ const resolvers = {
         manuscript.meta = {}
       }
 
-      manuscript.files = await getFilesWithUrl(manuscript.files)
-
-      const forms = await models.Form.query()
-      await regenerateFileUrisInReviews(manuscript, forms)
+      // manuscript.files = await getFilesWithUrl(manuscript.files)
+      // const forms = await models.Form.query()
+      // await regenerateFileUrisInReviews(manuscript, forms)
 
       if (typeof manuscript.meta.source === 'string') {
         manuscript.meta.source = await replaceImageSrc(
@@ -1005,7 +1048,7 @@ const resolvers = {
         return stripSensitiveItems(manuscript)
       }
 
-      return manuscript
+      return repackageForGraphql(manuscript)
     },
     async manuscriptsUserHasCurrentRoleIn(_, input, ctx) {
       // Get all manuscript versions that this user has a role in
@@ -1048,15 +1091,17 @@ const resolvers = {
           filteredManuscripts.push(m)
       })
 
-      return filteredManuscripts
+      return Promise.all(filteredManuscripts.map(m => repackageForGraphql(m)))
     },
     async manuscripts(_, { where }, ctx) {
-      return models.Manuscript.query()
+      const manuscripts = models.Manuscript.query()
         .withGraphFetched(
           '[teams, reviews, manuscriptVersions(orderByCreated)]',
         )
         .where({ parentId: null, isHidden: null })
         .orderBy('created', 'desc')
+
+      return Promise.all(manuscripts.map(async m => repackageForGraphql(m)))
     },
     async publishedManuscripts(_, { sort, offset, limit }, ctx) {
       const query = models.Manuscript.query()
@@ -1087,7 +1132,7 @@ const resolvers = {
       manuscripts = manuscripts.map(async m => {
         const manuscript = m
 
-        manuscript.files = await getFilesWithUrl(manuscript.files)
+        // manuscript.files = await getFilesWithUrl(manuscript.files)
 
         if (typeof manuscript.meta.source === 'string') {
           manuscript.meta.source = await replaceImageSrc(
@@ -1097,7 +1142,7 @@ const resolvers = {
           )
         }
 
-        return manuscript
+        return repackageForGraphql(manuscript)
       })
 
       return {

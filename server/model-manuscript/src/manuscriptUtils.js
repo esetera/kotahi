@@ -25,6 +25,27 @@ const stripSensitiveItems = manuscript => {
   return result
 }
 
+const fixMissingValuesInFilesInSingleMsVersion = ms => ({
+  ...ms,
+  files: (ms.files || []).map(f => ({
+    ...f,
+    tags: f.tags || [],
+    storedObjects: f.storedObjects || [],
+  })),
+})
+
+/** Returns a new manuscript object in which null/undefined files, file tags and file storedObjects are replaced with []. */
+const fixMissingValuesInFiles = ms => {
+  const result = fixMissingValuesInFilesInSingleMsVersion(ms)
+  if (result.manuscriptVersions)
+    result.manuscriptVersions = result.manuscriptVersions.map(v =>
+      fixMissingValuesInFilesInSingleMsVersion(v),
+    )
+
+  return result
+}
+
 module.exports = {
   stripSensitiveItems,
+  fixMissingValuesInFiles,
 }

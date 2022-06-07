@@ -250,7 +250,13 @@ const ReviewPage = ({ match, ...props }) => {
     ) || {}
 
   const versions = data
-    ? manuscriptVersions(data.manuscript).map(v => v.manuscript)
+    ? manuscriptVersions(data.manuscript).map(v => ({
+        ...v.manuscript,
+        reviews: v.manuscript.reviews.map(r => ({
+          ...r,
+          jsonData: JSON.parse(r.jsonData),
+        })),
+      }))
     : []
 
   const latestVersion = versions.length ? versions[0] : null
