@@ -34,6 +34,9 @@ const convertFilesToFullObjects = async (
     )
     .map(field => field.name)
 
+  if (typeof review.jsonData === 'string')
+    review.jsonData = JSON.parse(review.jsonData)
+
   for (const [key, value] of Object.entries(review.jsonData)) {
     if (fileFieldNames.includes(key)) {
       const fileIds = value.map(file => file.id || file) // Paranoia, in case some files are already in full object form
