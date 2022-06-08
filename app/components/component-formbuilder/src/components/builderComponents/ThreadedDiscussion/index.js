@@ -1,10 +1,10 @@
 import React from 'react'
 import { Button } from '@pubsweet/ui'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 import { SimpleWaxEditorWrapper } from '../../style'
 import ThreadedComment from './ThreadedComment'
-import { GET_THREADED_DISCUSSIONS } from './queries'
+import { CREATE_THREAD, GET_THREADED_DISCUSSIONS } from './queries'
 
 const ThreadedDiscussion = props => {
   const {
@@ -18,7 +18,7 @@ const ThreadedDiscussion = props => {
     ...SimpleWaxEditorProps
   } = props
 
-  const [newComment, setNewComment] = React.useState()
+  const [setNewComment] = React.useState()
 
   const lastComment = comments ? comments[comments.length - 1] : null
 
@@ -26,17 +26,24 @@ const ThreadedDiscussion = props => {
     ? lastComment.userId === user.id
     : null
 
-  const onClickComment = () => {
-    alert(newComment)
-  }
+  const [addThread] = useMutation(CREATE_THREAD, {
+    variables: {
+      manuscriptId: '79a70dbf-5ae7-4f80-afdd-9a68deadda8a',
+      comment: 'Thank you for your suggestions',
+      created: new Date(),
+      updated: new Date(),
+    },
+  })
 
-  const { data, error, loading } = useQuery(GET_THREADED_DISCUSSIONS)
+  const fetchData = () => useQuery(GET_THREADED_DISCUSSIONS)
+  const { loading, error } = fetchData()
 
   return (
     <>
       {loading && 'loading dicussion...'}
+      {/* {data && JSON.stringify(data)} */}
       {error && 'some error occurred while trying to load'}
-      {data && JSON.stringify(data)}
+
       {comments &&
         comments.map(comment => {
           return (
@@ -57,12 +64,7 @@ const ThreadedDiscussion = props => {
               onChange={content => setNewComment(content)}
             />
           </SimpleWaxEditorWrapper>
-          <Button
-            disabled={false}
-            onClick={onClickComment}
-            primary
-            type="button"
-          >
+          <Button disabled={false} onClick={addThread} primary type="button">
             Submit
           </Button>
         </>

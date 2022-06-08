@@ -3,22 +3,23 @@ const ThreadedDiscussion = require('./threadedDiscussion')
 
 const resolvers = {
   Query: {
-    async threadedDiscussions(_,) {
-      return (
-        models.ThreadedDiscussion.query().orderBy('created', 'desc')
-      )
-    }
+    async threadedDiscussions(_) {
+      return models.ThreadedDiscussion.query().orderBy('created', 'desc')
+    },
   },
 
   Mutation: {
-    // async deleteThreadedDiscussions(_, { id }) {
-    //   return models.ThreadedDiscussion.query().deleteById(id)
-    // },
+    async addThread(_, { comment, ...rest }) {
+      const threadedDiscussion = await ThreadedDiscussion.query().insertAndFetch(
+        {
+          ...rest,
+          threads: [comment],
+        },
+      )
 
-    async createThreadedDiscussions(_, { threadedDiscussion }) {
-      return ThreadedDiscussion.query().insertAndFetch(threadedDiscussion)
+      return { ...threadedDiscussion }
     },
-    
+
     // async updateThreadedDiscussions(_, { id, thread }) {
     //   return models.ThreadedDiscussion.query().updateAndFetchById(id, JSON.parse(thread))
     // },

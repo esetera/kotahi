@@ -8,7 +8,6 @@ import lightenBy from '../../../../../shared/lightenBy'
 import SimpleWaxEditor from '../../../../wax-collab/src/SimpleWaxEditor'
 import { Title, SectionHeader, SectionRowGrid } from '../style'
 import { SectionContent } from '../../../../shared'
-import { ThreadedDiscussion } from '../../../../component-formbuilder/src/components/builderComponents'
 
 const Heading = styled.span`
   font-weight: inherit;
@@ -106,7 +105,6 @@ const ReviewMetadata = ({
   showPreviewMetadataOnly,
   showEditorOnlyFields,
   displayShortIdAsIdentifier,
-  currentUser,
 }) => {
   // Parse submission metadata JSON for display purposes
   const manuscript = {
@@ -116,7 +114,6 @@ const ReviewMetadata = ({
 
   return (
     <>
-      <ThreadedDiscussion currentUser = {currentUser} />
       <SectionContent>
         {!showPreviewMetadataOnly && (
           <SectionHeader>

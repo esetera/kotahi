@@ -36,6 +36,7 @@ const DecisionVersions = props => {
     deleteFile,
     createFile,
     client,
+    fetchThreadedDiscussions,
   } = props
 
   const versions = gatherManuscriptVersions(manuscript)
@@ -87,6 +88,7 @@ const DecisionVersions = props => {
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}
                 version={version.manuscript}
+                fetchThreadedDiscussions={fetchThreadedDiscussions}
               />
             ))}
           </VersionSwitcher>

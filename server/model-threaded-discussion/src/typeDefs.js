@@ -10,16 +10,16 @@ type ThreadedDiscussion {
   updated: DateTime
   manuscriptId: ID!
   threads: [DiscussionThread!]!
-  userCanAddComment: Boolean!
-  userCanEditOwnComment: Boolean!
-  userCanEditAnyComment: Boolean!
+  userCanAddComment: Boolean
+  userCanEditOwnComment: Boolean
+  userCanEditAnyComment: Boolean
 }
 
 type DiscussionThread {
-  id: ID!
-  created: DateTime!
+  id: ID
+  created: DateTime
   updated: DateTime
-  comments: [ThreadComment!]!
+  comments: [ThreadComment]
 }
 
 type ThreadComment {
@@ -44,8 +44,13 @@ input CreateThreadedDiscussionsInput {
   manuscriptId: ID!
 }
 
+input CreateCommentInput {
+  comment: String
+  manuscriptId: ID!
+}
+
 extend type Mutation {
-  createThreadedDiscussions(threadedDiscussion: CreateThreadedDiscussionsInput!): ThreadedDiscussion
+  addThread(manuscriptId: ID, comment: String, created: DateTime, updated: DateTime): ThreadedDiscussion
 }
 `
 

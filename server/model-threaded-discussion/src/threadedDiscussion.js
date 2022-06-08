@@ -5,11 +5,6 @@ class ThreadedDiscussion extends BaseModel {
     return 'threaded_discussions'
   }
 
-  constructor(properties) {
-    super(properties)
-    this.type = 'ThreadedDiscussion'
-  }
-
   static get modifiers() {
     return {
       orderByCreated(builder) {
@@ -21,13 +16,10 @@ class ThreadedDiscussion extends BaseModel {
   static get schema() {
     return {
       properties: {
-        manuscript_id: { type: 'string', format: 'uuid' },
+        manuscriptId: { type: 'string', format: 'uuid' },
         threads: {
           type: 'array',
           default: [],
-          properties: {
-            id: { type: 'string', format: 'uuid' },
-          },
         },
       },
     }

@@ -54,7 +54,7 @@ const DecisionVersion = ({
   client,
   createFile,
   deleteFile,
-  threadedDiscussions,
+  fetchThreadedDiscussions,
 }) => {
   // Hooks from the old world
   const addEditor = (manuscript, label, isCurrent, user) => {
@@ -145,6 +145,7 @@ const DecisionVersion = ({
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
               form={form}
               manuscript={version}
+              fetchThreadedDiscussions={fetchThreadedDiscussions}
               showEditorOnlyFields
             />
           ) : (
