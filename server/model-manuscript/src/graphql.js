@@ -690,7 +690,7 @@ const resolvers = {
 
     async createNewVersion(_, { id }, ctx) {
       const manuscript = await models.Manuscript.query().findById(id)
-      const newVersion = manuscript.createNewVersion()
+      const newVersion = await manuscript.createNewVersion()
       return repackageForGraphql(newVersion)
     },
     async submitManuscript(_, { id, input }, ctx) {

@@ -42,7 +42,11 @@ const Review = ({ review, reviewForm, user, showUserInfo = true }) => (
 
     <ReadonlyFormTemplate
       form={reviewForm}
-      formData={JSON.parse(review.jsonData ?? '{}')}
+      formData={
+        typeof review.jsonData === 'string'
+          ? JSON.parse(review.jsonData)
+          : review.jsonData ?? '{}'
+      }
       hideSpecialInstructions
       showEditorOnlyFields={user.admin}
     />

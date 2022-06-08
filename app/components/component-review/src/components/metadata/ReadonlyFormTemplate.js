@@ -91,12 +91,13 @@ const ReadonlyFormTemplate = ({
         </SectionHeader>
       ) : null}
 
-      {displayShortIdAsIdentifier && (
-        <SectionRowGrid>
-          <Heading>Manuscript Number</Heading>
-          <Cell>{manuscript.shortId}</Cell>
-        </SectionRowGrid>
-      )}
+      {displayShortIdAsIdentifier &&
+        manuscript && ( // TODO The shortId shouldn't be rendered as part of this component. Split out!
+          <SectionRowGrid>
+            <Heading>Manuscript Number</Heading>
+            <Cell>{manuscript.shortId}</Cell>
+          </SectionRowGrid>
+        )}
 
       {form.children
         .filter(element => {
@@ -158,12 +159,13 @@ ReadonlyFormTemplate.propTypes = {
         tags: PropTypes.arrayOf(PropTypes.string.isRequired),
       }).isRequired,
     ),
-  }).isRequired,
+  }),
   showPreviewMetadataOnly: PropTypes.bool,
   showEditorOnlyFields: PropTypes.bool,
 }
 
 ReadonlyFormTemplate.defaultProps = {
+  manuscript: null,
   showPreviewMetadataOnly: false,
   showEditorOnlyFields: false,
 }
