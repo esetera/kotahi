@@ -63,6 +63,7 @@ const ReviewLayout = ({
           <ReadonlyFormTemplate
             form={submissionForm}
             formData={reviewData}
+            listManuscriptFiles
             manuscript={msVersion}
             showEditorOnlyFields={false}
           />
@@ -100,6 +101,7 @@ const ReviewLayout = ({
               ...latestVersion,
               submission: JSON.parse(latestVersion.submission),
             }}
+            listManuscriptFiles
             manuscript={latestVersion}
             showEditorOnlyFields={false}
           />
@@ -125,6 +127,7 @@ const ReviewLayout = ({
                 shouldStoreFilesInForm
                 showEditorOnlyFields={false}
                 submissionButtonText="Submit"
+                tagForFiles="review"
                 validateDoi={validateDoi}
               />
             </SectionContent>
@@ -133,6 +136,7 @@ const ReviewLayout = ({
             <ReadonlyFormTemplate
               form={decisionForm}
               formData={decision.jsonData || {}}
+              hideSpecialInstructions
               manuscript={latestVersion}
               title="Evaluation summary"
             />

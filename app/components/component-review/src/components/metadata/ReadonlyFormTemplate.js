@@ -11,7 +11,7 @@ import {
   Affiliation,
   Email,
 } from '../style'
-import { SectionContent } from '../../../../shared'
+import { SectionContent, Attachment } from '../../../../shared'
 import ManuscriptFilesList from './ManuscriptFilesList'
 import SpecialInstructions from './SpecialInstructions'
 
@@ -46,6 +46,17 @@ const showFieldData = (manuscript, fieldName, form) => {
     ))
   }
 
+  if (
+    ['SupplementaryFiles', 'VisualAbstract'].includes(
+      fieldDefinition?.component,
+    ) &&
+    Array.isArray(data)
+  ) {
+    return data.map(file => (
+      <Attachment file={file} key={file.storedObjects[0].url} uploaded />
+    ))
+  }
+
   if (Array.isArray(data)) {
     return data.join(', ')
   }
@@ -70,6 +81,7 @@ const ReadonlyFormTemplate = ({
   showEditorOnlyFields,
   title,
   displayShortIdAsIdentifier,
+  listManuscriptFiles,
 }) => {
   return (
     <SectionContent>
@@ -103,14 +115,17 @@ const ReadonlyFormTemplate = ({
             </SectionRowGrid>
           ) : null,
         )}
-      {!showPreviewMetadataOnly && (
-        <>
-          {!hideSpecialInstructions && (
-            <SpecialInstructions manuscript={manuscript} />
-          )}
-          <ManuscriptFilesList files={manuscript.files} />
-        </>
-      )}
+      {!showPreviewMetadataOnly && // TODO Special instructions and manuscript files should not be rendered in this component. Split out!
+        (listManuscriptFiles || !hideSpecialInstructions) && (
+          <>
+            {!hideSpecialInstructions && (
+              <SpecialInstructions manuscript={manuscript} />
+            )}
+            {listManuscriptFiles && (
+              <ManuscriptFilesList files={manuscript.files} />
+            )}
+          </>
+        )}
     </SectionContent>
   )
 }

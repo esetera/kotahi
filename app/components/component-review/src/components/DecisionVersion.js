@@ -124,6 +124,7 @@ const DecisionVersion = ({
                 ...version,
                 submission: JSON.parse(version.submission),
               }}
+              listManuscriptFiles
               manuscript={version}
               showEditorOnlyFields
             />
@@ -263,6 +264,7 @@ const DecisionVersion = ({
                   shouldStoreFilesInForm
                   showEditorOnlyFields
                   submissionButtonText="Submit"
+                  tagForFiles="decision"
                   urlFrag={urlFrag}
                   validateDoi={validateDoi}
                 />

@@ -1259,6 +1259,7 @@ const emptyFormProps = {
   },
   showPreviewMetadataOnly: false,
   showEditorOnlyFields: false,
+  listManuscriptFiles: true,
 }
 
 EmptyReviewMetadaForm.args = {

@@ -149,6 +149,7 @@ const InnerFormTemplate = ({
   isSubmission,
   reviewId,
   shouldStoreFilesInForm,
+  tagForFiles,
   initializeReview,
 }) => {
   const submitButton = (text, haspopup = false) => {
@@ -249,7 +250,7 @@ const InnerFormTemplate = ({
                     createFile={createFile}
                     deleteFile={deleteFile}
                     fieldName={shouldStoreFilesInForm ? element.name : 'files'} // TODO Store files in form for submissions too: should simplify code both frontend and back.
-                    fileType="supplementary"
+                    fileType={tagForFiles || 'supplementary'}
                     initializeReview={initializeReview}
                     manuscriptId={manuscriptId}
                     onChange={shouldStoreFilesInForm ? onChange : null}
@@ -263,7 +264,7 @@ const InnerFormTemplate = ({
                     createFile={createFile}
                     deleteFile={deleteFile}
                     fieldName={shouldStoreFilesInForm ? element.name : 'files'}
-                    fileType="visualAbstract"
+                    fileType={tagForFiles || 'visualAbstract'}
                     initializeReview={initializeReview}
                     manuscriptId={manuscriptId}
                     mimeTypesToAccept="image/*"
@@ -377,6 +378,7 @@ const FormTemplate = ({
   reviewId,
   shouldStoreFilesInForm,
   initializeReview,
+  tagForFiles,
 }) => {
   const [confirming, setConfirming] = React.useState(false)
 
@@ -412,6 +414,7 @@ const FormTemplate = ({
           shouldStoreFilesInForm={shouldStoreFilesInForm}
           showEditorOnlyFields={showEditorOnlyFields}
           submissionButtonText={submissionButtonText}
+          tagForFiles={tagForFiles}
           urlFrag={urlFrag}
           validateDoi={validateDoi}
         />
@@ -466,6 +469,8 @@ FormTemplate.propTypes = {
   submissionButtonText: PropTypes.string,
   showEditorOnlyFields: PropTypes.bool.isRequired,
   shouldStoreFilesInForm: PropTypes.bool,
+  /** If supplied, any uploaded files will be tagged with this rather than 'supplementary' or 'visualAbstract' */
+  tagForFiles: PropTypes.string,
   initializeReview: PropTypes.func,
 }
 FormTemplate.defaultProps = {
@@ -475,6 +480,7 @@ FormTemplate.defaultProps = {
   submissionButtonText: '',
   manuscriptStatus: null,
   shouldStoreFilesInForm: false,
+  tagForFiles: null,
   initializeReview: null,
 }
 

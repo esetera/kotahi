@@ -127,6 +127,7 @@ const Submit = ({
                 ...manuscript,
                 submission: JSON.parse(manuscript.submission),
               }}
+              listManuscriptFiles
               manuscript={manuscript}
               showEditorOnlyFields={false}
               title="Metadata"

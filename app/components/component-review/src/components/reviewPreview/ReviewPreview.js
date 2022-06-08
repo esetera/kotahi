@@ -35,6 +35,7 @@ const ReviewPreview = ({ manuscript, submissionForm }) => {
           ...manuscript,
           submission: JSON.parse(manuscript.submission),
         }}
+        listManuscriptFiles
         manuscript={manuscript}
         showEditorOnlyFields={false}
         showPreviewMetadataOnly
