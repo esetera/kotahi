@@ -148,8 +148,8 @@ const FilesUpload = ({
 }) => {
   let existingFiles = []
 
-  if (values?.files) {
-    existingFiles = values?.files
+  if (values?.[fieldName]) {
+    existingFiles = values[fieldName]
   }
 
   const createFile = async file => {
