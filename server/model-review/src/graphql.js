@@ -12,50 +12,45 @@ const {
 const resolvers = {
   Mutation: {
     async updateReview(_, { id, input }, ctx) {
-      const reviewDelta = { ...input }
-      if (input.jsonData) reviewDelta.jsonData = JSON.parse(input.jsonData) // Convert the JSON input to JavaScript object
+      const reviewDelta = { jsonData: {}, ...input }
       const existingReview = (await models.Review.query().findById(id)) || {}
 
       const form = await getReviewForm(existingReview.isDecision)
       await convertFilesToIdsOnly(reviewDelta, form)
 
-      const updatedReview = deepMergeObjectsReplacingArrays(
-        existingReview,
-        reviewDelta,
-      )
+      const mergedReview = {
+        canBePublishedPublicly: false,
+        isHiddenFromAuthor: false,
+        isHiddenReviewerName: false,
+        ...deepMergeObjectsReplacingArrays(existingReview, reviewDelta),
+        // Prevent reassignment of userId or manuscriptId:
+        userId: existingReview.userId || ctx.user,
+        manuscriptId: existingReview.manuscriptId || input.manuscriptId,
+      }
 
-      // Prevent reassignment of userId, manuscriptId or isDecision
-      if (existingReview.userId) updatedReview.userId = existingReview.userId
-      if (existingReview.manuscriptId)
-        updatedReview.manuscriptId = existingReview.manuscriptId
+      // Prevent reassignment of isDecision
       if (typeof existingReview.isDecision === 'boolean')
-        updatedReview.isDecision = existingReview.isDecision
+        mergedReview.isDecision = existingReview.isDecision
 
       const review = await models.Review.query().upsertGraphAndFetch(
         {
           id,
-          ...updatedReview,
-          jsonData: JSON.stringify(updatedReview.jsonData),
-          canBePublishedPublicly: false,
-          isHiddenFromAuthor: false,
-          isHiddenReviewerName: false,
-          manuscriptId: input.manuscriptId,
-          userId: input.userId,
+          ...mergedReview,
+          jsonData: JSON.stringify(mergedReview.jsonData),
         },
         { insertMissing: true },
       )
 
-      const userId = input.userId ? input.userId : ctx.user
-      const reviewUser = await models.User.query().findById(userId)
+      // We want to modify file URIs before return, so we'll use the parsed jsonData
+      review.jsonData = mergedReview.jsonData
+      const reviewUser = await models.User.query().findById(review.userId)
 
       await convertFilesToFullObjects(
-        updatedReview,
+        review,
         form,
         async ids => File.query().findByIds(ids),
         getFilesWithUrl,
       )
-
-      updatedReview.jsonData = JSON.stringify(updatedReview.jsonData) // Convert the JavaScript object back to JSON
 
       return {
         id: review.id,

@@ -1,8 +1,11 @@
 /** Checks through all fields containing files, and any files expressed in object form are replaced with simple IDs.
+ * This also converts any jsonData in string form to a parsed object.
  * This modifies the supplied reviewDelta IN PLACE. */
 /* eslint-disable no-restricted-syntax, no-param-reassign */
 const convertFilesToIdsOnly = (reviewDelta, form) => {
   if (!reviewDelta.jsonData) return
+  if (typeof reviewDelta.jsonData === 'string')
+    reviewDelta.jsonData = JSON.parse(reviewDelta.jsonData)
 
   const fileFieldNames = form.structure.children
     .filter(field =>
@@ -19,7 +22,9 @@ const convertFilesToIdsOnly = (reviewDelta, form) => {
 /* eslint-enable no-restricted-syntax, no-param-reassign */
 
 /** For all fields containing files, convert files expressed as simple IDs into full object form
- *  with time-limited URL. This modifies the supplied review IN PLACE. */
+ * with time-limited URL.
+ * This also converts any jsonData in string form to a parsed object.
+ * This modifies the supplied review IN PLACE. */
 /* eslint-disable no-restricted-syntax, no-await-in-loop, no-param-reassign */
 const convertFilesToFullObjects = async (
   review,
