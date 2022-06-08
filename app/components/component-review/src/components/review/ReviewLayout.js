@@ -40,11 +40,6 @@ const ReviewLayout = ({
 
   const decision = latestVersion.reviews.find(r => r.isDecision) || {}
 
-  const decisionJson = JSON.parse(decision?.jsonData || '{}')
-  let decisionComment = decisionJson.comment || null
-  if (!decisionComment || decisionComment === '<p class="paragraph"></p>')
-    decisionComment = '<i>No evaluation summary found</i>'
-
   priorVersions.forEach(msVersion => {
     if (msVersion.reviews?.some(r => !r.user))
       console.error(
@@ -56,9 +51,7 @@ const ReviewLayout = ({
       r => r.user?.id === currentUser.id && !r.isDecision,
     )
 
-    const reviewData = reviewForCurrentUser?.jsonData
-      ? JSON.parse(reviewForCurrentUser.jsonData)
-      : {}
+    const reviewData = reviewForCurrentUser?.jsonData || {}
 
     const label = moment().format('YYYY-MM-DD')
     reviewSections.push({
@@ -91,7 +84,7 @@ const ReviewLayout = ({
       r => r.user?.id === currentUser.id && !r.isDecision,
     )
 
-    const reviewData = JSON.parse(reviewForCurrentUser?.jsonData || '{}')
+    const reviewData = reviewForCurrentUser?.jsonData || {}
 
     const label = moment().format('YYYY-MM-DD')
 
@@ -139,7 +132,7 @@ const ReviewLayout = ({
           {['colab'].includes(process.env.INSTANCE_NAME) && (
             <ReadonlyFormTemplate
               form={decisionForm}
-              formData={JSON.parse(decision.jsonData || '{}')}
+              formData={decision.jsonData || {}}
               manuscript={latestVersion}
               title="Evaluation summary"
             />
