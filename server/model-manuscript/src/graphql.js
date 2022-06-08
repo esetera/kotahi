@@ -77,7 +77,8 @@ const updateAndRepackageForGraphql = async ms => {
 const regenerateAllFileUris = async manuscript => {
   const reviewForm = await getReviewForm(false)
   const decisionForm = await getReviewForm(true)
-  manuscript.files = await getFilesWithUrl(manuscript.files)
+  if (manuscript.files)
+    manuscript.files = await getFilesWithUrl(manuscript.files)
 
   if (manuscript.reviews) {
     for (const review of manuscript.reviews)
@@ -91,7 +92,7 @@ const regenerateAllFileUris = async manuscript => {
 
   if (manuscript.manuscriptVersions) {
     for (const v of manuscript.manuscriptVersions) {
-      v.files = await getFilesWithUrl(v.files)
+      if (v.files) v.files = await getFilesWithUrl(v.files)
 
       if (v.reviews) {
         for (const review of v.reviews)
@@ -258,7 +259,7 @@ const commonUpdateManuscript = async (id, input, ctx) => {
 
   const ms = await models.Manuscript.query()
     .findById(id)
-    .withGraphFetched('reviews')
+    .withGraphFetched('[reviews, files]')
 
   const updatedMs = deepMergeObjectsReplacingArrays(ms, msDelta)
 
@@ -684,7 +685,7 @@ const resolvers = {
       return team
     },
     async updateManuscript(_, { id, input }, ctx) {
-      return commonUpdateManuscript(id, input, ctx) // Currently submitManuscript and updateManuscript have identical action
+      return commonUpdateManuscript(id, input, ctx)
     },
 
     async createNewVersion(_, { id }, ctx) {
