@@ -108,35 +108,6 @@ const regenerateAllFileUris = async manuscript => {
 }
 /* eslint-enable no-param-reassign, no-restricted-syntax, no-await-in-loop */
 
-/* eslint-disable no-restricted-syntax, no-await-in-loop */
-/* const regenerateFileUrisInReviews = async (manuscript, forms) => {
-  for (const review of manuscript.reviews) {
-    const form = review.isDecision
-      ? forms.find(f => f.purpose === 'decision' && f.category === 'decision')
-      : forms.find(f => f.purpose === 'review' && f.category === 'review')
-
-    if (!form)
-      throw new Error(
-        `No form found for "${review.isDecision ? 'decision' : 'review'}"`,
-      )
-
-    const fileFieldNames = form.structure.children
-      .filter(field =>
-        ['SupplementaryFiles', 'VisualAbstract'].includes(field.component),
-      )
-      .map(field => field.name)
-
-    for (const [key, value] of Object.entries(review.jsonData)) {
-      if (fileFieldNames.includes(key) && value.length) {
-        const val = typeof value[0] === 'string' ? value : value.map(v => v.id) // TODO store files in form as IDs only, then this is not needed.
-        const files = await models.File.query().findByIds(val)
-        review.jsonData[key] = await getFilesWithUrl(files)
-      }
-    }
-  }
-} */
-/* eslint-enable no-restricted-syntax, no-await-in-loop */
-
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
     submission(parent) {
