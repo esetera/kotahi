@@ -15,6 +15,7 @@ const ThreadedDiscussion = props => {
     key,
     comments,
     threadedDiscussions,
+    manuscriptId,
     ...SimpleWaxEditorProps
   } = props
 
@@ -28,7 +29,7 @@ const ThreadedDiscussion = props => {
 
   const [addThread] = useMutation(CREATE_THREAD, {
     variables: {
-      manuscriptId: '79a70dbf-5ae7-4f80-afdd-9a68deadda8a',
+      manuscriptId: manuscriptId,
       comment: 'Thank you for your suggestions',
       created: new Date(),
       updated: new Date(),

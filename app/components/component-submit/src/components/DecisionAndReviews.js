@@ -12,7 +12,7 @@ import {
   Title,
   SectionContent,
 } from '../../../shared'
-import  ThreadedDiscussion  from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
+import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
 
 const Decision = ({ decision, editor }) =>
   decision ? (
@@ -86,14 +86,12 @@ const DecisionAndReviews = ({ manuscript }) => {
           <Title>Decision</Title>
         </SectionHeader>
         <Decision decision={decision} editor={decision?.user} />
-        <ThreadedDiscussion 
-          currentUser={currentUser} />
+        <ThreadedDiscussion currentUser={currentUser} manuscriptId={manuscript.id}/>
       </SectionContent>
       <SectionContent>
         <SectionHeader>
           <Title>Reviews</Title>
-          <ThreadedDiscussion 
-          currentUser={currentUser} />
+          
         </SectionHeader>
 
         {reviewsToShow.length ? (

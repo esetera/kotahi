@@ -72,6 +72,7 @@ const DecisionVersions = props => {
                 currentUser={currentUser}
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+                fetchThreadedDiscussions={fetchThreadedDiscussions}
                 form={form}
                 key={version.manuscript.id}
                 makeDecision={makeDecision}
@@ -88,7 +89,6 @@ const DecisionVersions = props => {
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}
                 version={version.manuscript}
-                fetchThreadedDiscussions={fetchThreadedDiscussions}
               />
             ))}
           </VersionSwitcher>

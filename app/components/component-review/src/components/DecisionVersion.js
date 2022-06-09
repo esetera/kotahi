@@ -112,7 +112,6 @@ const DecisionVersion = ({
       reviewData,
       manuscriptId,
     )
-
     return results
   }
 
@@ -143,9 +142,9 @@ const DecisionVersion = ({
           {!current ? (
             <ReviewMetadata
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+              fetchThreadedDiscussions={fetchThreadedDiscussions}
               form={form}
               manuscript={version}
-              fetchThreadedDiscussions={fetchThreadedDiscussions}
               showEditorOnlyFields
             />
           ) : (

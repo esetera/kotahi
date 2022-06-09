@@ -27,7 +27,6 @@ import {
   ErrorWrap,
   RecommendationInputContainer,
 } from '../style'
-import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
 
 // This solves issue #38, which caused the entire page to blank in chrome upon selection change, due to strange styling of radio buttons.
 const RadioGroup = styled(UnstableRadioGroup)`
@@ -39,15 +38,12 @@ const NoteDecision = ({
   updateReview,
   deleteFile,
   createFile,
-  currentUser,
-  threadedDiscussions,
 }) => (
   <>
     <Field name="decisionComment">
       {formikBag => (
         <>
           <NoteInput updateReview={updateReview} {...formikBag} />
-          <ThreadedDiscussion currentUser={currentUser} />
           <FilesUpload
             createFile={createFile}
             deleteFile={deleteFile}
@@ -172,7 +168,6 @@ const DecisionForm = ({
   deleteFile,
   createFile,
   currentUser,
-  threadedDiscussions,
 }) => {
   let status = null
 
