@@ -151,9 +151,9 @@ const ManuscriptResolvers = ({ isVersion }) => {
 
       const reviews =
         parent.reviews ||
-        (await models.Manuscript.query().findById(parent.id)).$relatedQuery(
-          'reviews',
-        ) ||
+        (await (
+          await models.Manuscript.query().findById(parent.id)
+        ).$relatedQuery('reviews')) ||
         []
 
       // eslint-disable-next-line no-restricted-syntax
