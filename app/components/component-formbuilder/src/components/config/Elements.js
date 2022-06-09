@@ -331,6 +331,7 @@ const elements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
+    hideFromAuthors: hideFromAuthorsField,
   },
   VisualAbstract: {
     id: textfield,
@@ -339,6 +340,7 @@ const elements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
+    hideFromAuthors: hideFromAuthorsField,
   },
   AuthorsInput: {
     id: textfield,
@@ -347,6 +349,7 @@ const elements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
+    hideFromAuthors: hideFromAuthorsField,
   },
   LinksInput: {
     id: textfield,
@@ -355,6 +358,7 @@ const elements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateCollection,
+    hideFromAuthors: hideFromAuthorsField,
   },
   AbstractEditor: {
     id: textfield,
@@ -364,6 +368,7 @@ const elements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateText,
+    hideFromAuthors: hideFromAuthorsField,
   },
   TextField: {
     id: textfield,
@@ -423,6 +428,7 @@ const elements = {
       },
       defaultValue: 'false',
     },
+    hideFromAuthors: hideFromAuthorsField,
   },
   CheckboxGroup: {
     id: textfield,
@@ -432,6 +438,7 @@ const elements = {
     options: optionfield,
     shortDescription: shortDescriptionField,
     validate: validateCollection,
+    hideFromAuthors: hideFromAuthorsField,
   },
   Select: {
     id: textfield,
@@ -442,6 +449,7 @@ const elements = {
     options: optionfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
+    hideFromAuthors: hideFromAuthorsField,
   },
   RadioGroup: {
     id: textfield,
@@ -453,6 +461,7 @@ const elements = {
     sectioncss: textarea,
     shortDescription: shortDescriptionField,
     validate: validateOther,
+    hideFromAuthors: hideFromAuthorsField,
   },
 }
 
