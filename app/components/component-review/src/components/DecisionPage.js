@@ -16,7 +16,12 @@ import {
   publishManuscriptMutation,
 } from './queries'
 
-import { CREATE_MESSAGE, VALIDATE_DOI } from '../../../../queries'
+import {
+  CREATE_MESSAGE,
+  CREATE_TEAM_MUTATION,
+  UPDATE_TEAM_MUTATION,
+  VALIDATE_DOI,
+} from '../../../../queries'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -51,38 +56,6 @@ const createFileMutation = gql`
 const deleteFileMutation = gql`
   mutation($id: ID!) {
     deleteFile(id: $id)
-  }
-`
-
-const teamFields = `
-  id
-  name
-  role
-  manuscript {
-    id
-  }
-  members {
-    id
-    user {
-      id
-      username
-    }
-  }
-`
-
-const updateTeamMutation = gql`
-  mutation($id: ID!, $input: TeamInput) {
-    updateTeam(id: $id, input: $input) {
-      ${teamFields}
-    }
-  }
-`
-
-const createTeamMutation = gql`
-  mutation($input: TeamInput!) {
-    createTeam(input: $input) {
-      ${teamFields}
-    }
   }
 `
 
@@ -126,8 +99,8 @@ const DecisionPage = ({ match }) => {
   const [sendChannelMessage] = useMutation(CREATE_MESSAGE)
   const [makeDecision] = useMutation(makeDecisionMutation)
   const [publishManuscript] = useMutation(publishManuscriptMutation)
-  const [updateTeam] = useMutation(updateTeamMutation)
-  const [createTeam] = useMutation(createTeamMutation)
+  const [updateTeam] = useMutation(UPDATE_TEAM_MUTATION)
+  const [createTeam] = useMutation(CREATE_TEAM_MUTATION)
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
 
@@ -245,8 +218,13 @@ const DecisionPage = ({ match }) => {
     return response
   }
 
-  const sendChannelMessageCb = async messageData =>
-    sendChannelMessage(messageData)
+  const sendChannelMessageCb = async messageData => {
+    const response = await sendChannelMessage({
+      variables: messageData,
+    })
+
+    return response
+  }
 
   if (!initialValues)
     setInitialValue(

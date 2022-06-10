@@ -32,7 +32,7 @@ const Decision = ({ decisionForm, manuscript }) => {
   )
 }
 
-const DecisionAndReviews = ({ manuscript, forms }) => {
+const DecisionAndReviews = ({ manuscript, forms, isControlPage }) => {
   const currentUser = useCurrentUser()
 
   const decision =
@@ -58,9 +58,11 @@ const DecisionAndReviews = ({ manuscript, forms }) => {
     ? authorTeam.members.find(member => member.user.id === currentUser.id)
     : false
 
-  const reviewsToShow = reviews.filter(
-    review => !review.isHiddenFromAuthor && isCurrentUserAuthor,
-  )
+  const reviewsToShow = isControlPage
+    ? reviews
+    : reviews.filter(
+        review => !review.isHiddenFromAuthor && isCurrentUserAuthor,
+      )
 
   const decisionForm = forms.find(
     form => form.category === 'decision' && form.purpose === 'decision',
