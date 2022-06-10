@@ -1,3 +1,5 @@
+const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
+
 const stripSensitiveItems = manuscript => {
   const result = {
     ...manuscript,
@@ -49,7 +51,41 @@ const fixMissingValuesInFiles = ms => {
   return result
 }
 
+/** Get evaluations as
+ * [
+ *  [submission.review1, submission.review1date],
+ *  [submission.review2, submission.review2date],
+ *  ...,
+ *  [submission.summary, submission.summarydate]
+ * ]
+ * These are evaluations in the submission form, NOT normal reviews. */
+const getEvaluationsAndDates = manuscript => {
+  const evaluationValues = Object.entries(manuscript.submission)
+    .filter(
+      ([prop, value]) =>
+        !Number.isNaN(Number(prop.split('review')[1])) &&
+        prop.includes('review'),
+    )
+    .map(([propName, value]) => [
+      value,
+      manuscript.submission[`${propName}date`],
+    ])
+
+  evaluationValues.push([
+    manuscript.submission.summary,
+    manuscript.submission.summarydate,
+  ])
+
+  return evaluationValues
+}
+
+const hasEvaluations = manuscript => {
+  const evaluations = getEvaluationsAndDates(manuscript)
+  return evaluations.map(checkIsAbstractValueEmpty).some(isEmpty => !isEmpty)
+}
+
 module.exports = {
   stripSensitiveItems,
   fixMissingValuesInFiles,
+  hasEvaluations,
 }

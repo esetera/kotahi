@@ -15,6 +15,7 @@ const publishToCrossref = require('../../publishing/crossref')
 const {
   stripSensitiveItems,
   fixMissingValuesInFiles,
+  hasEvaluations,
 } = require('./manuscriptUtils')
 
 const {
@@ -32,7 +33,6 @@ const {
 
 const sendEmailNotification = require('../../email-notifications')
 
-const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 const importArticlesFromBiorxiv = require('../../import-articles/biorxiv-import')
 const importArticlesFromBiorxivWithFullTextSearch = require('../../import-articles/biorxiv-full-text-import')
 const importArticlesFromPubmed = require('../../import-articles/pubmed-import')
@@ -249,32 +249,6 @@ const commonUpdateManuscript = async (id, input, ctx) => {
 
   await uploadAndConvertBase64ImagesInManuscript(updatedMs)
   return updateAndRepackageForGraphql(updatedMs)
-}
-
-/** Get evaluations as [ [submission.review1, submission.review1date], [submission.review2, submission.review2date], ..., [submission.summary, submission.summarydate] ] */
-const getEvaluationsAndDates = manuscript => {
-  const evaluationValues = Object.entries(manuscript.submission)
-    .filter(
-      ([prop, value]) =>
-        !Number.isNaN(Number(prop.split('review')[1])) &&
-        prop.includes('review'),
-    )
-    .map(([propName, value]) => [
-      value,
-      manuscript.submission[`${propName}date`],
-    ])
-
-  evaluationValues.push([
-    manuscript.submission.summary,
-    manuscript.submission.summarydate,
-  ])
-
-  return evaluationValues
-}
-
-const hasEvaluations = manuscript => {
-  const evaluations = getEvaluationsAndDates(manuscript)
-  return evaluations.map(checkIsAbstractValueEmpty).some(isEmpty => !isEmpty)
 }
 
 /** Send the manuscriptId OR a configured ref; and send token if one is configured */
@@ -550,7 +524,10 @@ const resolvers = {
           `Invalid action (reviewerResponse): Must be either "accepted" or "rejected"`,
         )
 
-      const team = await TeamModel.query().findById(teamId).eager('members')
+      const team = await TeamModel.query()
+        .findById(teamId)
+        .withGraphFetched('members')
+
       if (!team) throw new Error('No team was found')
 
       for (let i = 0; i < team.members.length; i += 1) {
@@ -819,7 +796,7 @@ const resolvers = {
           }).save()
         }
 
-        return existingTeam.$query().eager('members.[user]')
+        return existingTeam.$query().withGraphFetched('members.[user]')
       }
 
       // Create a new team of reviewers if it doesn't exist
@@ -847,13 +824,13 @@ const resolvers = {
         })
         .delete()
 
-      return reviewerTeam.$query().eager('members.[user]')
+      return reviewerTeam.$query().withGraphFetched('members.[user]')
     },
 
     async publishManuscript(_, { id }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(id)
-        .eager('reviews')
+        .withGraphFetched('reviews')
 
       const update = {} // This will collect any properties we may want to update in the DB
       update.published = new Date()
