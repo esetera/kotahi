@@ -240,7 +240,6 @@ const DecisionVersion = ({
                   createFile={createFile}
                   deleteFile={deleteFile}
                   form={decisionForm}
-                  initializeReview={null} // TODO must pass in a func to update the review
                   initialValues={
                     reviewByCurrentUser?.jsonData
                       ? JSON.parse(reviewByCurrentUser?.jsonData)
