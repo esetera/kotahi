@@ -24,7 +24,7 @@ const isPublishableFieldType = ({ component }) =>
   ['TextField', 'AbstractEditor'].includes(component)
 
 /** For an identifier such as 'review#0', return the corresponding review (with parsed jsonData),
- * or return { jsonData: {} } if not found.
+ * or return { jsonData: {} } if not found or the review is hidden.
  */
 const getReview = (manuscript, reviewIdentifier) => {
   const index = parseInt(reviewIdentifier.split('#')[1], 10)
@@ -32,6 +32,8 @@ const getReview = (manuscript, reviewIdentifier) => {
 
   const review =
     index < reviews.length ? { ...reviews[index] } : { jsonData: {} }
+
+  if (review.isHiddenFromAuthor) return { jsonData: {} }
 
   if (typeof review.jsonData === 'string')
     review.jsonData = JSON.parse(review.jsonData)
