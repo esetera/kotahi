@@ -39,6 +39,7 @@ const ProductionWaxEditor = ({
   ...rest
 }) => {
   const handleAssetManager = () => onAssetManager(manuscriptId)
+
   const waxUser = {
     userId: user.id || '-',
     userColor: {
@@ -54,7 +55,7 @@ const ProductionWaxEditor = ({
 
   useEffect(() => {
     return () => {
-      if (editorRef.current) {
+      if (editorRef.current && saveSource !== null) {
         saveSource(editorRef.current.getContent())
       }
     }
