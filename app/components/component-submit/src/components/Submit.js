@@ -51,6 +51,14 @@ const Submit = ({
     form => form.category === 'submission' && form.purpose === 'submit',
   )
 
+  const decisionForm = forms.find(
+    form => form.category === 'decision' && form.purpose === 'decision',
+  )
+
+  const reviewForm = forms.find(
+    form => form.category === 'review' && form.purpose === 'review',
+  )
+
   const submissionValues = createBlankSubmissionBasedOnForm(submissionForm)
 
   versions.forEach((version, index) => {
@@ -121,7 +129,11 @@ const Submit = ({
         content: (
           <>
             {hasDecision && (
-              <DecisionAndReviews forms={forms} manuscript={manuscript} />
+              <DecisionAndReviews
+                decisionForm={decisionForm}
+                manuscript={manuscript}
+                reviewForm={reviewForm}
+              />
             )}
             <ReadonlyFormTemplate
               form={submissionForm}

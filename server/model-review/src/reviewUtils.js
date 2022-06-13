@@ -44,7 +44,7 @@ const convertFilesToFullObjects = async (
 
   for (const [key, value] of Object.entries(review.jsonData)) {
     if (fileFieldNames.includes(key)) {
-      const fileIds = value.map(file => file.id || file) // Paranoia, in case some files are already in full object form
+      const fileIds = (value || []).map(file => file.id || file) // Paranoia, in case some files are already in full object form, or files is null
       const files = await getFilesByIds(fileIds)
       review.jsonData[key] = await getFilesWithUrl(files)
     }

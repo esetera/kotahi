@@ -221,7 +221,12 @@ const DecisionVersion = ({
             </SectionContent>
           )}
           {!current && (
-            <DecisionAndReviews isControlPage manuscript={version} />
+            <DecisionAndReviews
+              decisionForm={decisionForm}
+              isControlPage
+              manuscript={version}
+              reviewForm={reviewForm}
+            />
           )}
           {current && (
             <AdminSection key="decision-review">
