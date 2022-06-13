@@ -31,6 +31,7 @@ const DecisionVersion = ({
   decisionForm,
   form,
   current,
+  currentDecisionData,
   currentUser,
   version,
   parent,
@@ -43,7 +44,6 @@ const DecisionVersion = ({
   updateTeam,
   createTeam,
   updateReview,
-  reviewByCurrentUser,
   reviewForm,
   reviewers,
   teamLabels,
@@ -159,7 +159,6 @@ const DecisionVersion = ({
   }
 
   const decisionSection = () => {
-    // this is only used if current version & hence editable
     return {
       content: (
         <>
@@ -248,8 +247,8 @@ const DecisionVersion = ({
                   deleteFile={deleteFile}
                   form={decisionForm}
                   initialValues={
-                    reviewByCurrentUser?.jsonData
-                      ? JSON.parse(reviewByCurrentUser?.jsonData)
+                    currentDecisionData?.jsonData
+                      ? JSON.parse(currentDecisionData?.jsonData)
                       : {}
                   }
                   isSubmission={false}
@@ -266,7 +265,7 @@ const DecisionVersion = ({
                     })
                     actions.setSubmitting(false)
                   }}
-                  reviewId={reviewByCurrentUser.id}
+                  reviewId={currentDecisionData.id}
                   shouldStoreFilesInForm
                   showEditorOnlyFields
                   submissionButtonText="Submit"
