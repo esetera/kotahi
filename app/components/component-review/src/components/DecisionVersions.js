@@ -36,7 +36,6 @@ const DecisionVersions = props => {
     deleteFile,
     createFile,
     client,
-    fetchThreadedDiscussions,
   } = props
 
   const versions = gatherManuscriptVersions(manuscript)
@@ -72,7 +71,6 @@ const DecisionVersions = props => {
                 currentUser={currentUser}
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
-                fetchThreadedDiscussions={fetchThreadedDiscussions}
                 form={form}
                 key={version.manuscript.id}
                 makeDecision={makeDecision}

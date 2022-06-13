@@ -63,3 +63,40 @@ export const CREATE_THREAD = gql`
     }
   }
 `
+
+export const UPDATE_THREAD = gql`
+mutation(
+  $manuscriptId: ID
+  $comment: String
+  $created: DateTime
+  $updated: DateTime
+) {
+  updateThread(
+    manuscriptId: $manuscriptId
+    comment: $comment
+    created: $created
+    updated: $updated
+  ) {
+    id
+    created
+    updated
+    manuscriptId
+    threads {
+      id
+      comments {
+        id
+        commentVersions {
+          id
+          userId
+          comment
+        }
+        pendingVersions {
+          id
+          userId
+          comment
+        }
+      }
+    }
+  }
+}
+`

@@ -86,12 +86,14 @@ const DecisionAndReviews = ({ manuscript }) => {
           <Title>Decision</Title>
         </SectionHeader>
         <Decision decision={decision} editor={decision?.user} />
-        <ThreadedDiscussion currentUser={currentUser} manuscriptId={manuscript.id}/>
+        <ThreadedDiscussion
+          currentUser={currentUser}
+          manuscriptId={manuscript.id}
+        />
       </SectionContent>
       <SectionContent>
         <SectionHeader>
           <Title>Reviews</Title>
-          
         </SectionHeader>
 
         {reviewsToShow.length ? (

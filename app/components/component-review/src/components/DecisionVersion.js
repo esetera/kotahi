@@ -112,6 +112,7 @@ const DecisionVersion = ({
       reviewData,
       manuscriptId,
     )
+
     return results
   }
 

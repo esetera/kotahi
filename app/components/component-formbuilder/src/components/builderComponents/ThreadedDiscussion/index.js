@@ -19,7 +19,7 @@ const ThreadedDiscussion = props => {
     ...SimpleWaxEditorProps
   } = props
 
-  const [setNewComment] = React.useState()
+  const [NewComment, setNewComment] = React.useState()
 
   const lastComment = comments ? comments[comments.length - 1] : null
 
@@ -29,15 +29,26 @@ const ThreadedDiscussion = props => {
 
   const [addThread] = useMutation(CREATE_THREAD, {
     variables: {
-      manuscriptId: manuscriptId,
-      comment: 'Thank you for your suggestions',
+      manuscriptId,
+      comment: NewComment,
       created: new Date(),
       updated: new Date(),
     },
   })
 
+  // const [updateThread] = useMutation(UPDATE_THREAD,{
+  //   variables: {
+  //     manuscriptId,
+  //     comment: NewComment,
+  //     created: new Date(),
+  //     updated: new Date(),
+  //   },
+  // })
+// console.log(updateThread, 'updateThread')
+
   const fetchData = () => useQuery(GET_THREADED_DISCUSSIONS)
   const { loading, error } = fetchData()
+ 
 
   return (
     <>
@@ -65,7 +76,7 @@ const ThreadedDiscussion = props => {
               onChange={content => setNewComment(content)}
             />
           </SimpleWaxEditorWrapper>
-          <Button disabled={false} onClick={addThread} primary type="button">
+          <Button onClick={addThread} primary type="submit">
             Submit
           </Button>
         </>
