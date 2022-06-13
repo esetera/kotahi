@@ -1,7 +1,7 @@
 const typeDefs = `
 extend type Query {
   threadedDiscussion(id: ID!): ThreadedDiscussion!
-  threadedDiscussions: [ThreadedDiscussion]!
+  threadedDiscussions(manuscriptId: ID): [ThreadedDiscussion]!
 }
 
 type ThreadedDiscussion {

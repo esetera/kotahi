@@ -186,14 +186,13 @@ const DecisionForm = ({
         </SectionHeader>
         <SectionRow>
           <NoteDecision
-          
             createFile={createFile}
             currentUser={currentUser}
             deleteFile={deleteFile}
             manuscriptId={manuscriptId}
             updateReview={updateReview}
           />
-           <ThreadedDiscussion/>
+          <ThreadedDiscussion />
         </SectionRow>
         <SectionRowGrid>
           <Field

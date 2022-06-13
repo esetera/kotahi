@@ -22,10 +22,11 @@ const ThreadedDiscussion = props => {
 
   const [, setNewComment] = React.useState()
   const lastComment = comments ? comments[comments.length - 1] : null
-  
+
   const lastCommentByCurrentUser = lastComment
     ? lastComment.userId === user.id
     : null
+
   return (
     <>
       {loading && 'loading dicussion...'}
