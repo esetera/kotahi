@@ -56,4 +56,5 @@ extend type Mutation{
   updateThread(manuscriptId: ID, comment: String, created: DateTime, updated: DateTime): ThreadedDiscussion
 }
 `
+
 module.exports = typeDefs

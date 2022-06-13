@@ -3,9 +3,11 @@ const ThreadedDiscussion = require('./threadedDiscussion')
 
 const resolvers = {
   Query: {
-    async threadedDiscussions(_,{manuscriptId}) {
+    async threadedDiscussions(_, { manuscriptId }) {
       // console.log(manuscriptId, 'manuscriptId')
-      return models.ThreadedDiscussion.query().where({manuscriptId}).orderBy('created', 'desc')
+      return models.ThreadedDiscussion.query()
+        .where({ manuscriptId })
+        .orderBy('created', 'desc')
     },
   },
 
