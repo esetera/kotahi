@@ -22,7 +22,7 @@ const Bullet = styled.span`
     props.recommendation
       ? props.journal?.recommendations?.find(
           item => item.value === props.recommendation,
-        ).color
+        )?.color
       : 'black'};
   border-radius: 100%;
   display: inline-block;
