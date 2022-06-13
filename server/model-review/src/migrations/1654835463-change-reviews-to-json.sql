@@ -52,7 +52,7 @@ INSERT INTO reviews (
       json_build_object(
         'comment', d.content,
         'files', (SELECT to_jsonb(x)->'array_agg' FROM (
-          SELECT array_agg(id) FROM files WHERE object_id = d.id and tags @> '"decision"'
+          SELECT array_agg(id) FROM files WHERE object_id = r.id and tags @> '"decision"'
         ) x),
         'verdict', r.recommendation
       )::JSONB 
@@ -60,11 +60,11 @@ INSERT INTO reviews (
       json_build_object(
         'comment', c.content,
         'files', (SELECT to_jsonb(y)->'array_agg' FROM (
-          SELECT array_agg(id) FROM files WHERE object_id = c.id and tags @> '"review"'
+          SELECT array_agg(id) FROM files WHERE object_id = r.id and tags @> '"review"'
         ) y),
         'confidentialComment', conf_c.content,
         'confidentialFiles', (SELECT to_jsonb(z)->'array_agg' FROM (
-          SELECT array_agg(id) FROM files WHERE object_id = conf_c.id and tags @> '"confidential"'
+          SELECT array_agg(id) FROM files WHERE object_id = r.id and tags @> '"confidential"'
         ) z),
         'verdict', r.recommendation
       )::JSONB 
@@ -75,3 +75,6 @@ INSERT INTO reviews (
   LEFT JOIN review_comments conf_c ON (conf_c.review_id = r.id AND conf_c.comment_type = 'confidential')
   LEFT JOIN review_comments d ON (d.review_id = r.id AND d.comment_type = 'decision')
 );
+
+-- Remove old decision and review forms so the revised forms will be added
+delete from forms where category in ('review', 'decision');
