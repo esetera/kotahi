@@ -51,27 +51,27 @@ INSERT INTO reviews (
     WHEN r.is_decision THEN
       json_build_object(
         'comment', d.content,
-        'files', (SELECT json_agg(x) FROM (
-          SELECT id FROM files WHERE object_id = r.id and tags @> '"decision"'
+        'files', (SELECT to_jsonb(x)->'array_agg' FROM (
+          SELECT array_agg(id) FROM files WHERE object_id = d.id and tags @> '"decision"'
         ) x),
         'verdict', r.recommendation
       )::JSONB 
     ELSE
       json_build_object(
         'comment', c.content,
-        'files', (SELECT json_agg(y) FROM (
-          SELECT id FROM files WHERE object_id = r.id and tags @> '"review"'
+        'files', (SELECT to_jsonb(y)->'array_agg' FROM (
+          SELECT array_agg(id) FROM files WHERE object_id = c.id and tags @> '"review"'
         ) y),
         'confidentialComment', conf_c.content,
-        'confidentialFiles', (SELECT json_agg(z) FROM (
-          SELECT id FROM files WHERE object_id = r.id and tags @> '"confidential"'
+        'confidentialFiles', (SELECT to_jsonb(z)->'array_agg' FROM (
+          SELECT array_agg(id) FROM files WHERE object_id = conf_c.id and tags @> '"confidential"'
         ) z),
         'verdict', r.recommendation
       )::JSONB 
     END
       as json_data
   FROM reviews_old r
-  LEFT JOIN review_comments c ON (c.review_id = r.id AND c.type = 'review')
-  LEFT JOIN review_comments conf_c ON (conf_c.review_id = r.id AND conf_c.type = 'confidential')
-  LEFT JOIN review_comments d ON (d.review_id = r.id AND d.type = 'decision')
+  LEFT JOIN review_comments c ON (c.review_id = r.id AND c.comment_type = 'review')
+  LEFT JOIN review_comments conf_c ON (conf_c.review_id = r.id AND conf_c.comment_type = 'confidential')
+  LEFT JOIN review_comments d ON (d.review_id = r.id AND d.comment_type = 'decision')
 );
