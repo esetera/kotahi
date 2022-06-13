@@ -54,7 +54,7 @@ INSERT INTO reviews (
         'files', (SELECT to_jsonb(x)->'array_agg' FROM (
           SELECT array_agg(id) FROM files WHERE object_id = r.id and tags @> '"decision"'
         ) x),
-        'verdict', r.recommendation
+        'verdict', CASE WHEN r.recommendation = 'accepted' THEN 'accept' WHEN r.recommendation = 'rejected' THEN 'reject' ELSE r.recommendation END
       )::JSONB 
     ELSE
       json_build_object(
@@ -66,7 +66,7 @@ INSERT INTO reviews (
         'confidentialFiles', (SELECT to_jsonb(z)->'array_agg' FROM (
           SELECT array_agg(id) FROM files WHERE object_id = r.id and tags @> '"confidential"'
         ) z),
-        'verdict', r.recommendation
+        'verdict', CASE WHEN r.recommendation = 'accepted' THEN 'accept' WHEN r.recommendation = 'rejected' THEN 'reject' ELSE r.recommendation END
       )::JSONB 
     END
       as json_data
