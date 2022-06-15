@@ -77,16 +77,11 @@ const updateAndRepackageForGraphql = async ms => {
 const regenerateAllFileUris = async manuscript => {
   const reviewForm = await getReviewForm(false)
   const decisionForm = await getReviewForm(true)
+  const allFiles = []
 
   if (manuscript.files) {
     manuscript.files = await getFilesWithUrl(manuscript.files)
-
-    if (typeof manuscript.meta.source === 'string') {
-      manuscript.meta.source = await replaceImageSrcResponsive(
-        manuscript.meta.source,
-        manuscript.files,
-      )
-    }
+    allFiles.push(...manuscript.files)
   }
 
   if (manuscript.reviews) {
@@ -103,13 +98,7 @@ const regenerateAllFileUris = async manuscript => {
     for (const v of manuscript.manuscriptVersions) {
       if (v.files) {
         v.files = await getFilesWithUrl(v.files)
-
-        if (typeof v.meta.source === 'string') {
-          v.meta.source = await replaceImageSrcResponsive(
-            v.meta.source,
-            manuscript.files, // TODO Currently we're not recreating files in the manuscript when we create a new version. If we were, then this param would be v.files
-          )
-        }
+        allFiles.push(...v.files)
       }
 
       if (v.reviews) {
@@ -120,6 +109,25 @@ const regenerateAllFileUris = async manuscript => {
             async ids => File.query().findByIds(ids),
             getFilesWithUrl,
           )
+      }
+    }
+  }
+
+  // Currently we're not recreating files in the manuscript when we create a new version,
+  // so some files found in the HTML source may actually be owned by a previous version.
+  // We therefore need to have ALL files available when doing replacements.
+  // TODO Fix this by recreating all files upon creating a new version, and fix old manuscripts via migration.
+  if (allFiles.length && typeof manuscript.meta.source === 'string') {
+    manuscript.meta.source = await replaceImageSrcResponsive(
+      manuscript.meta.source,
+      allFiles,
+    )
+  }
+
+  if (manuscript.manuscriptVersions) {
+    for (const v of manuscript.manuscriptVersions) {
+      if (allFiles.length && typeof v.meta.source === 'string') {
+        v.meta.source = await replaceImageSrcResponsive(v.meta.source, allFiles)
       }
     }
   }
