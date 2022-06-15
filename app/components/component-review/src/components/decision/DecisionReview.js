@@ -258,11 +258,13 @@ ReviewHeading.propTypes = {
   journal: PropTypes.object,
   open: PropTypes.bool.isRequired,
   ordinal: PropTypes.number.isRequired,
-  recommendation: PropTypes.string.isRequired,
+  recommendation: PropTypes.string,
   toggleOpen: PropTypes.func.isRequired,
   // eslint-disable-next-line
   user: PropTypes.object.isRequired,
 }
+ReviewHeading.defaultProps = { recommendation: null }
+
 ToggleReview.propTypes = {
   open: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,

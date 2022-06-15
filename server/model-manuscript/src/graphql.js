@@ -77,8 +77,17 @@ const updateAndRepackageForGraphql = async ms => {
 const regenerateAllFileUris = async manuscript => {
   const reviewForm = await getReviewForm(false)
   const decisionForm = await getReviewForm(true)
-  if (manuscript.files)
+
+  if (manuscript.files) {
     manuscript.files = await getFilesWithUrl(manuscript.files)
+
+    if (typeof manuscript.meta.source === 'string') {
+      manuscript.meta.source = await replaceImageSrcResponsive(
+        manuscript.meta.source,
+        manuscript.files,
+      )
+    }
+  }
 
   if (manuscript.reviews) {
     for (const review of manuscript.reviews)
@@ -92,7 +101,16 @@ const regenerateAllFileUris = async manuscript => {
 
   if (manuscript.manuscriptVersions) {
     for (const v of manuscript.manuscriptVersions) {
-      if (v.files) v.files = await getFilesWithUrl(v.files)
+      if (v.files) {
+        v.files = await getFilesWithUrl(v.files)
+
+        if (typeof v.meta.source === 'string') {
+          v.meta.source = await replaceImageSrcResponsive(
+            v.meta.source,
+            manuscript.files, // TODO Currently we're not recreating files in the manuscript when we create a new version. If we were, then this param would be v.files
+          )
+        }
+      }
 
       if (v.reviews) {
         for (const review of v.reviews)

@@ -188,7 +188,7 @@ const InnerFormTemplate = ({
 
   // this is what the submit button will say
   const submitButtonText =
-    manuscriptStatus === articleStatuses.published
+    manuscriptStatus === isSubmission && articleStatuses.published
       ? 'Re-Publish'
       : submissionButtonText
 

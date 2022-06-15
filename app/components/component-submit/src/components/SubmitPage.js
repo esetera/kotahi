@@ -137,20 +137,7 @@ const SubmitPage = ({ match, history }) => {
       })
 
   const currentUser = data?.currentUser
-  let manuscript = data?.manuscript
-
-  // TODO: Figure out why this data does not get to DecisionAndReview
-  // Parse the jsonData in the reviews
-  const parsedReviews = manuscript.reviews.map(review => {
-    const parsedJsonData = JSON.parse(review.jsonData)
-
-    return {
-      ...review,
-      parsedJsonData,
-    }
-  })
-
-  manuscript = { ...manuscript, parsedReviews }
+  const manuscript = data?.manuscript
 
   const forms = data?.forms.map(currentForm => {
     return {

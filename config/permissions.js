@@ -359,7 +359,7 @@ const permissions = {
   Mutation: {
     upload: isAuthenticated,
     createManuscript: isAuthenticated,
-    updateManuscript: or(userIsAuthor, userIsAdmin),
+    updateManuscript: or(userIsAuthor, userIsEditor, userIsAdmin),
     submitManuscript: userIsAuthor,
     createMessage: userIsAllowedToChat,
     updateReview: or(
