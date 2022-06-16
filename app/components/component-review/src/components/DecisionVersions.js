@@ -38,11 +38,11 @@ const DecisionVersions = ({
   createFile,
   validateDoi,
 }) => {
-  const [initialValues, setInitialValue] = useState(null)
+  const [initialValue, setInitialValue] = useState(null)
 
   const versions = gatherManuscriptVersions(manuscript)
 
-  if (!initialValues)
+  if (!initialValue)
     setInitialValue(
       versions[0].manuscript.reviews.find(r => r.isDecision) || {
         id: uuid(),
@@ -77,7 +77,7 @@ const DecisionVersions = ({
                 createFile={createFile}
                 createTeam={createTeam}
                 current={index === 0}
-                currentDecisionData={initialValues}
+                currentDecisionData={initialValue}
                 currentUser={currentUser}
                 decisionForm={decisionForm}
                 deleteFile={deleteFile}
