@@ -108,6 +108,7 @@ const ReviewLayout = ({
           <SharedReviewerGroupReviews
             manuscript={latestVersion}
             reviewerId={currentUser.id}
+            reviewForm={reviewForm}
           />
           {status === 'completed' ? (
             <Review review={review} />
