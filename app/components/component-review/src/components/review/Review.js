@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
+import { ensureJsonIsParsed } from '../../../../../shared/objectUtils'
 
 const Heading = styled.h4``
 
@@ -42,11 +43,7 @@ const Review = ({ review, reviewForm, user, showUserInfo = true }) => (
 
     <ReadonlyFormTemplate
       form={reviewForm}
-      formData={
-        typeof review.jsonData === 'string'
-          ? JSON.parse(review.jsonData)
-          : review.jsonData ?? '{}'
-      }
+      formData={ensureJsonIsParsed(review.jsonData) ?? {}}
       hideSpecialInstructions
       showEditorOnlyFields={user.admin}
     />

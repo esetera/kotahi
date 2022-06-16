@@ -12,4 +12,8 @@ const deepMergeObjectsReplacingArrays = (baseObj, objToMerge) => {
   return mergeWith(baseObj, objToMerge, replaceArrays)
 }
 
-module.exports = { deepMergeObjectsReplacingArrays }
+/** Parses if value is a string, otherwise returns value unaltered. */
+const ensureJsonIsParsed = value =>
+  typeof value === 'string' ? JSON.parse(value) : value
+
+module.exports = { deepMergeObjectsReplacingArrays, ensureJsonIsParsed }

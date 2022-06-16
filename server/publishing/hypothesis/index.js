@@ -4,6 +4,7 @@ const axios = require('axios')
 const config = require('config')
 const { get } = require('lodash')
 const { getPublicFields } = require('../../model-form/src/formCommsUtils')
+const { ensureJsonIsParsed } = require('../../utils/objectUtils')
 
 const {
   getFieldNamesAndTags,
@@ -34,9 +35,7 @@ const getReview = (manuscript, reviewIdentifier) => {
     index < reviews.length ? { ...reviews[index] } : { jsonData: {} }
 
   if (review.isHiddenFromAuthor) return { jsonData: {} }
-
-  if (typeof review.jsonData === 'string')
-    review.jsonData = JSON.parse(review.jsonData)
+  review.jsonData = ensureJsonIsParsed(review.jsonData)
   return review
 }
 

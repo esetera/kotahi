@@ -1,4 +1,5 @@
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
+const { ensureJsonIsParsed } = require('../../utils/objectUtils')
 
 const stripConfidentialDataFromReviews = (
   reviews,
@@ -18,9 +19,8 @@ const stripConfidentialDataFromReviews = (
   return reviews
     .filter(r => !r.isHiddenFromAuthor)
     .map(review => {
-      const r = { ...review }
+      const r = { ...review, jsonData: ensureJsonIsParsed(review.jsonData) }
       if (r.isHiddenReviewerName) r.userId = null
-      if (typeof r.jsonData === 'string') r.jsonData = JSON.parse(r.jsonData)
 
       const confidentialFields = r.isDecision
         ? confidentialDecisionFields
