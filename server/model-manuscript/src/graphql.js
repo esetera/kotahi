@@ -1,9 +1,9 @@
 /* eslint-disable prefer-destructuring */
 const { ref } = require('objection')
 const axios = require('axios')
-const { mergeWith, isArray, map } = require('lodash')
+const { map } = require('lodash')
 const config = require('config')
-const { pubsubManager } = require('@coko/server')
+const { pubsubManager, File } = require('@coko/server')
 const models = require('@pubsweet/models')
 const cheerio = require('cheerio')
 
@@ -11,11 +11,17 @@ const { getPubsub } = pubsubManager
 const Form = require('../../model-form/src/form')
 const Message = require('../../model-message/src/message')
 const publishToCrossref = require('../../publishing/crossref')
-const { stripSensitiveItems } = require('./manuscriptUtils')
+
+const {
+  stripSensitiveItems,
+  fixMissingValuesInFiles,
+  hasEvaluations,
+} = require('./manuscriptUtils')
 
 const {
   getFilesWithUrl,
   replaceImageSrc,
+  replaceImageSrcResponsive,
   base64Images,
   uploadImage,
 } = require('../../utils/fileStorageUtils')
@@ -27,17 +33,80 @@ const {
 
 const sendEmailNotification = require('../../email-notifications')
 
-const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 const importArticlesFromBiorxiv = require('../../import-articles/biorxiv-import')
 const importArticlesFromBiorxivWithFullTextSearch = require('../../import-articles/biorxiv-full-text-import')
 const importArticlesFromPubmed = require('../../import-articles/pubmed-import')
 const publishToGoogleSpreadSheet = require('../../publishing/google-spreadsheet')
 const validateApiToken = require('../../utils/validateApiToken')
+const { deepMergeObjectsReplacingArrays } = require('../../utils/objectUtils')
+
+const {
+  convertFilesToFullObjects,
+} = require('../../model-review/src/reviewUtils')
+
+const { getReviewForm } = require('../../model-review/src/reviewCommsUtils')
 
 const SUBMISSION_FIELD_PREFIX = 'submission'
 const META_FIELD_PREFIX = 'meta'
 
 let isImportInProgress = false
+
+const repackageForGraphql = async ms => {
+  const result = { ...fixMissingValuesInFiles(ms) }
+  await regenerateAllFileUris(result)
+
+  if (result.reviews && typeof result.reviews !== 'string')
+    result.reviews = result.reviews.map(review => ({
+      ...review,
+      jsonData: JSON.stringify(review.jsonData),
+    }))
+
+  return result
+}
+
+const updateAndRepackageForGraphql = async ms => {
+  const updatedMs = await models.Manuscript.query().updateAndFetchById(
+    ms.id,
+    ms,
+  )
+
+  return repackageForGraphql(updatedMs)
+}
+
+/* eslint-disable no-param-reassign, no-restricted-syntax, no-await-in-loop */
+const regenerateAllFileUris = async manuscript => {
+  const reviewForm = await getReviewForm(false)
+  const decisionForm = await getReviewForm(true)
+  if (manuscript.files)
+    manuscript.files = await getFilesWithUrl(manuscript.files)
+
+  if (manuscript.reviews) {
+    for (const review of manuscript.reviews)
+      await convertFilesToFullObjects(
+        review,
+        review.isDecision ? decisionForm : reviewForm,
+        async ids => File.query().findByIds(ids),
+        getFilesWithUrl,
+      )
+  }
+
+  if (manuscript.manuscriptVersions) {
+    for (const v of manuscript.manuscriptVersions) {
+      if (v.files) v.files = await getFilesWithUrl(v.files)
+
+      if (v.reviews) {
+        for (const review of v.reviews)
+          await convertFilesToFullObjects(
+            review,
+            review.isDecision ? decisionForm : reviewForm,
+            async ids => File.query().findByIds(ids),
+            getFilesWithUrl,
+          )
+      }
+    }
+  }
+}
+/* eslint-enable no-param-reassign, no-restricted-syntax, no-await-in-loop */
 
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
@@ -48,11 +117,31 @@ const ManuscriptResolvers = ({ isVersion }) => {
       return JSON.stringify(parent.evaluationsHypothesisMap)
     },
     async reviews(parent, _, ctx) {
-      return parent.reviews
-        ? parent.reviews
-        : (await models.Manuscript.query().findById(parent.id)).$relatedQuery(
-            'reviews',
-          )
+      const reviewForm = await getReviewForm(false)
+      const decisionForm = await getReviewForm(true)
+
+      const reviews =
+        parent.reviews ||
+        (await (
+          await models.Manuscript.query().findById(parent.id)
+        ).$relatedQuery('reviews')) ||
+        []
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const review of reviews) {
+        // eslint-disable-next-line no-await-in-loop
+        await convertFilesToFullObjects(
+          review,
+          review.isDecision ? decisionForm : reviewForm,
+          async ids => File.query().findByIds(ids),
+          getFilesWithUrl,
+        )
+      }
+
+      return reviews.map(review => ({
+        ...review,
+        jsonData: JSON.stringify(review.jsonData),
+      }))
     },
     async teams(parent, _, ctx) {
       return parent.teams
@@ -92,28 +181,10 @@ const ManuscriptResolvers = ({ isVersion }) => {
   return resolvers
 }
 
-const mergeArrays = (destination, source) => {
-  if (isArray(destination)) return source
-  return undefined
-}
-
-const commonUpdateManuscript = async (id, input, ctx) => {
-  const msDelta = JSON.parse(input)
-  const ms = await models.Manuscript.query().findById(id)
-  const updatedMs = mergeWith(ms, msDelta, mergeArrays)
-
-  if (
-    updatedMs.status &&
-    updatedMs.status !== 'new' &&
-    !updatedMs.submittedDate
-  )
-    updatedMs.submittedDate = new Date()
-
-  if (['ncrc', 'colab'].includes(process.env.INSTANCE_NAME)) {
-    updatedMs.submission.editDate = new Date().toISOString().split('T')[0]
-  }
-
-  const { source } = updatedMs.meta
+/** Modifies the supplied manuscript by replacing all inlined base64 images
+ *  with actual images stored to file storage */
+const uploadAndConvertBase64ImagesInManuscript = async manuscript => {
+  const { source } = manuscript.meta
 
   if (typeof source === 'string') {
     const images = base64Images(source)
@@ -124,7 +195,7 @@ const commonUpdateManuscript = async (id, input, ctx) => {
       await Promise.all(
         map(images, async image => {
           if (image.blob) {
-            const uploadedImage = await uploadImage(image, updatedMs.id)
+            const uploadedImage = await uploadImage(image, manuscript.id)
             uploadedImages.push(uploadedImage)
           }
         }),
@@ -147,37 +218,37 @@ const commonUpdateManuscript = async (id, input, ctx) => {
         )
       })
 
-      updatedMs.meta.source = $.html()
+      // eslint-disable-next-line no-param-reassign
+      manuscript.meta.source = $.html()
     }
   }
-
-  return models.Manuscript.query().updateAndFetchById(id, updatedMs)
 }
 
-/** Get evaluations as [ [submission.review1, submission.review1date], [submission.review2, submission.review2date], ..., [submission.summary, submission.summarydate] ] */
-const getEvaluationsAndDates = manuscript => {
-  const evaluationValues = Object.entries(manuscript.submission)
-    .filter(
-      ([prop, value]) =>
-        !Number.isNaN(Number(prop.split('review')[1])) &&
-        prop.includes('review'),
-    )
-    .map(([propName, value]) => [
-      value,
-      manuscript.submission[`${propName}date`],
-    ])
+const commonUpdateManuscript = async (id, input, ctx) => {
+  // ms = manuscript
+  const msDelta = JSON.parse(input) // Convert the JSON input to JavaScript object
 
-  evaluationValues.push([
-    manuscript.submission.summary,
-    manuscript.submission.summarydate,
-  ])
+  const ms = await models.Manuscript.query()
+    .findById(id)
+    .withGraphFetched('[reviews, files]')
 
-  return evaluationValues
-}
+  const updatedMs = deepMergeObjectsReplacingArrays(ms, msDelta)
 
-const hasEvaluations = manuscript => {
-  const evaluations = getEvaluationsAndDates(manuscript)
-  return evaluations.map(checkIsAbstractValueEmpty).some(isEmpty => !isEmpty)
+  // Create a date for new submissions
+  if (
+    updatedMs.status &&
+    updatedMs.status !== 'new' &&
+    !updatedMs.submittedDate
+  ) {
+    updatedMs.submittedDate = new Date()
+  }
+
+  if (['ncrc', 'colab'].includes(process.env.INSTANCE_NAME)) {
+    updatedMs.submission.editDate = new Date().toISOString().split('T')[0]
+  }
+
+  await uploadAndConvertBase64ImagesInManuscript(updatedMs)
+  return updateAndRepackageForGraphql(updatedMs)
 }
 
 /** Send the manuscriptId OR a configured ref; and send token if one is configured */
@@ -320,11 +391,6 @@ const resolvers = {
           },
         ],
         files: files.map(file => {
-          // In order to match the behaviour of the createFile mutation, we add a prefix to the URL.
-          // This gives the URL required for download from the client (see app.js).
-          // TODO We should really be storing the URL from the point of view of the server (prefix is 'uploads/'), not of the client.
-          // TODO We can then convert to the client-centric URL at the point of passing a file object to the client.
-          // TODO This should be changed both here and for the createFile query, and we'll need a migration to convert all existing URLs in the DB.
           return {
             ...file,
           }
@@ -445,6 +511,7 @@ const resolvers = {
 
       return id
     },
+    // TODO Rename to something like 'setReviewerResponse'
     async reviewerResponse(_, { action, teamId }, context) {
       const {
         Team: TeamModel,
@@ -457,7 +524,10 @@ const resolvers = {
           `Invalid action (reviewerResponse): Must be either "accepted" or "rejected"`,
         )
 
-      const team = await TeamModel.query().findById(teamId).eager('members')
+      const team = await TeamModel.query()
+        .findById(teamId)
+        .withGraphFetched('members')
+
       if (!team) throw new Error('No team was found')
 
       for (let i = 0; i < team.members.length; i += 1) {
@@ -469,12 +539,12 @@ const resolvers = {
 
       if (action === 'accepted') {
         const review = {
-          recommendation: '',
           isDecision: false,
           isHiddenReviewerName: true,
           isHiddenFromAuthor: true,
           userId: context.user,
           manuscriptId: team.manuscriptId,
+          jsonData: '{}',
         }
 
         await new ReviewModel(review).save()
@@ -563,12 +633,13 @@ const resolvers = {
       return team
     },
     async updateManuscript(_, { id, input }, ctx) {
-      return commonUpdateManuscript(id, input, ctx) // Currently submitManuscript and updateManuscript have identical action
+      return commonUpdateManuscript(id, input, ctx)
     },
 
     async createNewVersion(_, { id }, ctx) {
       const manuscript = await models.Manuscript.query().findById(id)
-      return manuscript.createNewVersion()
+      const newVersion = await manuscript.createNewVersion()
+      return repackageForGraphql(newVersion)
     },
     async submitManuscript(_, { id, input }, ctx) {
       if (config['notification-email'].automated === 'true') {
@@ -622,30 +693,35 @@ const resolvers = {
         }
       }
 
-      return commonUpdateManuscript(id, input, ctx) // Currently submitManuscript and updateManuscript have identical action
+      return commonUpdateManuscript(id, input, ctx)
     },
 
-    async makeDecision(_, { id, decision }, ctx) {
+    async makeDecision(_, { id, decision: decisionString }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(id)
         .withGraphFetched(
-          '[submitter.[defaultIdentity], channels, teams.members.user]',
+          '[submitter.[defaultIdentity], channels, teams.members.user, reviews.user]',
         )
 
+      let decision = null
+      if (decisionString === 'accept') decision = 'accepted'
+      else if (decisionString === 'revise') decision = 'revise'
+      else if (decisionString === 'reject') decision = 'rejected'
+      if (!decision)
+        throw new Error(`Unknown decision type "${decisionString}" received.`)
       manuscript.decision = decision
-
       manuscript.status = decision
 
       if (
         manuscript.decision &&
         config['notification-email'].automated === 'true'
       ) {
-        // Automated email evaluvationComplete on decision
+        // Automated email evaluationComplete on decision
         const receiverEmail = manuscript.submitter.email
-        /* eslint-disable-next-line */
+
         const receiverFirstName = (
-          manuscript.submitter.defaultIdentity.name ||
           manuscript.submitter.username ||
+          manuscript.submitter.defaultIdentity.name ||
           ''
         ).split(' ')[0]
 
@@ -653,50 +729,48 @@ const resolvers = {
         const emailValidationRegexp = /^[^\s@]+@[^\s@]+$/
         const emailValidationResult = emailValidationRegexp.test(receiverEmail)
 
-        if (!emailValidationResult || !receiverFirstName) {
-          return manuscript.save()
-        }
+        if (emailValidationResult && receiverFirstName) {
+          const data = {
+            articleTitle: manuscript.meta.title,
+            authorName:
+              manuscript.submitter.defaultIdentity.name ||
+              manuscript.submitter.username ||
+              '',
+            receiverFirstName,
+            shortId: manuscript.shortId,
+          }
 
-        const data = {
-          articleTitle: manuscript.meta.title,
-          authorName:
-            manuscript.submitter.defaultIdentity.name ||
-            manuscript.submitter.username ||
-            '',
-          receiverFirstName,
-          shortId: manuscript.shortId,
-        }
+          try {
+            // Add Email Notification Record in Editorial Discussion Panel
+            const author = manuscript.teams.find(team => {
+              if (team.role === 'author') {
+                return team
+              }
 
-        try {
-          // Add Email Notification Record in Editorial Discussion Panel
-          const author = manuscript.teams.find(team => {
-            if (team.role === 'author') {
-              return team
-            }
+              return null
+            }).members[0].user
 
-            return null
-          }).members[0].user
+            const body = `Editor Decision sent by Kotahi to ${author.username}`
 
-          const body = `Editor Decision sent by Kotahi to ${author.username}`
+            const channelId = manuscript.channels.find(
+              channel => channel.topic === 'Editorial discussion',
+            ).id
 
-          const channelId = manuscript.channels.find(
-            channel => channel.topic === 'Editorial discussion',
-          ).id
+            Message.createMessage({
+              content: body,
+              channelId,
+              userId: manuscript.submitterId,
+            })
 
-          Message.createMessage({
-            content: body,
-            channelId,
-            userId: manuscript.submitterId,
-          })
-
-          await sendEmailNotification(receiverEmail, selectedTemplate, data)
-        } catch (e) {
-          /* eslint-disable-next-line */
-          console.log('email was not sent', e)
+            await sendEmailNotification(receiverEmail, selectedTemplate, data)
+          } catch (e) {
+            /* eslint-disable-next-line */
+            console.log('email was not sent', e)
+          }
         }
       }
 
-      return manuscript.save()
+      return updateAndRepackageForGraphql(manuscript)
     },
     async addReviewer(_, { manuscriptId, userId }, ctx) {
       const manuscript = await models.Manuscript.query().findById(manuscriptId)
@@ -722,7 +796,7 @@ const resolvers = {
           }).save()
         }
 
-        return existingTeam.$query().eager('members.[user]')
+        return existingTeam.$query().withGraphFetched('members.[user]')
       }
 
       // Create a new team of reviewers if it doesn't exist
@@ -750,13 +824,13 @@ const resolvers = {
         })
         .delete()
 
-      return reviewerTeam.$query().eager('members.[user]')
+      return reviewerTeam.$query().withGraphFetched('members.[user]')
     },
 
     async publishManuscript(_, { id }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(id)
-        .eager('reviews')
+        .withGraphFetched('reviews')
 
       const update = {} // This will collect any properties we may want to update in the DB
       update.published = new Date()
@@ -833,6 +907,7 @@ const resolvers = {
             manuscript,
           )
           succeeded = true
+          update.status = 'published'
         } catch (err) {
           let message = 'Publishing to hypothes.is failed!\n'
           if (err.response) {
@@ -864,7 +939,7 @@ const resolvers = {
         update,
       )
 
-      return { manuscript: updatedManuscript, steps }
+      return { manuscript: await repackageForGraphql(updatedManuscript), steps }
     },
   },
   Subscription: {
@@ -883,7 +958,7 @@ const resolvers = {
 
       const manuscript = await ManuscriptModel.query()
         .findById(id)
-        .withGraphFetched('[teams, channels, files, reviews.[user, comments]]')
+        .withGraphFetched('[teams, channels, files, reviews.[user]]')
 
       const user = await models.User.query().findById(ctx.user)
 
@@ -893,7 +968,9 @@ const resolvers = {
         manuscript.meta = {}
       }
 
-      manuscript.files = await getFilesWithUrl(manuscript.files)
+      // manuscript.files = await getFilesWithUrl(manuscript.files)
+      // const forms = await models.Form.query()
+      // await regenerateFileUrisInReviews(manuscript, forms)
 
       if (typeof manuscript.meta.source === 'string') {
         manuscript.meta.source = await replaceImageSrc(
@@ -921,7 +998,7 @@ const resolvers = {
         return stripSensitiveItems(manuscript)
       }
 
-      return manuscript
+      return repackageForGraphql(manuscript)
     },
     async manuscriptsUserHasCurrentRoleIn(_, input, ctx) {
       // Get all manuscript versions that this user has a role in
@@ -964,20 +1041,22 @@ const resolvers = {
           filteredManuscripts.push(m)
       })
 
-      return filteredManuscripts
+      return Promise.all(filteredManuscripts.map(m => repackageForGraphql(m)))
     },
     async manuscripts(_, { where }, ctx) {
-      return models.Manuscript.query()
+      const manuscripts = models.Manuscript.query()
         .withGraphFetched(
           '[teams, reviews, manuscriptVersions(orderByCreated)]',
         )
         .where({ parentId: null, isHidden: null })
         .orderBy('created', 'desc')
+
+      return Promise.all(manuscripts.map(async m => repackageForGraphql(m)))
     },
     async publishedManuscripts(_, { sort, offset, limit }, ctx) {
       const query = models.Manuscript.query()
         .whereNotNull('published')
-        .withGraphFetched('[reviews.[comments], files, submitter]')
+        .withGraphFetched('[reviews, files, submitter]')
 
       const totalCount = await query.resultSize()
 
@@ -1003,7 +1082,7 @@ const resolvers = {
       manuscripts = manuscripts.map(async m => {
         const manuscript = m
 
-        manuscript.files = await getFilesWithUrl(manuscript.files)
+        // manuscript.files = await getFilesWithUrl(manuscript.files)
 
         if (typeof manuscript.meta.source === 'string') {
           manuscript.meta.source = await replaceImageSrc(
@@ -1013,7 +1092,7 @@ const resolvers = {
           )
         }
 
-        return manuscript
+        return repackageForGraphql(manuscript)
       })
 
       return {
@@ -1116,15 +1195,34 @@ const resolvers = {
 
       const manuscripts = await query
 
-      return manuscripts.map(m => ({
-        id: m.id,
-        shortId: m.shortId,
-        files: m.files,
-        status: m.status,
-        meta: m.meta,
-        submission: JSON.stringify(m.submission),
-        publishedDate: m.published,
-      }))
+      return manuscripts.map(async m => {
+        const manuscript = m
+        manuscript.files = await getFilesWithUrl(manuscript.files)
+
+        if (typeof manuscript.meta.source === 'string') {
+          manuscript.meta.source = await replaceImageSrcResponsive(
+            manuscript.meta.source,
+            manuscript.files,
+          )
+        }
+
+        const printReadyPdf = manuscript.files.find(file =>
+          file.tags.includes('printReadyPdf'),
+        )
+
+        return {
+          id: manuscript.id,
+          shortId: manuscript.shortId,
+          files: manuscript.files,
+          status: manuscript.status,
+          meta: manuscript.meta,
+          submission: JSON.stringify(manuscript.submission),
+          publishedDate: manuscript.published,
+          printReadyPdfUrl: printReadyPdf
+            ? printReadyPdf.storedObjects[0].url
+            : null,
+        }
+      })
     },
     async publishedManuscript(_, { id }, ctx) {
       const m = await models.Manuscript.query()
@@ -1133,6 +1231,12 @@ const resolvers = {
         .withGraphFetched('[files]')
 
       if (!m) return null
+
+      m.files = await getFilesWithUrl(m.files)
+
+      if (typeof m.meta.source === 'string') {
+        m.meta.source = await replaceImageSrc(m.meta.source, m.files, 'medium')
+      }
 
       return {
         id: m.id,
@@ -1423,11 +1527,11 @@ const typeDefs = `
     meta: ManuscriptMeta
     submission: String
     publishedDate: DateTime
+    printReadyPdfUrl: String
   }
 `
 
 module.exports = {
   typeDefs,
   resolvers,
-  mergeArrays,
 }

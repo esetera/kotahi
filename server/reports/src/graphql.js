@@ -538,8 +538,13 @@ const getReviewersActivity = async (startDate, endDate, ctx) => {
 
         if (!review) return // continue
 
+        const reviewJsonData =
+          typeof review.jsonData === 'string'
+            ? JSON.parse(review.jsonData)
+            : review.jsonData
+
         // eslint-disable-next-line no-param-reassign
-        reviewer.recommendation = review.recommendation
+        reviewer.recommendation = reviewJsonData.verdict // TODO this expects the field to be named 'verdict'. Could be more robust.
         // eslint-disable-next-line no-param-reassign
         reviewer.duration = review.updated - reviewer.inviteDate
 

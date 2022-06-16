@@ -17,9 +17,8 @@ const ThreadedDiscussion = props => {
     loading,
     error,
     data,
-    ...SimpleWaxEditorProps
-  } = props
-
+    ...SimpleWaxEditorProps} = props
+  
   const [, setNewComment] = React.useState()
   const lastComment = comments ? comments[comments.length - 1] : null
 

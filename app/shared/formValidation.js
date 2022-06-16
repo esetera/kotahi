@@ -1,5 +1,4 @@
 import * as validators from 'xpub-validators'
-import { VALIDATE_DOI } from '../queries/index'
 import { validateAuthors } from './authorsFieldDefinitions'
 
 // eslint-disable-next-line import/prefer-default-export
@@ -8,7 +7,7 @@ export const validateFormField = (
   valueField = {},
   fieldName,
   doiValidation = false,
-  client,
+  validateDoi,
   componentType,
 ) => value => {
   const validator = vld || []
@@ -46,23 +45,9 @@ export const validateFormField = (
   if (
     errors.length === 0 &&
     fieldName === 'submission.articleURL' &&
-    doiValidation
-  ) {
-    return client
-      .query({
-        query: VALIDATE_DOI,
-        variables: {
-          articleURL: value,
-        },
-      })
-      .then(res => {
-        if (!res.data.validateDOI.isDOIValid) {
-          return 'DOI is invalid'
-        }
-
-        return undefined
-      })
-  }
+    doiValidation // TODO We could get rid of this flag and simply test whether validateDoi has a value
+  )
+    return validateDoi(value)
 
   return errors.length > 0 ? errors[0] : undefined
 }

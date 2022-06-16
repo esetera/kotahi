@@ -84,7 +84,6 @@ const createManuscriptMutation = gql`
       status
       reviews {
         open
-        recommendation
         created
         user {
           id
@@ -193,7 +192,7 @@ const uploadImage = (image, client, manuscriptId) => {
   const meta = {
     fileType: 'manuscriptImage',
     manuscriptId,
-    reviewCommentId: null,
+    reviewId: null,
   }
 
   const data = client.mutate({

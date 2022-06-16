@@ -18,6 +18,7 @@ import {
   IMPORT_MANUSCRIPTS,
   IMPORTED_MANUSCRIPTS_SUBSCRIPTION,
   GET_SYSTEM_WIDE_DISCUSSION_CHANNEL,
+  VALIDATE_DOI,
 } from '../../../queries'
 import configuredColumnNames from './configuredColumnNames'
 import { updateMutation } from '../../component-submit/src/components/SubmitPage'
@@ -142,10 +143,25 @@ const ManuscriptsPage = ({ history }) => {
 
   const client = useApolloClient()
 
+  const validateDoi = value =>
+    client
+      .query({
+        query: VALIDATE_DOI,
+        variables: {
+          articleURL: value,
+        },
+      })
+      .then(result => {
+        if (!result.data.validateDOI.isDOIValid) {
+          return 'DOI is invalid'
+        }
+
+        return undefined
+      })
+
   return (
     <Manuscripts
       chatRoomId={chatRoomId}
-      client={client}
       configuredColumnNames={configuredColumnNames}
       confrimBulkDelete={confrimBulkDelete}
       deleteManuscriptMutations={deleteManuscriptMutations}
@@ -163,6 +179,7 @@ const ManuscriptsPage = ({ history }) => {
       sortName={sortName}
       systemWideDiscussionChannel={systemWideDiscussionChannel}
       urlFrag={urlFrag}
+      validateDoi={validateDoi}
     />
   )
 }

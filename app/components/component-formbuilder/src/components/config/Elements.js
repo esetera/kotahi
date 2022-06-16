@@ -34,15 +34,28 @@ const shortDescriptionField = {
   props: { label: 'Short title (optional — used in concise listings)' },
 }
 
-const nameFieldRegex = /^(?:submission\.[a-zA-Z]\w*|meta.title|meta.abstract|fileName|visualAbstract)$/
+// Decision and Review:
+// - Don't have meta, but a single jsonData that can accomodate everything
+const nameFieldRegex = /^[a-zA-Z]\w*$/
 
 const nameField = {
   component: 'TextField',
   props: {
     label: 'Name (internal field name)',
+    validate: val => (nameFieldRegex.test(val) ? null : 'Invalid name'),
+  },
+}
+
+const submissionNameFieldRegex = /^(?:submission\.[a-zA-Z]\w*|meta.title|meta.abstract|fileName|visualAbstract)$/
+
+const submissionNameField = {
+  component: 'TextField',
+  props: {
+    label: 'Name (internal field name)',
     description:
       'Use either "submission.yourFieldNameHere", or one of the following: "meta.title" for manuscript title, "meta.abstract" for abstract, "fileName" for SupplementaryFiles, or "visualAbstract" for a VisualAbstract.',
-    validate: val => (nameFieldRegex.test(val) ? null : 'Invalid name'),
+    validate: val =>
+      submissionNameFieldRegex.test(val) ? null : 'Invalid name',
   },
 }
 
@@ -159,11 +172,11 @@ const hideFromAuthorsField = {
   defaultValue: 'false',
 }
 
-const elements = {
+const submissionElements = {
   SupplementaryFiles: {
     id: textfield,
     title: requiredTextField,
-    name: nameField,
+    name: submissionNameField,
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
@@ -173,7 +186,7 @@ const elements = {
   VisualAbstract: {
     id: textfield,
     title: requiredTextField,
-    name: nameField,
+    name: submissionNameField,
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
@@ -183,7 +196,7 @@ const elements = {
   AuthorsInput: {
     id: textfield,
     title: requiredTextField,
-    name: nameField,
+    name: submissionNameField,
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
@@ -193,7 +206,7 @@ const elements = {
   LinksInput: {
     id: textfield,
     title: requiredTextField,
-    name: nameField,
+    name: submissionNameField,
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateCollection,
@@ -201,6 +214,174 @@ const elements = {
     hideFromAuthors: hideFromAuthorsField,
   },
   AbstractEditor: {
+    id: textfield,
+    title: requiredTextField,
+    name: submissionNameField,
+    placeholder: textfield,
+    description: editorfield,
+    shortDescription: shortDescriptionField,
+    validate: validateText,
+    includeInReviewerPreview: reviewerPreviewField,
+    hideFromAuthors: hideFromAuthorsField,
+  },
+  ThreadedDiscussion:{
+    id: textfield,
+    title: requiredTextField,
+    name: submissionNameField,
+    placeholder: textfield,
+    description: editorfield,
+    shortDescription: shortDescriptionField,
+    validate: validateText,
+    includeInReviewerPreview: reviewerPreviewField,
+    hideFromAuthors: hideFromAuthorsField,
+  },
+  TextField: {
+    id: textfield,
+    title: requiredTextField,
+    name: submissionNameField,
+    placeholder: textfield,
+    description: editorfield,
+    shortDescription: shortDescriptionField,
+    validate: validateText,
+    parse: {
+      component: 'Menu',
+      props: {
+        label: 'Special parsing',
+        options: [
+          {
+            value: 'false',
+            label: 'None',
+          },
+          {
+            value: 'split',
+            label: 'Split at commas',
+          },
+        ],
+      },
+    },
+    format: {
+      component: 'Menu',
+      props: {
+        label: 'Special formatting',
+        options: [
+          {
+            value: 'false',
+            label: 'None',
+          },
+          {
+            value: 'join',
+            label: 'Join with commas',
+          },
+        ],
+      },
+    },
+    doiValidation: {
+      component: 'RadioBox',
+      props: {
+        inline: true,
+        options: [
+          {
+            value: 'true',
+            label: 'Yes',
+          },
+          {
+            value: 'false',
+            label: 'No',
+          },
+        ],
+        label: 'Validate as a DOI?',
+      },
+      defaultValue: 'false',
+    },
+    includeInReviewerPreview: reviewerPreviewField,
+    hideFromAuthors: hideFromAuthorsField,
+  },
+  CheckboxGroup: {
+    id: textfield,
+    title: requiredTextField,
+    name: submissionNameField,
+    description: editorfield,
+    options: optionfield,
+    shortDescription: shortDescriptionField,
+    validate: validateCollection,
+    includeInReviewerPreview: reviewerPreviewField,
+    hideFromAuthors: hideFromAuthorsField,
+  },
+  Select: {
+    id: textfield,
+    title: requiredTextField,
+    name: submissionNameField,
+    placeholder: textfield,
+    description: editorfield,
+    options: optionfield,
+    shortDescription: shortDescriptionField,
+    validate: validateOther,
+    includeInReviewerPreview: reviewerPreviewField,
+    hideFromAuthors: hideFromAuthorsField,
+  },
+  RadioGroup: {
+    id: textfield,
+    title: requiredTextField,
+    name: submissionNameField,
+    description: editorfield,
+    options: optionfield,
+    inline: radiofield,
+    sectioncss: textarea,
+    shortDescription: shortDescriptionField,
+    validate: validateOther,
+    includeInReviewerPreview: reviewerPreviewField,
+    hideFromAuthors: hideFromAuthorsField,
+  },
+}
+
+const elements = {
+  SupplementaryFiles: {
+    id: textfield,
+    title: requiredTextField,
+    name: nameField,
+    description: editorfield,
+    shortDescription: shortDescriptionField,
+    validate: validateOther,
+    hideFromAuthors: hideFromAuthorsField,
+  },
+  VisualAbstract: {
+    id: textfield,
+    title: requiredTextField,
+    name: nameField,
+    description: editorfield,
+    shortDescription: shortDescriptionField,
+    validate: validateOther,
+    hideFromAuthors: hideFromAuthorsField,
+  },
+  AuthorsInput: {
+    id: textfield,
+    title: requiredTextField,
+    name: nameField,
+    description: editorfield,
+    shortDescription: shortDescriptionField,
+    validate: validateOther,
+    hideFromAuthors: hideFromAuthorsField,
+  },
+  LinksInput: {
+    id: textfield,
+    title: requiredTextField,
+    name: nameField,
+    description: editorfield,
+    shortDescription: shortDescriptionField,
+    validate: validateCollection,
+    hideFromAuthors: hideFromAuthorsField,
+  },
+  AbstractEditor: {
+    id: textfield,
+    title: requiredTextField,
+    name: nameField,
+    placeholder: textfield,
+    description: editorfield,
+    shortDescription: shortDescriptionField,
+    validate: validateText,
+    hideFromAuthors: hideFromAuthorsField,
+  },
+  ThreadedDiscussion:{
     id: textfield,
     title: requiredTextField,
     name: nameField,
@@ -269,7 +450,6 @@ const elements = {
       },
       defaultValue: 'false',
     },
-    includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
   },
   CheckboxGroup: {
@@ -280,7 +460,6 @@ const elements = {
     options: optionfield,
     shortDescription: shortDescriptionField,
     validate: validateCollection,
-    includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
   },
   Select: {
@@ -292,7 +471,6 @@ const elements = {
     options: optionfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
-    includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
   },
   RadioGroup: {
@@ -305,9 +483,8 @@ const elements = {
     sectioncss: textarea,
     shortDescription: shortDescriptionField,
     validate: validateOther,
-    includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
   },
 }
 
-export default elements
+export { elements, submissionElements }

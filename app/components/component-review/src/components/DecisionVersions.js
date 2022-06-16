@@ -14,20 +14,22 @@ import MessageContainer from '../../../component-chat/src/MessageContainer'
 const DecisionVersions = props => {
   const {
     allUsers,
-    confirming,
     currentUser,
+    decisionForm,
     form,
     handleChange,
-    toggleConfirming,
     updateManuscript,
     manuscript,
     sendNotifyEmail,
     sendChannelMessageCb,
     makeDecision,
+    updateReviewJsonData,
     publishManuscript,
     updateTeam,
     createTeam,
     updateReview,
+    reviewByCurrentUser,
+    reviewForm,
     reviewers,
     teamLabels,
     canHideReviews,
@@ -35,7 +37,7 @@ const DecisionVersions = props => {
     displayShortIdAsIdentifier,
     deleteFile,
     createFile,
-    client,
+    validateDoi,
   } = props
 
   const versions = gatherManuscriptVersions(manuscript)
@@ -63,12 +65,11 @@ const DecisionVersions = props => {
               <DecisionVersion
                 allUsers={allUsers}
                 canHideReviews={canHideReviews}
-                client={client}
-                confirming={confirming}
                 createFile={createFile}
                 createTeam={createTeam}
                 current={index === 0}
                 currentUser={currentUser}
+                decisionForm={decisionForm}
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
                 form={form}
@@ -77,15 +78,18 @@ const DecisionVersions = props => {
                 onChange={handleChange}
                 parent={manuscript}
                 publishManuscript={publishManuscript}
+                reviewByCurrentUser={reviewByCurrentUser}
                 reviewers={reviewers}
+                reviewForm={reviewForm}
                 sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
                 teamLabels={teamLabels}
-                toggleConfirming={toggleConfirming}
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}
+                updateReviewJsonData={updateReviewJsonData}
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}
+                validateDoi={validateDoi}
                 version={version.manuscript}
               />
             ))}

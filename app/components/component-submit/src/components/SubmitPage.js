@@ -11,6 +11,7 @@ import { publishManuscriptMutation } from '../../../component-review/src/compone
 import pruneEmpty from '../../../../shared/pruneEmpty'
 import { validateManuscript } from '../../../../shared/manuscriptUtils'
 import CommsErrorBanner from '../../../shared/CommsErrorBanner'
+import { VALIDATE_DOI } from '../../../../queries'
 
 export const updateMutation = gql`
   mutation($id: ID!, $input: String) {
@@ -68,6 +69,7 @@ const urlFrag = config.journal.metadata.toplevel_urlfragment
 
 const cleanForm = form => {
   if (!form) return form
+
   // Remove any form items that are incomplete/invalid
   return { ...form, children: form.children.filter(f => f.component && f.name) }
 }
@@ -75,7 +77,6 @@ const cleanForm = form => {
 let debouncers = {}
 
 const SubmitPage = ({ match, history }) => {
-  const [confirming, setConfirming] = useState(false)
   const [isPublishingBlocked, setIsPublishingBlocked] = useState(false)
 
   useEffect(() => {
@@ -83,10 +84,6 @@ const SubmitPage = ({ match, history }) => {
       debouncers = {}
     }
   }, [])
-
-  const toggleConfirming = () => {
-    setConfirming(confirm => !confirm)
-  }
 
   const { data, loading, error } = useQuery(
     query,
@@ -123,9 +120,49 @@ const SubmitPage = ({ match, history }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
+  const validateDoi = value =>
+    client
+      .query({
+        query: VALIDATE_DOI,
+        variables: {
+          articleURL: value,
+        },
+      })
+      .then(result => {
+        if (!result.data.validateDOI.isDOIValid) {
+          return 'DOI is invalid'
+        }
+
+        return undefined
+      })
+
   const currentUser = data?.currentUser
-  const manuscript = data?.manuscript
-  const form = cleanForm(data?.formForPurposeAndCategory?.structure)
+  let manuscript = data?.manuscript
+
+  // TODO: Figure out why this data does not get to DecisionAndReview
+  // Parse the jsonData in the reviews
+  const parsedReviews = manuscript.reviews.map(review => {
+    const parsedJsonData = JSON.parse(review.jsonData)
+
+    return {
+      ...review,
+      parsedJsonData,
+    }
+  })
+
+  manuscript = { ...manuscript, parsedReviews }
+
+  const forms = data?.forms.map(currentForm => {
+    return {
+      ...cleanForm(currentForm?.structure),
+      category: currentForm?.category,
+      purpose: currentForm?.purpose,
+    }
+  })
+
+  const submissionForm = forms.find(
+    f => f.category === 'submission' && f.purpose === 'submit',
+  )
 
   const updateManuscript = (versionId, manuscriptDelta) => {
     return update({
@@ -160,18 +197,16 @@ const SubmitPage = ({ match, history }) => {
 
     setIsPublishingBlocked(true)
 
-    const areThereInvalidFields = await Promise.all(
-      validateManuscript(
-        {
-          ...JSON.parse(manuscript.submission),
-          ...manuscriptChangedFields.submission,
-        },
-        form,
-        client,
-      ),
+    const fieldErrors = await validateManuscript(
+      {
+        ...JSON.parse(manuscript.submission),
+        ...manuscriptChangedFields.submission,
+      },
+      submissionForm,
+      validateDoi,
     )
 
-    if (areThereInvalidFields.filter(Boolean).length !== 0) {
+    if (fieldErrors.filter(Boolean).length !== 0) {
       return
     }
 
@@ -218,20 +253,18 @@ const SubmitPage = ({ match, history }) => {
 
   return (
     <Submit
-      client={client}
-      confirming={confirming}
       createFile={createFile}
       createNewVersion={createNewVersion}
       currentUser={currentUser}
       deleteFile={deleteFile}
-      form={pruneEmpty(form)}
+      forms={pruneEmpty(forms)}
       match={match}
       onChange={handleChange}
       onSubmit={onSubmit}
       parent={manuscript}
       republish={republish}
-      toggleConfirming={toggleConfirming}
       updateManuscript={updateManuscript}
+      validateDoi={validateDoi}
       versions={versions}
     />
   )

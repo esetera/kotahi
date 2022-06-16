@@ -179,6 +179,7 @@ const ReviewBody = styled.div`
 
 const DecisionReview = ({
   review,
+  reviewForm,
   reviewer,
   manuscriptId,
   teams,
@@ -189,12 +190,16 @@ const DecisionReview = ({
   const currentUser = useCurrentUser()
 
   const {
-    recommendation,
     isHiddenFromAuthor,
     isHiddenReviewerName,
     id,
     canBePublishedPublicly,
   } = review
+
+  const recommendation =
+    typeof review.jsonData === 'string'
+      ? JSON.parse(review.jsonData).verdict
+      : review.jsonData?.verdict
 
   const { user, ordinal } = reviewer
 
@@ -229,7 +234,12 @@ const DecisionReview = ({
 
       {open && (
         <ReviewBody>
-          <Review review={review} showUserInfo={false} user={currentUser} />
+          <Review
+            review={review}
+            reviewForm={reviewForm}
+            showUserInfo={false}
+            user={currentUser}
+          />
         </ReviewBody>
       )}
     </Root>

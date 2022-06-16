@@ -1,41 +1,14 @@
 import { gql } from '@apollo/client'
 
-export const commentFields = `
-  id
-  commentType
-  content
-  files {
-    id
-    created
-    updated
-    name
-    tags
-    storedObjects {
-      key
-      mimetype
-      url
-    }
-  }
-`
-
 export const reviewFields = `
   id
   created
   updated
-  decisionComment {
-    ${commentFields}
-  }
-  reviewComment {
-    ${commentFields}
-  }
-  confidentialComment {
-    ${commentFields}
-  }
+  jsonData
   isDecision
   isHiddenFromAuthor
   isHiddenReviewerName
   canBePublishedPublicly
-  recommendation
   user {
     id
     defaultIdentity {
@@ -58,8 +31,11 @@ export const fragmentFields = `
     name
     tags
     storedObjects {
+      extension
       key
       mimetype
+      size
+      type
       url
     }
   }
@@ -144,7 +120,9 @@ const query = gql`
       }
     }
 
-    formForPurposeAndCategory(purpose: "submit", category: "submission") {
+    forms {
+      purpose
+      category
       structure {
         name
         description
