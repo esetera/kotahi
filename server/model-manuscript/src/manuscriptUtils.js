@@ -1,30 +1,39 @@
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 
-const stripSensitiveItems = manuscript => {
-  const result = {
-    ...manuscript,
-    manuscriptVersions: (manuscript.manuscriptVersions || []).map(v => ({
-      ...v,
-    })),
-  }
+const stripConfidentialDataFromReviews = (
+  reviews,
+  reviewForm,
+  decisionForm,
+) => {
+  if (!reviewForm || !decisionForm) return []
 
-  if (result.reviews) {
-    result.reviews.forEach((review, index) => {
-      delete result.reviews[index].confidentialComment
+  const confidentialReviewFields = reviewForm.structure.children
+    .filter(field => field.hideFromAuthors === 'true')
+    .map(field => field.name)
+
+  const confidentialDecisionFields = decisionForm.structure.children
+    .filter(field => field.hideFromAuthors === 'true')
+    .map(field => field.name)
+
+  return reviews
+    .filter(r => !r.isHiddenFromAuthor)
+    .map(review => {
+      const r = { ...review }
+      if (r.isHiddenReviewerName) r.userId = null
+      if (typeof r.jsonData === 'string') r.jsonData = JSON.parse(r.jsonData)
+
+      const confidentialFields = r.isDecision
+        ? confidentialDecisionFields
+        : confidentialReviewFields
+
+      const filteredJsonData = {}
+
+      Object.entries(r.jsonData).forEach(([key, value]) => {
+        if (!confidentialFields.includes(key)) filteredJsonData[key] = value
+      })
+      r.jsonData = filteredJsonData
+      return r
     })
-  }
-
-  if (result.manuscriptVersions) {
-    result.manuscriptVersions.forEach((v, vI) => {
-      if (v.reviews) {
-        v.reviews.forEach((r, rI) => {
-          delete result.manuscriptVersions[vI].reviews[rI].confidentialComment
-        })
-      }
-    })
-  }
-
-  return result
 }
 
 const fixMissingValuesInFilesInSingleMsVersion = ms => {
@@ -85,7 +94,7 @@ const hasEvaluations = manuscript => {
 }
 
 module.exports = {
-  stripSensitiveItems,
+  stripConfidentialDataFromReviews,
   fixMissingValuesInFiles,
   hasEvaluations,
 }

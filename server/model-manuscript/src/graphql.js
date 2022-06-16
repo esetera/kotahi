@@ -13,9 +13,9 @@ const Message = require('../../model-message/src/message')
 const publishToCrossref = require('../../publishing/crossref')
 
 const {
-  stripSensitiveItems,
   fixMissingValuesInFiles,
   hasEvaluations,
+  stripConfidentialDataFromReviews,
 } = require('./manuscriptUtils')
 
 const {
@@ -1020,8 +1020,19 @@ const resolvers = {
 
       manuscript.manuscriptVersions = await manuscript.getManuscriptVersions()
 
-      if (user && !user.admin) {
-        return stripSensitiveItems(manuscript)
+      if (
+        user &&
+        !user.admin &&
+        manuscript.reviews &&
+        manuscript.reviews.length
+      ) {
+        const reviewForm = await getReviewForm(false)
+        const decisionForm = await getReviewForm(true)
+        manuscript.reviews = stripConfidentialDataFromReviews(
+          manuscript.reviews,
+          reviewForm,
+          decisionForm,
+        )
       }
 
       return repackageForGraphql(manuscript)
@@ -1104,11 +1115,11 @@ const resolvers = {
       }
 
       let manuscripts = await query
+      const reviewForm = await getReviewForm(false)
+      const decisionForm = await getReviewForm(true)
 
       manuscripts = manuscripts.map(async m => {
         const manuscript = m
-
-        // manuscript.files = await getFilesWithUrl(manuscript.files)
 
         if (typeof manuscript.meta.source === 'string') {
           manuscript.meta.source = await replaceImageSrc(
@@ -1117,6 +1128,12 @@ const resolvers = {
             'medium',
           )
         }
+
+        manuscript.reviews = await stripConfidentialDataFromReviews(
+          manuscript.reviews,
+          reviewForm,
+          decisionForm,
+        )
 
         return repackageForGraphql(manuscript)
       })
