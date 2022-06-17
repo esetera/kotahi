@@ -44,7 +44,10 @@ const {
   convertFilesToFullObjects,
 } = require('../../model-review/src/reviewUtils')
 
-const { getReviewForm } = require('../../model-review/src/reviewCommsUtils')
+const {
+  getReviewForm,
+  getDecisionForm,
+} = require('../../model-review/src/reviewCommsUtils')
 
 const SUBMISSION_FIELD_PREFIX = 'submission'
 const META_FIELD_PREFIX = 'meta'
@@ -75,8 +78,8 @@ const updateAndRepackageForGraphql = async ms => {
 
 /* eslint-disable no-param-reassign, no-restricted-syntax, no-await-in-loop */
 const regenerateAllFileUris = async manuscript => {
-  const reviewForm = await getReviewForm(false)
-  const decisionForm = await getReviewForm(true)
+  const reviewForm = await getReviewForm()
+  const decisionForm = await getDecisionForm()
   const allFiles = []
 
   if (manuscript.files) {
@@ -143,8 +146,8 @@ const ManuscriptResolvers = ({ isVersion }) => {
       return JSON.stringify(parent.evaluationsHypothesisMap)
     },
     async reviews(parent, _, ctx) {
-      const reviewForm = await getReviewForm(false)
-      const decisionForm = await getReviewForm(true)
+      const reviewForm = await getReviewForm()
+      const decisionForm = await getDecisionForm()
 
       const reviews =
         parent.reviews ||
@@ -1026,8 +1029,8 @@ const resolvers = {
         manuscript.reviews &&
         manuscript.reviews.length
       ) {
-        const reviewForm = await getReviewForm(false)
-        const decisionForm = await getReviewForm(true)
+        const reviewForm = await getReviewForm()
+        const decisionForm = await getDecisionForm()
         manuscript.reviews = stripConfidentialDataFromReviews(
           manuscript.reviews,
           reviewForm,
@@ -1115,8 +1118,8 @@ const resolvers = {
       }
 
       let manuscripts = await query
-      const reviewForm = await getReviewForm(false)
-      const decisionForm = await getReviewForm(true)
+      const reviewForm = await getReviewForm()
+      const decisionForm = await getDecisionForm()
 
       manuscripts = manuscripts.map(async m => {
         const manuscript = m
