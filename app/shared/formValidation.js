@@ -9,7 +9,7 @@ export const validateFormField = (
   doiValidation = false,
   validateDoi,
   componentType,
-) => value => {
+) => async value => {
   const validator = vld || []
 
   if (componentType === 'AuthorsInput') {
@@ -21,33 +21,23 @@ export const validateFormField = (
     return validateAuthors(value)
   }
 
-  if (validator.length === 0) return undefined
-  const errors = []
-  validator
+  const errors = validator
     .map(v => v.value)
     .map(validatorFn => {
       // if there is YSWYG component and it's empty - the value is a paragraph
       const valueFormatted =
-        componentType === 'AbstractEditor' && value === '<p></p>' ? '' : value
+        componentType === 'AbstractEditor' &&
+        ['<p></p>', '<p class="paragraph"></p>'].includes(value)
+          ? ''
+          : value
 
-      const error =
-        validatorFn === 'required'
-          ? validators[validatorFn](valueFormatted)
-          : validators[validatorFn](valueField[validatorFn])(valueFormatted)
-
-      if (error) {
-        errors.push(error)
-      }
-
-      return validatorFn
+      return validatorFn === 'required'
+        ? validators[validatorFn](valueFormatted)
+        : validators[validatorFn](valueField[validatorFn])(valueFormatted)
     })
+    .filter(Boolean)
 
-  if (
-    errors.length === 0 &&
-    fieldName === 'submission.articleURL' &&
-    doiValidation // TODO We could get rid of this flag and simply test whether validateDoi has a value
-  )
-    return validateDoi(value)
-
-  return errors.length > 0 ? errors[0] : undefined
+  if (errors.length) return errors[0]
+  if (value && doiValidation) return validateDoi(value)
+  return undefined
 }

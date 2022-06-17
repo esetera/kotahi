@@ -11,7 +11,7 @@ import { publishManuscriptMutation } from '../../../component-review/src/compone
 import pruneEmpty from '../../../../shared/pruneEmpty'
 import { validateManuscript } from '../../../../shared/manuscriptUtils'
 import CommsErrorBanner from '../../../shared/CommsErrorBanner'
-import { VALIDATE_DOI } from '../../../../queries'
+import { validateDoi } from '../../../../shared/commsUtils'
 
 export const updateMutation = gql`
   mutation($id: ID!, $input: String) {
@@ -119,22 +119,6 @@ const SubmitPage = ({ match, history }) => {
 
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
-
-  const validateDoi = value =>
-    client
-      .query({
-        query: VALIDATE_DOI,
-        variables: {
-          articleURL: value,
-        },
-      })
-      .then(result => {
-        if (!result.data.validateDOI.isDOIValid) {
-          return 'DOI is invalid'
-        }
-
-        return undefined
-      })
 
   const currentUser = data?.currentUser
   const manuscript = data?.manuscript
@@ -251,7 +235,7 @@ const SubmitPage = ({ match, history }) => {
       parent={manuscript}
       republish={republish}
       updateManuscript={updateManuscript}
-      validateDoi={validateDoi}
+      validateDoi={validateDoi(client)}
       versions={versions}
     />
   )

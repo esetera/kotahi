@@ -19,8 +19,8 @@ import {
   CREATE_MESSAGE,
   CREATE_TEAM_MUTATION,
   UPDATE_TEAM_MUTATION,
-  VALIDATE_DOI,
 } from '../../../../queries'
+import { validateDoi } from '../../../../shared/commsUtils'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -119,22 +119,6 @@ const DecisionPage = ({ match }) => {
         input: JSON.stringify(manuscriptDelta),
       },
     })
-
-  const validateDoi = value =>
-    client
-      .query({
-        query: VALIDATE_DOI,
-        variables: {
-          articleURL: value,
-        },
-      })
-      .then(result => {
-        if (!result.data.validateDOI.isDOIValid) {
-          return 'DOI is invalid'
-        }
-
-        return undefined
-      })
 
   const updateReview = async (reviewId, reviewData, manuscriptId) => {
     doUpdateReview({
@@ -268,7 +252,7 @@ const DecisionPage = ({ match }) => {
       updateReviewJsonData={updateReviewJsonData}
       updateTeam={updateTeam}
       urlFrag={urlFrag}
-      validateDoi={validateDoi}
+      validateDoi={validateDoi(client)}
     />
   )
 }
