@@ -8,8 +8,7 @@ import query, { fragmentFields } from '../userManuscriptFormQuery'
 import { Spinner } from '../../../shared'
 import gatherManuscriptVersions from '../../../../shared/manuscript_versions'
 import { publishManuscriptMutation } from '../../../component-review/src/components/queries'
-import pruneEmpty from '../../../../shared/pruneEmpty'
-import { validateManuscript } from '../../../../shared/manuscriptUtils'
+import { validateManuscriptSubmission } from '../../../../shared/manuscriptUtils'
 import CommsErrorBanner from '../../../shared/CommsErrorBanner'
 import { validateDoi } from '../../../../shared/commsUtils'
 
@@ -67,13 +66,6 @@ const deleteFileMutation = gql`
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
-const cleanForm = form => {
-  if (!form) return form
-
-  // Remove any form items that are incomplete/invalid
-  return { ...form, children: form.children.filter(f => f.component && f.name) }
-}
-
 let debouncers = {}
 
 const SubmitPage = ({ match, history }) => {
@@ -122,18 +114,9 @@ const SubmitPage = ({ match, history }) => {
 
   const currentUser = data?.currentUser
   const manuscript = data?.manuscript
-
-  const forms = data?.forms.map(currentForm => {
-    return {
-      ...cleanForm(currentForm?.structure),
-      category: currentForm?.category,
-      purpose: currentForm?.purpose,
-    }
-  })
-
-  const submissionForm = forms.find(
-    f => f.category === 'submission' && f.purpose === 'submit',
-  )
+  const submissionForm = data?.submissionForm?.structure
+  const decisionForm = data?.decisionForm?.structure
+  const reviewForm = data?.reviewForm?.structure
 
   const updateManuscript = (versionId, manuscriptDelta) => {
     return update({
@@ -168,13 +151,13 @@ const SubmitPage = ({ match, history }) => {
 
     setIsPublishingBlocked(true)
 
-    const fieldErrors = await validateManuscript(
+    const fieldErrors = await validateManuscriptSubmission(
       {
         ...JSON.parse(manuscript.submission),
         ...manuscriptChangedFields.submission,
       },
       submissionForm,
-      validateDoi,
+      validateDoi(client),
     )
 
     if (fieldErrors.filter(Boolean).length !== 0) {
@@ -227,13 +210,15 @@ const SubmitPage = ({ match, history }) => {
       createFile={createFile}
       createNewVersion={createNewVersion}
       currentUser={currentUser}
+      decisionForm={decisionForm}
       deleteFile={deleteFile}
-      forms={pruneEmpty(forms)}
       match={match}
       onChange={handleChange}
       onSubmit={onSubmit}
       parent={manuscript}
       republish={republish}
+      reviewForm={reviewForm}
+      submissionForm={submissionForm}
       updateManuscript={updateManuscript}
       validateDoi={validateDoi(client)}
       versions={versions}

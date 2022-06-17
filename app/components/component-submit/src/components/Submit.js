@@ -30,7 +30,9 @@ const createBlankSubmissionBasedOnForm = form => {
 
 const Submit = ({
   versions = [],
-  forms,
+  decisionForm,
+  reviewForm,
+  submissionForm,
   createNewVersion,
   currentUser,
   parent,
@@ -46,18 +48,6 @@ const Submit = ({
   const decisionSections = []
 
   const currentVersion = versions[0]
-
-  const submissionForm = forms.find(
-    form => form.category === 'submission' && form.purpose === 'submit',
-  )
-
-  const decisionForm = forms.find(
-    form => form.category === 'decision' && form.purpose === 'decision',
-  )
-
-  const reviewForm = forms.find(
-    form => form.category === 'review' && form.purpose === 'review',
-  )
 
   const submissionValues = createBlankSubmissionBasedOnForm(submissionForm)
 
@@ -204,6 +194,32 @@ const Submit = ({
   )
 }
 
+const formPropTypes = PropTypes.shape({
+  name: PropTypes.string.isRequired,
+  description: PropTypes.string,
+  children: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      sectioncss: PropTypes.string,
+      id: PropTypes.string.isRequired,
+      component: PropTypes.string.isRequired,
+      group: PropTypes.string,
+      placeholder: PropTypes.string,
+      validate: PropTypes.arrayOf(PropTypes.object.isRequired),
+      validateValue: PropTypes.objectOf(
+        PropTypes.oneOfType([
+          PropTypes.string.isRequired,
+          PropTypes.number.isRequired,
+        ]).isRequired,
+      ),
+    }).isRequired,
+  ).isRequired,
+  popuptitle: PropTypes.string,
+  popupdescription: PropTypes.string,
+  haspopup: PropTypes.string.isRequired, // bool as string
+})
+
 Submit.propTypes = {
   versions: PropTypes.arrayOf(
     PropTypes.shape({
@@ -211,33 +227,9 @@ Submit.propTypes = {
       label: PropTypes.string,
     }),
   ).isRequired,
-  forms: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      description: PropTypes.string,
-      children: PropTypes.arrayOf(
-        PropTypes.shape({
-          name: PropTypes.string.isRequired,
-          title: PropTypes.string.isRequired,
-          sectioncss: PropTypes.string,
-          id: PropTypes.string.isRequired,
-          component: PropTypes.string.isRequired,
-          group: PropTypes.string,
-          placeholder: PropTypes.string,
-          validate: PropTypes.arrayOf(PropTypes.object.isRequired),
-          validateValue: PropTypes.objectOf(
-            PropTypes.oneOfType([
-              PropTypes.string.isRequired,
-              PropTypes.number.isRequired,
-            ]).isRequired,
-          ),
-        }).isRequired,
-      ).isRequired,
-      popuptitle: PropTypes.string,
-      popupdescription: PropTypes.string,
-      haspopup: PropTypes.string.isRequired, // bool as string
-    }).isRequired,
-  ).isRequired,
+  submissionForm: formPropTypes.isRequired,
+  decisionForm: formPropTypes.isRequired,
+  reviewForm: formPropTypes.isRequired,
   createNewVersion: PropTypes.func.isRequired,
   currentUser: PropTypes.shape({
     admin: PropTypes.bool.isRequired,
