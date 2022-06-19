@@ -12,7 +12,6 @@ import {
   SectionContent,
 } from '../../../shared'
 import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
-// import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
 
 const threadedDiscussiondata = {
   isValid: true,

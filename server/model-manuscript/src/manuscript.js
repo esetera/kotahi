@@ -171,6 +171,14 @@ class Manuscript extends BaseModel {
           to: 'files.objectId',
         },
       },
+      // threaded_discussions: {
+      //   relation: BaseModel.HasManyRelation,
+      //   modelClass: ThreadedDiscussion,
+      //   join: {
+      //     from: 'manuscript.id',
+      //     to: 'threaded_discussions.manuscriptId',
+      //   },
+      // },
       reviews: {
         relation: BaseModel.HasManyRelation,
         modelClass: Review,
