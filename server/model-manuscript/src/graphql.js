@@ -18,6 +18,10 @@ const {
   stripConfidentialDataFromReviews,
 } = require('./manuscriptUtils')
 
+const { applyTemplate, generateCss } = require('../../pdfexport/applyTemplate')
+const publicationMetadata = require('../../pdfexport/pdfTemplates/publicationMetadata')
+const articleMetadata = require('../../pdfexport/pdfTemplates/articleMetadata')
+
 const {
   getFilesWithUrl,
   replaceImageSrc,
@@ -136,6 +140,11 @@ const regenerateAllFileUris = async manuscript => {
   }
 }
 /* eslint-enable no-param-reassign, no-restricted-syntax, no-await-in-loop */
+
+const getCss = async () => {
+  const css = await generateCss()
+  return css
+}
 
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
@@ -1311,6 +1320,10 @@ const resolvers = {
           printReadyPdfUrl: printReadyPdf
             ? printReadyPdf.storedObjects[0].url
             : null,
+          styledHtml: applyTemplate(m, true),
+          css: getCss(),
+          publicationMetadata,
+          articleMetadata: articleMetadata(m),
         }
       })
     },
@@ -1336,6 +1349,10 @@ const resolvers = {
         meta: m.meta,
         submission: JSON.stringify(m.submission),
         publishedDate: m.published,
+        styledHtml: applyTemplate(m, true),
+        css: getCss(),
+        publicationMetadata,
+        articleMetadata: articleMetadata(m),
       }
     },
     async unreviewedPreprints(_, { token }, ctx) {
@@ -1617,7 +1634,9 @@ const typeDefs = `
     meta: ManuscriptMeta
     submission: String
     publishedDate: DateTime
-    printReadyPdfUrl: String
+		printReadyPdfUrl: String
+		styledHtml: String
+		css: String
   }
 `
 
