@@ -445,8 +445,49 @@ const resolvers = {
         { relate: true },
       )
 
-      manuscript.manuscriptVersions = []
-      return manuscript
+      // Base64 conversion moved to server-side as a performance imporvement
+      const { source } = manuscript.meta
+
+      if (typeof source === 'string') {
+        const images = await base64Images(source)
+
+        if (images.length > 0) {
+          const uploadedImages = await Promise.all(
+            map(images, async image => {
+              const uploadedImage = await uploadImage(image, manuscript.id)
+              return uploadedImage
+            }),
+          )
+
+          const uploadedImagesWithUrl = await getFilesWithUrl(uploadedImages)
+
+          const $ = cheerio.load(source)
+
+          map(images, (image, index) => {
+            const elem = $('img').get(index)
+            const $elem = $(elem)
+            $elem.attr('data-fileid', uploadedImagesWithUrl[index].id)
+            $elem.attr('alt', uploadedImagesWithUrl[index].name)
+            $elem.attr(
+              'src',
+              uploadedImagesWithUrl[index].storedObjects.find(
+                storedObject => storedObject.type === 'medium',
+              ).url,
+            )
+          })
+
+          manuscript.meta.source = $.html()
+        }
+      }
+
+      const updatedManuscript = models.Manuscript.query().updateAndFetchById(
+        manuscript.id,
+        manuscript,
+      )
+
+      updatedManuscript.manuscriptVersions = []
+
+      return updatedManuscript
     },
     importManuscripts(_, props, ctx) {
       if (isImportInProgress) return false
@@ -889,6 +930,9 @@ const resolvers = {
             errorMessage = e
           }
         }
+
+        // Manuscript doesn't have evaluations
+        succeeded = false
 
         steps.push({
           stepLabel,
