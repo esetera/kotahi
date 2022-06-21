@@ -225,7 +225,9 @@ export const makeDecisionMutation = gql`
 `
 export const createThreadMutation = gql`
   mutation($id: ID!, $decision: String) {
-    createThread(id: $id, decision: $decision)
+    createThread(id: $id, decision: $decision) {
+      id
+    }
   }
 `
 

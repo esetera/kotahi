@@ -90,7 +90,7 @@ const isPublicFileFromPublishedManuscript = rule({ cache: 'contextual' })(
 
 const isPublicReviewFromPublishedManuscript = rule({ cache: 'contextual' })(
   async (parent, args, ctx, info) => {
-    if (!parent.canBePublishedPublicly || !parent.manuscriptId) return false
+    if (parent.isHiddenFromAuthor || !parent.manuscriptId) return false
 
     // TODO Check that all confidential fields have been stripped out. Otherwise return false.
 
@@ -359,7 +359,7 @@ const permissions = {
   Mutation: {
     upload: isAuthenticated,
     createManuscript: isAuthenticated,
-    updateManuscript: or(userIsAuthor, userIsAdmin),
+    updateManuscript: or(userIsAuthor, userIsEditor, userIsAdmin),
     submitManuscript: userIsAuthor,
     createMessage: userIsAllowedToChat,
     updateReview: or(

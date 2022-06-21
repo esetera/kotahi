@@ -13,10 +13,14 @@ const Message = require('../../model-message/src/message')
 const publishToCrossref = require('../../publishing/crossref')
 
 const {
-  stripSensitiveItems,
   fixMissingValuesInFiles,
   hasEvaluations,
+  stripConfidentialDataFromReviews,
 } = require('./manuscriptUtils')
+
+const { applyTemplate, generateCss } = require('../../pdfexport/applyTemplate')
+const publicationMetadata = require('../../pdfexport/pdfTemplates/publicationMetadata')
+const articleMetadata = require('../../pdfexport/pdfTemplates/articleMetadata')
 
 const {
   getFilesWithUrl,
@@ -44,7 +48,10 @@ const {
   convertFilesToFullObjects,
 } = require('../../model-review/src/reviewUtils')
 
-const { getReviewForm } = require('../../model-review/src/reviewCommsUtils')
+const {
+  getReviewForm,
+  getDecisionForm,
+} = require('../../model-review/src/reviewCommsUtils')
 
 const SUBMISSION_FIELD_PREFIX = 'submission'
 const META_FIELD_PREFIX = 'meta'
@@ -75,10 +82,14 @@ const updateAndRepackageForGraphql = async ms => {
 
 /* eslint-disable no-param-reassign, no-restricted-syntax, no-await-in-loop */
 const regenerateAllFileUris = async manuscript => {
-  const reviewForm = await getReviewForm(false)
-  const decisionForm = await getReviewForm(true)
-  if (manuscript.files)
+  const reviewForm = await getReviewForm()
+  const decisionForm = await getDecisionForm()
+  const allFiles = []
+
+  if (manuscript.files) {
     manuscript.files = await getFilesWithUrl(manuscript.files)
+    allFiles.push(...manuscript.files)
+  }
 
   if (manuscript.reviews) {
     for (const review of manuscript.reviews)
@@ -92,7 +103,10 @@ const regenerateAllFileUris = async manuscript => {
 
   if (manuscript.manuscriptVersions) {
     for (const v of manuscript.manuscriptVersions) {
-      if (v.files) v.files = await getFilesWithUrl(v.files)
+      if (v.files) {
+        v.files = await getFilesWithUrl(v.files)
+        allFiles.push(...v.files)
+      }
 
       if (v.reviews) {
         for (const review of v.reviews)
@@ -105,8 +119,32 @@ const regenerateAllFileUris = async manuscript => {
       }
     }
   }
+
+  // Currently we're not recreating files in the manuscript when we create a new version,
+  // so some files found in the HTML source may actually be owned by a previous version.
+  // We therefore need to have ALL files available when doing replacements.
+  // TODO Fix this by recreating all files upon creating a new version, and fix old manuscripts via migration.
+  if (allFiles.length && typeof manuscript.meta.source === 'string') {
+    manuscript.meta.source = await replaceImageSrcResponsive(
+      manuscript.meta.source,
+      allFiles,
+    )
+  }
+
+  if (manuscript.manuscriptVersions) {
+    for (const v of manuscript.manuscriptVersions) {
+      if (allFiles.length && typeof v.meta.source === 'string') {
+        v.meta.source = await replaceImageSrcResponsive(v.meta.source, allFiles)
+      }
+    }
+  }
 }
 /* eslint-enable no-param-reassign, no-restricted-syntax, no-await-in-loop */
+
+const getCss = async () => {
+  const css = await generateCss()
+  return css
+}
 
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
@@ -117,8 +155,8 @@ const ManuscriptResolvers = ({ isVersion }) => {
       return JSON.stringify(parent.evaluationsHypothesisMap)
     },
     async reviews(parent, _, ctx) {
-      const reviewForm = await getReviewForm(false)
-      const decisionForm = await getReviewForm(true)
+      const reviewForm = await getReviewForm()
+      const decisionForm = await getDecisionForm()
 
       const reviews =
         parent.reviews ||
@@ -416,8 +454,49 @@ const resolvers = {
         { relate: true },
       )
 
-      manuscript.manuscriptVersions = []
-      return manuscript
+      // Base64 conversion moved to server-side as a performance imporvement
+      const { source } = manuscript.meta
+
+      if (typeof source === 'string') {
+        const images = await base64Images(source)
+
+        if (images.length > 0) {
+          const uploadedImages = await Promise.all(
+            map(images, async image => {
+              const uploadedImage = await uploadImage(image, manuscript.id)
+              return uploadedImage
+            }),
+          )
+
+          const uploadedImagesWithUrl = await getFilesWithUrl(uploadedImages)
+
+          const $ = cheerio.load(source)
+
+          map(images, (image, index) => {
+            const elem = $('img').get(index)
+            const $elem = $(elem)
+            $elem.attr('data-fileid', uploadedImagesWithUrl[index].id)
+            $elem.attr('alt', uploadedImagesWithUrl[index].name)
+            $elem.attr(
+              'src',
+              uploadedImagesWithUrl[index].storedObjects.find(
+                storedObject => storedObject.type === 'medium',
+              ).url,
+            )
+          })
+
+          manuscript.meta.source = $.html()
+        }
+      }
+
+      const updatedManuscript = models.Manuscript.query().updateAndFetchById(
+        manuscript.id,
+        manuscript,
+      )
+
+      updatedManuscript.manuscriptVersions = []
+
+      return updatedManuscript
     },
     importManuscripts(_, props, ctx) {
       if (isImportInProgress) return false
@@ -861,6 +940,9 @@ const resolvers = {
           }
         }
 
+        // Manuscript doesn't have evaluations
+        succeeded = false
+
         steps.push({
           stepLabel,
           succeeded,
@@ -994,8 +1076,19 @@ const resolvers = {
 
       manuscript.manuscriptVersions = await manuscript.getManuscriptVersions()
 
-      if (user && !user.admin) {
-        return stripSensitiveItems(manuscript)
+      if (
+        user &&
+        !user.admin &&
+        manuscript.reviews &&
+        manuscript.reviews.length
+      ) {
+        const reviewForm = await getReviewForm()
+        const decisionForm = await getDecisionForm()
+        manuscript.reviews = stripConfidentialDataFromReviews(
+          manuscript.reviews,
+          reviewForm,
+          decisionForm,
+        )
       }
 
       return repackageForGraphql(manuscript)
@@ -1078,11 +1171,11 @@ const resolvers = {
       }
 
       let manuscripts = await query
+      const reviewForm = await getReviewForm()
+      const decisionForm = await getDecisionForm()
 
       manuscripts = manuscripts.map(async m => {
         const manuscript = m
-
-        // manuscript.files = await getFilesWithUrl(manuscript.files)
 
         if (typeof manuscript.meta.source === 'string') {
           manuscript.meta.source = await replaceImageSrc(
@@ -1091,6 +1184,12 @@ const resolvers = {
             'medium',
           )
         }
+
+        manuscript.reviews = await stripConfidentialDataFromReviews(
+          manuscript.reviews,
+          reviewForm,
+          decisionForm,
+        )
 
         return repackageForGraphql(manuscript)
       })
@@ -1221,6 +1320,10 @@ const resolvers = {
           printReadyPdfUrl: printReadyPdf
             ? printReadyPdf.storedObjects[0].url
             : null,
+          styledHtml: applyTemplate(m, true),
+          css: getCss(),
+          publicationMetadata,
+          articleMetadata: articleMetadata(m),
         }
       })
     },
@@ -1246,6 +1349,10 @@ const resolvers = {
         meta: m.meta,
         submission: JSON.stringify(m.submission),
         publishedDate: m.published,
+        styledHtml: applyTemplate(m, true),
+        css: getCss(),
+        publicationMetadata,
+        articleMetadata: articleMetadata(m),
       }
     },
     async unreviewedPreprints(_, { token }, ctx) {
@@ -1527,7 +1634,9 @@ const typeDefs = `
     meta: ManuscriptMeta
     submission: String
     publishedDate: DateTime
-    printReadyPdfUrl: String
+		printReadyPdfUrl: String
+		styledHtml: String
+		css: String
   }
 `
 

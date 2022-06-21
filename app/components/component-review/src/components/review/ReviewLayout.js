@@ -116,6 +116,7 @@ const ReviewLayout = ({
           <SharedReviewerGroupReviews
             manuscript={latestVersion}
             reviewerId={currentUser.id}
+            reviewForm={reviewForm}
             threadedDiscussions={threadedDiscussions}
           />
           {status === 'completed' ? (

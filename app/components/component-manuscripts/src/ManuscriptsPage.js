@@ -18,13 +18,13 @@ import {
   IMPORT_MANUSCRIPTS,
   IMPORTED_MANUSCRIPTS_SUBSCRIPTION,
   GET_SYSTEM_WIDE_DISCUSSION_CHANNEL,
-  VALIDATE_DOI,
 } from '../../../queries'
 import configuredColumnNames from './configuredColumnNames'
 import { updateMutation } from '../../component-submit/src/components/SubmitPage'
 import { publishManuscriptMutation } from '../../component-review/src/components/queries'
 import getUriQueryParams from './getUriQueryParams'
 import Manuscripts from './Manuscripts'
+import { validateDoi } from '../../../shared/commsUtils'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 const chatRoomId = fnv.hash(config['pubsweet-client'].baseUrl).hex()
@@ -134,30 +134,13 @@ const ManuscriptsPage = ({ history }) => {
 
   const [update] = useMutation(updateMutation)
   const [publishManuscript] = useMutation(publishManuscriptMutation)
+  const client = useApolloClient()
 
   const publishManuscripts = manuscriptId => {
     publishManuscript({
       variables: { id: manuscriptId },
     })
   }
-
-  const client = useApolloClient()
-
-  const validateDoi = value =>
-    client
-      .query({
-        query: VALIDATE_DOI,
-        variables: {
-          articleURL: value,
-        },
-      })
-      .then(result => {
-        if (!result.data.validateDOI.isDOIValid) {
-          return 'DOI is invalid'
-        }
-
-        return undefined
-      })
 
   return (
     <Manuscripts
@@ -179,7 +162,7 @@ const ManuscriptsPage = ({ history }) => {
       sortName={sortName}
       systemWideDiscussionChannel={systemWideDiscussionChannel}
       urlFrag={urlFrag}
-      validateDoi={validateDoi}
+      validateDoi={validateDoi(client)}
     />
   )
 }

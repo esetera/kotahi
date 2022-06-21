@@ -1,14 +1,16 @@
 const models = require('@pubsweet/models')
 
-const getReviewForm = async isDecision => {
-  const form = await models.Form.query().where({
-    category: isDecision ? 'decision' : 'review',
-    purpose: isDecision ? 'decision' : 'review',
-  })
-
+const getForm = async categoryAndPurpose => {
+  const form = await models.Form.query().where(categoryAndPurpose)
   if (!form || !form.length)
-    throw new Error(`No form found for "${isDecision ? 'decision' : 'review'}"`)
+    throw new Error(`No form found for "${categoryAndPurpose.purpose}"`)
   return form[0]
 }
 
-module.exports = { getReviewForm }
+const getReviewForm = async () =>
+  getForm({ category: 'review', purpose: 'review' })
+
+const getDecisionForm = async () =>
+  getForm({ category: 'decision', purpose: 'decision' })
+
+module.exports = { getReviewForm, getDecisionForm }

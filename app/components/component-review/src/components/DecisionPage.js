@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useQuery, useMutation, gql, useApolloClient } from '@apollo/client'
 import { set, debounce } from 'lodash'
 import config from 'config'
-import { v4 as uuid } from 'uuid'
 import DecisionVersions from './DecisionVersions'
 import { Spinner, CommsErrorBanner } from '../../../shared'
 import { fragmentFields } from '../../../component-submit/src/userManuscriptFormQuery'
@@ -20,8 +19,8 @@ import {
   CREATE_MESSAGE,
   CREATE_TEAM_MUTATION,
   UPDATE_TEAM_MUTATION,
-  VALIDATE_DOI,
 } from '../../../../queries'
+import { validateDoi } from '../../../../shared/commsUtils'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -62,8 +61,6 @@ const deleteFileMutation = gql`
 let debouncers = {}
 
 const DecisionPage = ({ match }) => {
-  const [initialValues, setInitialValue] = useState(null)
-
   // start of code from submit page to handle possible form changes
   const client = useApolloClient()
 
@@ -122,22 +119,6 @@ const DecisionPage = ({ match }) => {
         input: JSON.stringify(manuscriptDelta),
       },
     })
-
-  const validateDoi = value =>
-    client
-      .query({
-        query: VALIDATE_DOI,
-        variables: {
-          articleURL: value,
-        },
-      })
-      .then(result => {
-        if (!result.data.validateDOI.isDOIValid) {
-          return 'DOI is invalid'
-        }
-
-        return undefined
-      })
 
   const updateReview = async (reviewId, reviewData, manuscriptId) => {
     doUpdateReview({
@@ -226,15 +207,8 @@ const DecisionPage = ({ match }) => {
     return response
   }
 
-  if (!initialValues)
-    setInitialValue(
-      manuscript.reviews.find(
-        r => r.user.id === currentUser.id && r.isDecision,
-      ) || { id: uuid(), isDecision: true, userId: currentUser.id },
-    )
-
   /** This will only send the modified field, not the entire review object */
-  const updateReviewJsonData = (value, path) => {
+  const updateReviewJsonData = (versionId, value, path) => {
     const reviewDelta = {} // Only the changed fields
     // E.g. if path is 'meta.title' and value is 'Foo' this gives { meta: { title: 'Foo' } }
     set(reviewDelta, path, value)
@@ -246,7 +220,7 @@ const DecisionPage = ({ match }) => {
       userId: currentUser.id,
     }
 
-    updateReview(initialValues.id, reviewPayload, manuscript.id)
+    updateReview(versionId, reviewPayload, manuscript.id)
   }
 
   return (
@@ -268,7 +242,6 @@ const DecisionPage = ({ match }) => {
       makeDecision={makeDecision}
       manuscript={manuscript}
       publishManuscript={publishManuscript}
-      reviewByCurrentUser={initialValues}
       reviewers={data?.manuscript?.reviews}
       reviewForm={reviewForm}
       sendChannelMessageCb={sendChannelMessageCb}
@@ -280,7 +253,7 @@ const DecisionPage = ({ match }) => {
       updateReviewJsonData={updateReviewJsonData}
       updateTeam={updateTeam}
       urlFrag={urlFrag}
-      validateDoi={validateDoi}
+      validateDoi={validateDoi(client)}
     />
   )
 }

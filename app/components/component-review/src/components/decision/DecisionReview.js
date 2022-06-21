@@ -9,6 +9,7 @@ import useCurrentUser from '../../../../../hooks/useCurrentUser'
 import ShareIcon from '../../../../../shared/icons/share'
 import { UserCombo, Primary, Secondary, UserInfo } from '../../../../shared'
 import { UserAvatar } from '../../../../component-avatar/src'
+import { ensureJsonIsParsed } from '../../../../../shared/objectUtils'
 
 const ToggleReview = ({ open, toggle }) => (
   <Button onClick={toggle} plain>
@@ -22,7 +23,7 @@ const Bullet = styled.span`
     props.recommendation
       ? props.journal?.recommendations?.find(
           item => item.value === props.recommendation,
-        ).color
+        )?.color
       : 'black'};
   border-radius: 100%;
   display: inline-block;
@@ -197,10 +198,7 @@ const DecisionReview = ({
     canBePublishedPublicly,
   } = review
 
-  const recommendation =
-    typeof review.jsonData === 'string'
-      ? JSON.parse(review.jsonData).verdict
-      : review.jsonData?.verdict
+  const recommendation = ensureJsonIsParsed(review.jsonData)?.verdict
 
   const { user, ordinal } = reviewer
 
@@ -260,11 +258,13 @@ ReviewHeading.propTypes = {
   journal: PropTypes.object,
   open: PropTypes.bool.isRequired,
   ordinal: PropTypes.number.isRequired,
-  recommendation: PropTypes.string.isRequired,
+  recommendation: PropTypes.string,
   toggleOpen: PropTypes.func.isRequired,
   // eslint-disable-next-line
   user: PropTypes.object.isRequired,
 }
+ReviewHeading.defaultProps = { recommendation: null }
+
 ToggleReview.propTypes = {
   open: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
