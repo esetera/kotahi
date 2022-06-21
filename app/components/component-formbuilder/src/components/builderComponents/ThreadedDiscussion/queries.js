@@ -29,16 +29,16 @@ export const GET_THREADED_DISCUSSIONS = gql`
 
 export const CREATE_THREAD = gql`
   mutation(
-    $manuscriptId: ID
-    $comment: String
-    $created: DateTime
-    $updated: DateTime
+    $manuscriptId: ID,
+    $comment: String,
+    $created: DateTime,
+    $updated: DateTime,
   ) {
     addThread(
-      manuscriptId: $manuscriptId
-      comment: $comment
-      created: $created
-      updated: $updated
+      manuscriptId: $manuscriptId,
+      comment: $comment,
+      created: $created,
+      updated: $updated,
     ) {
       id
       created

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import DecisionReview from './DecisionReview'
 import { SectionHeader, SectionRow, Title } from '../style'
 import { SectionContent } from '../../../../shared'
-import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
+import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
 
 // TODO: read reviewer ordinal and name from project reviewer
 // const { status } =
@@ -87,7 +87,7 @@ const DecisionReviews = ({
     <SectionContent>
       <SectionHeader>
         <Title>Reviews</Title>
-        <ThreadedDiscussion {...threadedDiscussiondata}/>
+        <ThreadedDiscussion {...threadedDiscussiondata} />
       </SectionHeader>
       {manuscript.reviews && manuscript.reviews.length ? (
         manuscript.reviews

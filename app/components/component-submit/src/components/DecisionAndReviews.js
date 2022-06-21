@@ -11,7 +11,7 @@ import {
   Title,
   SectionContent,
 } from '../../../shared'
-import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
+import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
 
 const threadedDiscussiondata = {
   isValid: true,
@@ -142,7 +142,7 @@ const DecisionAndReviews = ({
       <SectionContent>
         <SectionHeader>
           <Title>Decision</Title>
-          <ThreadedDiscussion {...threadedDiscussiondata}/>
+          <ThreadedDiscussion {...threadedDiscussiondata} />
         </SectionHeader>
         <Decision
           decisionForm={decisionForm}
@@ -153,7 +153,7 @@ const DecisionAndReviews = ({
       <SectionContent>
         <SectionHeader>
           <Title>Reviews</Title>
-          <ThreadedDiscussion {...threadedDiscussiondata}/>
+          <ThreadedDiscussion {...threadedDiscussiondata} />
         </SectionHeader>
 
         {reviewsToShow.length ? (
