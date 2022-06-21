@@ -37,6 +37,7 @@ const DecisionVersions = props => {
     displayShortIdAsIdentifier,
     deleteFile,
     createFile,
+    threadedDiscussions,
     validateDoi,
   } = props
 
@@ -84,6 +85,7 @@ const DecisionVersions = props => {
                 sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
                 teamLabels={teamLabels}
+                threadedDiscussions={threadedDiscussions}
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}
                 updateReviewJsonData={updateReviewJsonData}

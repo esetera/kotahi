@@ -4,6 +4,7 @@ class ThreadedDiscussion extends BaseModel {
   static get tableName() {
     return 'threaded_discussions'
   }
+
   static get modifiers() {
     return {
       orderByCreated(builder) {

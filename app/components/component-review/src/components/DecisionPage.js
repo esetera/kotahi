@@ -274,6 +274,7 @@ const DecisionPage = ({ match }) => {
       sendChannelMessageCb={sendChannelMessageCb}
       sendNotifyEmail={sendNotifyEmail}
       teamLabels={config.teams}
+      threadedDiscussions={data?.threadedDiscussions}
       updateManuscript={updateManuscript}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}

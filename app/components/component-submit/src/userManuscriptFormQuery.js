@@ -160,6 +160,30 @@ const query = gql`
         }
       }
     }
+
+    threadedDiscussions(manuscriptId: $id) {
+      id
+      created
+      updated
+      manuscriptId
+      threads {
+        id
+        comments {
+          id
+          commentVersions {
+            id
+            userId
+            comment
+            created
+          }
+          pendingVersions {
+            id
+            userId
+            comment
+          }
+        }
+      }
+    }
   }
 `
 

@@ -32,6 +32,7 @@ const ReviewLayout = ({
   deleteFile,
   validateDoi,
   decisionForm,
+  threadedDiscussions,
 }) => {
   const reviewSections = []
   const latestVersion = versions[0]
@@ -66,13 +67,19 @@ const ReviewLayout = ({
             listManuscriptFiles
             manuscript={msVersion}
             showEditorOnlyFields={false}
+            threadedDiscussions={threadedDiscussions}
           />
           <SharedReviewerGroupReviews
             manuscript={msVersion}
             reviewerId={currentUser.id}
             reviewForm={reviewForm}
+            threadedDiscussions={threadedDiscussions}
           />
-          <Review review={reviewForCurrentUser} reviewForm={reviewForm} />
+          <Review
+            review={reviewForCurrentUser}
+            reviewForm={reviewForm}
+            threadedDiscussions={threadedDiscussions}
+          />
         </div>
       ),
       key: msVersion.id,
@@ -104,13 +111,19 @@ const ReviewLayout = ({
             listManuscriptFiles
             manuscript={latestVersion}
             showEditorOnlyFields={false}
+            threadedDiscussions={threadedDiscussions}
           />
           <SharedReviewerGroupReviews
             manuscript={latestVersion}
             reviewerId={currentUser.id}
+            threadedDiscussions={threadedDiscussions}
           />
           {status === 'completed' ? (
-            <Review review={review} />
+            <Review
+              review={review}
+              reviewForm={reviewForm}
+              threadedDiscussions={threadedDiscussions}
+            />
           ) : (
             <SectionContent>
               <FormTemplate
@@ -127,6 +140,7 @@ const ReviewLayout = ({
                 showEditorOnlyFields={false}
                 submissionButtonText="Submit"
                 tagForFiles="review"
+                threadedDiscussions={threadedDiscussions}
                 validateDoi={validateDoi}
               />
             </SectionContent>
@@ -137,6 +151,7 @@ const ReviewLayout = ({
               formData={decision.jsonData || {}}
               hideSpecialInstructions
               manuscript={latestVersion}
+              threadedDiscussions={threadedDiscussions}
               title="Evaluation summary"
             />
           )}

@@ -13,6 +13,7 @@ const SubmissionForm = ({
   manuscript,
   createFile,
   deleteFile,
+  threadedDiscussions,
   validateDoi,
 }) => {
   return (
@@ -42,6 +43,7 @@ const SubmissionForm = ({
             ? 'Submit Evaluation'
             : 'Submit your research object'
         }
+        threadedDiscussions={threadedDiscussions}
         validateDoi={validateDoi}
       />
     </SectionContent>

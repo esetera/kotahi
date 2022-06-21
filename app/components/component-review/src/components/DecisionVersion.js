@@ -54,7 +54,7 @@ const DecisionVersion = ({
   validateDoi,
   createFile,
   deleteFile,
-  fetchThreadedDiscussions,
+  threadedDiscussions,
 }) => {
   // Hooks from the old world
   const addEditor = (manuscript, label, isCurrent, user) => {
@@ -120,7 +120,6 @@ const DecisionVersion = ({
           {!current ? (
             <ReadonlyFormTemplate
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
-              fetchThreadedDiscussions={fetchThreadedDiscussions}
               form={form}
               formData={{
                 ...version,
@@ -129,6 +128,7 @@ const DecisionVersion = ({
               listManuscriptFiles
               manuscript={version}
               showEditorOnlyFields
+              threadedDiscussions={threadedDiscussions}
             />
           ) : (
             <SectionContent>
@@ -148,6 +148,7 @@ const DecisionVersion = ({
                 }}
                 republish={() => null}
                 showEditorOnlyFields
+                threadedDiscussions={threadedDiscussions}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}
               />
@@ -228,6 +229,7 @@ const DecisionVersion = ({
               isControlPage
               manuscript={version}
               reviewForm={reviewForm}
+              threadedDiscussions={threadedDiscussions}
             />
           )}
           {current && (
@@ -237,6 +239,7 @@ const DecisionVersion = ({
                 manuscript={version}
                 reviewers={reviewers}
                 reviewForm={reviewForm}
+                threadedDiscussions={threadedDiscussions}
                 updateReview={updateReview}
                 urlFrag={urlFrag}
               />
@@ -273,6 +276,7 @@ const DecisionVersion = ({
                   showEditorOnlyFields
                   submissionButtonText="Submit"
                   tagForFiles="decision"
+                  threadedDiscussions={threadedDiscussions}
                   urlFrag={urlFrag}
                   validateDoi={validateDoi}
                 />

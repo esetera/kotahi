@@ -224,14 +224,14 @@ const submissionElements = {
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
   },
-  ThreadedDiscussion:{
+  ThreadedDiscussion: {
     id: textfield,
     title: requiredTextField,
     name: submissionNameField,
     placeholder: textfield,
     description: editorfield,
     shortDescription: shortDescriptionField,
-    validate: validateText,
+    validate: validateOther,
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
   },
@@ -381,14 +381,14 @@ const elements = {
     validate: validateText,
     hideFromAuthors: hideFromAuthorsField,
   },
-  ThreadedDiscussion:{
+  ThreadedDiscussion: {
     id: textfield,
     title: requiredTextField,
     name: nameField,
     placeholder: textfield,
     description: editorfield,
     shortDescription: shortDescriptionField,
-    validate: validateText,
+    validate: validateOther,
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
   },

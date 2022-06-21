@@ -82,7 +82,11 @@ const ReviewPreviewPage = ({ match }) => {
   }
 
   return (
-    <ReviewPreview manuscript={manuscript} submissionForm={submissionForm} />
+    <ReviewPreview
+      manuscript={manuscript}
+      submissionForm={submissionForm}
+      threadedDiscussions={[]}
+    />
   )
 }
 

@@ -23,7 +23,7 @@ const IconLink = styled.div`
   width: fit-content;
 `
 
-const ReviewPreview = ({ manuscript, submissionForm }) => {
+const ReviewPreview = ({ manuscript, submissionForm, threadedDiscussions }) => {
   const history = useHistory()
   return (
     <Page>
@@ -39,6 +39,7 @@ const ReviewPreview = ({ manuscript, submissionForm }) => {
         manuscript={manuscript}
         showEditorOnlyFields={false}
         showPreviewMetadataOnly
+        threadedDiscussions={threadedDiscussions}
       />
       <IconLink onClick={() => history.goBack()}>
         <Icon color={th('colorPrimary')} inline size={2}>

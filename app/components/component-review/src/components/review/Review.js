@@ -21,7 +21,13 @@ const filesToAttachment = file => ({
 })
 */
 
-const Review = ({ review, reviewForm, user, showUserInfo = true }) => (
+const Review = ({
+  review,
+  reviewForm,
+  user,
+  showUserInfo = true,
+  threadedDiscussions,
+}) => (
   <Container>
     {!review.isHiddenReviewerName && showUserInfo && (
       <div>
@@ -49,6 +55,7 @@ const Review = ({ review, reviewForm, user, showUserInfo = true }) => (
       }
       hideSpecialInstructions
       showEditorOnlyFields={user.admin}
+      threadedDiscussions={threadedDiscussions}
     />
   </Container>
 )

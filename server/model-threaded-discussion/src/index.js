@@ -1,5 +1,4 @@
-const resolvers = require('./resolvers')
-const typeDefs = require('./typeDefs')
+const { typeDefs, resolvers } = require('./graphql')
 const model = require('./threadedDiscussion')
 
 module.exports = {

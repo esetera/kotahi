@@ -1,102 +1,73 @@
 import { gql } from '@apollo/client'
-/* eslint-disable import/prefer-default-export */
-export const GET_THREADED_DISCUSSIONS = gql`
-  query GetThreadedDiscussions {
-    threadedDiscussions {
-      id
-      created
-      updated
-      manuscriptId
-      threads {
-        id
-        comments {
-          id
-          commentVersions {
-            id
-            userId
-            comment
-          }
-          pendingVersions {
-            id
-            userId
-            comment
-          }
-        }
-      }
-    }
-  }
-`
 
-export const CREATE_THREAD = gql`
-  mutation(
-    $manuscriptId: ID
-    $comment: String
-    $created: DateTime
-    $updated: DateTime
-  ) {
-    addThread(
-      manuscriptId: $manuscriptId
-      comment: $comment
-      created: $created
-      updated: $updated
-    ) {
-      id
-      created
-      updated
-      manuscriptId
-      threads {
-        id
-        comments {
-          id
-          commentVersions {
-            id
-            userId
-            comment
-          }
-          pendingVersions {
-            id
-            userId
-            comment
-          }
-        }
-      }
-    }
-  }
-`
-
-export const UPDATE_THREAD = gql`
-mutation(
-  $manuscriptId: ID
-  $comment: String
-  $created: DateTime
-  $updated: DateTime
-) {
-  updateThread(
-    manuscriptId: $manuscriptId
-    comment: $comment
-    created: $created
-    updated: $updated
-  ) {
+const discussionFields = `
+  id
+  created
+  updated
+  manuscriptId
+  threads {
     id
-    created
-    updated
-    manuscriptId
-    threads {
+    comments {
       id
-      comments {
+      commentVersions {
         id
-        commentVersions {
-          id
-          userId
-          comment
-        }
-        pendingVersions {
-          id
-          userId
-          comment
-        }
+        userId
+        comment
+        created
+      }
+      pendingVersions {
+        id
+        userId
+        comment
       }
     }
   }
-}
+`
+
+export const GET_THREADED_DISCUSSIONS = gql`
+  query GetThreadedDiscussions($manuscriptId: ID!) {
+    threadedDiscussions(manuscriptId: $manuscriptId) {
+      ${discussionFields}
+    }
+  }
+`
+
+export const UPDATE_PENDING_COMMENT = gql`
+  mutation(
+    $manuscriptId: ID!
+    $threadedDiscussionId: ID!
+    $threadId: ID!
+    $commentId: ID!
+    $pendingVersionId: ID!
+    $comment: String
+  ) {
+    updatePendingComment(
+      manuscriptId: $manuscriptId
+      threadedDiscussionId: $threadedDiscussionId
+      threadId: $threadId
+      commentId: $commentId
+      pendingVersionId: $pendingVersionId
+      comment: $comment
+    ) {
+      ${discussionFields}
+    }
+  }
+`
+
+export const COMPLETE_COMMENT = gql`
+  mutation(
+    $threadedDiscussionId: ID!
+    $threadId: ID!
+    $commentId: ID!
+    $pendingVersionId: ID!
+  ) {
+    completeComment(
+      threadedDiscussionId: $threadedDiscussionId
+      threadId: $threadId
+      commentId: $commentId
+      pendingVersionId: $pendingVersionId
+    ) {
+      ${discussionFields}
+    }
+  }
 `

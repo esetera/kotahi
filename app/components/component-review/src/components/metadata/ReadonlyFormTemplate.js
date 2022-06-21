@@ -14,9 +14,9 @@ import {
 import { SectionContent, Attachment } from '../../../../shared'
 import ManuscriptFilesList from './ManuscriptFilesList'
 import SpecialInstructions from './SpecialInstructions'
-// import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
+import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
 
-const showFieldData = (manuscript, fieldName, form) => {
+const showFieldData = (manuscript, fieldName, form, threadedDiscussions) => {
   const data = get(manuscript, fieldName)
   const fieldDefinition = form.children?.find(field => field.name === fieldName)
 
@@ -45,6 +45,15 @@ const showFieldData = (manuscript, fieldName, form) => {
         </a>
       </p>
     ))
+  }
+
+  if (fieldDefinition?.component === 'ThreadedDiscussion' && data) {
+    // data should be the threadedDiscussion ID
+    const discussion = threadedDiscussions.find(d => d.id === data) || {
+      threads: [],
+    }
+
+    return <ThreadedDiscussion {...discussion} manuscriptId={manuscript.id} />
   }
 
   if (
@@ -83,9 +92,10 @@ const ReadonlyFormTemplate = ({
   title,
   displayShortIdAsIdentifier,
   listManuscriptFiles,
+  threadedDiscussions,
 }) => {
   return (
-    <><SectionContent>
+    <SectionContent>
       {title ? (
         <SectionHeader>
           <Title>{title}</Title>
@@ -108,13 +118,21 @@ const ReadonlyFormTemplate = ({
             (showEditorOnlyFields || element.hideFromAuthors !== 'true')
           )
         })
-        .map(element => !showPreviewMetadataOnly ||
+        .map(element =>
+          !showPreviewMetadataOnly ||
           shouldShowInPreview(element.name, form) ? (
-          <SectionRowGrid key={element.id}>
-            <Heading>{element.shortDescription || element.title}</Heading>
-            <Cell>{showFieldData(formData, element.name, form)}</Cell>
-          </SectionRowGrid>
-        ) : null
+            <SectionRowGrid key={element.id}>
+              <Heading>{element.shortDescription || element.title}</Heading>
+              <Cell>
+                {showFieldData(
+                  formData,
+                  element.name,
+                  form,
+                  threadedDiscussions,
+                )}
+              </Cell>
+            </SectionRowGrid>
+          ) : null,
         )}
       {!showPreviewMetadataOnly && // TODO Special instructions and manuscript files should not be rendered in this component. Split out!
         (listManuscriptFiles || !hideSpecialInstructions) && (
@@ -127,7 +145,7 @@ const ReadonlyFormTemplate = ({
             )}
           </>
         )}
-    </SectionContent></>
+    </SectionContent>
   )
 }
 

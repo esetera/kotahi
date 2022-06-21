@@ -263,6 +263,7 @@ const SubmitPage = ({ match, history }) => {
       onSubmit={onSubmit}
       parent={manuscript}
       republish={republish}
+      threadedDiscussions={data.threadedDiscussions}
       updateManuscript={updateManuscript}
       validateDoi={validateDoi}
       versions={versions}

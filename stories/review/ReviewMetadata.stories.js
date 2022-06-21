@@ -668,6 +668,7 @@ const baseProps = {
   },
   showPreviewMetadataOnly: false,
   showEditorOnlyFields: false,
+  threadedDiscussions: [],
 }
 
 Base.args = baseProps
