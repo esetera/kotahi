@@ -24,7 +24,7 @@ import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 const ThreadedComment = props => {
   const {
     comment,
-    currentUserId,
+    currentUser,
     simpleWaxEditorProps,
     userCanEditOwnComment,
     userCanEditAnyComment,
@@ -68,7 +68,7 @@ const ThreadedComment = props => {
               />
             </DateWrapper>
             {(userCanEditAnyComment ||
-              (userCanEditOwnComment && author.id === currentUserId)) && (
+              (userCanEditOwnComment && author.id === currentUser.id)) && (
               <Icon
                 onClick={event => {
                   setOpenModal(true)

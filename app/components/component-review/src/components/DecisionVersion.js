@@ -119,6 +119,7 @@ const DecisionVersion = ({
         <>
           {!current ? (
             <ReadonlyFormTemplate
+              currentUser={currentUser}
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
               form={form}
               formData={{
@@ -134,6 +135,7 @@ const DecisionVersion = ({
             <SectionContent>
               <FormTemplate
                 createFile={createFile}
+                currentUser={currentUser}
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
                 form={form}
@@ -249,6 +251,7 @@ const DecisionVersion = ({
               <SectionContent>
                 <FormTemplate
                   createFile={createFile}
+                  currentUser={currentUser}
                   deleteFile={deleteFile}
                   form={decisionForm}
                   initialValues={

@@ -23,6 +23,7 @@ const filesToAttachment = file => ({
 */
 
 const Review = ({
+  currentUser,
   review,
   reviewForm,
   user,
@@ -48,6 +49,7 @@ const Review = ({
     )}
 
     <ReadonlyFormTemplate
+      currentUser={currentUser}
       form={reviewForm}
       formData={ensureJsonIsParsed(review.jsonData) ?? {}}
       hideSpecialInstructions

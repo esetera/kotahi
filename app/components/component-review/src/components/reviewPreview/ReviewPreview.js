@@ -23,13 +23,19 @@ const IconLink = styled.div`
   width: fit-content;
 `
 
-const ReviewPreview = ({ manuscript, submissionForm, threadedDiscussions }) => {
+const ReviewPreview = ({
+  currentUser,
+  manuscript,
+  submissionForm,
+  threadedDiscussions,
+}) => {
   const history = useHistory()
   return (
     <Page>
       <Heading>Summary</Heading>
       <Title>{manuscript.meta.title}</Title>
       <ReadonlyFormTemplate
+        currentUser={currentUser}
         form={submissionForm}
         formData={{
           ...manuscript,

@@ -97,6 +97,7 @@ const Submit = ({
       }
 
       const submissionProps = {
+        currentUser,
         versionValues,
         form: submissionForm,
         onSubmit,
@@ -129,6 +130,7 @@ const Submit = ({
               />
             )}
             <ReadonlyFormTemplate
+              currentUser={currentUser}
               form={submissionForm}
               formData={{
                 ...manuscript,

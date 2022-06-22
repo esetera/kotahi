@@ -152,6 +152,7 @@ const InnerFormTemplate = ({
   shouldStoreFilesInForm,
   tagForFiles,
   threadedDiscussions,
+  currentUser,
   initializeReview,
 }) => {
   const submitButton = (text, haspopup = false) => {
@@ -276,10 +277,14 @@ const InnerFormTemplate = ({
                 )}
                 {element.component === 'ThreadedDiscussion' && (
                   <ThreadedDiscussion
-                    {...(threadedDiscussions.find(d => d.id === values) || {
+                    {...(threadedDiscussions.find(
+                      d => d.id === values[element.name] || true, // TODO remove "|| true", used for forcing it to show test data despite id mismatch
+                    ) || {
                       threads: [],
                     })}
+                    currentUser={currentUser}
                     manuscriptId={manuscriptId}
+                    value={values[element.name]}
                   />
                 )}
                 {![
@@ -393,6 +398,7 @@ const FormTemplate = ({
   initializeReview,
   tagForFiles,
   threadedDiscussions,
+  currentUser = { username: 'Ben', id: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436' }, // TODO pass this in
 }) => {
   const [confirming, setConfirming] = React.useState(false)
 
@@ -416,6 +422,7 @@ const FormTemplate = ({
           isSubmission={isSubmission}
           toggleConfirming={toggleConfirming}
           {...formProps}
+          currentUser={currentUser}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
           form={form}
           initializeReview={initializeReview}

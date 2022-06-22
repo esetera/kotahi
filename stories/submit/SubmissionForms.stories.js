@@ -888,6 +888,10 @@ const emptyFormProps = {
       },
     ],
   },
+  currentUser: {
+    id: '1228b2a9-e125-4e44-be44-d02c2d1ad2eb',
+    username: 'Some User',
+  },
 }
 
 EmptySubmissionForm.args = {

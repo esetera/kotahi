@@ -3,6 +3,7 @@ import { SectionContent } from '../../../shared'
 import FormTemplate from './FormTemplate'
 
 const SubmissionForm = ({
+  currentUser,
   versionValues,
   form,
   onSubmit,
@@ -20,6 +21,7 @@ const SubmissionForm = ({
     <SectionContent>
       <FormTemplate
         createFile={createFile}
+        currentUser={currentUser}
         deleteFile={deleteFile}
         form={form}
         initialValues={versionValues}

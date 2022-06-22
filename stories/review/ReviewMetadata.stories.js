@@ -1261,6 +1261,10 @@ const emptyFormProps = {
   showPreviewMetadataOnly: false,
   showEditorOnlyFields: false,
   listManuscriptFiles: true,
+  currentUser: {
+    id: 'e11b5e2f-441a-4bf5-a74a-34fb5dd09e39',
+    username: 'Some User',
+  },
 }
 
 EmptyReviewMetadaForm.args = {

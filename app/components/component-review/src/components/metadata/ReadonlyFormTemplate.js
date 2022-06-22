@@ -16,7 +16,13 @@ import ManuscriptFilesList from './ManuscriptFilesList'
 import SpecialInstructions from './SpecialInstructions'
 import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
 
-const showFieldData = (manuscript, fieldName, form, threadedDiscussions) => {
+const showFieldData = (
+  manuscript,
+  fieldName,
+  form,
+  threadedDiscussions,
+  currentUser,
+) => {
   const data = get(manuscript, fieldName)
   const fieldDefinition = form.children?.find(field => field.name === fieldName)
 
@@ -53,7 +59,13 @@ const showFieldData = (manuscript, fieldName, form, threadedDiscussions) => {
       threads: [],
     }
 
-    return <ThreadedDiscussion {...discussion} manuscriptId={manuscript.id} />
+    return (
+      <ThreadedDiscussion
+        {...discussion}
+        currentUser={currentUser}
+        manuscriptId={manuscript.id}
+      />
+    )
   }
 
   if (
@@ -83,6 +95,7 @@ const shouldShowInPreview = (fieldName, form) => {
 }
 
 const ReadonlyFormTemplate = ({
+  currentUser,
   form,
   formData,
   hideSpecialInstructions,
@@ -129,6 +142,7 @@ const ReadonlyFormTemplate = ({
                   element.name,
                   form,
                   threadedDiscussions,
+                  currentUser,
                 )}
               </Cell>
             </SectionRowGrid>

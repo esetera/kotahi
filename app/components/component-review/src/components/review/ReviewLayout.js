@@ -62,6 +62,7 @@ const ReviewLayout = ({
             <EditorSection manuscript={msVersion} readonly />
           )}
           <ReadonlyFormTemplate
+            currentUser={currentUser}
             form={submissionForm}
             formData={reviewData}
             listManuscriptFiles
@@ -70,12 +71,14 @@ const ReviewLayout = ({
             threadedDiscussions={threadedDiscussions}
           />
           <SharedReviewerGroupReviews
+            currentUser={currentUser}
             manuscript={msVersion}
             reviewerId={currentUser.id}
             reviewForm={reviewForm}
             threadedDiscussions={threadedDiscussions}
           />
           <Review
+            currentUser={currentUser}
             review={reviewForCurrentUser}
             reviewForm={reviewForm}
             threadedDiscussions={threadedDiscussions}
@@ -103,6 +106,7 @@ const ReviewLayout = ({
             <EditorSection manuscript={latestVersion} readonly />
           )}
           <ReadonlyFormTemplate // Display manuscript metadata
+            currentUser={currentUser}
             form={submissionForm}
             formData={{
               ...latestVersion,
@@ -114,6 +118,7 @@ const ReviewLayout = ({
             threadedDiscussions={threadedDiscussions}
           />
           <SharedReviewerGroupReviews
+            currentUser={currentUser}
             manuscript={latestVersion}
             reviewerId={currentUser.id}
             reviewForm={reviewForm}
@@ -121,6 +126,7 @@ const ReviewLayout = ({
           />
           {status === 'completed' ? (
             <Review
+              currentUser={currentUser}
               review={review}
               reviewForm={reviewForm}
               threadedDiscussions={threadedDiscussions}
@@ -129,6 +135,7 @@ const ReviewLayout = ({
             <SectionContent>
               <FormTemplate
                 createFile={createFile}
+                currentUser={currentUser}
                 deleteFile={deleteFile}
                 form={reviewForm}
                 initialValues={reviewData}
@@ -148,6 +155,7 @@ const ReviewLayout = ({
           )}
           {['colab'].includes(process.env.INSTANCE_NAME) && (
             <ReadonlyFormTemplate
+              currentUser={currentUser}
               form={decisionForm}
               formData={decision.jsonData || {}}
               hideSpecialInstructions

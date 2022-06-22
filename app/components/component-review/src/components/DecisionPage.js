@@ -169,6 +169,7 @@ const DecisionPage = ({ match }) => {
   } = data
 
   // TODO This is TEST DATA: remove once we're getting useful values from the DB.
+  // TODO Modify the query to embed full user objects instead of just userIds.
   const threadedDiscussions = [
     {
       id: '7416150c-2b25-4839-a94c-e4e1a0e35aeb',
@@ -190,7 +191,10 @@ const DecisionPage = ({ match }) => {
                   id: 'ffa8357a-a589-4469-9d84-bbbad1c793af',
                   created: 1655825019000,
                   updated: 1655825019000,
-                  userId: '906f42a3-64da-4cb0-8f72-f6a51d3a3452', // Someone's user ID here
+                  author: {
+                    id: '906f42a3-64da-4cb0-8f72-f6a51d3a3452', // Someone's user ID here
+                    username: 'Harriet Handling Editor',
+                  },
                   comment: '<p class="paragraph">Existing comment</p>',
                 },
               ],
@@ -206,7 +210,10 @@ const DecisionPage = ({ match }) => {
                   id: 'a37d2394-8e1e-48dd-bba9-d16e2dd535c3',
                   created: 1655825019000,
                   updated: 1655825019000,
-                  userId: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436', // Your user ID here
+                  author: {
+                    id: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436', // Your user ID here
+                    username: 'Ben W',
+                  },
                   comment: '<p class="paragraph">Hello!</p>',
                 },
               ],

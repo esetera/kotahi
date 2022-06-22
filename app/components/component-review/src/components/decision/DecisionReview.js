@@ -234,6 +234,7 @@ const DecisionReview = ({
       {open && (
         <ReviewBody>
           <Review
+            currentUser={currentUser}
             review={review}
             reviewForm={reviewForm}
             showUserInfo={false}
