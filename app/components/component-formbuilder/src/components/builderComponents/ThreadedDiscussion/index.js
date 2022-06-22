@@ -56,7 +56,7 @@ const ThreadedDiscussion = props => {
     id,
     created,
     updated,
-    manuscriptId,
+    manuscriptId, // TODO We actually need the manuscriptId of the first version of the manuscript
     threads,
     userCanAddComment,
     userCanEditOwnComment,
