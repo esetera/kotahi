@@ -23,7 +23,9 @@ const getExistingOrInitialComments = (
         return {
           ...pv,
           isEditing: true,
-          existingComment: c.commentVersions.find(cv => cv.id === pv.id), // If an existingComment is not found, this is a new, unsubmitted comment.
+          existingComment: c.commentVersions.length
+            ? c.commentVersions[c.commentVersions.length - 1]
+            : null, // If null, this is a new, unsubmitted comment.
         }
       }
 
@@ -60,8 +62,7 @@ const ThreadedDiscussion = props => {
     userCanEditOwnComment,
     userCanEditAnyComment,
     currentUser,
-    users = [], // TODO we should instead receive the user objects already embedded in the threadedDiscussion when it arrives from the server
-    value,
+    value, // This is the threadedDiscussionId
     ...SimpleWaxEditorProps
   } = props
 
@@ -73,7 +74,6 @@ const ThreadedDiscussion = props => {
       thread.comments,
       currentUser,
       userCanAddComment,
-      users,
     ),
   )
 
