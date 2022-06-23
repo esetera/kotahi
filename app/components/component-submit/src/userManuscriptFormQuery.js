@@ -20,6 +20,45 @@ export const reviewFields = `
   }
 `
 
+const formFields = `
+  structure {
+    name
+    description
+    haspopup
+    popuptitle
+    popupdescription
+    children {
+      title
+      shortDescription
+      id
+      component
+      name
+      description
+      doiValidation
+      placeholder
+      parse
+      format
+      options {
+        id
+        label
+        value
+        labelColor
+      }
+      validate {
+        id
+        label
+        value
+      }
+      validateValue {
+        minChars
+        maxChars
+        minSize
+      }
+      hideFromAuthors
+    }
+  }
+`
+
 export const fragmentFields = `
   id
   shortId
@@ -120,43 +159,38 @@ const query = gql`
       }
     }
 
-    forms {
-      purpose
-      category
-      structure {
-        name
-        description
-        haspopup
-        popuptitle
-        popupdescription
-        children {
-          title
-          shortDescription
+    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission") {
+      ${formFields}
+    }
+
+    decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision") {
+      ${formFields}
+    }
+
+    reviewForm: formForPurposeAndCategory(purpose: "review", category: "review") {
+      ${formFields}
+    }
+
+    threadedDiscussions(manuscriptId: $id) {
+      id
+      created
+      updated
+      manuscriptId
+      threads {
+        id
+        comments {
           id
-          component
-          name
-          description
-          doiValidation
-          placeholder
-          parse
-          format
-          options {
+          commentVersions {
             id
-            label
-            value
-            labelColor
+            userId
+            comment
+            created
           }
-          validate {
+          pendingVersions {
             id
-            label
-            value
+            userId
+            comment
           }
-          validateValue {
-            minChars
-            maxChars
-            minSize
-          }
-          hideFromAuthors
         }
       }
     }

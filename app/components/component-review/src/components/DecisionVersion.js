@@ -31,6 +31,7 @@ const DecisionVersion = ({
   decisionForm,
   form,
   current,
+  currentDecisionData,
   currentUser,
   version,
   parent,
@@ -43,7 +44,6 @@ const DecisionVersion = ({
   updateTeam,
   createTeam,
   updateReview,
-  reviewByCurrentUser,
   reviewForm,
   reviewers,
   teamLabels,
@@ -54,7 +54,7 @@ const DecisionVersion = ({
   validateDoi,
   createFile,
   deleteFile,
-  fetchThreadedDiscussions,
+  threadedDiscussions,
 }) => {
   // Hooks from the old world
   const addEditor = (manuscript, label, isCurrent, user) => {
@@ -119,8 +119,8 @@ const DecisionVersion = ({
         <>
           {!current ? (
             <ReadonlyFormTemplate
+              currentUser={currentUser}
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
-              fetchThreadedDiscussions={fetchThreadedDiscussions}
               form={form}
               formData={{
                 ...version,
@@ -129,11 +129,13 @@ const DecisionVersion = ({
               listManuscriptFiles
               manuscript={version}
               showEditorOnlyFields
+              threadedDiscussions={threadedDiscussions}
             />
           ) : (
             <SectionContent>
               <FormTemplate
                 createFile={createFile}
+                currentUser={currentUser}
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
                 form={form}
@@ -148,6 +150,7 @@ const DecisionVersion = ({
                 }}
                 republish={() => null}
                 showEditorOnlyFields
+                threadedDiscussions={threadedDiscussions}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}
               />
@@ -161,7 +164,6 @@ const DecisionVersion = ({
   }
 
   const decisionSection = () => {
-    // this is only used if current version & hence editable
     return {
       content: (
         <>
@@ -228,6 +230,7 @@ const DecisionVersion = ({
               isControlPage
               manuscript={version}
               reviewForm={reviewForm}
+              threadedDiscussions={threadedDiscussions}
             />
           )}
           {current && (
@@ -237,6 +240,7 @@ const DecisionVersion = ({
                 manuscript={version}
                 reviewers={reviewers}
                 reviewForm={reviewForm}
+                threadedDiscussions={threadedDiscussions}
                 updateReview={updateReview}
                 urlFrag={urlFrag}
               />
@@ -247,11 +251,12 @@ const DecisionVersion = ({
               <SectionContent>
                 <FormTemplate
                   createFile={createFile}
+                  currentUser={currentUser}
                   deleteFile={deleteFile}
                   form={decisionForm}
                   initialValues={
-                    reviewByCurrentUser?.jsonData
-                      ? JSON.parse(reviewByCurrentUser?.jsonData)
+                    currentDecisionData?.jsonData
+                      ? JSON.parse(currentDecisionData?.jsonData)
                       : {}
                   }
                   isSubmission={false}
@@ -268,11 +273,12 @@ const DecisionVersion = ({
                     })
                     actions.setSubmitting(false)
                   }}
-                  reviewId={reviewByCurrentUser.id}
+                  reviewId={currentDecisionData.id}
                   shouldStoreFilesInForm
                   showEditorOnlyFields
                   submissionButtonText="Submit"
                   tagForFiles="decision"
+                  threadedDiscussions={threadedDiscussions}
                   urlFrag={urlFrag}
                   validateDoi={validateDoi}
                 />

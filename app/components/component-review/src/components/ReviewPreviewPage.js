@@ -53,7 +53,7 @@ const query = gql`
   }
 `
 
-const ReviewPreviewPage = ({ match }) => {
+const ReviewPreviewPage = ({ match, currentUser }) => {
   const { loading, error, data } = useQuery(query, {
     variables: {
       id: match.params.version,
@@ -82,7 +82,12 @@ const ReviewPreviewPage = ({ match }) => {
   }
 
   return (
-    <ReviewPreview manuscript={manuscript} submissionForm={submissionForm} />
+    <ReviewPreview
+      currentUser={currentUser}
+      manuscript={manuscript}
+      submissionForm={submissionForm}
+      threadedDiscussions={[]}
+    />
   )
 }
 

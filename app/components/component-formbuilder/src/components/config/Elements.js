@@ -224,7 +224,7 @@ const submissionElements = {
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
   },
-  ThreadedDiscussion:{
+  ThreadedDiscussion: {
     id: textfield,
     title: requiredTextField,
     name: submissionNameField,
@@ -380,7 +380,7 @@ const elements = {
     validate: validateText,
     hideFromAuthors: hideFromAuthorsField,
   },
-  ThreadedDiscussion:{
+  ThreadedDiscussion: {
     id: textfield,
     title: requiredTextField,
     name: nameField,

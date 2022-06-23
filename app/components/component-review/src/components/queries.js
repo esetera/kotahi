@@ -159,6 +159,30 @@ export const query = gql`
       }
     }
 
+    threadedDiscussions(manuscriptId: $id) {
+      id
+      created
+      updated
+      manuscriptId
+      threads {
+        id
+        comments {
+          id
+          commentVersions {
+            id
+            userId
+            comment
+            created
+          }
+          pendingVersions {
+            id
+            userId
+            comment
+          }
+        }
+      }
+    }
+
     submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission") {
       ${formFields}
     }
@@ -201,7 +225,9 @@ export const makeDecisionMutation = gql`
 `
 export const createThreadMutation = gql`
   mutation($id: ID!, $decision: String) {
-    createThread(id: $id, decision: $decision)
+    createThread(id: $id, decision: $decision) {
+      id
+    }
   }
 `
 

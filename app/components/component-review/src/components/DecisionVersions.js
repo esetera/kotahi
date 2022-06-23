@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { v4 as uuid } from 'uuid'
 import DecisionVersion from './DecisionVersion'
 import gatherManuscriptVersions from '../../../../shared/manuscript_versions'
 
@@ -11,36 +12,45 @@ import {
 } from '../../../shared'
 import MessageContainer from '../../../component-chat/src/MessageContainer'
 
-const DecisionVersions = props => {
-  const {
-    allUsers,
-    currentUser,
-    decisionForm,
-    form,
-    handleChange,
-    updateManuscript,
-    manuscript,
-    sendNotifyEmail,
-    sendChannelMessageCb,
-    makeDecision,
-    updateReviewJsonData,
-    publishManuscript,
-    updateTeam,
-    createTeam,
-    updateReview,
-    reviewByCurrentUser,
-    reviewForm,
-    reviewers,
-    teamLabels,
-    canHideReviews,
-    urlFrag,
-    displayShortIdAsIdentifier,
-    deleteFile,
-    createFile,
-    validateDoi,
-  } = props
+const DecisionVersions = ({
+  allUsers,
+  currentUser,
+  decisionForm,
+  form,
+  handleChange,
+  updateManuscript,
+  manuscript,
+  sendNotifyEmail,
+  sendChannelMessageCb,
+  makeDecision,
+  updateReviewJsonData,
+  publishManuscript,
+  updateTeam,
+  createTeam,
+  updateReview,
+  reviewForm,
+  reviewers,
+  teamLabels,
+  canHideReviews,
+  urlFrag,
+  displayShortIdAsIdentifier,
+  deleteFile,
+  createFile,
+  threadedDiscussions,
+  validateDoi,
+}) => {
+  const [initialValue, setInitialValue] = useState(null)
 
   const versions = gatherManuscriptVersions(manuscript)
+
+  if (!initialValue)
+    setInitialValue(
+      versions[0].manuscript.reviews.find(r => r.isDecision) || {
+        id: uuid(),
+        isDecision: true,
+        userId: currentUser.id,
+      },
+    )
 
   // Protect if channels don't exist for whatever reason
   let editorialChannelId, allChannelId
@@ -68,6 +78,7 @@ const DecisionVersions = props => {
                 createFile={createFile}
                 createTeam={createTeam}
                 current={index === 0}
+                currentDecisionData={initialValue}
                 currentUser={currentUser}
                 decisionForm={decisionForm}
                 deleteFile={deleteFile}
@@ -78,15 +89,17 @@ const DecisionVersions = props => {
                 onChange={handleChange}
                 parent={manuscript}
                 publishManuscript={publishManuscript}
-                reviewByCurrentUser={reviewByCurrentUser}
                 reviewers={reviewers}
                 reviewForm={reviewForm}
                 sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
                 teamLabels={teamLabels}
+                threadedDiscussions={threadedDiscussions}
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}
-                updateReviewJsonData={updateReviewJsonData}
+                updateReviewJsonData={(value, path) =>
+                  updateReviewJsonData(version.manuscript.id, value, path)
+                }
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}

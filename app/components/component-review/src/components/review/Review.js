@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
+import { ensureJsonIsParsed } from '../../../../../shared/objectUtils'
 
 const Heading = styled.h4``
 
@@ -21,7 +22,14 @@ const filesToAttachment = file => ({
 })
 */
 
-const Review = ({ review, reviewForm, user, showUserInfo = true }) => (
+const Review = ({
+  currentUser,
+  review,
+  reviewForm,
+  user,
+  showUserInfo = true,
+  threadedDiscussions,
+}) => (
   <Container>
     {!review.isHiddenReviewerName && showUserInfo && (
       <div>
@@ -41,14 +49,12 @@ const Review = ({ review, reviewForm, user, showUserInfo = true }) => (
     )}
 
     <ReadonlyFormTemplate
+      currentUser={currentUser}
       form={reviewForm}
-      formData={
-        typeof review.jsonData === 'string'
-          ? JSON.parse(review.jsonData)
-          : review.jsonData ?? '{}'
-      }
+      formData={ensureJsonIsParsed(review.jsonData) ?? {}}
       hideSpecialInstructions
       showEditorOnlyFields={user.admin}
+      threadedDiscussions={threadedDiscussions}
     />
   </Container>
 )

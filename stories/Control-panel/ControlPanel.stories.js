@@ -1942,6 +1942,7 @@ const props = {
   page: 1,
   sortDirection: 'DESC',
   sortName: 'created',
+  threadedDiscussions: [],
 }
 
 Base.args = props

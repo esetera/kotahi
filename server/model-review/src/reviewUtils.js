@@ -1,3 +1,5 @@
+const { ensureJsonIsParsed } = require('../../utils/objectUtils')
+
 /** Checks through all fields containing files, and any files expressed in object form are replaced with simple IDs.
  * This also converts any jsonData in string form to a parsed object.
  * This modifies the supplied reviewDelta IN PLACE. */
@@ -39,8 +41,7 @@ const convertFilesToFullObjects = async (
     )
     .map(field => field.name)
 
-  if (typeof review.jsonData === 'string')
-    review.jsonData = JSON.parse(review.jsonData)
+  review.jsonData = ensureJsonIsParsed(review.jsonData)
 
   for (const [key, value] of Object.entries(review.jsonData)) {
     if (fileFieldNames.includes(key)) {

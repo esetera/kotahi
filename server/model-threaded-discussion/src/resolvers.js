@@ -1,36 +1,34 @@
-const models = require('@pubsweet/models')
-const ThreadedDiscussion = require('./threadedDiscussion')
+// const models = require('@pubsweet/models')
+// const ThreadedDiscussion = require('./threadedDiscussion')
 
-const resolvers = {
-    Query: {
-      async threadedDiscussions(_, { manuscriptId }) {
-        const result = await models.ThreadedDiscussion.query()
-          .where({ manuscriptId })
-          .orderBy('created', 'desc')
-  
-        return result.map(discussion => ({
-          ...discussion,
-          threads: JSON.parse(discussion.threads),
-        }))
-      },
-    },
+// const resolvers = {
+//     Query: {
+//       async threadedDiscussions(_, { manuscriptId }) {
+//         console.log(threadedDiscussions,'threadedDiscussions')
+//         console.log(manuscriptId, 'manuscriptId')
+//         const result = await models.ThreadedDiscussion.query()
+//           .where({ manuscriptId: manuscriptId })
+//           .orderBy('created', 'desc')
 
-  Mutation: {
-    async addThread(_, { comment, ...rest }) {
-      const threadedDiscussion = await ThreadedDiscussion.query().upsertGraph(
-        {
-          ...rest,
-          threads: [comment],
-        },
-      )
+//         // return result.map(discussion => ({
+//         //   ...discussion,
+//         //   threads: JSON.parse(discussion.threads),
+//         // }))
+//       },
+//     },
 
-      return { ...threadedDiscussion }
-    },
+//   Mutation: {
+//     async addThread(_, { comment, ...rest }) {
+//       const threadedDiscussion = await ThreadedDiscussion.query().insertAndFetch(
+//         {
+//           ...rest,
+//           threads: [comment],
+//         },
+//       )
 
-    // async updateThreadedDiscussions(_, { id, thread }) {
-    //   return models.ThreadedDiscussion.query().updateAndFetchById(id, JSON.parse(thread))
-    // },
-  },
-}
+//       return { ...threadedDiscussion }
+//     },
+//   },
+// }
 
-module.exports = resolvers
+// module.exports = resolvers

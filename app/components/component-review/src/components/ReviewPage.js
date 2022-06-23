@@ -187,6 +187,30 @@ const query = gql`
       }
     }
 
+    threadedDiscussions(manuscriptId: $id) {
+      id
+      created
+      updated
+      manuscriptId
+      threads {
+        id
+        comments {
+          id
+          commentVersions {
+            id
+            userId
+            comment
+            created
+          }
+          pendingVersions {
+            id
+            userId
+            comment
+          }
+        }
+      }
+    }
+
     submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission") {
       ${formStructure}
     }
@@ -280,7 +304,7 @@ const ReviewPage = ({ match, ...props }) => {
     )
   }
 
-  const { manuscript } = data
+  const { manuscript, threadedDiscussions } = data
 
   // We shouldn't arrive at this page with a subsequent/child manuscript ID. If we do, redirect to the parent/original ID
   if (manuscript.parentId)
@@ -444,6 +468,7 @@ const ReviewPage = ({ match, ...props }) => {
       reviewForm={reviewForm}
       status={status}
       submissionForm={submissionForm}
+      threadedDiscussions={threadedDiscussions}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
       versions={versions}

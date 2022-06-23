@@ -1,78 +1,125 @@
-import React from 'react'
-import { useMutation, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
+import React, { useState } from 'react'
+import { v4 as uuid } from 'uuid'
 import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 import { SimpleWaxEditorWrapper } from '../../style'
+import { GET_THREADED_DISCUSSIONS } from './queries'
 import ThreadedComment from './ThreadedComment'
-import { CREATE_THREAD, GET_THREADED_DISCUSSIONS } from './queries'
-import { Button } from '@pubsweet/ui'
+
+/** Returns an array of objects supplying useful into for each comment; and adds a new one at the end
+ * if the user is permitted to add a new comment and haven't yet started doing so.
+ */
+const getExistingOrInitialComments = (
+  comments,
+  currentUser,
+  userCanAddComment,
+) => {
+  const result = comments
+    .filter(c => c.pendingVersions.length || c.commentVersions.length)
+    .map(c => {
+      if (c.pendingVersions.length) {
+        // This comment is currently being edited!
+        // Note that the server strips all pendingComments for other users before sending to the client,
+        // so if there is a pendingVersion it is for the current user.
+        const pv = c.pendingVersions[c.pendingVersions.length - 1]
+        return {
+          ...pv,
+          isEditing: true,
+          existingComment: c.commentVersions.length
+            ? c.commentVersions[c.commentVersions.length - 1]
+            : null, // If null, this is a new, unsubmitted comment.
+        }
+      }
+
+      // This comment is not currently being edited.
+      return {
+        ...c.commentVersions[c.commentVersions.length - 1],
+      }
+    })
+
+  const lastComment = result.length ? result[result.length - 1] : null
+  const lastCommentIsByUser = lastComment.author.id === currentUser.id
+
+  // If the last comment in the thread is not by this user (and they are permitted to comment at all),
+  // we create the preliminary data for a new comment, not yet in the DB.
+  if (userCanAddComment && !lastCommentIsByUser)
+    result.push({
+      id: uuid(),
+      comment: '<p class="paragraph></p>',
+      isEditing: true,
+      author: currentUser,
+    })
+
+  return result
+}
 
 const ThreadedDiscussion = props => {
   const {
     id,
-    user,
-    key,
-    value,
-    comments,
+    created,
+    updated,
+    manuscriptId, // TODO We actually need the manuscriptId of the first version of the manuscript
+    threads,
+    userCanAddComment,
+    userCanEditOwnComment,
+    userCanEditAnyComment,
     currentUser,
-    manuscriptId,
-    threadedDiscussionId,
+    value, // This is the threadedDiscussionId
     ...SimpleWaxEditorProps
   } = props
+// console.log(manuscriptId,'manuscriptId')
+  const [threadId] = useState(threads?.[0]?.id || uuid())
+  const thread = threads?.find(t => t.id === threadId) || { comments: [] }
 
-  const [NewComment, setNewComment] = React.useState()
-  const lastComment = comments ? comments[comments.length - 1] : null
-
-  const lastCommentByCurrentUser = lastComment
-    ? lastComment.userId === user.id
-    : null
+  const [comments, setComments] = useState(
+    getExistingOrInitialComments(
+      thread.comments,
+      currentUser,
+      userCanAddComment,
+    ),
+  )
 
   const { data } = useQuery(GET_THREADED_DISCUSSIONS, {
+
     variables: {
-      id: manuscriptId,
-      comments: NewComment,
-      created: new Date(),
-      updated: new Date(),
+      manuscriptId,
     },
   })
-const { upsert } = useMutation(CREATE_THREAD,{
-  variables: {
-    id: manuscriptId,
-    comments: NewComment,
-    created: new Date(),
-    updated: new Date(),
-  },
-})
+  
+  // if(loading || error)
+  // {
+  //   return true
+  // }
   return (
     <>
-     {data && JSON.stringify(data)}
-
       {comments &&
-        comments.map(comment => {
+        comments.map((comment, index) => {
+          const isLastComment = index >= comments.length - 1
+
+          if (isLastComment && comment.isEditing && !comment.existingComment)
+            return (
+              <SimpleWaxEditorWrapper key={comment.id}>
+                <SimpleWaxEditor
+                  {...SimpleWaxEditorProps}
+                  onChange={content => null} // TODO upsert
+                  value={comment.comment}
+                />
+              </SimpleWaxEditorWrapper>
+            )
+
           return (
             <ThreadedComment
               comment={comment}
-              currentUserId={user.id}
+              currentUser={currentUser}
               key={comment.id}
               simpleWaxEditorProps={SimpleWaxEditorProps}
+              userCanEditAnyComment={userCanEditAnyComment}
+              userCanEditOwnComment={userCanEditOwnComment}
             />
           )
         })}
-
-      {!lastCommentByCurrentUser && (
-        <>
-          <SimpleWaxEditorWrapper>
-            <SimpleWaxEditor
-              {...SimpleWaxEditorProps}
-              onChange={content => setNewComment(content)}
-            />
-          </SimpleWaxEditorWrapper>
-          <Button onClick= {upsert} primary type="submit">
-            Submit
-          </Button>
-        </>
-      )}
     </>
   )
-}
+ }
 
 export default ThreadedDiscussion

@@ -2,7 +2,7 @@ const models = require('@pubsweet/models')
 const File = require('@coko/server/src/models/file/file.model')
 const { getFilesWithUrl } = require('../../utils/fileStorageUtils')
 const { deepMergeObjectsReplacingArrays } = require('../../utils/objectUtils')
-const { getReviewForm } = require('./reviewCommsUtils')
+const { getReviewForm, getDecisionForm } = require('./reviewCommsUtils')
 
 const {
   convertFilesToIdsOnly,
@@ -15,7 +15,10 @@ const resolvers = {
       const reviewDelta = { jsonData: {}, ...input }
       const existingReview = (await models.Review.query().findById(id)) || {}
 
-      const form = await getReviewForm(existingReview.isDecision)
+      const form = existingReview.isDecision
+        ? await getDecisionForm()
+        : await getReviewForm()
+
       await convertFilesToIdsOnly(reviewDelta, form)
 
       const mergedReview = {

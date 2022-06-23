@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useQuery, useMutation, gql, useApolloClient } from '@apollo/client'
 import { set, debounce } from 'lodash'
 import config from 'config'
-import { v4 as uuid } from 'uuid'
 import DecisionVersions from './DecisionVersions'
 import { Spinner, CommsErrorBanner } from '../../../shared'
 import { fragmentFields } from '../../../component-submit/src/userManuscriptFormQuery'
@@ -20,8 +19,8 @@ import {
   CREATE_MESSAGE,
   CREATE_TEAM_MUTATION,
   UPDATE_TEAM_MUTATION,
-  VALIDATE_DOI,
 } from '../../../../queries'
+import { validateDoi } from '../../../../shared/commsUtils'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -62,8 +61,6 @@ const deleteFileMutation = gql`
 let debouncers = {}
 
 const DecisionPage = ({ match }) => {
-  const [initialValues, setInitialValue] = useState(null)
-
   // start of code from submit page to handle possible form changes
   const client = useApolloClient()
 
@@ -123,22 +120,6 @@ const DecisionPage = ({ match }) => {
       },
     })
 
-  const validateDoi = value =>
-    client
-      .query({
-        query: VALIDATE_DOI,
-        variables: {
-          articleURL: value,
-        },
-      })
-      .then(result => {
-        if (!result.data.validateDOI.isDOIValid) {
-          return 'DOI is invalid'
-        }
-
-        return undefined
-      })
-
   const updateReview = async (reviewId, reviewData, manuscriptId) => {
     doUpdateReview({
       variables: { id: reviewId || undefined, input: reviewData },
@@ -187,6 +168,65 @@ const DecisionPage = ({ match }) => {
     users,
   } = data
 
+  // TODO This is TEST DATA: remove once we're getting useful values from the DB.
+  // TODO Modify the query to embed full user objects instead of just userIds.
+  const threadedDiscussions = [
+    {
+      id: '7416150c-2b25-4839-a94c-e4e1a0e35aeb',
+      created: 1655825019000,
+      updated: 1655825019000,
+      manuscriptId: '07a26ea9-872f-4c04-8d3f-8e0097aa58dd', // Your manuscriptId here!
+      threads: [
+        {
+          id: '26af5cc0-4e1d-4361-bcc3-432030ec2356',
+          created: 1655825019000,
+          updated: 1655825019000,
+          comments: [
+            {
+              id: 'd9693775-4203-442a-9620-f11adc889f6a',
+              created: 1655825019000,
+              updated: 1655825019000,
+              commentVersions: [
+                {
+                  id: 'ffa8357a-a589-4469-9d84-bbbad1c793af',
+                  created: 1655825019000,
+                  updated: 1655825019000,
+                  author: {
+                    id: '906f42a3-64da-4cb0-8f72-f6a51d3a3452', // Someone's user ID here
+                    username: 'Harriet Handling Editor',
+                  },
+                  comment: '<p class="paragraph">Existing comment</p>',
+                },
+              ],
+              pendingVersions: [],
+            },
+            {
+              id: '3e85a7e6-b223-4994-90f6-9173c4a8a284',
+              created: 1655825019000,
+              updated: 1655825019000,
+              commentVersions: [],
+              pendingVersions: [
+                {
+                  id: 'a37d2394-8e1e-48dd-bba9-d16e2dd535c3',
+                  created: 1655825019000,
+                  updated: 1655825019000,
+                  author: {
+                    id: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436', // Your user ID here
+                    username: 'Ben W',
+                  },
+                  comment: '<p class="paragraph">Hello!</p>',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      userCanAddComment: true,
+      userCanEditOwnComment: true,
+      userCanEditAnyComment: true,
+    },
+  ]
+
   const form = submissionForm?.structure ?? {
     name: '',
     children: [],
@@ -226,15 +266,8 @@ const DecisionPage = ({ match }) => {
     return response
   }
 
-  if (!initialValues)
-    setInitialValue(
-      manuscript.reviews.find(
-        r => r.user.id === currentUser.id && r.isDecision,
-      ) || { id: uuid(), isDecision: true, userId: currentUser.id },
-    )
-
   /** This will only send the modified field, not the entire review object */
-  const updateReviewJsonData = (value, path) => {
+  const updateReviewJsonData = (versionId, value, path) => {
     const reviewDelta = {} // Only the changed fields
     // E.g. if path is 'meta.title' and value is 'Foo' this gives { meta: { title: 'Foo' } }
     set(reviewDelta, path, value)
@@ -246,7 +279,7 @@ const DecisionPage = ({ match }) => {
       userId: currentUser.id,
     }
 
-    updateReview(initialValues.id, reviewPayload, manuscript.id)
+    updateReview(versionId, reviewPayload, manuscript.id)
   }
 
   return (
@@ -268,18 +301,18 @@ const DecisionPage = ({ match }) => {
       makeDecision={makeDecision}
       manuscript={manuscript}
       publishManuscript={publishManuscript}
-      reviewByCurrentUser={initialValues}
       reviewers={data?.manuscript?.reviews}
       reviewForm={reviewForm}
       sendChannelMessageCb={sendChannelMessageCb}
       sendNotifyEmail={sendNotifyEmail}
       teamLabels={config.teams}
+      threadedDiscussions={threadedDiscussions}
       updateManuscript={updateManuscript}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
       updateTeam={updateTeam}
       urlFrag={urlFrag}
-      validateDoi={validateDoi}
+      validateDoi={validateDoi(client)}
     />
   )
 }

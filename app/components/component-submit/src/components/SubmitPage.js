@@ -8,10 +8,9 @@ import query, { fragmentFields } from '../userManuscriptFormQuery'
 import { Spinner } from '../../../shared'
 import gatherManuscriptVersions from '../../../../shared/manuscript_versions'
 import { publishManuscriptMutation } from '../../../component-review/src/components/queries'
-import pruneEmpty from '../../../../shared/pruneEmpty'
-import { validateManuscript } from '../../../../shared/manuscriptUtils'
+import { validateManuscriptSubmission } from '../../../../shared/manuscriptUtils'
 import CommsErrorBanner from '../../../shared/CommsErrorBanner'
-import { VALIDATE_DOI } from '../../../../queries'
+import { validateDoi } from '../../../../shared/commsUtils'
 
 export const updateMutation = gql`
   mutation($id: ID!, $input: String) {
@@ -67,13 +66,6 @@ const deleteFileMutation = gql`
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
-const cleanForm = form => {
-  if (!form) return form
-
-  // Remove any form items that are incomplete/invalid
-  return { ...form, children: form.children.filter(f => f.component && f.name) }
-}
-
 let debouncers = {}
 
 const SubmitPage = ({ match, history }) => {
@@ -120,49 +112,11 @@ const SubmitPage = ({ match, history }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const validateDoi = value =>
-    client
-      .query({
-        query: VALIDATE_DOI,
-        variables: {
-          articleURL: value,
-        },
-      })
-      .then(result => {
-        if (!result.data.validateDOI.isDOIValid) {
-          return 'DOI is invalid'
-        }
-
-        return undefined
-      })
-
   const currentUser = data?.currentUser
-  let manuscript = data?.manuscript
-
-  // TODO: Figure out why this data does not get to DecisionAndReview
-  // Parse the jsonData in the reviews
-  const parsedReviews = manuscript.reviews.map(review => {
-    const parsedJsonData = JSON.parse(review.jsonData)
-
-    return {
-      ...review,
-      parsedJsonData,
-    }
-  })
-
-  manuscript = { ...manuscript, parsedReviews }
-
-  const forms = data?.forms.map(currentForm => {
-    return {
-      ...cleanForm(currentForm?.structure),
-      category: currentForm?.category,
-      purpose: currentForm?.purpose,
-    }
-  })
-
-  const submissionForm = forms.find(
-    f => f.category === 'submission' && f.purpose === 'submit',
-  )
+  const manuscript = data?.manuscript
+  const submissionForm = data?.submissionForm?.structure
+  const decisionForm = data?.decisionForm?.structure
+  const reviewForm = data?.reviewForm?.structure
 
   const updateManuscript = (versionId, manuscriptDelta) => {
     return update({
@@ -197,13 +151,13 @@ const SubmitPage = ({ match, history }) => {
 
     setIsPublishingBlocked(true)
 
-    const fieldErrors = await validateManuscript(
+    const fieldErrors = await validateManuscriptSubmission(
       {
         ...JSON.parse(manuscript.submission),
         ...manuscriptChangedFields.submission,
       },
       submissionForm,
-      validateDoi,
+      validateDoi(client),
     )
 
     if (fieldErrors.filter(Boolean).length !== 0) {
@@ -256,15 +210,18 @@ const SubmitPage = ({ match, history }) => {
       createFile={createFile}
       createNewVersion={createNewVersion}
       currentUser={currentUser}
+      decisionForm={decisionForm}
       deleteFile={deleteFile}
-      forms={pruneEmpty(forms)}
       match={match}
       onChange={handleChange}
       onSubmit={onSubmit}
       parent={manuscript}
       republish={republish}
+      reviewForm={reviewForm}
+      submissionForm={submissionForm}
+      threadedDiscussions={data.threadedDiscussions}
       updateManuscript={updateManuscript}
-      validateDoi={validateDoi}
+      validateDoi={validateDoi(client)}
       versions={versions}
     />
   )
