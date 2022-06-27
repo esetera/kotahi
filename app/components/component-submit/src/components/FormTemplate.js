@@ -19,7 +19,7 @@ import ValidatedFieldFormik from './ValidatedField'
 import Confirm from './Confirm'
 import { articleStatuses } from '../../../../globals'
 import { validateFormField } from '../../../../shared/formValidation'
-import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
+import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
 
 const Intro = styled.div`
   font-style: italic;

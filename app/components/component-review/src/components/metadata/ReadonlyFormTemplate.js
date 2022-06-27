@@ -14,7 +14,7 @@ import {
 import { SectionContent, Attachment } from '../../../../shared'
 import ManuscriptFilesList from './ManuscriptFilesList'
 import SpecialInstructions from './SpecialInstructions'
-import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion'
+import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
 
 const showFieldData = (
   manuscript,
