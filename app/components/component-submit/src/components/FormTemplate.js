@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
 import { unescape, set } from 'lodash'
-import { TextField, RadioGroup, CheckboxGroup, Button } from '@pubsweet/ui'
+import { TextField, RadioGroup, CheckboxGroup } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
 import {
@@ -20,6 +20,7 @@ import Confirm from './Confirm'
 import { articleStatuses } from '../../../../globals'
 import { validateFormField } from '../../../../shared/formValidation'
 import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
+import ActionButton from '../../../shared/ActionButton'
 
 const Intro = styled.div`
   font-style: italic;
@@ -157,13 +158,15 @@ const InnerFormTemplate = ({
   updatePendingComment,
   currentUser,
   initializeReview,
+  isSubmitting,
+  submitCount,
 }) => {
   console.log(threadedDiscussions)
 
   const submitButton = (text, haspopup = false) => {
     return (
       <div>
-        <Button
+        <ActionButton
           onClick={async () => {
             if (republish && manuscriptStatus === articleStatuses.published) {
               republish(manuscriptId)
@@ -186,10 +189,13 @@ const InnerFormTemplate = ({
             }
           }}
           primary
-          type="button"
+          status={
+            // eslint-disable-next-line no-nested-ternary
+            isSubmitting ? 'pending' : submitCount ? 'success' : ''
+          }
         >
           {text}
-        </Button>
+        </ActionButton>
       </div>
     )
   }

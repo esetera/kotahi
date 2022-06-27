@@ -19,6 +19,7 @@ import {
   CREATE_MESSAGE,
   CREATE_TEAM_MUTATION,
   UPDATE_TEAM_MUTATION,
+  GET_INVITATIONS_FOR_MANUSCRIPT,
 } from '../../../../queries'
 import { validateDoi } from '../../../../shared/commsUtils'
 import { UPDATE_PENDING_COMMENT } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
@@ -85,7 +86,7 @@ const DecisionPage = ({ match }) => {
 
   // end of code from submit page to handle possible form changes
 
-  const { loading, error, data } = useQuery(query, {
+  const { loading, data, error } = useQuery(query, {
     variables: {
       id: match.params.version,
     },
@@ -113,6 +114,13 @@ const DecisionPage = ({ match }) => {
       cache.evict({ id })
     },
   })
+
+  const { data: invitations } = useQuery(GET_INVITATIONS_FOR_MANUSCRIPT, {
+    variables: { id: data?.manuscript?.id },
+  })
+
+  if (loading && !data) return <Spinner />
+  if (error) return <CommsErrorBanner error={error} />
 
   const updateManuscript = (versionId, manuscriptDelta) =>
     update({
@@ -216,7 +224,7 @@ const DecisionPage = ({ match }) => {
   }
 
   /** This will only send the modified field, not the entire review object */
-  const updateReviewJsonData = (versionId, value, path) => {
+  const updateReviewJsonData = (reviewId, value, path) => {
     const reviewDelta = {} // Only the changed fields
     // E.g. if path is 'meta.title' and value is 'Foo' this gives { meta: { title: 'Foo' } }
     set(reviewDelta, path, value)
@@ -228,7 +236,7 @@ const DecisionPage = ({ match }) => {
       userId: currentUser.id,
     }
 
-    updateReview(versionId, reviewPayload, manuscript.id)
+    updateReview(reviewId, reviewPayload, manuscript.id)
   }
 
   return (
@@ -247,6 +255,7 @@ const DecisionPage = ({ match }) => {
       }
       form={form}
       handleChange={handleChange}
+      invitations={invitations?.getInvitationsForManuscript}
       makeDecision={makeDecision}
       manuscript={manuscript}
       publishManuscript={publishManuscript}

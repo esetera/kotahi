@@ -39,6 +39,7 @@ const DecisionVersions = ({
   threadedDiscussions,
   updatePendingComment,
   validateDoi,
+  invitations,
 }) => {
   const [initialValue, setInitialValue] = useState(null)
 
@@ -85,6 +86,7 @@ const DecisionVersions = ({
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
                 form={form}
+                invitations={invitations}
                 key={version.manuscript.id}
                 makeDecision={makeDecision}
                 onChange={handleChange}
@@ -100,7 +102,7 @@ const DecisionVersions = ({
                 updatePendingComment={updatePendingComment}
                 updateReview={updateReview}
                 updateReviewJsonData={(value, path) =>
-                  updateReviewJsonData(version.manuscript.id, value, path)
+                  updateReviewJsonData(initialValue.id, value, path)
                 }
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}
