@@ -22,16 +22,21 @@ const getExistingOrInitialComments = (
         const pv = c.pendingVersions[c.pendingVersions.length - 1]
         return {
           ...pv,
+          id: c.id,
           isEditing: true,
           existingComment: c.commentVersions.length
             ? c.commentVersions[c.commentVersions.length - 1]
             : null, // If null, this is a new, unsubmitted comment.
+          versionId: pv.id,
         }
       }
 
       // This comment is not currently being edited.
+      const cv = c.commentVersions[c.commentVersions.length - 1]
       return {
-        ...c.commentVersions[c.commentVersions.length - 1],
+        ...cv,
+        id: c.id,
+        versionId: cv.id,
       }
     })
 
@@ -68,11 +73,10 @@ const ThreadedDiscussion = ({
     userCanEditOwnComment,
     userCanEditAnyComment,
   } = threadedDiscussion || { userCanAddComment: true } // TODO Figure out this permission properly
-  console.log(threadedDiscussion)
 
   const [threadedDiscussionId] = useState(threadedDiscussion?.id || uuid())
   const [threadId] = useState(threadedDiscussion?.threads?.[0]?.id || uuid())
-  const threadComments = threadedDiscussion?.threads?.[0] || []
+  const threadComments = threadedDiscussion?.threads?.[0]?.comments || []
 
   const [comments, setComments] = useState(
     getExistingOrInitialComments(
@@ -102,7 +106,7 @@ const ThreadedDiscussion = ({
                       pendingVersionId: comment.versionId,
                       comment: content,
                     })
-                    if (!threadedDiscussion?.id) onChange(threadedDiscussionId) // TODO Why is this not saving form state?
+                    if (!threadedDiscussion?.id) onChange(threadedDiscussionId)
                     // TODO update state using setComments()?
                   }}
                   value={comment.comment}

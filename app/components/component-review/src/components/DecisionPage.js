@@ -131,7 +131,6 @@ const DecisionPage = ({ match }) => {
     })
 
   const updateReview = async (reviewId, reviewData, manuscriptId) => {
-    console.log(reviewId, reviewData, manuscriptId)
     doUpdateReview({
       variables: { id: reviewId || undefined, input: reviewData },
       update: (cache, { data: { updateReview: updatedReview } }) => {

@@ -161,8 +161,6 @@ const InnerFormTemplate = ({
   isSubmitting,
   submitCount,
 }) => {
-  console.log(threadedDiscussions)
-
   const submitButton = (text, haspopup = false) => {
     return (
       <div>
