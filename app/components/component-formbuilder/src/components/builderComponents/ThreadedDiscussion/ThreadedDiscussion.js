@@ -68,6 +68,7 @@ const ThreadedDiscussion = ({
     userCanEditOwnComment,
     userCanEditAnyComment,
   } = threadedDiscussion || { userCanAddComment: true } // TODO Figure out this permission properly
+  console.log(threadedDiscussion)
 
   const [threadedDiscussionId] = useState(threadedDiscussion?.id || uuid())
   const [threadId] = useState(threadedDiscussion?.threads?.[0]?.id || uuid())
@@ -101,7 +102,7 @@ const ThreadedDiscussion = ({
                       pendingVersionId: comment.versionId,
                       comment: content,
                     })
-                    if (!threadedDiscussion?.id) onChange(threadedDiscussionId)
+                    if (!threadedDiscussion?.id) onChange(threadedDiscussionId) // TODO Why is this not saving form state?
                     // TODO update state using setComments()?
                   }}
                   value={comment.comment}

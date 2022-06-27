@@ -147,7 +147,6 @@ const resolvers = {
       ctx,
     ) {
       // TODO ensure that the current user is permitted to comment
-      // TODO update dates at the appropriate places
       const now = new Date().toISOString()
       const manuscriptId = await getOriginalVersionManuscriptId(msVersionId)
 
@@ -209,6 +208,7 @@ const resolvers = {
 
       pendingVersion.comment = comment
 
+      // TODO Why is this not upserting? Why does it return undefined?
       const result = await models.ThreadedDiscussion.query().updateAndFetchById(
         threadedDiscussionId,
         { ...discussion, threads: JSON.stringify(discussion.threads) },
