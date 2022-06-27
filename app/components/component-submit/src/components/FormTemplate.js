@@ -272,6 +272,7 @@ const InnerFormTemplate = ({
                     manuscriptId={manuscriptId}
                     mimeTypesToAccept="image/*"
                     onChange={shouldStoreFilesInForm ? onChange : null}
+                    reviewId={reviewId}
                     values={values}
                   />
                 )}
