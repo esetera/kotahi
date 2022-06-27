@@ -66,6 +66,7 @@ const elements = {
   AuthorsInput,
   Select,
   LinksInput,
+  ThreadedDiscussion,
 }
 
 elements.AbstractEditor = ({
@@ -242,6 +243,15 @@ const InnerFormTemplate = ({
           )
           .map(prepareFieldProps)
           .map((element, i) => {
+            const threadedDiscussion =
+              element.component === 'ThreadedDiscussion'
+                ? threadedDiscussions.find(
+                    d => d.id === values[element.name] || true, // TODO remove "|| true", used for forcing it to show test data despite id mismatch
+                  ) || {
+                    threads: [],
+                  }
+                : null
+
             return (
               <Section
                 cssOverrides={JSON.parse(element.sectioncss || '{}')}
@@ -276,23 +286,9 @@ const InnerFormTemplate = ({
                     values={values}
                   />
                 )}
-                {element.component === 'ThreadedDiscussion' && (
-                  <ThreadedDiscussion
-                    {...(threadedDiscussions.find(
-                      d => d.id === values[element.name] || true, // TODO remove "|| true", used for forcing it to show test data despite id mismatch
-                    ) || {
-                      threads: [],
-                    })}
-                    currentUser={currentUser}
-                    manuscriptId={manuscriptId}
-                    value={values[element.name]}
-                  />
-                )}
-                {![
-                  'SupplementaryFiles',
-                  'VisualAbstract',
-                  'ThreadedDiscussion',
-                ].includes(element.component) && (
+                {!['SupplementaryFiles', 'VisualAbstract'].includes(
+                  element.component,
+                ) && (
                   <ValidatedFieldFormik
                     {...rejectProps(element, [
                       'component',
@@ -308,8 +304,10 @@ const InnerFormTemplate = ({
                     ])}
                     aria-label={element.placeholder || element.title}
                     component={elements[element.component]}
+                    currentUser={currentUser}
                     data-testid={element.name} // TODO: Improve this
                     key={`validate-${element.id}`}
+                    manuscriptId={manuscriptId}
                     name={element.name}
                     onChange={value => {
                       // TODO: Perhaps split components remove conditions here
@@ -329,6 +327,7 @@ const InnerFormTemplate = ({
                     readonly={element.name === 'submission.editDate'}
                     setTouched={setTouched}
                     spellCheck
+                    threadedDiscussion={threadedDiscussion}
                     validate={validateFormField(
                       element.validate,
                       element.validateValue,

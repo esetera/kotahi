@@ -53,6 +53,13 @@ const getExistingOrInitialComments = (
 
 const ThreadedDiscussion = props => {
   const {
+    threadedDiscussion,
+    currentUser,
+    value, // This is the threadedDiscussionId
+    ...SimpleWaxEditorProps
+  } = props
+
+  const {
     id,
     created,
     updated,
@@ -61,10 +68,7 @@ const ThreadedDiscussion = props => {
     userCanAddComment,
     userCanEditOwnComment,
     userCanEditAnyComment,
-    currentUser,
-    value, // This is the threadedDiscussionId
-    ...SimpleWaxEditorProps
-  } = props
+  } = threadedDiscussion
 
   const [threadId] = useState(threads?.[0]?.id || uuid())
   const thread = threads?.find(t => t.id === threadId) || { comments: [] }
