@@ -170,13 +170,19 @@ export const query = gql`
           id
           commentVersions {
             id
-            userId
+            author {
+              id
+              username
+            }
             comment
             created
           }
           pendingVersions {
             id
-            userId
+            author {
+              id
+              username
+            }
             comment
           }
         }

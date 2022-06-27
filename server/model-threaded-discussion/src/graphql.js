@@ -10,43 +10,126 @@ const getOriginalVersionManuscriptId = async manuscriptId => {
   return parentId || manuscriptId
 }
 
+const filterDistinct = (id, index, arr) => arr.indexOf(id) === index
+
 /** Returns a threadedDiscussion that strips out all pendingVersions not for this userId,
  * then all comments that don't have any remaining pendingVersions or commentVersions,
  * then all threads that don't have any remaining comments.
  * Also adds flags indicating what the user is permitted to do.
  */
-const stripHiddenAndAddUserFlags = (discussion, userId) => ({
-  ...discussion,
-  threads: discussion.threads
-    .map(thread => ({
-      ...thread,
-      comments: thread.comments
-        .map(c => ({
-          ...c,
-          pendingVersions: c.pendingVersions.filter(pv => pv.userId === userId),
-        }))
-        .filter(c => c.commentVersions.length || c.pendingVersions.length),
-    }))
-    .filter(t => t.comments.length),
-  userCanAddComment: true, // TODO give a sensible value
-  userCanEditOwnComment: true, // TODO give a sensible value
-  userCanEditAnyComment: true, // TODO give a sensible value
-})
+const stripHiddenAndAddUserInfo = async (discussion, userId) => {
+  const userIds = discussion.threads
+    .map(t =>
+      t.comments.map(c =>
+        c.commentVersions
+          .map(v => v.userId)
+          .concat(c.pendingVersions.map(v => v.userId)),
+      ),
+    )
+    .flat(2)
+    .filter(filterDistinct)
+
+  const users = await models.User.query().findByIds(userIds)
+  const usersMap = {}
+  users.forEach(u => (usersMap[u.id] = u))
+
+  return {
+    ...discussion,
+    threads: discussion.threads
+      .map(thread => ({
+        ...thread,
+        comments: thread.comments
+          .map(c => ({
+            ...c,
+            commentVersions: c.commentVersions.map(cv => ({
+              ...cv,
+              author: usersMap[cv.userId],
+            })),
+            pendingVersions: c.pendingVersions
+              .filter(pv => pv.userId === userId)
+              .map(pv => ({ ...pv, author: usersMap[pv.userId] })),
+          }))
+          .filter(c => c.commentVersions.length || c.pendingVersions.length),
+      }))
+      .filter(t => t.comments.length),
+    userCanAddComment: true, // TODO give a sensible value
+    userCanEditOwnComment: true, // TODO give a sensible value
+    userCanEditAnyComment: true, // TODO give a sensible value
+  }
+}
 
 const resolvers = {
   Query: {
-    async threadedDiscussions(_, { manuscriptId: msVersionId }) {
+    async threadedDiscussions(_, { manuscriptId: msVersionId }, ctx) {
       const manuscriptId = await getOriginalVersionManuscriptId(msVersionId)
 
       const result = await models.ThreadedDiscussion.query()
         .where({ manuscriptId })
         .orderBy('created', 'desc')
 
-      return result.map(discussion =>
-        stripHiddenAndAddUserFlags({
-          ...discussion,
-          threads: JSON.parse(discussion.threads),
-        }),
+      // TODO This is TEST DATA: remove once we're getting useful values from the DB.
+      // TODO Modify the query to embed full user objects instead of just userIds.
+      const threadedDiscussions = [
+        {
+          id: '7416150c-2b25-4839-a94c-e4e1a0e35aeb',
+          created: 1655825019000,
+          updated: 1655825019000,
+          manuscriptId: '07a26ea9-872f-4c04-8d3f-8e0097aa58dd', // Your manuscriptId here!
+          threads: [
+            {
+              id: '26af5cc0-4e1d-4361-bcc3-432030ec2356',
+              created: 1655825019000,
+              updated: 1655825019000,
+              comments: [
+                {
+                  id: 'd9693775-4203-442a-9620-f11adc889f6a',
+                  created: 1655825019000,
+                  updated: 1655825019000,
+                  commentVersions: [
+                    {
+                      id: 'ffa8357a-a589-4469-9d84-bbbad1c793af',
+                      created: 1655825019000,
+                      updated: 1655825019000,
+                      userId: '906f42a3-64da-4cb0-8f72-f6a51d3a3452', // Someone's user ID here
+                      comment: '<p class="paragraph">Existing comment</p>',
+                    },
+                  ],
+                  pendingVersions: [],
+                },
+                {
+                  id: '3e85a7e6-b223-4994-90f6-9173c4a8a284',
+                  created: 1655825019000,
+                  updated: 1655825019000,
+                  commentVersions: [],
+                  pendingVersions: [
+                    {
+                      id: 'a37d2394-8e1e-48dd-bba9-d16e2dd535c3',
+                      created: 1655825019000,
+                      updated: 1655825019000,
+                      userId: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436',
+                      comment: '<p class="paragraph">Hello!</p>',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          userCanAddComment: true,
+          userCanEditOwnComment: true,
+          userCanEditAnyComment: true,
+        },
+      ].map(d => ({ ...d, threads: JSON.stringify(d.threads) }))
+
+      return Promise.all(
+        threadedDiscussions.map(async discussion =>
+          stripHiddenAndAddUserInfo(
+            {
+              ...discussion,
+              threads: JSON.parse(discussion.threads),
+            },
+            ctx.user,
+          ),
+        ),
       )
     },
   },
@@ -109,7 +192,7 @@ const resolvers = {
         { ...discussion, threads: JSON.stringify(discussion.threads) },
       )
 
-      return stripHiddenAndAddUserFlags(discussion, ctx.user)
+      return stripHiddenAndAddUserInfo(discussion, ctx.user)
     },
     async completeComment(
       _,
@@ -157,7 +240,7 @@ const resolvers = {
         { ...discussion, threads: JSON.stringify(discussion.threads) },
       )
 
-      return stripHiddenAndAddUserFlags(discussion, ctx.user)
+      return stripHiddenAndAddUserInfo(discussion, ctx.user)
     },
   },
 }
@@ -201,7 +284,7 @@ type ThreadedCommentVersion {
   id: ID!
   created: DateTime!
   updated: DateTime
-  userId: ID!
+  author: User!
   comment: String!
 }
 
