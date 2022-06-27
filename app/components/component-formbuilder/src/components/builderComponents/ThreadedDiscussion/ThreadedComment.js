@@ -89,9 +89,9 @@ const ThreadedComment = props => {
         </CommentWrapper>
         <SimpleWaxEditorWrapper collapse={collapse}>
           <SimpleWaxEditor
-            readonly
             {...simpleWaxEditorProps}
             key={counter}
+            readonly
             value={modalFieldValue}
           />
           <CollapseOverlay collapse={collapse} />
