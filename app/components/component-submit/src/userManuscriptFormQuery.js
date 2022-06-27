@@ -182,13 +182,21 @@ const query = gql`
           id
           commentVersions {
             id
-            userId
+            author {
+              id
+              username
+              profilePicture
+            }
             comment
             created
           }
           pendingVersions {
             id
-            userId
+            author {
+              id
+              username
+              profilePicture
+            }
             comment
           }
         }

@@ -173,6 +173,7 @@ export const query = gql`
             author {
               id
               username
+              profilePicture
             }
             comment
             created
@@ -182,6 +183,7 @@ export const query = gql`
             author {
               id
               username
+              profilePicture
             }
             comment
           }

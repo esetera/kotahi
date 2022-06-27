@@ -90,7 +90,7 @@ const resolvers = {
                       id: 'ffa8357a-a589-4469-9d84-bbbad1c793af',
                       created: 1655825019000,
                       updated: 1655825019000,
-                      userId: '906f42a3-64da-4cb0-8f72-f6a51d3a3452', // Someone's user ID here
+                      userId: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436', // '906f42a3-64da-4cb0-8f72-f6a51d3a3452', // Someone's user ID here
                       comment: '<p class="paragraph">Existing comment</p>',
                     },
                   ],
@@ -106,7 +106,7 @@ const resolvers = {
                       id: 'a37d2394-8e1e-48dd-bba9-d16e2dd535c3',
                       created: 1655825019000,
                       updated: 1655825019000,
-                      userId: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436',
+                      userId: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436', // Your user ID here
                       comment: '<p class="paragraph">Hello!</p>',
                     },
                   ],
