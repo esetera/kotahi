@@ -1,5 +1,4 @@
 const models = require('@pubsweet/models')
-const ThreadedDiscussion = require('./threadedDiscussion')
 
 const getOriginalVersionManuscriptId = async manuscriptId => {
   const ms = await models.Manuscript.query()
@@ -69,59 +68,59 @@ const resolvers = {
 
       // TODO This is TEST DATA: remove once we're getting useful values from the DB.
       // TODO Modify the query to embed full user objects instead of just userIds.
-      const threadedDiscussions = [
-        {
-          id: '7416150c-2b25-4839-a94c-e4e1a0e35aeb',
-          created: 1655825019000,
-          updated: 1655825019000,
-          manuscriptId: '07a26ea9-872f-4c04-8d3f-8e0097aa58dd', // Your manuscriptId here!
-          threads: [
-            {
-              id: '26af5cc0-4e1d-4361-bcc3-432030ec2356',
-              created: 1655825019000,
-              updated: 1655825019000,
-              comments: [
-                {
-                  id: 'd9693775-4203-442a-9620-f11adc889f6a',
-                  created: 1655825019000,
-                  updated: 1655825019000,
-                  commentVersions: [
-                    {
-                      id: 'ffa8357a-a589-4469-9d84-bbbad1c793af',
-                      created: 1655825019000,
-                      updated: 1655825019000,
-                      userId: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436', // '906f42a3-64da-4cb0-8f72-f6a51d3a3452', // Someone's user ID here
-                      comment: '<p class="paragraph">Existing comment</p>',
-                    },
-                  ],
-                  pendingVersions: [],
-                },
-                {
-                  id: '3e85a7e6-b223-4994-90f6-9173c4a8a284',
-                  created: 1655825019000,
-                  updated: 1655825019000,
-                  commentVersions: [],
-                  pendingVersions: [
-                    {
-                      id: 'a37d2394-8e1e-48dd-bba9-d16e2dd535c3',
-                      created: 1655825019000,
-                      updated: 1655825019000,
-                      userId: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436', // Your user ID here
-                      comment: '<p class="paragraph">Hello!</p>',
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-          userCanAddComment: true,
-          userCanEditOwnComment: true,
-          userCanEditAnyComment: true,
-        },
-      ].map(d => ({ ...d, threads: JSON.stringify(d.threads) }))
+      // const threadedDiscussions = [
+      //   {
+      //     id: '7416150c-2b25-4839-a94c-e4e1a0e35aeb',
+      //     created: 1655825019000,
+      //     updated: 1655825019000,
+      //     manuscriptId: '07a26ea9-872f-4c04-8d3f-8e0097aa58dd', // Your manuscriptId here!
+      //     threads: [
+      //       {
+      //         id: '26af5cc0-4e1d-4361-bcc3-432030ec2356',
+      //         created: 1655825019000,
+      //         updated: 1655825019000,
+      //         comments: [
+      //           {
+      //             id: 'd9693775-4203-442a-9620-f11adc889f6a',
+      //             created: 1655825019000,
+      //             updated: 1655825019000,
+      //             commentVersions: [
+      //               {
+      //                 id: 'ffa8357a-a589-4469-9d84-bbbad1c793af',
+      //                 created: 1655825019000,
+      //                 updated: 1655825019000,
+      //                 userId: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436', // '906f42a3-64da-4cb0-8f72-f6a51d3a3452', // Someone's user ID here
+      //                 comment: '<p class="paragraph">Existing comment</p>',
+      //               },
+      //             ],
+      //             pendingVersions: [],
+      //           },
+      //           {
+      //             id: '3e85a7e6-b223-4994-90f6-9173c4a8a284',
+      //             created: 1655825019000,
+      //             updated: 1655825019000,
+      //             commentVersions: [],
+      //             pendingVersions: [
+      //               {
+      //                 id: 'a37d2394-8e1e-48dd-bba9-d16e2dd535c3',
+      //                 created: 1655825019000,
+      //                 updated: 1655825019000,
+      //                 userId: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436', // Your user ID here
+      //                 comment: '<p class="paragraph">Hello!</p>',
+      //               },
+      //             ],
+      //           },
+      //         ],
+      //       },
+      //     ],
+      //     userCanAddComment: true,
+      //     userCanEditOwnComment: true,
+      //     userCanEditAnyComment: true,
+      //   },
+      // ].map(d => ({ ...d, threads: JSON.stringify(d.threads) }))
 
       return Promise.all(
-        threadedDiscussions.map(async discussion =>
+        result.map(async discussion =>
           stripHiddenAndAddUserInfo(
             {
               ...discussion,
@@ -149,36 +148,59 @@ const resolvers = {
     ) {
       // TODO ensure that the current user is permitted to comment
       // TODO update dates at the appropriate places
+      const now = new Date().toISOString()
       const manuscriptId = await getOriginalVersionManuscriptId(msVersionId)
 
-      let discussion = await ThreadedDiscussion.query().where({
-        id: threadedDiscussionId,
-      })
+      let discussion = await models.ThreadedDiscussion.query().findById(
+        threadedDiscussionId,
+      )
       if (discussion) discussion.threads = JSON.parse(discussion.threads)
-      else discussion = { id: threadedDiscussionId, manuscriptId, threads: [] }
+      else
+        discussion = {
+          id: threadedDiscussionId,
+          manuscriptId,
+          threads: [],
+          created: now,
+        }
+      discussion.updated = now
 
       let thread = discussion.threads.find(t => t.id === threadId)
 
       if (!thread) {
-        thread = { id: threadId, comments: [] }
+        thread = { id: threadId, comments: [], created: now }
         discussion.threads.push(thread)
       }
+
+      thread.updated = now
 
       let commnt = thread.comments.find(c => c.id === commentId)
 
       if (!commnt) {
-        commnt = { id: commentId, commentVersions: [], pendingVersions: [] }
+        commnt = {
+          id: commentId,
+          commentVersions: [],
+          pendingVersions: [],
+          created: now,
+        }
         thread.comments.push(commnt)
       }
 
-      let pendingVersion = comment.pendingVersions.find(
+      commnt.updated = now
+
+      let pendingVersion = commnt.pendingVersions.find(
         pv => pv.id === pendingVersionId,
       )
 
       if (!pendingVersion) {
-        pendingVersion = { id: pendingVersionId, userId: ctx.user }
-        comment.pendingVersions.push(pendingVersion)
+        pendingVersion = {
+          id: pendingVersionId,
+          userId: ctx.user,
+          created: now,
+        }
+        commnt.pendingVersions.push(pendingVersion)
       }
+
+      pendingVersion.updated = now
 
       if (pendingVersion.userId !== ctx.user)
         throw new Error(
@@ -187,10 +209,12 @@ const resolvers = {
 
       pendingVersion.comment = comment
 
-      await ThreadedDiscussion.query().updateAndFetchById(
+      const result = await models.ThreadedDiscussion.query().updateAndFetchById(
         threadedDiscussionId,
         { ...discussion, threads: JSON.stringify(discussion.threads) },
       )
+
+      console.log(result)
 
       return stripHiddenAndAddUserInfo(discussion, ctx.user)
     },
@@ -201,7 +225,7 @@ const resolvers = {
     ) {
       // TODO ensure that the current user is permitted to comment
       // TODO update dates at the appropriate places
-      const discussion = await ThreadedDiscussion.query().where({
+      const discussion = await models.ThreadedDiscussion.query().where({
         id: threadedDiscussionId,
       })
 
@@ -235,7 +259,7 @@ const resolvers = {
         userId: ctx.user,
         comment: pendingVersion.comment,
       })
-      await ThreadedDiscussion.query().updateAndFetchById(
+      await models.ThreadedDiscussion.query().updateAndFetchById(
         threadedDiscussionId,
         { ...discussion, threads: JSON.stringify(discussion.threads) },
       )

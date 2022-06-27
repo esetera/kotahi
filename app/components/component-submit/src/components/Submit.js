@@ -44,6 +44,7 @@ const Submit = ({
   createFile,
   deleteFile,
   threadedDiscussions,
+  updatePendingComment,
   validateDoi,
 }) => {
   const decisionSections = []
@@ -109,6 +110,7 @@ const Submit = ({
         createFile,
         deleteFile,
         threadedDiscussions,
+        updatePendingComment,
         validateDoi,
       }
 

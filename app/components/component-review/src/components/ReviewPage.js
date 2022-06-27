@@ -8,6 +8,7 @@ import ReviewLayout from './review/ReviewLayout'
 import { Heading, Page, Spinner } from '../../../shared'
 import useCurrentUser from '../../../../hooks/useCurrentUser'
 import manuscriptVersions from '../../../../shared/manuscript_versions'
+import { UPDATE_PENDING_COMMENT } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 const createFileMutation = gql`
   mutation($file: Upload!, $meta: FileMetaInput!) {
@@ -257,6 +258,7 @@ const ReviewPage = ({ match, ...props }) => {
   const [updateReviewMutation] = useMutation(updateReviewMutationQuery)
   const [completeReview] = useMutation(completeReviewMutation)
   const [createFile] = useMutation(createFileMutation)
+  const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -459,6 +461,10 @@ const ReviewPage = ({ match, ...props }) => {
     history.push(`${urlFrag}/dashboard`)
   }
 
+  const updatePendingComment = async variables => {
+    doUpdatePendingComment({ variables })
+  }
+
   return (
     <ReviewLayout
       channelId={channelId}
@@ -477,6 +483,7 @@ const ReviewPage = ({ match, ...props }) => {
       status={status}
       submissionForm={submissionForm}
       threadedDiscussions={threadedDiscussions}
+      updatePendingComment={updatePendingComment}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
       versions={versions}

@@ -17,10 +17,7 @@ class ThreadedDiscussion extends BaseModel {
     return {
       properties: {
         manuscriptId: { type: 'string', format: 'uuid' },
-        threads: {
-          type: 'array',
-          default: [],
-        },
+        threads: {},
       },
     }
   }

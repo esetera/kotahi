@@ -11,6 +11,7 @@ import { publishManuscriptMutation } from '../../../component-review/src/compone
 import { validateManuscriptSubmission } from '../../../../shared/manuscriptUtils'
 import CommsErrorBanner from '../../../shared/CommsErrorBanner'
 import { validateDoi } from '../../../../shared/commsUtils'
+import { UPDATE_PENDING_COMMENT } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 export const updateMutation = gql`
   mutation($id: ID!, $input: String) {
@@ -91,6 +92,7 @@ const SubmitPage = ({ match, history }) => {
   const [createNewVersion] = useMutation(createNewVersionMutation)
   const [publishManuscript] = useMutation(publishManuscriptMutation)
   const [createFile] = useMutation(createFileMutation)
+  const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -203,6 +205,10 @@ const SubmitPage = ({ match, history }) => {
     }
   }
 
+  const updatePendingComment = async variables => {
+    doUpdatePendingComment({ variables })
+  }
+
   const versions = gatherManuscriptVersions(manuscript)
 
   return (
@@ -221,6 +227,7 @@ const SubmitPage = ({ match, history }) => {
       submissionForm={submissionForm}
       threadedDiscussions={data.threadedDiscussions}
       updateManuscript={updateManuscript}
+      updatePendingComment={updatePendingComment}
       validateDoi={validateDoi(client)}
       versions={versions}
     />

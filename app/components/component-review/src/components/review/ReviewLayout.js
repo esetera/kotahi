@@ -33,6 +33,7 @@ const ReviewLayout = ({
   validateDoi,
   decisionForm,
   threadedDiscussions,
+  updatePendingComment,
 }) => {
   const reviewSections = []
   const latestVersion = versions[0]
@@ -137,6 +138,9 @@ const ReviewLayout = ({
                 createFile={createFile}
                 currentUser={currentUser}
                 deleteFile={deleteFile}
+                firstVersionManuscriptId={
+                  latestVersion.parentId || latestVersion.id
+                }
                 form={reviewForm}
                 initialValues={reviewData}
                 manuscriptId={latestVersion.id}
@@ -149,6 +153,7 @@ const ReviewLayout = ({
                 submissionButtonText="Submit"
                 tagForFiles="review"
                 threadedDiscussions={threadedDiscussions}
+                updatePendingComment={updatePendingComment}
                 validateDoi={validateDoi}
               />
             </SectionContent>

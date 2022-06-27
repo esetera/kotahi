@@ -462,6 +462,7 @@ const baseProps = {
     ],
   },
   threadedDiscussions: [],
+  updatePendingComment: () => null,
 }
 
 Base.args = baseProps

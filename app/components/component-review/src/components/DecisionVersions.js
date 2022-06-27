@@ -37,6 +37,7 @@ const DecisionVersions = ({
   deleteFile,
   createFile,
   threadedDiscussions,
+  updatePendingComment,
   validateDoi,
 }) => {
   const [initialValue, setInitialValue] = useState(null)
@@ -96,6 +97,7 @@ const DecisionVersions = ({
                 teamLabels={teamLabels}
                 threadedDiscussions={threadedDiscussions}
                 updateManuscript={updateManuscript}
+                updatePendingComment={updatePendingComment}
                 updateReview={updateReview}
                 updateReviewJsonData={(value, path) =>
                   updateReviewJsonData(version.manuscript.id, value, path)

@@ -1943,6 +1943,7 @@ const props = {
   sortDirection: 'DESC',
   sortName: 'created',
   threadedDiscussions: [],
+  updatePendingComment: () => null,
 }
 
 Base.args = props

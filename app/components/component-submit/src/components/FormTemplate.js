@@ -134,6 +134,7 @@ const InnerFormTemplate = ({
   manuscriptId,
   manuscriptShortId,
   manuscriptStatus,
+  firstVersionManuscriptId,
   setTouched, // formik
   values, // formik
   setFieldValue, // formik
@@ -153,9 +154,12 @@ const InnerFormTemplate = ({
   shouldStoreFilesInForm,
   tagForFiles,
   threadedDiscussions,
+  updatePendingComment,
   currentUser,
   initializeReview,
 }) => {
+  console.log(threadedDiscussions)
+
   const submitButton = (text, haspopup = false) => {
     return (
       <div>
@@ -243,14 +247,15 @@ const InnerFormTemplate = ({
           )
           .map(prepareFieldProps)
           .map((element, i) => {
-            const threadedDiscussion =
-              element.component === 'ThreadedDiscussion'
-                ? threadedDiscussions.find(
-                    d => d.id === values[element.name] || true, // TODO remove "|| true", used for forcing it to show test data despite id mismatch
-                  ) || {
-                    threads: [],
-                  }
-                : null
+            let threadedDiscussion
+            let updatePendingCommentFn
+
+            if (element.component === 'ThreadedDiscussion') {
+              threadedDiscussion = threadedDiscussions.find(
+                d => d.id === values[element.name] || true, // TODO remove "|| true", used for forcing it to show test data despite id mismatch
+              )
+              updatePendingCommentFn = updatePendingComment
+            }
 
             return (
               <Section
@@ -306,8 +311,8 @@ const InnerFormTemplate = ({
                     component={elements[element.component]}
                     currentUser={currentUser}
                     data-testid={element.name} // TODO: Improve this
+                    firstVersionManuscriptId={firstVersionManuscriptId}
                     key={`validate-${element.id}`}
-                    manuscriptId={manuscriptId}
                     name={element.name}
                     onChange={value => {
                       // TODO: Perhaps split components remove conditions here
@@ -328,6 +333,7 @@ const InnerFormTemplate = ({
                     setTouched={setTouched}
                     spellCheck
                     threadedDiscussion={threadedDiscussion}
+                    updatePendingComment={updatePendingCommentFn}
                     validate={validateFormField(
                       element.validate,
                       element.validateValue,
@@ -382,6 +388,7 @@ const FormTemplate = ({
   manuscriptId,
   manuscriptShortId,
   manuscriptStatus,
+  firstVersionManuscriptId,
   submissionButtonText,
   onChange,
   republish,
@@ -398,6 +405,7 @@ const FormTemplate = ({
   initializeReview,
   tagForFiles,
   threadedDiscussions,
+  updatePendingComment,
   currentUser = { username: 'Ben', id: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436' }, // TODO pass this in
 }) => {
   const [confirming, setConfirming] = React.useState(false)
@@ -424,6 +432,7 @@ const FormTemplate = ({
           {...formProps}
           currentUser={currentUser}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+          firstVersionManuscriptId={firstVersionManuscriptId}
           form={form}
           initializeReview={initializeReview}
           manuscriptId={manuscriptId}
@@ -437,6 +446,7 @@ const FormTemplate = ({
           submissionButtonText={submissionButtonText}
           tagForFiles={tagForFiles}
           threadedDiscussions={threadedDiscussions}
+          updatePendingComment={updatePendingComment}
           urlFrag={urlFrag}
           validateDoi={validateDoi}
         />

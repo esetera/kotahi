@@ -21,6 +21,7 @@ import {
   UPDATE_TEAM_MUTATION,
 } from '../../../../queries'
 import { validateDoi } from '../../../../shared/commsUtils'
+import { UPDATE_PENDING_COMMENT } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -100,6 +101,7 @@ const DecisionPage = ({ match }) => {
   const [createTeam] = useMutation(CREATE_TEAM_MUTATION)
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
+  const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -154,6 +156,10 @@ const DecisionPage = ({ match }) => {
         })
       },
     })
+  }
+
+  const updatePendingComment = async variables => {
+    doUpdatePendingComment({ variables })
   }
 
   if (loading && !data) return <Spinner />
@@ -250,6 +256,7 @@ const DecisionPage = ({ match }) => {
       teamLabels={config.teams}
       threadedDiscussions={threadedDiscussions}
       updateManuscript={updateManuscript}
+      updatePendingComment={updatePendingComment}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
       updateTeam={updateTeam}
