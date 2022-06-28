@@ -188,8 +188,15 @@ const InnerFormTemplate = ({
           }}
           primary
           status={
-            // eslint-disable-next-line no-nested-ternary
-            isSubmitting ? 'pending' : submitCount ? 'success' : ''
+            /* eslint-disable no-nested-ternary */
+            isSubmitting
+              ? 'pending'
+              : Object.keys(errors).length
+              ? 'failure'
+              : submitCount
+              ? 'success'
+              : ''
+            /* eslint-enable no-nested-ternary */
           }
         >
           {text}
