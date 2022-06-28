@@ -34,6 +34,7 @@ const ReviewLayout = ({
   decisionForm,
   threadedDiscussions,
   updatePendingComment,
+  completeComments,
 }) => {
   const reviewSections = []
   const latestVersion = versions[0]
@@ -135,6 +136,7 @@ const ReviewLayout = ({
           ) : (
             <SectionContent>
               <FormTemplate
+                completeComments={completeComments}
                 createFile={createFile}
                 currentUser={currentUser}
                 deleteFile={deleteFile}

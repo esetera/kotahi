@@ -56,6 +56,7 @@ const DecisionVersion = ({
   deleteFile,
   threadedDiscussions,
   updatePendingComment,
+  completeComments,
   invitations,
 }) => {
   // Hooks from the old world
@@ -136,6 +137,7 @@ const DecisionVersion = ({
           ) : (
             <SectionContent>
               <FormTemplate
+                completeComments={completeComments}
                 createFile={createFile}
                 currentUser={currentUser}
                 deleteFile={deleteFile}
@@ -255,6 +257,7 @@ const DecisionVersion = ({
             <AdminSection key="decision-form">
               <SectionContent>
                 <FormTemplate
+                  completeComments={completeComments}
                   createFile={createFile}
                   currentUser={currentUser}
                   deleteFile={deleteFile}

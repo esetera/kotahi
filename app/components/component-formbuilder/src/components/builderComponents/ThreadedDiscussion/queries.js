@@ -62,18 +62,14 @@ export const UPDATE_PENDING_COMMENT = gql`
   }
 `
 
-export const COMPLETE_COMMENT = gql`
+export const COMPLETE_COMMENTS = gql`
   mutation(
     $threadedDiscussionId: ID!
-    $threadId: ID!
-    $commentId: ID!
-    $pendingVersionId: ID!
+    $userId: ID!
   ) {
-    completeComment(
+    completeComments(
       threadedDiscussionId: $threadedDiscussionId
-      threadId: $threadId
-      commentId: $commentId
-      pendingVersionId: $pendingVersionId
+      userId: $userId
     ) {
       ${discussionFields}
     }

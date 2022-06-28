@@ -11,7 +11,10 @@ import { publishManuscriptMutation } from '../../../component-review/src/compone
 import { validateManuscriptSubmission } from '../../../../shared/manuscriptUtils'
 import CommsErrorBanner from '../../../shared/CommsErrorBanner'
 import { validateDoi } from '../../../../shared/commsUtils'
-import { UPDATE_PENDING_COMMENT } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
+import {
+  UPDATE_PENDING_COMMENT,
+  COMPLETE_COMMENTS,
+} from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 export const updateMutation = gql`
   mutation($id: ID!, $input: String) {
@@ -93,6 +96,7 @@ const SubmitPage = ({ match, history }) => {
   const [publishManuscript] = useMutation(publishManuscriptMutation)
   const [createFile] = useMutation(createFileMutation)
   const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
+  const [completeComments] = useMutation(COMPLETE_COMMENTS)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -213,6 +217,7 @@ const SubmitPage = ({ match, history }) => {
 
   return (
     <Submit
+      completeComments={completeComments}
       createFile={createFile}
       createNewVersion={createNewVersion}
       currentUser={currentUser}

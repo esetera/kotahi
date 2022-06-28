@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
-import { unescape, set } from 'lodash'
+import { unescape, get, set } from 'lodash'
 import { TextField, RadioGroup, CheckboxGroup } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
@@ -410,6 +410,7 @@ const FormTemplate = ({
   tagForFiles,
   threadedDiscussions,
   updatePendingComment,
+  completeComments,
   currentUser = { username: 'Ben', id: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436' }, // TODO pass this in
 }) => {
   const [confirming, setConfirming] = React.useState(false)
@@ -418,11 +419,28 @@ const FormTemplate = ({
     setConfirming(confirm => !confirm)
   }
 
+  const sumbitPendingThreadedDiscussionComments = async values => {
+    await Promise.all(
+      form.children
+        .filter(field => field.component === 'ThreadedDiscussion')
+        .forEach(field => {
+          const threadedDiscussionId = get(values, field.name)
+          if (threadedDiscussionId)
+            completeComments({
+              variables: { threadedDiscussionId, userId: currentUser.id },
+            })
+        }),
+    )
+  }
+
   return (
     <Formik
       displayName={form.name}
       initialValues={initialValues}
-      onSubmit={onSubmit ?? (() => null)}
+      onSubmit={async (values, actions) => {
+        await sumbitPendingThreadedDiscussionComments(values)
+        if (onSubmit) await onSubmit(values, actions)
+      }}
       validateOnBlur
       validateOnChange={false}
     >

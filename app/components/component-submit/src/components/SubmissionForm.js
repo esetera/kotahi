@@ -16,11 +16,13 @@ const SubmissionForm = ({
   deleteFile,
   threadedDiscussions,
   updatePendingComment,
+  completeComments,
   validateDoi,
 }) => {
   return (
     <SectionContent>
       <FormTemplate
+        completeComments={completeComments}
         createFile={createFile}
         currentUser={currentUser}
         deleteFile={deleteFile}

@@ -38,6 +38,7 @@ const DecisionVersions = ({
   createFile,
   threadedDiscussions,
   updatePendingComment,
+  completeComments,
   validateDoi,
   invitations,
 }) => {
@@ -77,6 +78,7 @@ const DecisionVersions = ({
               <DecisionVersion
                 allUsers={allUsers}
                 canHideReviews={canHideReviews}
+                completeComments={completeComments}
                 createFile={createFile}
                 createTeam={createTeam}
                 current={index === 0}

@@ -22,7 +22,10 @@ import {
   GET_INVITATIONS_FOR_MANUSCRIPT,
 } from '../../../../queries'
 import { validateDoi } from '../../../../shared/commsUtils'
-import { UPDATE_PENDING_COMMENT } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
+import {
+  UPDATE_PENDING_COMMENT,
+  COMPLETE_COMMENTS,
+} from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -103,6 +106,7 @@ const DecisionPage = ({ match }) => {
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
   const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
+  const [completeComments] = useMutation(COMPLETE_COMMENTS)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -242,6 +246,7 @@ const DecisionPage = ({ match }) => {
     <DecisionVersions
       allUsers={users}
       canHideReviews={config.review.hide === 'true'}
+      completeComments={completeComments}
       createFile={createFile}
       createTeam={createTeam}
       currentUser={currentUser}

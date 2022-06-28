@@ -8,7 +8,10 @@ import ReviewLayout from './review/ReviewLayout'
 import { Heading, Page, Spinner } from '../../../shared'
 import useCurrentUser from '../../../../hooks/useCurrentUser'
 import manuscriptVersions from '../../../../shared/manuscript_versions'
-import { UPDATE_PENDING_COMMENT } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
+import {
+  UPDATE_PENDING_COMMENT,
+  COMPLETE_COMMENTS,
+} from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 const createFileMutation = gql`
   mutation($file: Upload!, $meta: FileMetaInput!) {
@@ -259,6 +262,7 @@ const ReviewPage = ({ match, ...props }) => {
   const [completeReview] = useMutation(completeReviewMutation)
   const [createFile] = useMutation(createFileMutation)
   const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
+  const [completeComments] = useMutation(COMPLETE_COMMENTS)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -468,6 +472,7 @@ const ReviewPage = ({ match, ...props }) => {
   return (
     <ReviewLayout
       channelId={channelId}
+      completeComments={completeComments}
       createFile={createFile}
       currentUser={currentUser}
       decisionForm={decisionForm}
