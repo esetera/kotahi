@@ -67,7 +67,6 @@ const ThreadedDiscussion = ({
   ...SimpleWaxEditorProps
 }) => {
   const {
-    created,
     updated,
     userCanAddComment,
     userCanEditOwnComment,

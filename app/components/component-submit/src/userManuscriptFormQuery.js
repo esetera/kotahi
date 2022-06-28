@@ -201,6 +201,9 @@ const query = gql`
           }
         }
       }
+      userCanAddComment
+      userCanEditOwnComment
+      userCanEditAnyComment
     }
   }
 `

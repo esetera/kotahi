@@ -30,6 +30,9 @@ const discussionFields = `
       }
     }
   }
+  userCanAddComment
+  userCanEditOwnComment
+  userCanEditAnyComment
 `
 
 export const GET_THREADED_DISCUSSIONS = gql`

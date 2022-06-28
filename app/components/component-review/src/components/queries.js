@@ -189,6 +189,9 @@ export const query = gql`
           }
         }
       }
+      userCanAddComment
+      userCanEditOwnComment
+      userCanEditAnyComment
     }
 
     submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission") {

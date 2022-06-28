@@ -33,6 +33,7 @@ const stripHiddenAndAddUserInfo = async (discussion, userId) => {
       ),
     )
     .flat(2)
+    .concat([userId]) // Getting user info for the current user too, as it's convenient
     .filter(filterDistinct)
 
   const users = await models.User.query().findByIds(userIds)
@@ -58,9 +59,9 @@ const stripHiddenAndAddUserInfo = async (discussion, userId) => {
           .filter(c => c.commentVersions.length || c.pendingVersions.length),
       }))
       .filter(t => t.comments.length),
-    userCanAddComment: true, // TODO give a sensible value
-    userCanEditOwnComment: true, // TODO give a sensible value
-    userCanEditAnyComment: true, // TODO give a sensible value
+    userCanAddComment: true, // Current logic is that all users can add comments
+    userCanEditOwnComment: usersMap[userId].admin, // TODO allow editors too
+    userCanEditAnyComment: usersMap[userId].admin, // TODO allow editors too
   }
 }
 
