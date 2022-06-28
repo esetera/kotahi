@@ -423,13 +423,13 @@ const FormTemplate = ({
     await Promise.all(
       form.children
         .filter(field => field.component === 'ThreadedDiscussion')
-        .forEach(field => {
-          const threadedDiscussionId = get(values, field.name)
-          if (threadedDiscussionId)
-            completeComments({
-              variables: { threadedDiscussionId, userId: currentUser.id },
-            })
-        }),
+        .map(field => get(values, field.name))
+        .filter(Boolean)
+        .map(async threadedDiscussionId =>
+          completeComments({
+            variables: { threadedDiscussionId, userId: currentUser.id },
+          }),
+        ),
     )
   }
 
