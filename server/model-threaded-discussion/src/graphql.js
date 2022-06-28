@@ -108,7 +108,6 @@ const resolvers = {
           threads: [],
           created: now,
         }
-      discussion.updated = now
 
       let thread = discussion.threads.find(t => t.id === threadId)
 
@@ -116,8 +115,6 @@ const resolvers = {
         thread = { id: threadId, comments: [], created: now }
         discussion.threads.push(thread)
       }
-
-      thread.updated = now
 
       let commnt = thread.comments.find(c => c.id === commentId)
 
@@ -130,8 +127,6 @@ const resolvers = {
         }
         thread.comments.push(commnt)
       }
-
-      commnt.updated = now
 
       let pendingVersion = commnt.pendingVersions.find(
         pv => pv.id === pendingVersionId,
