@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
@@ -159,13 +159,15 @@ const InnerFormTemplate = ({
   currentUser,
   initializeReview,
   isSubmitting,
-  submitCount,
 }) => {
+  const [submitSucceeded, setSubmitSucceeded] = useState(false)
+
   const submitButton = (text, haspopup = false) => {
     return (
       <div>
         <ActionButton
           onClick={async () => {
+            // TODO shouldn't this come after error checking and submission?
             if (republish && manuscriptStatus === articleStatuses.published) {
               republish(manuscriptId)
               return
@@ -182,6 +184,7 @@ const InnerFormTemplate = ({
               !haspopup
             ) {
               handleSubmit()
+              setSubmitSucceeded(!hasErrors)
             } else {
               toggleConfirming()
             }
@@ -193,7 +196,7 @@ const InnerFormTemplate = ({
               ? 'pending'
               : Object.keys(errors).length
               ? 'failure'
-              : submitCount
+              : submitSucceeded
               ? 'success'
               : ''
             /* eslint-enable no-nested-ternary */
