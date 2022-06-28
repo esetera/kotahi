@@ -33,7 +33,13 @@ const ThreadedComment = props => {
     onSubmit,
   } = props
 
-  const { comment: value, author, createdAt, updatedAt } = comment
+  const {
+    comment: value,
+    author,
+    createdAt,
+    updatedAt,
+    existingComment, // If this comment is in the process of being edited, existingComment contains the value prior to editing
+  } = comment
 
   const [openModal, setOpenModal] = useState(false)
   const [modalFieldValue, setModalFieldValue] = useState(value)
@@ -96,7 +102,7 @@ const ThreadedComment = props => {
             {...simpleWaxEditorProps}
             key={counter}
             readonly
-            value={modalFieldValue}
+            value={existingComment?.comment || modalFieldValue}
           />
           <CollapseOverlay collapse={collapse} />
         </SimpleWaxEditorWrapper>
@@ -122,6 +128,7 @@ const ThreadedComment = props => {
             <CancelButton
               onClick={() => {
                 setOpenModal(false)
+                setModalFieldValue(existingComment?.comment || value)
                 onCancel()
               }}
             >

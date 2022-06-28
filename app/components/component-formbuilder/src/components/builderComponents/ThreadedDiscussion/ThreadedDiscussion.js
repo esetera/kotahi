@@ -138,7 +138,7 @@ const ThreadedDiscussion = ({
                   threadedDiscussionId,
                   threadId,
                   commentId: comment.id,
-                  pendingVersionId: comment.versionId, // TODO generate better value
+                  pendingVersionId: uuid(), // TODO generate better value?
                   comment: content,
                 })
               }}
