@@ -113,7 +113,6 @@ const ThreadedDiscussion = ({
                 />
               </SimpleWaxEditorWrapper>
             )
-
           return (
             <ThreadedComment
               comment={comment}

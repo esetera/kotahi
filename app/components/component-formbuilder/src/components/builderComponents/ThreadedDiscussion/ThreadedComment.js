@@ -58,7 +58,7 @@ const ThreadedComment = props => {
               <Tooltip
                 content={
                   <>
-                    Created at &nbsp;
+                    Created at &nbsp;   
                     <Moment format="YYYY-MM-DD HH:mm:ss">{createdAt}</Moment>
                     <br />
                     Updated at &nbsp;
@@ -87,7 +87,8 @@ const ThreadedComment = props => {
             </Collapse>
           </ActionWrapper>
         </CommentWrapper>
-        <SimpleWaxEditorWrapper collapse={collapse}>
+        {modalFieldValue !==null ?"comment is deleted":
+        (<SimpleWaxEditorWrapper collapse={collapse}>
           <SimpleWaxEditor
             {...simpleWaxEditorProps}
             key={counter}
@@ -96,6 +97,9 @@ const ThreadedComment = props => {
           />
           <CollapseOverlay collapse={collapse} />
         </SimpleWaxEditorWrapper>
+)
+        }
+  
         <Modal isOpen={openModal}>
           <ModalContainer>
             <SimpleWaxEditor
