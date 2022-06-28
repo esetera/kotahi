@@ -437,9 +437,7 @@ const FormTemplate = ({
         .map(field => get(values, field.name))
         .filter(Boolean)
         .map(async threadedDiscussionId =>
-          completeComments({
-            variables: { threadedDiscussionId, userId: currentUser.id },
-          }),
+          completeComments({ variables: { threadedDiscussionId } }),
         ),
     )
   }

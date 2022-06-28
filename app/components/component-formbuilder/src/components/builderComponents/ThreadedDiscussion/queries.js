@@ -66,13 +66,9 @@ export const UPDATE_PENDING_COMMENT = gql`
 `
 
 export const COMPLETE_COMMENTS = gql`
-  mutation(
-    $threadedDiscussionId: ID!
-    $userId: ID!
-  ) {
+  mutation($threadedDiscussionId: ID!) {
     completeComments(
       threadedDiscussionId: $threadedDiscussionId
-      userId: $userId
     ) {
       ${discussionFields}
     }

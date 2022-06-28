@@ -90,6 +90,34 @@ const stripHiddenAndAddUserInfo = async (discussion, userId) => {
   }
 }
 
+/* eslint-disable no-restricted-syntax, no-param-reassign */
+const convertUsersPendingVersionsToCommentVersions = (userId, comment, now) => {
+  let hasUpdated = false
+
+  // Should be only one pendingVersion for a user, but to be safe we assume there could be multiple
+  for (const pendingVersion of comment.pendingVersions.filter(
+    pv => pv.userId === userId && hasValue(pv.comment),
+  )) {
+    if (!comment.commentVersions) comment.commentVersions = []
+
+    comment.commentVersions.push({
+      id: uuid(),
+      created: now,
+      updated: now,
+      userId,
+      comment: pendingVersion.comment,
+    })
+    comment.pendingVersions = comment.pendingVersions.filter(
+      pv => pv.id !== pendingVersion.id,
+    )
+    hasUpdated = true
+    comment.updated = now
+  }
+
+  return hasUpdated
+}
+/* eslint-enable no-restricted-syntax, no-param-reassign */
+
 const resolvers = {
   Query: {
     async threadedDiscussions(_, { manuscriptId: msVersionId }, ctx) {
@@ -184,7 +212,7 @@ const resolvers = {
       return stripHiddenAndAddUserInfo(discussion, ctx.user)
     },
     /* eslint-disable no-restricted-syntax */
-    async completeComments(_, { threadedDiscussionId, userId }, ctx) {
+    async completeComments(_, { threadedDiscussionId }, ctx) {
       const now = new Date().toISOString()
       let hasUpdated = false
 
@@ -199,24 +227,10 @@ const resolvers = {
 
       for (const thread of discussion.threads) {
         for (const comment of thread.comments) {
-          // Should be only one pendingVersion for a user, but to be safe we assume there could be multiple
-          for (const pendingVersion of comment.pendingVersions.filter(
-            pv => pv.userId === userId && hasValue(pv.comment),
-          )) {
-            if (!comment.commentVersions) comment.commentVersions = []
-
-            comment.commentVersions.push({
-              id: uuid(),
-              created: now,
-              updated: now,
-              userId,
-              comment: pendingVersion.comment,
-            })
-            comment.pendingVersions = comment.pendingVersions.filter(
-              pv => pv.id !== pendingVersion.id,
-            )
+          if (
+            convertUsersPendingVersionsToCommentVersions(ctx.user, comment, now)
+          ) {
             hasUpdated = true
-            comment.updated = now
             thread.updated = now
             discussion.updated = now
           }
@@ -234,6 +248,43 @@ const resolvers = {
       return stripHiddenAndAddUserInfo(discussion, ctx.user)
     },
     /* eslint-enable no-restricted-syntax */
+    async completeComment(
+      _,
+      { threadedDiscussionId, threadId, commentId },
+      ctx,
+    ) {
+      const now = new Date().toISOString()
+
+      const discussion = await models.ThreadedDiscussion.query().findById(
+        threadedDiscussionId,
+      )
+
+      if (!discussion)
+        throw new Error(
+          `threadedDiscussion with ID ${threadedDiscussionId} not found`,
+        )
+
+      const thread = discussion.threads.find(t => t.id === threadId)
+      if (!thread) throw new Error(`thread with ID ${threadId} not found`)
+      const comment = thread.comments.find(c => c.id === commentId)
+      if (!comment) throw new Error(`comment with ID ${commentId} not found`)
+
+      if (
+        convertUsersPendingVersionsToCommentVersions(ctx.user, comment, now)
+      ) {
+        thread.updated = now
+        discussion.updated = now
+
+        await models.ThreadedDiscussion.query()
+          .update({
+            updated: discussion.updated,
+            threads: JSON.stringify(discussion.threads),
+          })
+          .where({ id: threadedDiscussionId })
+      }
+
+      return stripHiddenAndAddUserInfo(discussion, ctx.user)
+    },
   },
 }
 
@@ -243,7 +294,8 @@ extend type Query {
 }
 extend type Mutation {
   updatePendingComment(manuscriptId: ID!, threadedDiscussionId: ID!, threadId: ID!, commentId: ID!, pendingVersionId: ID!, comment: String): ThreadedDiscussion!
-  completeComments(threadedDiscussionId: ID!, userId: ID!): ThreadedDiscussion!
+  completeComments(threadedDiscussionId: ID!): ThreadedDiscussion!
+  completeComment(threadedDiscussionId: ID!, threadId: ID!, commentId: ID!): ThreadedDiscussion!
 }
 
 type ThreadedDiscussion {

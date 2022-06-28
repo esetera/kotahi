@@ -110,7 +110,6 @@ const ThreadedDiscussion = ({
                       comment: content,
                     })
                     if (!threadedDiscussion?.id) onChange(threadedDiscussionId)
-                    // TODO update state using setComments()?
                   }}
                   value={comment.comment}
                 />
@@ -122,6 +121,20 @@ const ThreadedDiscussion = ({
               comment={comment}
               currentUser={currentUser}
               key={comment.id}
+              onChange={content => {
+                updatePendingComment({
+                  manuscriptId: firstVersionManuscriptId,
+                  threadedDiscussionId,
+                  threadId,
+                  commentId: comment.id,
+                  pendingVersionId: comment.versionId, // TODO generate better value
+                  comment: content,
+                })
+              }}
+              onSubmit={
+                () =>
+                  null /* completeComment({ variables: { threadedDiscussionId, threadId, commentId } }) */
+              }
               simpleWaxEditorProps={SimpleWaxEditorProps}
               userCanEditAnyComment={userCanEditAnyComment}
               userCanEditOwnComment={userCanEditOwnComment}
