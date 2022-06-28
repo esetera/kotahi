@@ -159,6 +159,7 @@ const InnerFormTemplate = ({
   currentUser,
   initializeReview,
   isSubmitting,
+  submitCount,
 }) => {
   const [submitSucceeded, setSubmitSucceeded] = useState(false)
 
@@ -194,8 +195,8 @@ const InnerFormTemplate = ({
             /* eslint-disable no-nested-ternary */
             isSubmitting
               ? 'pending'
-              : Object.keys(errors).length
-              ? 'failure'
+              : Object.keys(errors).length && submitCount
+              ? '' // TODO Make this case 'failure', once we've fixed the validation delays in the form
               : submitSucceeded
               ? 'success'
               : ''
