@@ -256,7 +256,7 @@ const InnerFormTemplate = ({
 
             if (element.component === 'ThreadedDiscussion') {
               threadedDiscussion = threadedDiscussions.find(
-                d => d.id === values[element.name] || true, // TODO remove "|| true", used for forcing it to show test data despite id mismatch
+                d => d.id === values[element.name],
               )
               updatePendingCommentFn = updatePendingComment
             }
