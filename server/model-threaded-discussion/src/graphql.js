@@ -18,6 +18,27 @@ const getOriginalVersionManuscriptId = async manuscriptId => {
 
 const filterDistinct = (id, index, arr) => arr.indexOf(id) === index
 
+const userIsEditorOfLatestVersion = async (
+  userId,
+  firstVersionManuscriptId,
+) => {
+  const latestVersionMs = (
+    await models.Manuscript.query()
+      .select('id')
+      .where({ parentId: firstVersionManuscriptId })
+      .orWhere({ id: firstVersionManuscriptId })
+      .orderBy('created', 'desc')
+      .limit(1)
+      .withGraphFetched('teams.members')
+  )[0]
+
+  return latestVersionMs.teams.some(
+    t =>
+      ['seniorEditor', 'handlingEditor', 'editor'].includes(t.role) &&
+      t.members.some(m => m.userId === userId),
+  )
+}
+
 /** Returns a threadedDiscussion that strips out all pendingVersions not for this userId,
  * then all comments that don't have any remaining pendingVersions or commentVersions,
  * then all threads that don't have any remaining comments.
@@ -40,6 +61,10 @@ const stripHiddenAndAddUserInfo = async (discussion, userId) => {
   const usersMap = {}
   users.forEach(u => (usersMap[u.id] = u))
 
+  const userIsAdminOrEditor =
+    usersMap[userId].admin ||
+    (await userIsEditorOfLatestVersion(userId, discussion.manuscriptId))
+
   return {
     ...discussion,
     threads: discussion.threads
@@ -60,8 +85,8 @@ const stripHiddenAndAddUserInfo = async (discussion, userId) => {
       }))
       .filter(t => t.comments.length),
     userCanAddComment: true, // Current logic is that all users can add comments
-    userCanEditOwnComment: usersMap[userId].admin, // TODO allow editors too
-    userCanEditAnyComment: usersMap[userId].admin, // TODO allow editors too
+    userCanEditOwnComment: userIsAdminOrEditor,
+    userCanEditAnyComment: userIsAdminOrEditor,
   }
 }
 
