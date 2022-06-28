@@ -170,9 +170,8 @@ const DecisionPage = ({ match }) => {
     })
   }
 
-  const updatePendingComment = async variables => {
+  const updatePendingComment = async variables =>
     doUpdatePendingComment({ variables })
-  }
 
   if (loading && !data) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />

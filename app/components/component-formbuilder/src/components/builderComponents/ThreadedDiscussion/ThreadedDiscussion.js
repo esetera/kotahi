@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { v4 as uuid } from 'uuid'
 import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 import { SimpleWaxEditorWrapper } from '../../style'
@@ -78,13 +78,17 @@ const ThreadedDiscussion = ({
   const [threadId] = useState(threadedDiscussion?.threads?.[0]?.id || uuid())
   const threadComments = threadedDiscussion?.threads?.[0]?.comments || []
 
-  const [comments, setComments] = useState(
-    getExistingOrInitialComments(
-      threadComments,
-      currentUser,
-      userCanAddComment,
-    ),
-  )
+  const [comments, setComments] = useState([])
+
+  useEffect(() => {
+    setComments(
+      getExistingOrInitialComments(
+        threadComments,
+        currentUser,
+        userCanAddComment,
+      ),
+    )
+  }, [updated])
 
   return (
     <>
