@@ -188,8 +188,15 @@ const InnerFormTemplate = ({
           }}
           primary
           status={
-            // eslint-disable-next-line no-nested-ternary
-            isSubmitting ? 'pending' : submitCount ? 'success' : ''
+            /* eslint-disable no-nested-ternary */
+            isSubmitting
+              ? 'pending'
+              : Object.keys(errors).length
+              ? 'failure'
+              : submitCount
+              ? 'success'
+              : ''
+            /* eslint-enable no-nested-ternary */
           }
         >
           {text}
@@ -423,13 +430,13 @@ const FormTemplate = ({
     await Promise.all(
       form.children
         .filter(field => field.component === 'ThreadedDiscussion')
-        .forEach(field => {
-          const threadedDiscussionId = get(values, field.name)
-          if (threadedDiscussionId)
-            completeComments({
-              variables: { threadedDiscussionId, userId: currentUser.id },
-            })
-        }),
+        .map(field => get(values, field.name))
+        .filter(Boolean)
+        .map(async threadedDiscussionId =>
+          completeComments({
+            variables: { threadedDiscussionId, userId: currentUser.id },
+          }),
+        ),
     )
   }
 
