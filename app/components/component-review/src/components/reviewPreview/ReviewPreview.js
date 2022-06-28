@@ -23,13 +23,19 @@ const IconLink = styled.div`
   width: fit-content;
 `
 
-const ReviewPreview = ({ manuscript, submissionForm }) => {
+const ReviewPreview = ({
+  currentUser,
+  manuscript,
+  submissionForm,
+  threadedDiscussions,
+}) => {
   const history = useHistory()
   return (
     <Page>
       <Heading>Summary</Heading>
       <Title>{manuscript.meta.title}</Title>
       <ReadonlyFormTemplate
+        currentUser={currentUser}
         form={submissionForm}
         formData={{
           ...manuscript,
@@ -39,6 +45,7 @@ const ReviewPreview = ({ manuscript, submissionForm }) => {
         manuscript={manuscript}
         showEditorOnlyFields={false}
         showPreviewMetadataOnly
+        threadedDiscussions={threadedDiscussions}
       />
       <IconLink onClick={() => history.goBack()}>
         <Icon color={th('colorPrimary')} inline size={2}>

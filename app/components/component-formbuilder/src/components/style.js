@@ -107,7 +107,7 @@ const SimpleWaxEditorWrapper = styled.div`
   ${props =>
     props.collapse
       ? css`
-          height: 100px;
+          max-height: 100px;
           overflow: hidden;
         `
       : css`

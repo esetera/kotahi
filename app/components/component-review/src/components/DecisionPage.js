@@ -23,6 +23,10 @@ import {
   GET_BLACKLIST_INFORMATION,
 } from '../../../../queries'
 import { validateDoi } from '../../../../shared/commsUtils'
+import {
+  UPDATE_PENDING_COMMENT,
+  COMPLETE_COMMENTS,
+} from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -113,6 +117,8 @@ const DecisionPage = ({ match }) => {
   const [createTeam] = useMutation(CREATE_TEAM_MUTATION)
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
+  const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
+  const [completeComments] = useMutation(COMPLETE_COMMENTS)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -176,6 +182,13 @@ const DecisionPage = ({ match }) => {
     })
   }
 
+  const updatePendingComment = async variables => {
+    doUpdatePendingComment({ variables })
+  }
+
+  if (loading && !data) return <Spinner />
+  if (error) return <CommsErrorBanner error={error} />
+
   const {
     manuscript,
     submissionForm,
@@ -183,6 +196,7 @@ const DecisionPage = ({ match }) => {
     reviewForm: reviewFormOuter,
     currentUser,
     users,
+    threadedDiscussions,
   } = data
 
   const form = submissionForm?.structure ?? {
@@ -244,6 +258,7 @@ const DecisionPage = ({ match }) => {
     <DecisionVersions
       allUsers={users}
       canHideReviews={config.review.hide === 'true'}
+      completeComments={completeComments}
       createFile={createFile}
       createTeam={createTeam}
       currentUser={currentUser}
@@ -270,7 +285,9 @@ const DecisionPage = ({ match }) => {
       setExternalEmail={setExternalEmail}
       setSelectedEmail={setSelectedEmail}
       teamLabels={config.teams}
+      threadedDiscussions={threadedDiscussions}
       updateManuscript={updateManuscript}
+      updatePendingComment={updatePendingComment}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
       updateTeam={updateTeam}

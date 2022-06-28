@@ -3,6 +3,7 @@ import { SectionContent } from '../../../shared'
 import FormTemplate from './FormTemplate'
 
 const SubmissionForm = ({
+  currentUser,
   versionValues,
   form,
   onSubmit,
@@ -13,13 +14,19 @@ const SubmissionForm = ({
   manuscript,
   createFile,
   deleteFile,
+  threadedDiscussions,
+  updatePendingComment,
+  completeComments,
   validateDoi,
 }) => {
   return (
     <SectionContent>
       <FormTemplate
+        completeComments={completeComments}
         createFile={createFile}
+        currentUser={currentUser}
         deleteFile={deleteFile}
+        firstVersionManuscriptId={manuscript.parentId || manuscript.id}
         form={form}
         initialValues={versionValues}
         manuscriptId={manuscript.id}
@@ -42,6 +49,8 @@ const SubmissionForm = ({
             ? 'Submit Evaluation'
             : 'Submit your research object'
         }
+        threadedDiscussions={threadedDiscussions}
+        updatePendingComment={updatePendingComment}
         validateDoi={validateDoi}
       />
     </SectionContent>

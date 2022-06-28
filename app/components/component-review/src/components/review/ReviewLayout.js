@@ -32,6 +32,9 @@ const ReviewLayout = ({
   deleteFile,
   validateDoi,
   decisionForm,
+  threadedDiscussions,
+  updatePendingComment,
+  completeComments,
 }) => {
   const reviewSections = []
   const latestVersion = versions[0]
@@ -61,18 +64,27 @@ const ReviewLayout = ({
             <EditorSection manuscript={msVersion} readonly />
           )}
           <ReadonlyFormTemplate
+            currentUser={currentUser}
             form={submissionForm}
             formData={reviewData}
             listManuscriptFiles
             manuscript={msVersion}
             showEditorOnlyFields={false}
+            threadedDiscussions={threadedDiscussions}
           />
           <SharedReviewerGroupReviews
+            currentUser={currentUser}
             manuscript={msVersion}
             reviewerId={currentUser.id}
             reviewForm={reviewForm}
+            threadedDiscussions={threadedDiscussions}
           />
-          <Review review={reviewForCurrentUser} reviewForm={reviewForm} />
+          <Review
+            currentUser={currentUser}
+            review={reviewForCurrentUser}
+            reviewForm={reviewForm}
+            threadedDiscussions={threadedDiscussions}
+          />
         </div>
       ),
       key: msVersion.id,
@@ -96,6 +108,7 @@ const ReviewLayout = ({
             <EditorSection manuscript={latestVersion} readonly />
           )}
           <ReadonlyFormTemplate // Display manuscript metadata
+            currentUser={currentUser}
             form={submissionForm}
             formData={{
               ...latestVersion,
@@ -104,19 +117,32 @@ const ReviewLayout = ({
             listManuscriptFiles
             manuscript={latestVersion}
             showEditorOnlyFields={false}
+            threadedDiscussions={threadedDiscussions}
           />
           <SharedReviewerGroupReviews
+            currentUser={currentUser}
             manuscript={latestVersion}
             reviewerId={currentUser.id}
             reviewForm={reviewForm}
+            threadedDiscussions={threadedDiscussions}
           />
           {status === 'completed' ? (
-            <Review review={review} />
+            <Review
+              currentUser={currentUser}
+              review={review}
+              reviewForm={reviewForm}
+              threadedDiscussions={threadedDiscussions}
+            />
           ) : (
             <SectionContent>
               <FormTemplate
+                completeComments={completeComments}
                 createFile={createFile}
+                currentUser={currentUser}
                 deleteFile={deleteFile}
+                firstVersionManuscriptId={
+                  latestVersion.parentId || latestVersion.id
+                }
                 form={reviewForm}
                 initialValues={reviewData}
                 manuscriptId={latestVersion.id}
@@ -128,16 +154,20 @@ const ReviewLayout = ({
                 showEditorOnlyFields={false}
                 submissionButtonText="Submit"
                 tagForFiles="review"
+                threadedDiscussions={threadedDiscussions}
+                updatePendingComment={updatePendingComment}
                 validateDoi={validateDoi}
               />
             </SectionContent>
           )}
           {['colab'].includes(process.env.INSTANCE_NAME) && (
             <ReadonlyFormTemplate
+              currentUser={currentUser}
               form={decisionForm}
               formData={decision.jsonData || {}}
               hideSpecialInstructions
               manuscript={latestVersion}
+              threadedDiscussions={threadedDiscussions}
               title="Evaluation summary"
             />
           )}

@@ -111,6 +111,47 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
             },
           },
         },
+        ThreadedDiscussion: {
+          fields: {
+            threads: {
+              merge(existing, incoming) {
+                return incoming
+              },
+            },
+          },
+        },
+        DiscussionThread: {
+          fields: {
+            comments: {
+              merge(existing, incoming) {
+                return incoming
+              },
+            },
+          },
+        },
+        ThreadComment: {
+          fields: {
+            commentVersions: {
+              merge(existing, incoming) {
+                return incoming
+              },
+            },
+            pendingVersions: {
+              merge(existing, incoming) {
+                return incoming
+              },
+            },
+          },
+        },
+        User: {
+          fields: {
+            teams: {
+              merge(existing, incoming) {
+                return incoming
+              },
+            },
+          },
+        },
       },
     }),
   }

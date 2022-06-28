@@ -54,6 +54,9 @@ const DecisionVersion = ({
   validateDoi,
   createFile,
   deleteFile,
+  threadedDiscussions,
+  updatePendingComment,
+  completeComments,
   invitations,
   externalEmail,
   setExternalEmail,
@@ -124,6 +127,7 @@ const DecisionVersion = ({
         <>
           {!current ? (
             <ReadonlyFormTemplate
+              currentUser={currentUser}
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
               form={form}
               formData={{
@@ -133,13 +137,17 @@ const DecisionVersion = ({
               listManuscriptFiles
               manuscript={version}
               showEditorOnlyFields
+              threadedDiscussions={threadedDiscussions}
             />
           ) : (
             <SectionContent>
               <FormTemplate
+                completeComments={completeComments}
                 createFile={createFile}
+                currentUser={currentUser}
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+                firstVersionManuscriptId={version.parentId || version.id}
                 form={form}
                 initialValues={versionValues}
                 isSubmission
@@ -152,6 +160,8 @@ const DecisionVersion = ({
                 }}
                 republish={() => null}
                 showEditorOnlyFields
+                threadedDiscussions={threadedDiscussions}
+                updatePendingComment={updatePendingComment}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}
               />
@@ -236,6 +246,7 @@ const DecisionVersion = ({
               isControlPage
               manuscript={version}
               reviewForm={reviewForm}
+              threadedDiscussions={threadedDiscussions}
             />
           )}
           {current && (
@@ -246,6 +257,7 @@ const DecisionVersion = ({
                 manuscript={version}
                 reviewers={reviewers}
                 reviewForm={reviewForm}
+                threadedDiscussions={threadedDiscussions}
                 updateReview={updateReview}
                 urlFrag={urlFrag}
               />
@@ -255,8 +267,11 @@ const DecisionVersion = ({
             <AdminSection key="decision-form">
               <SectionContent>
                 <FormTemplate
+                  completeComments={completeComments}
                   createFile={createFile}
+                  currentUser={currentUser}
                   deleteFile={deleteFile}
+                  firstVersionManuscriptId={version.parentId || version.id}
                   form={decisionForm}
                   initialValues={
                     currentDecisionData?.jsonData
@@ -282,6 +297,8 @@ const DecisionVersion = ({
                   showEditorOnlyFields
                   submissionButtonText="Submit"
                   tagForFiles="decision"
+                  threadedDiscussions={threadedDiscussions}
+                  updatePendingComment={updatePendingComment}
                   urlFrag={urlFrag}
                   validateDoi={validateDoi}
                 />

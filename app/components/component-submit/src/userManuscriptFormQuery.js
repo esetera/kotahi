@@ -170,6 +170,38 @@ const query = gql`
     reviewForm: formForPurposeAndCategory(purpose: "review", category: "review") {
       ${formFields}
     }
+
+    threadedDiscussions(manuscriptId: $id) {
+      id
+      created
+      updated
+      manuscriptId
+      threads {
+        id
+        comments {
+          id
+          commentVersions {
+            id
+            author {
+              id
+              username
+              profilePicture
+            }
+            comment
+            created
+          }
+          pendingVersions {
+            id
+            author {
+              id
+              username
+              profilePicture
+            }
+            comment
+          }
+        }
+      }
+    }
   }
 `
 

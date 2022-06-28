@@ -43,6 +43,8 @@ const Submit = ({
   updateManuscript,
   createFile,
   deleteFile,
+  threadedDiscussions,
+  updatePendingComment,
   validateDoi,
 }) => {
   const decisionSections = []
@@ -95,6 +97,7 @@ const Submit = ({
       }
 
       const submissionProps = {
+        currentUser,
         versionValues,
         form: submissionForm,
         onSubmit,
@@ -105,6 +108,8 @@ const Submit = ({
         manuscript,
         createFile,
         deleteFile,
+        threadedDiscussions,
+        updatePendingComment,
         validateDoi,
       }
 
@@ -122,9 +127,11 @@ const Submit = ({
                 decisionForm={decisionForm}
                 manuscript={manuscript}
                 reviewForm={reviewForm}
+                threadedDiscussions={threadedDiscussions}
               />
             )}
             <ReadonlyFormTemplate
+              currentUser={currentUser}
               form={submissionForm}
               formData={{
                 ...manuscript,
@@ -133,6 +140,7 @@ const Submit = ({
               listManuscriptFiles
               manuscript={manuscript}
               showEditorOnlyFields={false}
+              threadedDiscussions={threadedDiscussions}
               title="Metadata"
             />
           </>

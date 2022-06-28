@@ -187,6 +187,7 @@ const DecisionReview = ({
   isControlPage,
   updateReview,
   canHideReviews,
+  threadedDiscussions,
 }) => {
   const currentUser = useCurrentUser()
 
@@ -233,9 +234,11 @@ const DecisionReview = ({
       {open && (
         <ReviewBody>
           <Review
+            currentUser={currentUser}
             review={review}
             reviewForm={reviewForm}
             showUserInfo={false}
+            threadedDiscussions={threadedDiscussions}
             user={currentUser}
           />
         </ReviewBody>

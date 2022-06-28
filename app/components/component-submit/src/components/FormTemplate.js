@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
-import { unescape, set } from 'lodash'
+import { unescape, get, set } from 'lodash'
 import { TextField, RadioGroup, CheckboxGroup } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
@@ -19,6 +19,7 @@ import ValidatedFieldFormik from './ValidatedField'
 import Confirm from './Confirm'
 import { articleStatuses } from '../../../../globals'
 import { validateFormField } from '../../../../shared/formValidation'
+import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
 import ActionButton from '../../../shared/ActionButton'
 
 const Intro = styled.div`
@@ -66,6 +67,7 @@ const elements = {
   AuthorsInput,
   Select,
   LinksInput,
+  ThreadedDiscussion,
 }
 
 elements.AbstractEditor = ({
@@ -133,6 +135,7 @@ const InnerFormTemplate = ({
   manuscriptId,
   manuscriptShortId,
   manuscriptStatus,
+  firstVersionManuscriptId,
   setTouched, // formik
   values, // formik
   setFieldValue, // formik
@@ -151,6 +154,9 @@ const InnerFormTemplate = ({
   reviewId,
   shouldStoreFilesInForm,
   tagForFiles,
+  threadedDiscussions,
+  updatePendingComment,
+  currentUser,
   initializeReview,
   isSubmitting,
   submitCount,
@@ -245,6 +251,16 @@ const InnerFormTemplate = ({
           )
           .map(prepareFieldProps)
           .map((element, i) => {
+            let threadedDiscussion
+            let updatePendingCommentFn
+
+            if (element.component === 'ThreadedDiscussion') {
+              threadedDiscussion = threadedDiscussions.find(
+                d => d.id === values[element.name],
+              )
+              updatePendingCommentFn = updatePendingComment
+            }
+
             return (
               <Section
                 cssOverrides={JSON.parse(element.sectioncss || '{}')}
@@ -275,60 +291,66 @@ const InnerFormTemplate = ({
                     manuscriptId={manuscriptId}
                     mimeTypesToAccept="image/*"
                     onChange={shouldStoreFilesInForm ? onChange : null}
+                    reviewId={reviewId}
                     values={values}
                   />
                 )}
-                {element.component !== 'SupplementaryFiles' &&
-                  element.component !== 'VisualAbstract' && (
-                    <ValidatedFieldFormik
-                      {...rejectProps(element, [
-                        'component',
-                        'title',
-                        'sectioncss',
-                        'parse',
-                        'format',
-                        'validate',
-                        'validateValue',
-                        'description',
-                        'shortDescription',
-                        'labelColor',
-                      ])}
-                      aria-label={element.placeholder || element.title}
-                      component={elements[element.component]}
-                      data-testid={element.name} // TODO: Improve this
-                      key={`validate-${element.id}`}
-                      name={element.name}
-                      onChange={value => {
-                        // TODO: Perhaps split components remove conditions here
-                        let val
+                {!['SupplementaryFiles', 'VisualAbstract'].includes(
+                  element.component,
+                ) && (
+                  <ValidatedFieldFormik
+                    {...rejectProps(element, [
+                      'component',
+                      'title',
+                      'sectioncss',
+                      'parse',
+                      'format',
+                      'validate',
+                      'validateValue',
+                      'description',
+                      'shortDescription',
+                      'labelColor',
+                    ])}
+                    aria-label={element.placeholder || element.title}
+                    component={elements[element.component]}
+                    currentUser={currentUser}
+                    data-testid={element.name} // TODO: Improve this
+                    firstVersionManuscriptId={firstVersionManuscriptId}
+                    key={`validate-${element.id}`}
+                    name={element.name}
+                    onChange={value => {
+                      // TODO: Perhaps split components remove conditions here
+                      let val
 
-                        if (value.target) {
-                          val = value.target.value
-                        } else if (value.value) {
-                          val = value.value
-                        } else {
-                          val = value
-                        }
+                      if (value.target) {
+                        val = value.target.value
+                      } else if (value.value) {
+                        val = value.value
+                      } else {
+                        val = value
+                      }
 
-                        setFieldValue(element.name, val, false)
-                        onChange(val, element.name)
-                      }}
-                      readonly={element.name === 'submission.editDate'}
-                      setTouched={setTouched}
-                      spellCheck
-                      validate={validateFormField(
-                        element.validate,
-                        element.validateValue,
-                        element.name,
-                        JSON.parse(
-                          element.doiValidation ? element.doiValidation : false,
-                        ),
-                        validateDoi,
-                        element.component,
-                      )}
-                      values={values}
-                    />
-                  )}
+                      setFieldValue(element.name, val, false)
+                      onChange(val, element.name)
+                    }}
+                    readonly={element.name === 'submission.editDate'}
+                    setTouched={setTouched}
+                    spellCheck
+                    threadedDiscussion={threadedDiscussion}
+                    updatePendingComment={updatePendingCommentFn}
+                    validate={validateFormField(
+                      element.validate,
+                      element.validateValue,
+                      element.name,
+                      JSON.parse(
+                        element.doiValidation ? element.doiValidation : false,
+                      ),
+                      validateDoi,
+                      element.component,
+                    )}
+                    values={values}
+                  />
+                )}
                 <SubNote
                   dangerouslySetInnerHTML={createMarkup(element.description)}
                 />
@@ -370,6 +392,7 @@ const FormTemplate = ({
   manuscriptId,
   manuscriptShortId,
   manuscriptStatus,
+  firstVersionManuscriptId,
   submissionButtonText,
   onChange,
   republish,
@@ -385,6 +408,10 @@ const FormTemplate = ({
   shouldStoreFilesInForm,
   initializeReview,
   tagForFiles,
+  threadedDiscussions,
+  updatePendingComment,
+  completeComments,
+  currentUser = { username: 'Ben', id: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436' }, // TODO pass this in
 }) => {
   const [confirming, setConfirming] = React.useState(false)
 
@@ -392,11 +419,28 @@ const FormTemplate = ({
     setConfirming(confirm => !confirm)
   }
 
+  const sumbitPendingThreadedDiscussionComments = async values => {
+    await Promise.all(
+      form.children
+        .filter(field => field.component === 'ThreadedDiscussion')
+        .forEach(field => {
+          const threadedDiscussionId = get(values, field.name)
+          if (threadedDiscussionId)
+            completeComments({
+              variables: { threadedDiscussionId, userId: currentUser.id },
+            })
+        }),
+    )
+  }
+
   return (
     <Formik
       displayName={form.name}
       initialValues={initialValues}
-      onSubmit={onSubmit ?? (() => null)}
+      onSubmit={async (values, actions) => {
+        await sumbitPendingThreadedDiscussionComments(values)
+        if (onSubmit) await onSubmit(values, actions)
+      }}
       validateOnBlur
       validateOnChange={false}
     >
@@ -408,7 +452,9 @@ const FormTemplate = ({
           isSubmission={isSubmission}
           toggleConfirming={toggleConfirming}
           {...formProps}
+          currentUser={currentUser}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+          firstVersionManuscriptId={firstVersionManuscriptId}
           form={form}
           initializeReview={initializeReview}
           manuscriptId={manuscriptId}
@@ -421,6 +467,8 @@ const FormTemplate = ({
           showEditorOnlyFields={showEditorOnlyFields}
           submissionButtonText={submissionButtonText}
           tagForFiles={tagForFiles}
+          threadedDiscussions={threadedDiscussions}
+          updatePendingComment={updatePendingComment}
           urlFrag={urlFrag}
           validateDoi={validateDoi}
         />

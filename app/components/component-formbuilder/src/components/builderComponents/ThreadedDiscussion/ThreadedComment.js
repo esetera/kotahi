@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Moment from 'react-moment'
 import { Button } from '@pubsweet/ui'
-import Tooltip from '../../../component-reporting/src/Tooltip'
+import Tooltip from '../../../../../component-reporting/src/Tooltip'
 import {
   DateWrapper,
   CommentMetaWrapper,
@@ -15,25 +15,25 @@ import {
   ModalContainer,
   CancelButton,
   CommentContainer,
-} from './style'
-import { Icon } from '../../../shared'
-import { UserAvatar } from '../../../component-avatar/src'
-import Modal from '../../../component-modal/src'
-import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
+} from '../../style'
+import { Icon } from '../../../../../shared'
+import { UserAvatar } from '../../../../../component-avatar/src'
+import Modal from '../../../../../component-modal/src'
+import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 
 const ThreadedComment = props => {
-  const { comment, simpleWaxEditorProps, currentUserId } = props
-
   const {
-    author,
-    createdAt,
-    updatedAt,
+    comment,
+    currentUser,
+    simpleWaxEditorProps,
     userCanEditOwnComment,
     userCanEditAnyComment,
-  } = comment
+  } = props
+
+  const { comment: value, author, createdAt, updatedAt } = comment
 
   const [openModal, setOpenModal] = useState(false)
-  const [modalFieldValue, setModalFieldValue] = useState(comment.value)
+  const [modalFieldValue, setModalFieldValue] = useState(value)
   const [counter, setCounter] = useState(1)
   const [collapse, setCollapse] = useState(true)
 
@@ -68,7 +68,7 @@ const ThreadedComment = props => {
               />
             </DateWrapper>
             {(userCanEditAnyComment ||
-              (userCanEditOwnComment && author.id === currentUserId)) && (
+              (userCanEditOwnComment && author.id === currentUser.id)) && (
               <Icon
                 onClick={event => {
                   setOpenModal(true)
@@ -89,9 +89,9 @@ const ThreadedComment = props => {
         </CommentWrapper>
         <SimpleWaxEditorWrapper collapse={collapse}>
           <SimpleWaxEditor
-            readonly
             {...simpleWaxEditorProps}
             key={counter}
+            readonly
             value={modalFieldValue}
           />
           <CollapseOverlay collapse={collapse} />

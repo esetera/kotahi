@@ -12,7 +12,12 @@ import {
   SectionContent,
 } from '../../../shared'
 
-const Decision = ({ decisionForm, manuscript }) => {
+const Decision = ({
+  currentUser,
+  decisionForm,
+  manuscript,
+  threadedDiscussions,
+}) => {
   const decisionDataString = manuscript.reviews.find(r => r.isDecision)
     ?.jsonData
 
@@ -22,10 +27,12 @@ const Decision = ({ decisionForm, manuscript }) => {
 
   return decisionData ? (
     <ReadonlyFormTemplate
+      currentUser={currentUser}
       form={decisionForm}
       formData={decisionData}
       hideSpecialInstructions
       manuscript={manuscript}
+      threadedDiscussions={threadedDiscussions}
     />
   ) : (
     <SectionRow>Pending.</SectionRow>
@@ -37,6 +44,7 @@ const DecisionAndReviews = ({
   isControlPage,
   reviewForm,
   decisionForm,
+  threadedDiscussions,
 }) => {
   const currentUser = useCurrentUser()
 
@@ -76,9 +84,11 @@ const DecisionAndReviews = ({
           <Title>Decision</Title>
         </SectionHeader>
         <Decision
+          currentUser={currentUser}
           decisionForm={decisionForm}
           editor={decision?.user}
           manuscript={manuscript}
+          threadedDiscussions={threadedDiscussions}
         />
       </SectionContent>
       <SectionContent>
@@ -99,6 +109,7 @@ const DecisionAndReviews = ({
                 }}
                 reviewForm={reviewForm}
                 teams={manuscript.teams}
+                threadedDiscussions={threadedDiscussions}
               />
             </SectionRow>
           ))
