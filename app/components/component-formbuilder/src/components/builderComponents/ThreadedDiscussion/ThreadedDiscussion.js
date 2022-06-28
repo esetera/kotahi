@@ -24,21 +24,26 @@ const getExistingOrInitialComments = (
         const pv = c.pendingVersions[c.pendingVersions.length - 1]
         return {
           ...pv,
+          id: c.id,
           isEditing: true,
           existingComment: c.commentVersions.length
             ? c.commentVersions[c.commentVersions.length - 1]
             : null, // If null, this is a new, unsubmitted comment.
+          versionId: pv.id,
         }
       }
 
       // This comment is not currently being edited.
+      const cv = c.commentVersions[c.commentVersions.length - 1]
       return {
-        ...c.commentVersions[c.commentVersions.length - 1],
+        ...cv,
+        id: c.id,
+        versionId: cv.id,
       }
     })
 
   const lastComment = result.length ? result[result.length - 1] : null
-  const lastCommentIsByUser = lastComment.author.id === currentUser.id
+  const lastCommentIsByUser = lastComment?.author?.id === currentUser.id
 
   // If the last comment in the thread is not by this user (and they are permitted to comment at all),
   // we create the preliminary data for a new comment, not yet in the DB.
@@ -48,32 +53,36 @@ const getExistingOrInitialComments = (
       comment: '<p class="paragraph></p>',
       isEditing: true,
       author: currentUser,
+      versionId: uuid(),
     })
 
   return result
 }
 
-const ThreadedDiscussion = props => {
+const ThreadedDiscussion = ({
+  currentUser,
+  firstVersionManuscriptId,
+  onChange,
+  threadedDiscussion,
+  updatePendingComment,
+  value, // This is the threadedDiscussionId
+  ...SimpleWaxEditorProps
+}) => {
   const {
-    id,
     created,
     updated,
-    manuscriptId, // TODO We actually need the manuscriptId of the first version of the manuscript
-    threads,
     userCanAddComment,
     userCanEditOwnComment,
     userCanEditAnyComment,
-    currentUser,
-    value, // This is the threadedDiscussionId
-    ...SimpleWaxEditorProps
-  } = props
-// console.log(manuscriptId,'manuscriptId')
-  const [threadId] = useState(threads?.[0]?.id || uuid())
-  const thread = threads?.find(t => t.id === threadId) || { comments: [] }
+  } = threadedDiscussion || { userCanAddComment: true } // TODO Figure out this permission properly
+
+  const [threadedDiscussionId] = useState(threadedDiscussion?.id || uuid())
+  const [threadId] = useState(threadedDiscussion?.threads?.[0]?.id || uuid())
+  const threadComments = threadedDiscussion?.threads?.[0]?.comments || []
 
   const [comments, setComments] = useState(
     getExistingOrInitialComments(
-      thread.comments,
+      threadComments,
       currentUser,
       userCanAddComment,
     ),
@@ -101,7 +110,18 @@ const ThreadedDiscussion = props => {
               <SimpleWaxEditorWrapper key={comment.id}>
                 <SimpleWaxEditor
                   {...SimpleWaxEditorProps}
-                  onChange={content => null} // TODO upsert
+                  onChange={content => {
+                    updatePendingComment({
+                      manuscriptId: firstVersionManuscriptId,
+                      threadedDiscussionId,
+                      threadId,
+                      commentId: comment.id,
+                      pendingVersionId: comment.versionId,
+                      comment: content,
+                    })
+                    if (!threadedDiscussion?.id) onChange(threadedDiscussionId)
+                    // TODO update state using setComments()?
+                  }}
                   value={comment.comment}
                 />
               </SimpleWaxEditorWrapper>

@@ -19,8 +19,13 @@ import {
   CREATE_MESSAGE,
   CREATE_TEAM_MUTATION,
   UPDATE_TEAM_MUTATION,
+  GET_INVITATIONS_FOR_MANUSCRIPT,
 } from '../../../../queries'
 import { validateDoi } from '../../../../shared/commsUtils'
+import {
+  UPDATE_PENDING_COMMENT,
+  COMPLETE_COMMENTS,
+} from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -84,7 +89,7 @@ const DecisionPage = ({ match }) => {
 
   // end of code from submit page to handle possible form changes
 
-  const { loading, error, data } = useQuery(query, {
+  const { loading, data, error } = useQuery(query, {
     variables: {
       id: match.params.version,
     },
@@ -100,6 +105,8 @@ const DecisionPage = ({ match }) => {
   const [createTeam] = useMutation(CREATE_TEAM_MUTATION)
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
+  const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
+  const [completeComments] = useMutation(COMPLETE_COMMENTS)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -111,6 +118,13 @@ const DecisionPage = ({ match }) => {
       cache.evict({ id })
     },
   })
+
+  const { data: invitations } = useQuery(GET_INVITATIONS_FOR_MANUSCRIPT, {
+    variables: { id: data?.manuscript?.id },
+  })
+
+  if (loading && !data) return <Spinner />
+  if (error) return <CommsErrorBanner error={error} />
 
   const updateManuscript = (versionId, manuscriptDelta) =>
     update({
@@ -156,6 +170,10 @@ const DecisionPage = ({ match }) => {
     })
   }
 
+  const updatePendingComment = async variables => {
+    doUpdatePendingComment({ variables })
+  }
+
   if (loading && !data) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
@@ -166,66 +184,8 @@ const DecisionPage = ({ match }) => {
     reviewForm: reviewFormOuter,
     currentUser,
     users,
+    threadedDiscussions,
   } = data
-
-  // TODO This is TEST DATA: remove once we're getting useful values from the DB.
-  // TODO Modify the query to embed full user objects instead of just userIds.
-  const threadedDiscussions = [
-    {
-      id: '7416150c-2b25-4839-a94c-e4e1a0e35aeb',
-      created: 1655825019000,
-      updated: 1655825019000,
-      manuscriptId: '07a26ea9-872f-4c04-8d3f-8e0097aa58dd', // Your manuscriptId here!
-      threads: [
-        {
-          id: '26af5cc0-4e1d-4361-bcc3-432030ec2356',
-          created: 1655825019000,
-          updated: 1655825019000,
-          comments: [
-            {
-              id: 'd9693775-4203-442a-9620-f11adc889f6a',
-              created: 1655825019000,
-              updated: 1655825019000,
-              commentVersions: [
-                {
-                  id: 'ffa8357a-a589-4469-9d84-bbbad1c793af',
-                  created: 1655825019000,
-                  updated: 1655825019000,
-                  author: {
-                    id: '906f42a3-64da-4cb0-8f72-f6a51d3a3452', // Someone's user ID here
-                    username: 'Harriet Handling Editor',
-                  },
-                  comment: '<p class="paragraph">Existing comment</p>',
-                },
-              ],
-              pendingVersions: [],
-            },
-            {
-              id: '3e85a7e6-b223-4994-90f6-9173c4a8a284',
-              created: 1655825019000,
-              updated: 1655825019000,
-              commentVersions: [],
-              pendingVersions: [
-                {
-                  id: 'a37d2394-8e1e-48dd-bba9-d16e2dd535c3',
-                  created: 1655825019000,
-                  updated: 1655825019000,
-                  author: {
-                    id: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436', // Your user ID here
-                    username: 'Ben W',
-                  },
-                  comment: '<p class="paragraph">Hello!</p>',
-                },
-              ],
-            },
-          ],
-        },
-      ],
-      userCanAddComment: true,
-      userCanEditOwnComment: true,
-      userCanEditAnyComment: true,
-    },
-  ]
 
   const form = submissionForm?.structure ?? {
     name: '',
@@ -267,7 +227,7 @@ const DecisionPage = ({ match }) => {
   }
 
   /** This will only send the modified field, not the entire review object */
-  const updateReviewJsonData = (versionId, value, path) => {
+  const updateReviewJsonData = (reviewId, value, path) => {
     const reviewDelta = {} // Only the changed fields
     // E.g. if path is 'meta.title' and value is 'Foo' this gives { meta: { title: 'Foo' } }
     set(reviewDelta, path, value)
@@ -279,13 +239,14 @@ const DecisionPage = ({ match }) => {
       userId: currentUser.id,
     }
 
-    updateReview(versionId, reviewPayload, manuscript.id)
+    updateReview(reviewId, reviewPayload, manuscript.id)
   }
 
   return (
     <DecisionVersions
       allUsers={users}
       canHideReviews={config.review.hide === 'true'}
+      completeComments={completeComments}
       createFile={createFile}
       createTeam={createTeam}
       currentUser={currentUser}
@@ -298,6 +259,7 @@ const DecisionPage = ({ match }) => {
       }
       form={form}
       handleChange={handleChange}
+      invitations={invitations?.getInvitationsForManuscript}
       makeDecision={makeDecision}
       manuscript={manuscript}
       publishManuscript={publishManuscript}
@@ -308,6 +270,7 @@ const DecisionPage = ({ match }) => {
       teamLabels={config.teams}
       threadedDiscussions={threadedDiscussions}
       updateManuscript={updateManuscript}
+      updatePendingComment={updatePendingComment}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
       updateTeam={updateTeam}

@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
-import { unescape, set } from 'lodash'
-import { TextField, RadioGroup, CheckboxGroup, Button } from '@pubsweet/ui'
+import { unescape, get, set } from 'lodash'
+import { TextField, RadioGroup, CheckboxGroup } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
 import {
@@ -20,6 +20,7 @@ import Confirm from './Confirm'
 import { articleStatuses } from '../../../../globals'
 import { validateFormField } from '../../../../shared/formValidation'
 import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
+import ActionButton from '../../../shared/ActionButton'
 
 const Intro = styled.div`
   font-style: italic;
@@ -66,6 +67,7 @@ const elements = {
   AuthorsInput,
   Select,
   LinksInput,
+  ThreadedDiscussion,
 }
 
 elements.AbstractEditor = ({
@@ -133,6 +135,7 @@ const InnerFormTemplate = ({
   manuscriptId,
   manuscriptShortId,
   manuscriptStatus,
+  firstVersionManuscriptId,
   setTouched, // formik
   values, // formik
   setFieldValue, // formik
@@ -152,13 +155,16 @@ const InnerFormTemplate = ({
   shouldStoreFilesInForm,
   tagForFiles,
   threadedDiscussions,
+  updatePendingComment,
   currentUser,
   initializeReview,
+  isSubmitting,
+  submitCount,
 }) => {
   const submitButton = (text, haspopup = false) => {
     return (
       <div>
-        <Button
+        <ActionButton
           onClick={async () => {
             if (republish && manuscriptStatus === articleStatuses.published) {
               republish(manuscriptId)
@@ -181,10 +187,13 @@ const InnerFormTemplate = ({
             }
           }}
           primary
-          type="button"
+          status={
+            // eslint-disable-next-line no-nested-ternary
+            isSubmitting ? 'pending' : submitCount ? 'success' : ''
+          }
         >
           {text}
-        </Button>
+        </ActionButton>
       </div>
     )
   }
@@ -242,6 +251,16 @@ const InnerFormTemplate = ({
           )
           .map(prepareFieldProps)
           .map((element, i) => {
+            let threadedDiscussion
+            let updatePendingCommentFn
+
+            if (element.component === 'ThreadedDiscussion') {
+              threadedDiscussion = threadedDiscussions.find(
+                d => d.id === values[element.name],
+              )
+              updatePendingCommentFn = updatePendingComment
+            }
+
             return (
               <Section
                 cssOverrides={JSON.parse(element.sectioncss || '{}')}
@@ -272,26 +291,13 @@ const InnerFormTemplate = ({
                     manuscriptId={manuscriptId}
                     mimeTypesToAccept="image/*"
                     onChange={shouldStoreFilesInForm ? onChange : null}
+                    reviewId={reviewId}
                     values={values}
                   />
                 )}
-                {element.component === 'ThreadedDiscussion' && (
-                  <ThreadedDiscussion
-                    {...(threadedDiscussions.find(
-                      d => d.id === values[element.name] || true, // TODO remove "|| true", used for forcing it to show test data despite id mismatch
-                    ) || {
-                      threads: [],
-                    })}
-                    currentUser={currentUser}
-                    manuscriptId={manuscriptId}
-                    value={values[element.name]}
-                  />
-                )}
-                {![
-                  'SupplementaryFiles',
-                  'VisualAbstract',
-                  'ThreadedDiscussion',
-                ].includes(element.component) && (
+                {!['SupplementaryFiles', 'VisualAbstract'].includes(
+                  element.component,
+                ) && (
                   <ValidatedFieldFormik
                     {...rejectProps(element, [
                       'component',
@@ -307,7 +313,9 @@ const InnerFormTemplate = ({
                     ])}
                     aria-label={element.placeholder || element.title}
                     component={elements[element.component]}
+                    currentUser={currentUser}
                     data-testid={element.name} // TODO: Improve this
+                    firstVersionManuscriptId={firstVersionManuscriptId}
                     key={`validate-${element.id}`}
                     name={element.name}
                     onChange={value => {
@@ -328,6 +336,8 @@ const InnerFormTemplate = ({
                     readonly={element.name === 'submission.editDate'}
                     setTouched={setTouched}
                     spellCheck
+                    threadedDiscussion={threadedDiscussion}
+                    updatePendingComment={updatePendingCommentFn}
                     validate={validateFormField(
                       element.validate,
                       element.validateValue,
@@ -382,6 +392,7 @@ const FormTemplate = ({
   manuscriptId,
   manuscriptShortId,
   manuscriptStatus,
+  firstVersionManuscriptId,
   submissionButtonText,
   onChange,
   republish,
@@ -398,6 +409,8 @@ const FormTemplate = ({
   initializeReview,
   tagForFiles,
   threadedDiscussions,
+  updatePendingComment,
+  completeComments,
   currentUser = { username: 'Ben', id: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436' }, // TODO pass this in
 }) => {
   const [confirming, setConfirming] = React.useState(false)
@@ -406,11 +419,28 @@ const FormTemplate = ({
     setConfirming(confirm => !confirm)
   }
 
+  const sumbitPendingThreadedDiscussionComments = async values => {
+    await Promise.all(
+      form.children
+        .filter(field => field.component === 'ThreadedDiscussion')
+        .forEach(field => {
+          const threadedDiscussionId = get(values, field.name)
+          if (threadedDiscussionId)
+            completeComments({
+              variables: { threadedDiscussionId, userId: currentUser.id },
+            })
+        }),
+    )
+  }
+
   return (
     <Formik
       displayName={form.name}
       initialValues={initialValues}
-      onSubmit={onSubmit ?? (() => null)}
+      onSubmit={async (values, actions) => {
+        await sumbitPendingThreadedDiscussionComments(values)
+        if (onSubmit) await onSubmit(values, actions)
+      }}
       validateOnBlur
       validateOnChange={false}
     >
@@ -424,6 +454,7 @@ const FormTemplate = ({
           {...formProps}
           currentUser={currentUser}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+          firstVersionManuscriptId={firstVersionManuscriptId}
           form={form}
           initializeReview={initializeReview}
           manuscriptId={manuscriptId}
@@ -437,6 +468,7 @@ const FormTemplate = ({
           submissionButtonText={submissionButtonText}
           tagForFiles={tagForFiles}
           threadedDiscussions={threadedDiscussions}
+          updatePendingComment={updatePendingComment}
           urlFrag={urlFrag}
           validateDoi={validateDoi}
         />

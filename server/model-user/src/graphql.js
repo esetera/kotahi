@@ -144,6 +144,7 @@ const resolvers = {
 
       return models.User.query().updateAndFetchById(id, JSON.parse(input))
     },
+
     // Authentication
     async loginUser(_, { input }, ctx) {
       /* eslint-disable-next-line global-require */
@@ -213,6 +214,7 @@ const resolvers = {
         selectedTemplate,
         externalEmail,
         externalName,
+        currentUser,
       } = inputParsed
 
       const receiverEmail = externalEmail || selectedEmail
@@ -248,22 +250,41 @@ const resolvers = {
         return { success: false }
       }
 
-      const user = await models.User.find(ctx.user)
+      const invitationSender = await models.User.find(ctx.user)
       const manuscriptId = manuscript.id
       const toEmail = receiverEmail
       const purpose = 'Inviting an author to accept a manuscript'
       const status = 'UNANSWERED'
-      const senderId = user.id
+      const senderId = invitationSender.id
 
       let invitationId = ''
 
       if (selectedTemplate === 'authorAcceptanceEmailTemplate') {
+        let userId = null
+        let invitedPersonName = ''
+
+        if (selectedEmail) {
+          const [userReceiver] = await models.User.query()
+            .where({ email: selectedEmail })
+            .withGraphFetched('[defaultIdentity]')
+
+          userId = userReceiver.id
+          invitedPersonName = userReceiver.username
+        } else {
+          invitedPersonName = externalName
+        }
+
+        const invitedPersonType = 'AUTHOR'
+
         const newInvitation = await new Invitation({
           manuscriptId,
           toEmail,
           purpose,
           status,
           senderId,
+          invitedPersonType,
+          invitedPersonName,
+          userId,
         }).saveGraph()
 
         invitationId = newInvitation.id
@@ -273,6 +294,7 @@ const resolvers = {
         await sendEmailNotification(receiverEmail, selectedTemplate, {
           articleTitle: manuscript.meta.title,
           authorName,
+          currentUser,
           receiverFirstName,
           shortId: manuscript.shortId,
           toEmail,
