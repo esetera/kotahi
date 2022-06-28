@@ -156,6 +156,8 @@ const InnerFormTemplate = ({
   tagForFiles,
   threadedDiscussions,
   updatePendingComment,
+  completeComment,
+  deletePendingComment,
   currentUser,
   initializeReview,
   isSubmitting,
@@ -323,9 +325,11 @@ const InnerFormTemplate = ({
                       'labelColor',
                     ])}
                     aria-label={element.placeholder || element.title}
+                    completeComment={completeComment}
                     component={elements[element.component]}
                     currentUser={currentUser}
                     data-testid={element.name} // TODO: Improve this
+                    deletePendingComment={deletePendingComment}
                     firstVersionManuscriptId={firstVersionManuscriptId}
                     key={`validate-${element.id}`}
                     name={element.name}
@@ -422,6 +426,8 @@ const FormTemplate = ({
   threadedDiscussions,
   updatePendingComment,
   completeComments,
+  completeComment,
+  deletePendingComment,
   currentUser = { username: 'Ben', id: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436' }, // TODO pass this in
 }) => {
   const [confirming, setConfirming] = React.useState(false)
@@ -461,7 +467,9 @@ const FormTemplate = ({
           isSubmission={isSubmission}
           toggleConfirming={toggleConfirming}
           {...formProps}
+          completeComment={completeComment}
           currentUser={currentUser}
+          deletePendingComment={deletePendingComment}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
           firstVersionManuscriptId={firstVersionManuscriptId}
           form={form}

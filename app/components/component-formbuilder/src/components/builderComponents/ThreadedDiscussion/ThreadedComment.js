@@ -28,6 +28,9 @@ const ThreadedComment = props => {
     simpleWaxEditorProps,
     userCanEditOwnComment,
     userCanEditAnyComment,
+    onCancel,
+    onChange,
+    onSubmit,
   } = props
 
   const { comment: value, author, createdAt, updatedAt } = comment
@@ -37,9 +40,10 @@ const ThreadedComment = props => {
   const [counter, setCounter] = useState(1)
   const [collapse, setCollapse] = useState(true)
 
-  const onButtonClick = () => {
+  const onSubmitClick = () => {
     setCounter(counter + 1)
     setOpenModal(false)
+    onSubmit()
   }
 
   return (
@@ -100,19 +104,27 @@ const ThreadedComment = props => {
           <ModalContainer>
             <SimpleWaxEditor
               {...simpleWaxEditorProps}
-              onChange={data => setModalFieldValue(data)}
+              onChange={data => {
+                setModalFieldValue(data)
+                onChange(data)
+              }}
               value={modalFieldValue}
             />
             <Button
               onClick={event => {
-                onButtonClick()
+                onSubmitClick()
               }}
               primary
             >
               Edit
             </Button>
             &nbsp;
-            <CancelButton onClick={() => setOpenModal(false)}>
+            <CancelButton
+              onClick={() => {
+                setOpenModal(false)
+                onCancel()
+              }}
+            >
               Cancel
             </CancelButton>
           </ModalContainer>

@@ -39,6 +39,8 @@ const DecisionVersions = ({
   threadedDiscussions,
   updatePendingComment,
   completeComments,
+  completeComment,
+  deletePendingComment,
   validateDoi,
   invitations,
 }) => {
@@ -78,6 +80,7 @@ const DecisionVersions = ({
               <DecisionVersion
                 allUsers={allUsers}
                 canHideReviews={canHideReviews}
+                completeComment={completeComment}
                 completeComments={completeComments}
                 createFile={createFile}
                 createTeam={createTeam}
@@ -86,6 +89,7 @@ const DecisionVersions = ({
                 currentUser={currentUser}
                 decisionForm={decisionForm}
                 deleteFile={deleteFile}
+                deletePendingComment={deletePendingComment}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
                 form={form}
                 invitations={invitations}

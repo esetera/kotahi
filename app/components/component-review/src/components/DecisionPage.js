@@ -25,6 +25,8 @@ import { validateDoi } from '../../../../shared/commsUtils'
 import {
   UPDATE_PENDING_COMMENT,
   COMPLETE_COMMENTS,
+  COMPLETE_COMMENT,
+  DELETE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
@@ -107,6 +109,8 @@ const DecisionPage = ({ match }) => {
   const [createFile] = useMutation(createFileMutation)
   const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
   const [completeComments] = useMutation(COMPLETE_COMMENTS)
+  const [completeComment] = useMutation(COMPLETE_COMMENT)
+  const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -245,12 +249,14 @@ const DecisionPage = ({ match }) => {
     <DecisionVersions
       allUsers={users}
       canHideReviews={config.review.hide === 'true'}
+      completeComment={completeComment}
       completeComments={completeComments}
       createFile={createFile}
       createTeam={createTeam}
       currentUser={currentUser}
       decisionForm={decisionForm}
       deleteFile={deleteFile}
+      deletePendingComment={deletePendingComment}
       displayShortIdAsIdentifier={
         config['client-features'].displayShortIdAsIdentifier &&
         config['client-features'].displayShortIdAsIdentifier.toLowerCase() ===

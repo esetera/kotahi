@@ -11,6 +11,8 @@ import manuscriptVersions from '../../../../shared/manuscript_versions'
 import {
   UPDATE_PENDING_COMMENT,
   COMPLETE_COMMENTS,
+  COMPLETE_COMMENT,
+  DELETE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 const createFileMutation = gql`
@@ -266,6 +268,8 @@ const ReviewPage = ({ match, ...props }) => {
   const [createFile] = useMutation(createFileMutation)
   const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
   const [completeComments] = useMutation(COMPLETE_COMMENTS)
+  const [completeComment] = useMutation(COMPLETE_COMMENT)
+  const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -475,11 +479,13 @@ const ReviewPage = ({ match, ...props }) => {
   return (
     <ReviewLayout
       channelId={channelId}
+      completeComment={completeComment}
       completeComments={completeComments}
       createFile={createFile}
       currentUser={currentUser}
       decisionForm={decisionForm}
       deleteFile={deleteFile}
+      deletePendingComment={deletePendingComment}
       onSubmit={values =>
         handleSubmit({
           reviewId: existingReview.current.id,

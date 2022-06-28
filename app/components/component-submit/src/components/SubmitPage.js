@@ -14,6 +14,8 @@ import { validateDoi } from '../../../../shared/commsUtils'
 import {
   UPDATE_PENDING_COMMENT,
   COMPLETE_COMMENTS,
+  COMPLETE_COMMENT,
+  DELETE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 export const updateMutation = gql`
@@ -97,6 +99,8 @@ const SubmitPage = ({ match, history }) => {
   const [createFile] = useMutation(createFileMutation)
   const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
   const [completeComments] = useMutation(COMPLETE_COMMENTS)
+  const [completeComment] = useMutation(COMPLETE_COMMENT)
+  const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -217,12 +221,14 @@ const SubmitPage = ({ match, history }) => {
 
   return (
     <Submit
+      completeComment={completeComment}
       completeComments={completeComments}
       createFile={createFile}
       createNewVersion={createNewVersion}
       currentUser={currentUser}
       decisionForm={decisionForm}
       deleteFile={deleteFile}
+      deletePendingComment={deletePendingComment}
       match={match}
       onChange={handleChange}
       onSubmit={onSubmit}

@@ -35,6 +35,8 @@ const ReviewLayout = ({
   threadedDiscussions,
   updatePendingComment,
   completeComments,
+  completeComment,
+  deletePendingComment,
 }) => {
   const reviewSections = []
   const latestVersion = versions[0]
@@ -136,10 +138,12 @@ const ReviewLayout = ({
           ) : (
             <SectionContent>
               <FormTemplate
+                completeComment={completeComment}
                 completeComments={completeComments}
                 createFile={createFile}
                 currentUser={currentUser}
                 deleteFile={deleteFile}
+                deletePendingComment={deletePendingComment}
                 firstVersionManuscriptId={
                   latestVersion.parentId || latestVersion.id
                 }

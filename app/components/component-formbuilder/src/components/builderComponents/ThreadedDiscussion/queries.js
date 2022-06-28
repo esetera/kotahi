@@ -74,3 +74,27 @@ export const COMPLETE_COMMENTS = gql`
     }
   }
 `
+
+export const COMPLETE_COMMENT = gql`
+  mutation($threadedDiscussionId: ID!, $threadId: ID!, $commentId: ID!) {
+    completeComment(
+      threadedDiscussionId: $threadedDiscussionId,
+      threadId: $threadId,
+      commentId: $commentId
+    ) {
+      ${discussionFields}
+    }
+  }
+`
+
+export const DELETE_PENDING_COMMENT = gql`
+  mutation($threadedDiscussionId: ID!, $threadId: ID!, $commentId: ID!) {
+    deletePendingComment(
+      threadedDiscussionId: $threadedDiscussionId,
+      threadId: $threadId,
+      commentId: $commentId
+    ) {
+      ${discussionFields}
+    }
+  }
+`

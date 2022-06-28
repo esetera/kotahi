@@ -285,6 +285,38 @@ const resolvers = {
 
       return stripHiddenAndAddUserInfo(discussion, ctx.user)
     },
+    async deletePendingComment(
+      _,
+      { threadedDiscussionId, threadId, commentId },
+      ctx,
+    ) {
+      const discussion = await models.ThreadedDiscussion.query().findById(
+        threadedDiscussionId,
+      )
+
+      if (!discussion)
+        throw new Error(
+          `threadedDiscussion with ID ${threadedDiscussionId} not found`,
+        )
+
+      const thread = discussion.threads.find(t => t.id === threadId)
+      if (!thread) throw new Error(`thread with ID ${threadId} not found`)
+      const comment = thread.comments.find(c => c.id === commentId)
+      if (!comment) throw new Error(`comment with ID ${commentId} not found`)
+
+      comment.pendingVersions = comment.pendingVersions.filter(
+        pv => pv.userId !== ctx.user,
+      )
+
+      await models.ThreadedDiscussion.query()
+        .update({
+          updated: discussion.updated,
+          threads: JSON.stringify(discussion.threads),
+        })
+        .where({ id: threadedDiscussionId })
+
+      return stripHiddenAndAddUserInfo(discussion, ctx.user)
+    },
   },
 }
 
@@ -296,6 +328,7 @@ extend type Mutation {
   updatePendingComment(manuscriptId: ID!, threadedDiscussionId: ID!, threadId: ID!, commentId: ID!, pendingVersionId: ID!, comment: String): ThreadedDiscussion!
   completeComments(threadedDiscussionId: ID!): ThreadedDiscussion!
   completeComment(threadedDiscussionId: ID!, threadId: ID!, commentId: ID!): ThreadedDiscussion!
+  deletePendingComment(threadedDiscussionId: ID!, threadId: ID!, commentId: ID!): ThreadedDiscussion!
 }
 
 type ThreadedDiscussion {

@@ -63,6 +63,8 @@ const ThreadedDiscussion = ({
   onChange,
   threadedDiscussion,
   updatePendingComment,
+  completeComment,
+  deletePendingComment,
   value, // This is the threadedDiscussionId
   ...SimpleWaxEditorProps
 }) => {
@@ -121,6 +123,15 @@ const ThreadedDiscussion = ({
               comment={comment}
               currentUser={currentUser}
               key={comment.id}
+              onCancel={() =>
+                deletePendingComment({
+                  variables: {
+                    threadedDiscussionId,
+                    threadId,
+                    commentId: comment.id,
+                  },
+                })
+              }
               onChange={content => {
                 updatePendingComment({
                   manuscriptId: firstVersionManuscriptId,
@@ -131,9 +142,14 @@ const ThreadedDiscussion = ({
                   comment: content,
                 })
               }}
-              onSubmit={
-                () =>
-                  null /* completeComment({ variables: { threadedDiscussionId, threadId, commentId } }) */
+              onSubmit={() =>
+                completeComment({
+                  variables: {
+                    threadedDiscussionId,
+                    threadId,
+                    commentId: comment.id,
+                  },
+                })
               }
               simpleWaxEditorProps={SimpleWaxEditorProps}
               userCanEditAnyComment={userCanEditAnyComment}
