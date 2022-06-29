@@ -43,6 +43,11 @@ const DecisionVersions = ({
   deletePendingComment,
   validateDoi,
   invitations,
+  setExternalEmail,
+  externalEmail,
+  selectedEmail,
+  setSelectedEmail,
+  isEmailAddressOptedOut,
 }) => {
   const [initialValue, setInitialValue] = useState(null)
 
@@ -91,8 +96,10 @@ const DecisionVersions = ({
                 deleteFile={deleteFile}
                 deletePendingComment={deletePendingComment}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+                externalEmail={externalEmail}
                 form={form}
                 invitations={invitations}
+                isEmailAddressOptedOut={isEmailAddressOptedOut}
                 key={version.manuscript.id}
                 makeDecision={makeDecision}
                 onChange={handleChange}
@@ -100,8 +107,11 @@ const DecisionVersions = ({
                 publishManuscript={publishManuscript}
                 reviewers={reviewers}
                 reviewForm={reviewForm}
+                selectedEmail={selectedEmail}
                 sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
+                setExternalEmail={setExternalEmail}
+                setSelectedEmail={setSelectedEmail}
                 teamLabels={teamLabels}
                 threadedDiscussions={threadedDiscussions}
                 updateManuscript={updateManuscript}

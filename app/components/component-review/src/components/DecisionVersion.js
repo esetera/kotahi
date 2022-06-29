@@ -60,6 +60,11 @@ const DecisionVersion = ({
   completeComment,
   deletePendingComment,
   invitations,
+  externalEmail,
+  setExternalEmail,
+  selectedEmail,
+  setSelectedEmail,
+  isEmailAddressOptedOut,
 }) => {
   // Hooks from the old world
   const addEditor = (manuscript, label, isCurrent, user) => {
@@ -194,9 +199,14 @@ const DecisionVersion = ({
                 <EmailNotifications
                   allUsers={allUsers}
                   currentUser={currentUser}
+                  externalEmail={externalEmail}
+                  isEmailAddressOptedOut={isEmailAddressOptedOut}
                   manuscript={version}
+                  selectedEmail={selectedEmail}
                   sendChannelMessageCb={sendChannelMessageCb}
                   sendNotifyEmail={sendNotifyEmail}
+                  setExternalEmail={setExternalEmail}
+                  setSelectedEmail={setSelectedEmail}
                 />
               )}
               <AssignEditorsReviewers
