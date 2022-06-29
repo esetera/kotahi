@@ -18,6 +18,27 @@ const getOriginalVersionManuscriptId = async manuscriptId => {
 
 const filterDistinct = (id, index, arr) => arr.indexOf(id) === index
 
+const userIsEditorOfLatestVersion = async (
+  userId,
+  firstVersionManuscriptId,
+) => {
+  const latestVersionMs = (
+    await models.Manuscript.query()
+      .select('id')
+      .where({ parentId: firstVersionManuscriptId })
+      .orWhere({ id: firstVersionManuscriptId })
+      .orderBy('created', 'desc')
+      .limit(1)
+      .withGraphFetched('teams.members')
+  )[0]
+
+  return latestVersionMs.teams.some(
+    t =>
+      ['seniorEditor', 'handlingEditor', 'editor'].includes(t.role) &&
+      t.members.some(m => m.userId === userId),
+  )
+}
+
 /** Returns a threadedDiscussion that strips out all pendingVersions not for this userId,
  * then all comments that don't have any remaining pendingVersions or commentVersions,
  * then all threads that don't have any remaining comments.
@@ -33,11 +54,16 @@ const stripHiddenAndAddUserInfo = async (discussion, userId) => {
       ),
     )
     .flat(2)
+    .concat([userId]) // Getting user info for the current user too, as it's convenient
     .filter(filterDistinct)
 
   const users = await models.User.query().findByIds(userIds)
   const usersMap = {}
   users.forEach(u => (usersMap[u.id] = u))
+
+  const userIsAdminOrEditor =
+    usersMap[userId].admin ||
+    (await userIsEditorOfLatestVersion(userId, discussion.manuscriptId))
 
   return {
     ...discussion,
@@ -58,11 +84,39 @@ const stripHiddenAndAddUserInfo = async (discussion, userId) => {
           .filter(c => c.commentVersions.length || c.pendingVersions.length),
       }))
       .filter(t => t.comments.length),
-    userCanAddComment: true, // TODO give a sensible value
-    userCanEditOwnComment: true, // TODO give a sensible value
-    userCanEditAnyComment: true, // TODO give a sensible value
+    userCanAddComment: true, // Current logic is that all users can add comments
+    userCanEditOwnComment: userIsAdminOrEditor,
+    userCanEditAnyComment: userIsAdminOrEditor,
   }
 }
+
+/* eslint-disable no-restricted-syntax, no-param-reassign */
+const convertUsersPendingVersionsToCommentVersions = (userId, comment, now) => {
+  let hasUpdated = false
+
+  // Should be only one pendingVersion for a user, but to be safe we assume there could be multiple
+  for (const pendingVersion of comment.pendingVersions.filter(
+    pv => pv.userId === userId && hasValue(pv.comment),
+  )) {
+    if (!comment.commentVersions) comment.commentVersions = []
+
+    comment.commentVersions.push({
+      id: uuid(),
+      created: now,
+      updated: now,
+      userId,
+      comment: pendingVersion.comment,
+    })
+    comment.pendingVersions = comment.pendingVersions.filter(
+      pv => pv.id !== pendingVersion.id,
+    )
+    hasUpdated = true
+    comment.updated = now
+  }
+
+  return hasUpdated
+}
+/* eslint-enable no-restricted-syntax, no-param-reassign */
 
 const resolvers = {
   Query: {
@@ -158,7 +212,7 @@ const resolvers = {
       return stripHiddenAndAddUserInfo(discussion, ctx.user)
     },
     /* eslint-disable no-restricted-syntax */
-    async completeComments(_, { threadedDiscussionId, userId }, ctx) {
+    async completeComments(_, { threadedDiscussionId }, ctx) {
       const now = new Date().toISOString()
       let hasUpdated = false
 
@@ -173,24 +227,10 @@ const resolvers = {
 
       for (const thread of discussion.threads) {
         for (const comment of thread.comments) {
-          // Should be only one pendingVersion for a user, but to be safe we assume there could be multiple
-          for (const pendingVersion of comment.pendingVersions.filter(
-            pv => pv.userId === userId && hasValue(pv.comment),
-          )) {
-            if (!comment.commentVersions) comment.commentVersions = []
-
-            comment.commentVersions.push({
-              id: uuid(),
-              created: now,
-              updated: now,
-              userId,
-              comment: pendingVersion.comment,
-            })
-            comment.pendingVersions = comment.pendingVersions.filter(
-              pv => pv.id !== pendingVersion.id,
-            )
+          if (
+            convertUsersPendingVersionsToCommentVersions(ctx.user, comment, now)
+          ) {
             hasUpdated = true
-            comment.updated = now
             thread.updated = now
             discussion.updated = now
           }
@@ -208,6 +248,75 @@ const resolvers = {
       return stripHiddenAndAddUserInfo(discussion, ctx.user)
     },
     /* eslint-enable no-restricted-syntax */
+    async completeComment(
+      _,
+      { threadedDiscussionId, threadId, commentId },
+      ctx,
+    ) {
+      const now = new Date().toISOString()
+
+      const discussion = await models.ThreadedDiscussion.query().findById(
+        threadedDiscussionId,
+      )
+
+      if (!discussion)
+        throw new Error(
+          `threadedDiscussion with ID ${threadedDiscussionId} not found`,
+        )
+
+      const thread = discussion.threads.find(t => t.id === threadId)
+      if (!thread) throw new Error(`thread with ID ${threadId} not found`)
+      const comment = thread.comments.find(c => c.id === commentId)
+      if (!comment) throw new Error(`comment with ID ${commentId} not found`)
+
+      if (
+        convertUsersPendingVersionsToCommentVersions(ctx.user, comment, now)
+      ) {
+        thread.updated = now
+        discussion.updated = now
+
+        await models.ThreadedDiscussion.query()
+          .update({
+            updated: discussion.updated,
+            threads: JSON.stringify(discussion.threads),
+          })
+          .where({ id: threadedDiscussionId })
+      }
+
+      return stripHiddenAndAddUserInfo(discussion, ctx.user)
+    },
+    async deletePendingComment(
+      _,
+      { threadedDiscussionId, threadId, commentId },
+      ctx,
+    ) {
+      const discussion = await models.ThreadedDiscussion.query().findById(
+        threadedDiscussionId,
+      )
+
+      if (!discussion)
+        throw new Error(
+          `threadedDiscussion with ID ${threadedDiscussionId} not found`,
+        )
+
+      const thread = discussion.threads.find(t => t.id === threadId)
+      if (!thread) throw new Error(`thread with ID ${threadId} not found`)
+      const comment = thread.comments.find(c => c.id === commentId)
+      if (!comment) throw new Error(`comment with ID ${commentId} not found`)
+
+      comment.pendingVersions = comment.pendingVersions.filter(
+        pv => pv.userId !== ctx.user,
+      )
+
+      await models.ThreadedDiscussion.query()
+        .update({
+          updated: discussion.updated,
+          threads: JSON.stringify(discussion.threads),
+        })
+        .where({ id: threadedDiscussionId })
+
+      return stripHiddenAndAddUserInfo(discussion, ctx.user)
+    },
   },
 }
 
@@ -217,7 +326,9 @@ extend type Query {
 }
 extend type Mutation {
   updatePendingComment(manuscriptId: ID!, threadedDiscussionId: ID!, threadId: ID!, commentId: ID!, pendingVersionId: ID!, comment: String): ThreadedDiscussion!
-  completeComments(threadedDiscussionId: ID!, userId: ID!): ThreadedDiscussion!
+  completeComments(threadedDiscussionId: ID!): ThreadedDiscussion!
+  completeComment(threadedDiscussionId: ID!, threadId: ID!, commentId: ID!): ThreadedDiscussion!
+  deletePendingComment(threadedDiscussionId: ID!, threadId: ID!, commentId: ID!): ThreadedDiscussion!
 }
 
 type ThreadedDiscussion {

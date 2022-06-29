@@ -57,6 +57,8 @@ const DecisionVersion = ({
   threadedDiscussions,
   updatePendingComment,
   completeComments,
+  completeComment,
+  deletePendingComment,
   invitations,
   externalEmail,
   setExternalEmail,
@@ -142,10 +144,12 @@ const DecisionVersion = ({
           ) : (
             <SectionContent>
               <FormTemplate
+                completeComment={completeComment}
                 completeComments={completeComments}
                 createFile={createFile}
                 currentUser={currentUser}
                 deleteFile={deleteFile}
+                deletePendingComment={deletePendingComment}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
                 firstVersionManuscriptId={version.parentId || version.id}
                 form={form}
@@ -267,10 +271,12 @@ const DecisionVersion = ({
             <AdminSection key="decision-form">
               <SectionContent>
                 <FormTemplate
+                  completeComment={completeComment}
                   completeComments={completeComments}
                   createFile={createFile}
                   currentUser={currentUser}
                   deleteFile={deleteFile}
+                  deletePendingComment={deletePendingComment}
                   firstVersionManuscriptId={version.parentId || version.id}
                   form={decisionForm}
                   initialValues={

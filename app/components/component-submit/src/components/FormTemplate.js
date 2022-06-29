@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
@@ -156,16 +156,21 @@ const InnerFormTemplate = ({
   tagForFiles,
   threadedDiscussions,
   updatePendingComment,
+  completeComment,
+  deletePendingComment,
   currentUser,
   initializeReview,
   isSubmitting,
   submitCount,
 }) => {
+  const [submitSucceeded, setSubmitSucceeded] = useState(false)
+
   const submitButton = (text, haspopup = false) => {
     return (
       <div>
         <ActionButton
           onClick={async () => {
+            // TODO shouldn't this come after error checking and submission?
             if (republish && manuscriptStatus === articleStatuses.published) {
               republish(manuscriptId)
               return
@@ -182,6 +187,7 @@ const InnerFormTemplate = ({
               !haspopup
             ) {
               handleSubmit()
+              setSubmitSucceeded(!hasErrors)
             } else {
               toggleConfirming()
             }
@@ -191,9 +197,9 @@ const InnerFormTemplate = ({
             /* eslint-disable no-nested-ternary */
             isSubmitting
               ? 'pending'
-              : Object.keys(errors).length
-              ? 'failure'
-              : submitCount
+              : Object.keys(errors).length && submitCount
+              ? '' // TODO Make this case 'failure', once we've fixed the validation delays in the form
+              : submitSucceeded
               ? 'success'
               : ''
             /* eslint-enable no-nested-ternary */
@@ -319,9 +325,11 @@ const InnerFormTemplate = ({
                       'labelColor',
                     ])}
                     aria-label={element.placeholder || element.title}
+                    completeComment={completeComment}
                     component={elements[element.component]}
                     currentUser={currentUser}
                     data-testid={element.name} // TODO: Improve this
+                    deletePendingComment={deletePendingComment}
                     firstVersionManuscriptId={firstVersionManuscriptId}
                     key={`validate-${element.id}`}
                     name={element.name}
@@ -418,6 +426,8 @@ const FormTemplate = ({
   threadedDiscussions,
   updatePendingComment,
   completeComments,
+  completeComment,
+  deletePendingComment,
   currentUser = { username: 'Ben', id: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436' }, // TODO pass this in
 }) => {
   const [confirming, setConfirming] = React.useState(false)
@@ -433,9 +443,7 @@ const FormTemplate = ({
         .map(field => get(values, field.name))
         .filter(Boolean)
         .map(async threadedDiscussionId =>
-          completeComments({
-            variables: { threadedDiscussionId, userId: currentUser.id },
-          }),
+          completeComments({ variables: { threadedDiscussionId } }),
         ),
     )
   }
@@ -459,7 +467,9 @@ const FormTemplate = ({
           isSubmission={isSubmission}
           toggleConfirming={toggleConfirming}
           {...formProps}
+          completeComment={completeComment}
           currentUser={currentUser}
+          deletePendingComment={deletePendingComment}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
           firstVersionManuscriptId={firstVersionManuscriptId}
           form={form}

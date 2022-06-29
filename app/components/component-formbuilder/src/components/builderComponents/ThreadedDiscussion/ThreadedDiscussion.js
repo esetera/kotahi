@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { v4 as uuid } from 'uuid'
 import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 import { SimpleWaxEditorWrapper } from '../../style'
@@ -63,11 +63,12 @@ const ThreadedDiscussion = ({
   onChange,
   threadedDiscussion,
   updatePendingComment,
+  completeComment,
+  deletePendingComment,
   value, // This is the threadedDiscussionId
   ...SimpleWaxEditorProps
 }) => {
   const {
-    created,
     updated,
     userCanAddComment,
     userCanEditOwnComment,
@@ -78,13 +79,17 @@ const ThreadedDiscussion = ({
   const [threadId] = useState(threadedDiscussion?.threads?.[0]?.id || uuid())
   const threadComments = threadedDiscussion?.threads?.[0]?.comments || []
 
-  const [comments, setComments] = useState(
-    getExistingOrInitialComments(
-      threadComments,
-      currentUser,
-      userCanAddComment,
-    ),
-  )
+  const [comments, setComments] = useState([])
+
+  useEffect(() => {
+    setComments(
+      getExistingOrInitialComments(
+        threadComments,
+        currentUser,
+        userCanAddComment,
+      ),
+    )
+  }, [updated])
 
   return (
     <>
@@ -107,7 +112,6 @@ const ThreadedDiscussion = ({
                       comment: content,
                     })
                     if (!threadedDiscussion?.id) onChange(threadedDiscussionId)
-                    // TODO update state using setComments()?
                   }}
                   value={comment.comment}
                 />
@@ -118,6 +122,34 @@ const ThreadedDiscussion = ({
               comment={comment}
               currentUser={currentUser}
               key={comment.id}
+              onCancel={() =>
+                deletePendingComment({
+                  variables: {
+                    threadedDiscussionId,
+                    threadId,
+                    commentId: comment.id,
+                  },
+                })
+              }
+              onChange={content => {
+                updatePendingComment({
+                  manuscriptId: firstVersionManuscriptId,
+                  threadedDiscussionId,
+                  threadId,
+                  commentId: comment.id,
+                  pendingVersionId: uuid(), // TODO generate better value?
+                  comment: content,
+                })
+              }}
+              onSubmit={() =>
+                completeComment({
+                  variables: {
+                    threadedDiscussionId,
+                    threadId,
+                    commentId: comment.id,
+                  },
+                })
+              }
               simpleWaxEditorProps={SimpleWaxEditorProps}
               userCanEditAnyComment={userCanEditAnyComment}
               userCanEditOwnComment={userCanEditOwnComment}

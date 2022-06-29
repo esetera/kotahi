@@ -17,15 +17,19 @@ const SubmissionForm = ({
   threadedDiscussions,
   updatePendingComment,
   completeComments,
+  completeComment,
+  deletePendingComment,
   validateDoi,
 }) => {
   return (
     <SectionContent>
       <FormTemplate
+        completeComment={completeComment}
         completeComments={completeComments}
         createFile={createFile}
         currentUser={currentUser}
         deleteFile={deleteFile}
+        deletePendingComment={deletePendingComment}
         firstVersionManuscriptId={manuscript.parentId || manuscript.id}
         form={form}
         initialValues={versionValues}

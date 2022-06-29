@@ -28,18 +28,28 @@ const ThreadedComment = props => {
     simpleWaxEditorProps,
     userCanEditOwnComment,
     userCanEditAnyComment,
+    onCancel,
+    onChange,
+    onSubmit,
   } = props
 
-  const { comment: value, author, createdAt, updatedAt } = comment
+  const {
+    comment: value,
+    author,
+    createdAt,
+    updatedAt,
+    existingComment, // If this comment is in the process of being edited, existingComment contains the value prior to editing
+  } = comment
 
   const [openModal, setOpenModal] = useState(false)
   const [modalFieldValue, setModalFieldValue] = useState(value)
   const [counter, setCounter] = useState(1)
   const [collapse, setCollapse] = useState(true)
 
-  const onButtonClick = () => {
+  const onSubmitClick = () => {
     setCounter(counter + 1)
     setOpenModal(false)
+    onSubmit()
   }
 
   return (
@@ -93,7 +103,7 @@ const ThreadedComment = props => {
             {...simpleWaxEditorProps}
             key={counter}
             readonly
-            value={modalFieldValue}
+            value={existingComment?.comment || modalFieldValue}
           />
           <CollapseOverlay collapse={collapse} />
         </SimpleWaxEditorWrapper>
@@ -104,19 +114,28 @@ const ThreadedComment = props => {
           <ModalContainer>
             <SimpleWaxEditor
               {...simpleWaxEditorProps}
-              onChange={data => setModalFieldValue(data)}
+              onChange={data => {
+                setModalFieldValue(data)
+                onChange(data)
+              }}
               value={modalFieldValue}
             />
             <Button
               onClick={event => {
-                onButtonClick()
+                onSubmitClick()
               }}
               primary
             >
               Edit
             </Button>
             &nbsp;
-            <CancelButton onClick={() => setOpenModal(false)}>
+            <CancelButton
+              onClick={() => {
+                setOpenModal(false)
+                setModalFieldValue(existingComment?.comment || value)
+                onCancel()
+              }}
+            >
               Cancel
             </CancelButton>
           </ModalContainer>
