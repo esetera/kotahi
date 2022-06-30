@@ -95,6 +95,7 @@ const query = gql`
             minSize
           }
           hideFromAuthors
+          permitPublishing
         }
       }
     }

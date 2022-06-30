@@ -4,13 +4,14 @@ import styled from 'styled-components'
 import { Formik } from 'formik'
 import { unescape, get, set } from 'lodash'
 import { TextField, RadioGroup, CheckboxGroup } from '@pubsweet/ui'
-import { th } from '@pubsweet/ui-toolkit'
+import { th, grid } from '@pubsweet/ui-toolkit'
 import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
 import {
   Section as Container,
   Select,
   FilesUpload,
   Attachment,
+  FieldPublishingSelector,
 } from '../../../shared'
 import { Heading1, Section, Legend, SubNote } from '../style'
 import AuthorsInput from './AuthorsInput'
@@ -40,9 +41,43 @@ const ModalWrapper = styled.div`
   z-index: 10000;
 `
 
+const LowerPadded = styled.div`
+  padding-bottom: ${grid(3)};
+`
+
 const SafeRadioGroup = styled(RadioGroup)`
   position: relative;
 `
+
+const PaddedRadioGroup = props => (
+  <LowerPadded>
+    <SafeRadioGroup {...props} />
+  </LowerPadded>
+)
+
+const PaddedCheckboxGroup = props => (
+  <LowerPadded>
+    <CheckboxGroup {...props} />
+  </LowerPadded>
+)
+
+const PaddedSelect = props => (
+  <LowerPadded>
+    <Select {...props} />
+  </LowerPadded>
+)
+
+const PaddedAuthorsInput = props => (
+  <LowerPadded>
+    <AuthorsInput {...props} />
+  </LowerPadded>
+)
+
+const PaddedLinksInput = props => (
+  <LowerPadded>
+    <LinksInput {...props} />
+  </LowerPadded>
+)
 
 const NoteRight = styled.div`
   float: right;
@@ -50,6 +85,19 @@ const NoteRight = styled.div`
   line-height: ${th('lineHeightBaseSmall')};
   text-align: right;
 `
+
+const FieldHead = styled.div`
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  width: auto;
+`
+
+const hasValue = value =>
+  typeof value === 'string' &&
+  value &&
+  value !== '<p></p>' &&
+  value !== '<p class="paragraph"></p>'
 
 const filterFileManuscript = files =>
   files.filter(
@@ -62,11 +110,11 @@ const filterFileManuscript = files =>
 /** Definitions for available field types */
 const elements = {
   TextField,
-  RadioGroup: SafeRadioGroup,
-  CheckboxGroup,
-  AuthorsInput,
-  Select,
-  LinksInput,
+  RadioGroup: PaddedRadioGroup,
+  CheckboxGroup: PaddedCheckboxGroup,
+  AuthorsInput: PaddedAuthorsInput,
+  Select: PaddedSelect,
+  LinksInput: PaddedLinksInput,
   ThreadedDiscussion,
 }
 
@@ -162,6 +210,9 @@ const InnerFormTemplate = ({
   initializeReview,
   isSubmitting,
   submitCount,
+  shouldShowOptionToPublish,
+  fieldsToPublish = [],
+  setShouldPublishField,
 }) => {
   const [submitSucceeded, setSubmitSucceeded] = useState(false)
 
@@ -279,7 +330,19 @@ const InnerFormTemplate = ({
                 cssOverrides={JSON.parse(element.sectioncss || '{}')}
                 key={`${element.id}`}
               >
-                <Legend dangerouslySetInnerHTML={createMarkup(element.title)} />
+                <FieldHead>
+                  <Legend
+                    dangerouslySetInnerHTML={createMarkup(element.title)}
+                  />
+                  {shouldShowOptionToPublish &&
+                    element.permitPublishing === 'true' &&
+                    element.component !== 'ThreadedDiscussion' && (
+                      <FieldPublishingSelector
+                        name={element.name}
+                        onChange={setShouldPublishField}
+                      />
+                    )}
+                </FieldHead>
                 {element.component === 'SupplementaryFiles' && (
                   <FilesUpload
                     createFile={createFile}
@@ -350,6 +413,9 @@ const InnerFormTemplate = ({
                     }}
                     readonly={element.name === 'submission.editDate'}
                     setTouched={setTouched}
+                    shouldShowOptionToPublish={
+                      element.permitPublishing && shouldShowOptionToPublish
+                    }
                     spellCheck
                     threadedDiscussion={threadedDiscussion}
                     updatePendingComment={updatePendingCommentFn}
@@ -366,9 +432,11 @@ const InnerFormTemplate = ({
                     values={values}
                   />
                 )}
-                <SubNote
-                  dangerouslySetInnerHTML={createMarkup(element.description)}
-                />
+                {hasValue(element.description) && (
+                  <SubNote
+                    dangerouslySetInnerHTML={createMarkup(element.description)}
+                  />
+                )}
               </Section>
             )
           })}
@@ -428,7 +496,10 @@ const FormTemplate = ({
   completeComments,
   completeComment,
   deletePendingComment,
-  currentUser = { username: 'Ben', id: '3c0beafa-4dbb-46c7-9ea8-dc6d6e8f4436' }, // TODO pass this in
+  currentUser,
+  fieldsToPublish,
+  setShouldPublishField,
+  shouldShowOptionToPublish = false,
 }) => {
   const [confirming, setConfirming] = React.useState(false)
 
@@ -471,6 +542,7 @@ const FormTemplate = ({
           currentUser={currentUser}
           deletePendingComment={deletePendingComment}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+          fieldsToPublish={fieldsToPublish}
           firstVersionManuscriptId={firstVersionManuscriptId}
           form={form}
           initializeReview={initializeReview}
@@ -480,6 +552,8 @@ const FormTemplate = ({
           onChange={onChange}
           republish={republish}
           reviewId={reviewId}
+          setShouldPublishField={setShouldPublishField}
+          shouldShowOptionToPublish={shouldShowOptionToPublish}
           shouldStoreFilesInForm={shouldStoreFilesInForm}
           showEditorOnlyFields={showEditorOnlyFields}
           submissionButtonText={submissionButtonText}

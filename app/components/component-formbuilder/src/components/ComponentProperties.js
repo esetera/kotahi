@@ -27,6 +27,16 @@ const InvalidWarning = styled.div`
   color: ${th('colorError')};
 `
 
+const getComponentProperties = (componentType, formCategory) =>
+  formCategory === 'submission'
+    ? submissionComponents[componentType] ?? {}
+    : components[componentType] ?? {}
+
+const getEditableComponentProperties = (componentType, formCategory) =>
+  Object.entries(getComponentProperties(componentType, formCategory)).filter(
+    ([key]) => key !== 'id',
+  )
+
 const ComponentProperties = ({
   formErrors,
   onSubmit,
@@ -35,16 +45,17 @@ const ComponentProperties = ({
   setFieldValue,
   category,
 }) => {
-  let componentProperties
-
-  if (category === 'submission') {
-    componentProperties = submissionComponents[selectedComponent] ?? {}
-  } else {
-    componentProperties = components[selectedComponent] ?? {}
+  const populateDefaultValues = componentType => {
+    getEditableComponentProperties(componentType, category).forEach(
+      ([key, value]) => {
+        if (value.defaultValue) setFieldValue(key, value.defaultValue)
+      },
+    )
   }
 
-  const editableProperties = Object.entries(componentProperties).filter(
-    ([key, value]) => key !== 'id',
+  const editableProperties = getEditableComponentProperties(
+    selectedComponent,
+    category,
   )
 
   const formIsValid = !Object.keys(formErrors).length
@@ -61,6 +72,7 @@ const ComponentProperties = ({
             onChange={value => {
               setComponentType(value)
               setFieldValue('component', value)
+              populateDefaultValues(value)
             }}
             required
           />

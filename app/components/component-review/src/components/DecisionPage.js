@@ -13,6 +13,7 @@ import {
   makeDecisionMutation,
   updateReviewMutation,
   publishManuscriptMutation,
+  setShouldPublishFieldMutation,
 } from './queries'
 
 import {
@@ -123,6 +124,7 @@ const DecisionPage = ({ match }) => {
   const [completeComments] = useMutation(COMPLETE_COMMENTS)
   const [completeComment] = useMutation(COMPLETE_COMMENT)
   const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
+  const [setShouldPublishField] = useMutation(setShouldPublishFieldMutation)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -289,6 +291,7 @@ const DecisionPage = ({ match }) => {
       sendNotifyEmail={sendNotifyEmail}
       setExternalEmail={setExternalEmail}
       setSelectedEmail={setSelectedEmail}
+      setShouldPublishField={setShouldPublishField}
       teamLabels={config.teams}
       threadedDiscussions={threadedDiscussions}
       updateManuscript={updateManuscript}

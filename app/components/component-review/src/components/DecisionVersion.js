@@ -64,6 +64,7 @@ const DecisionVersion = ({
   setExternalEmail,
   selectedEmail,
   setSelectedEmail,
+  setShouldPublishField,
   isEmailAddressOptedOut,
 }) => {
   // Hooks from the old world
@@ -277,6 +278,7 @@ const DecisionVersion = ({
                   currentUser={currentUser}
                   deleteFile={deleteFile}
                   deletePendingComment={deletePendingComment}
+                  fieldsToPublish={version.fieldsToPublish}
                   firstVersionManuscriptId={version.parentId || version.id}
                   form={decisionForm}
                   initialValues={
@@ -299,6 +301,8 @@ const DecisionVersion = ({
                     actions.setSubmitting(false)
                   }}
                   reviewId={currentDecisionData.id}
+                  setShouldPublishField={setShouldPublishField}
+                  shouldShowOptionToPublish
                   shouldStoreFilesInForm
                   showEditorOnlyFields
                   submissionButtonText="Submit"

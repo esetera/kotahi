@@ -47,6 +47,7 @@ const DecisionVersions = ({
   externalEmail,
   selectedEmail,
   setSelectedEmail,
+  setShouldPublishField,
   isEmailAddressOptedOut,
 }) => {
   const [initialValue, setInitialValue] = useState(null)
@@ -112,6 +113,15 @@ const DecisionVersions = ({
                 sendNotifyEmail={sendNotifyEmail}
                 setExternalEmail={setExternalEmail}
                 setSelectedEmail={setSelectedEmail}
+                setShouldPublishField={async (fieldName, shouldPublish) =>
+                  setShouldPublishField({
+                    variables: {
+                      manuscriptId: version.manuscript.id,
+                      fieldName,
+                      shouldPublish,
+                    },
+                  })
+                }
                 teamLabels={teamLabels}
                 threadedDiscussions={threadedDiscussions}
                 updateManuscript={updateManuscript}

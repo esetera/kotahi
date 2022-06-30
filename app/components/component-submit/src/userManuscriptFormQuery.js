@@ -55,6 +55,7 @@ const formFields = `
         minSize
       }
       hideFromAuthors
+      permitPublishing
     }
   }
 `

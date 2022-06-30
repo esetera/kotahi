@@ -172,6 +172,25 @@ const hideFromAuthorsField = {
   defaultValue: 'false',
 }
 
+const permitPublishingField = {
+  component: 'RadioBox',
+  props: {
+    inline: true,
+    options: [
+      {
+        value: 'true',
+        label: 'Yes',
+      },
+      {
+        value: 'false',
+        label: 'No',
+      },
+    ],
+    label: 'Allow this field to be selected for publishing?',
+  },
+  defaultValue: 'false',
+}
+
 const submissionElements = {
   SupplementaryFiles: {
     id: textfield,
@@ -223,6 +242,7 @@ const submissionElements = {
     validate: validateText,
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
   },
   ThreadedDiscussion: {
     id: textfield,
@@ -234,6 +254,7 @@ const submissionElements = {
     validate: validateOther,
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
   },
   TextField: {
     id: textfield,
@@ -295,6 +316,7 @@ const submissionElements = {
     },
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
   },
   CheckboxGroup: {
     id: textfield,
@@ -380,6 +402,7 @@ const elements = {
     shortDescription: shortDescriptionField,
     validate: validateText,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
   },
   ThreadedDiscussion: {
     id: textfield,
@@ -391,6 +414,7 @@ const elements = {
     validate: validateOther,
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
   },
   TextField: {
     id: textfield,
@@ -451,6 +475,7 @@ const elements = {
       defaultValue: 'false',
     },
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
   },
   CheckboxGroup: {
     id: textfield,

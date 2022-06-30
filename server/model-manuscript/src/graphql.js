@@ -921,7 +921,20 @@ const resolvers = {
 
       return reviewerTeam.$query().withGraphFetched('members.[user]')
     },
+    async setShouldPublishField(_, { manuscriptId, fieldName, shouldPublish }) {
+      const manuscript = await models.Manuscript.query().findById(manuscriptId)
+      manuscript.fieldsToPublish = manuscript.fieldsToPublish.filter(
+        f => f !== fieldName,
+      )
+      if (shouldPublish) manuscript.fieldsToPublish.push(fieldName)
 
+      const updated = await models.Manuscript.query().updateAndFetchById(
+        manuscriptId,
+        manuscript,
+      )
+
+      return repackageForGraphql(updated)
+    },
     async publishManuscript(_, { id }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(id)
@@ -1476,6 +1489,7 @@ const typeDefs = `
     publishManuscript(id: ID!): PublishingResult!
     createNewVersion(id: ID!): Manuscript
     importManuscripts: Boolean!
+    setShouldPublishField(manuscriptId: ID!, fieldName: String!, shouldPublish: Boolean!): Manuscript!
   }
 
   type Manuscript implements Object {
@@ -1500,6 +1514,7 @@ const typeDefs = `
     published: DateTime
     evaluationsHypothesisMap: String
     currentRoles: [String]
+    fieldsToPublish: [String!]!
   }
 
   type ManuscriptVersion implements Object {
@@ -1521,6 +1536,7 @@ const typeDefs = `
     published: DateTime
     parentId: ID
     evaluationsHypothesisMap: String
+    fieldsToPublish: [String!]!
   }
 
   input ManuscriptInput {
