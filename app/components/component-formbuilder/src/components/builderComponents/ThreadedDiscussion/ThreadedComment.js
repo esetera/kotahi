@@ -3,10 +3,8 @@ import Moment from 'react-moment'
 import { Button } from '@pubsweet/ui'
 import Tooltip from '../../../../../component-reporting/src/Tooltip'
 import {
-  DateWrapper,
   CommentMetaWrapper,
   UserMetaWrapper,
-  UserName,
   SimpleWaxEditorWrapper,
   CollapseOverlay,
   CommentWrapper,
@@ -16,23 +14,23 @@ import {
   CancelButton,
   CommentContainer,
 } from '../../style'
-import { Icon } from '../../../../../shared'
+import { FieldPublishingSelector, Icon } from '../../../../../shared'
 import { UserAvatar } from '../../../../../component-avatar/src'
 import Modal from '../../../../../component-modal/src'
 import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 
-const ThreadedComment = props => {
-  const {
-    comment,
-    currentUser,
-    simpleWaxEditorProps,
-    userCanEditOwnComment,
-    userCanEditAnyComment,
-    onCancel,
-    onChange,
-    onSubmit,
-  } = props
-
+const ThreadedComment = ({
+  comment,
+  currentUser,
+  simpleWaxEditorProps,
+  userCanEditOwnComment,
+  userCanEditAnyComment,
+  onCancel,
+  onChange,
+  onSubmit,
+  shouldPublish,
+  setShouldPublish,
+}) => {
   const {
     comment: value,
     author,
@@ -59,11 +57,11 @@ const ThreadedComment = props => {
           <CommentMetaWrapper>
             <UserMetaWrapper>
               <UserAvatar user={author} />
-              <UserName>{author.username}</UserName>
+              {author.username}
             </UserMetaWrapper>
           </CommentMetaWrapper>
           <ActionWrapper>
-            <DateWrapper>
+            <div>
               <Moment format="YYYY-MM-DD">{createdAt}</Moment>
               <Tooltip
                 content={
@@ -76,10 +74,17 @@ const ThreadedComment = props => {
                   </>
                 }
               />
-            </DateWrapper>
+            </div>
+            {setShouldPublish && (
+              <FieldPublishingSelector
+                onChange={setShouldPublish}
+                value={shouldPublish}
+              />
+            )}
             {(userCanEditAnyComment ||
               (userCanEditOwnComment && author.id === currentUser.id)) && (
               <Icon
+                noPadding
                 onClick={event => {
                   setOpenModal(true)
                 }}
@@ -93,7 +98,7 @@ const ThreadedComment = props => {
               }}
               value={collapse}
             >
-              {collapse ? <Icon>chevron-down</Icon> : <Icon>chevron-up</Icon>}
+              <Icon noPadding>{collapse ? 'chevron-down' : 'chevron-up'}</Icon>
             </Collapse>
           </ActionWrapper>
         </CommentWrapper>

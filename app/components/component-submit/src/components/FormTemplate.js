@@ -317,18 +317,23 @@ const InnerFormTemplate = ({
             let threadedDiscussionProps
 
             if (element.component === 'ThreadedDiscussion') {
+              const setShouldPublishComment =
+                shouldShowOptionToPublish &&
+                element.permitPublishing === 'true' &&
+                ((id, val) =>
+                  setShouldPublishField(`${element.name}:${id}`, val))
+
               threadedDiscussionProps = {
                 ...tdProps,
                 threadedDiscussion: tdProps.threadedDiscussions.find(
                   d => d.id === values[element.name],
                 ),
                 threadedDiscussions: undefined,
-                fieldsToPublish: fieldsToPublish.filter(f =>
-                  f.startsWith(`${element.name}:`),
-                ),
-                shouldShowOptionToPublish:
-                  element.permitPublishing && shouldShowOptionToPublish,
-                setShouldPublishField,
+                commentsToPublish: fieldsToPublish
+                  .filter(f => f.startsWith(`${element.name}:`))
+                  .map(f => f.split(':')[1]),
+                setShouldPublishComment,
+                userCanAddThread: true,
               }
             }
 
@@ -345,8 +350,9 @@ const InnerFormTemplate = ({
                     element.permitPublishing === 'true' &&
                     element.component !== 'ThreadedDiscussion' && (
                       <FieldPublishingSelector
-                        name={element.name}
-                        onChange={setShouldPublishField}
+                        onChange={val =>
+                          setShouldPublishField(element.name, val)
+                        }
                         value={fieldsToPublish.includes(element.name)}
                       />
                     )}

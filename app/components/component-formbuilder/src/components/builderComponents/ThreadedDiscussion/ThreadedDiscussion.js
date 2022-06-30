@@ -58,33 +58,32 @@ const getExistingOrInitialComments = (
 }
 
 const ThreadedDiscussion = ({
-  threadedDiscussionProps,
-  onChange,
-  value, // This is the threadedDiscussionId
-  ...SimpleWaxEditorProps
-}) => {
-  const {
+  threadedDiscussionProps: {
     threadedDiscussion,
     currentUser,
     firstVersionManuscriptId,
     updatePendingComment,
     completeComment,
     deletePendingComment,
-    fieldsToPublish,
-  } = threadedDiscussionProps
-
+    userCanAddThread,
+    commentsToPublish: commsToPublish,
+    setShouldPublishComment,
+  },
+  onChange,
+  ...SimpleWaxEditorProps
+}) => {
   const {
     updated,
     userCanAddComment,
     userCanEditOwnComment,
     userCanEditAnyComment,
-  } = threadedDiscussion || { userCanAddComment: true } // TODO Figure out this permission properly
+  } = threadedDiscussion || { userCanAddComment: userCanAddThread }
 
   const [threadedDiscussionId] = useState(threadedDiscussion?.id || uuid())
   const [threadId] = useState(threadedDiscussion?.threads?.[0]?.id || uuid())
   const threadComments = threadedDiscussion?.threads?.[0]?.comments || []
-
   const [comments, setComments] = useState([])
+  const [commentsToPublish, setCommentsToPublish] = useState(commsToPublish)
 
   useEffect(() => {
     setComments(
@@ -156,6 +155,16 @@ const ThreadedDiscussion = ({
                   },
                 })
               }
+              setShouldPublish={
+                setShouldPublishComment &&
+                (val => {
+                  setShouldPublishComment(comment.id, val)
+                  const ids = commentsToPublish.filter(id => id !== comment.id)
+                  if (val) ids.push(comment.id)
+                  setCommentsToPublish(ids)
+                })
+              }
+              shouldPublish={commentsToPublish.includes(comment.id)}
               simpleWaxEditorProps={SimpleWaxEditorProps}
               userCanEditAnyComment={userCanEditAnyComment}
               userCanEditOwnComment={userCanEditOwnComment}
