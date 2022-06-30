@@ -65,6 +65,7 @@ const ThreadedDiscussion = ({
   updatePendingComment,
   completeComment,
   deletePendingComment,
+  fieldsToPublishSubset,
   value, // This is the threadedDiscussionId
   ...SimpleWaxEditorProps
 }) => {

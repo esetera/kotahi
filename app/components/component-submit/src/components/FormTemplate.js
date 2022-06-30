@@ -317,12 +317,16 @@ const InnerFormTemplate = ({
           .map((element, i) => {
             let threadedDiscussion
             let updatePendingCommentFn
+            let fieldsToPublishSubset
 
             if (element.component === 'ThreadedDiscussion') {
               threadedDiscussion = threadedDiscussions.find(
                 d => d.id === values[element.name],
               )
               updatePendingCommentFn = updatePendingComment
+              fieldsToPublishSubset = fieldsToPublish.filter(f =>
+                f.startsWith(`${element.name}:`),
+              )
             }
 
             return (
@@ -394,6 +398,7 @@ const InnerFormTemplate = ({
                     currentUser={currentUser}
                     data-testid={element.name} // TODO: Improve this
                     deletePendingComment={deletePendingComment}
+                    fieldsToPublishSubset={fieldsToPublishSubset}
                     firstVersionManuscriptId={firstVersionManuscriptId}
                     key={`validate-${element.id}`}
                     name={element.name}
