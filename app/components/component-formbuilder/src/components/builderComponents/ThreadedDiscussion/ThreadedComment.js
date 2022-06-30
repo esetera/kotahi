@@ -52,6 +52,16 @@ const ThreadedComment = props => {
     onSubmit()
   }
 
+  // eslint-disable-next-line no-shadow
+  const hasValue = value => {
+    return (
+      typeof value === 'string' &&
+      value &&
+      value !== '<p></p>' &&
+      value !== '<p class="paragraph"></p>'
+    )
+  }
+
   return (
     <>
       <CommentContainer>
@@ -68,7 +78,7 @@ const ThreadedComment = props => {
               <Tooltip
                 content={
                   <>
-                    Created at &nbsp;   
+                    Created at &nbsp;
                     <Moment format="YYYY-MM-DD HH:mm:ss">{createdAt}</Moment>
                     <br />
                     Updated at &nbsp;
@@ -97,19 +107,20 @@ const ThreadedComment = props => {
             </Collapse>
           </ActionWrapper>
         </CommentWrapper>
-        {modalFieldValue !==null ?"comment is deleted":
-        (<SimpleWaxEditorWrapper collapse={collapse}>
-          <SimpleWaxEditor
-            {...simpleWaxEditorProps}
-            key={counter}
-            readonly
-            value={existingComment?.comment || modalFieldValue}
-          />
-          <CollapseOverlay collapse={collapse} />
-        </SimpleWaxEditorWrapper>
-)
-        }
-  
+        {!hasValue(modalFieldValue) ? (
+          'Comment is deleted'
+        ) : (
+          <SimpleWaxEditorWrapper collapse={collapse}>
+            <SimpleWaxEditor
+              {...simpleWaxEditorProps}
+              key={counter}
+              readonly
+              value={existingComment?.comment || modalFieldValue}
+            />
+            <CollapseOverlay collapse={collapse} />
+          </SimpleWaxEditorWrapper>
+        )}
+
         <Modal isOpen={openModal}>
           <ModalContainer>
             <SimpleWaxEditor

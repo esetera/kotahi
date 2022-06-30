@@ -2,7 +2,7 @@ const models = require('@pubsweet/models')
 const { v4: uuid } = require('uuid')
 
 const hasValue = value =>
-typeof value === 'string' &&
+  typeof value === 'string' &&
   value &&
   value !== '<p></p>' &&
   value !== '<p class="paragraph"></p>'
