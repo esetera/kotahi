@@ -340,6 +340,7 @@ const InnerFormTemplate = ({
                       <FieldPublishingSelector
                         name={element.name}
                         onChange={setShouldPublishField}
+                        value={fieldsToPublish.includes(element.name)}
                       />
                     )}
                 </FieldHead>
