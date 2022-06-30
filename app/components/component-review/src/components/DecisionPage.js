@@ -259,18 +259,25 @@ const DecisionPage = ({ match }) => {
     updateReview(reviewId, reviewPayload, manuscript.id)
   }
 
+  const threadedDiscussionProps = {
+    threadedDiscussions,
+    updatePendingComment,
+    completeComment,
+    completeComments,
+    deletePendingComment,
+    currentUser,
+    firstVersionManuscriptId: manuscript.parentId || manuscript.id,
+  }
+
   return (
     <DecisionVersions
       allUsers={users}
       canHideReviews={config.review.hide === 'true'}
-      completeComment={completeComment}
-      completeComments={completeComments}
       createFile={createFile}
       createTeam={createTeam}
       currentUser={currentUser}
       decisionForm={decisionForm}
       deleteFile={deleteFile}
-      deletePendingComment={deletePendingComment}
       displayShortIdAsIdentifier={
         config['client-features'].displayShortIdAsIdentifier &&
         config['client-features'].displayShortIdAsIdentifier.toLowerCase() ===
@@ -293,9 +300,8 @@ const DecisionPage = ({ match }) => {
       setSelectedEmail={setSelectedEmail}
       setShouldPublishField={setShouldPublishField}
       teamLabels={config.teams}
-      threadedDiscussions={threadedDiscussions}
+      threadedDiscussionProps={threadedDiscussionProps}
       updateManuscript={updateManuscript}
-      updatePendingComment={updatePendingComment}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
       updateTeam={updateTeam}

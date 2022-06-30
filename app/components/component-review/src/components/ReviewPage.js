@@ -266,7 +266,7 @@ const ReviewPage = ({ match, ...props }) => {
   const [updateReviewMutation] = useMutation(updateReviewMutationQuery)
   const [completeReview] = useMutation(completeReviewMutation)
   const [createFile] = useMutation(createFileMutation)
-  const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
+  const [updatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
   const [completeComments] = useMutation(COMPLETE_COMMENTS)
   const [completeComment] = useMutation(COMPLETE_COMMENT)
   const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
@@ -472,20 +472,23 @@ const ReviewPage = ({ match, ...props }) => {
     history.push(`${urlFrag}/dashboard`)
   }
 
-  const updatePendingComment = async variables => {
-    doUpdatePendingComment({ variables })
+  const threadedDiscussionProps = {
+    threadedDiscussions,
+    updatePendingComment,
+    completeComment,
+    completeComments,
+    deletePendingComment,
+    currentUser,
+    firstVersionManuscriptId: manuscript.parentId || manuscript.id,
   }
 
   return (
     <ReviewLayout
       channelId={channelId}
-      completeComment={completeComment}
-      completeComments={completeComments}
       createFile={createFile}
       currentUser={currentUser}
       decisionForm={decisionForm}
       deleteFile={deleteFile}
-      deletePendingComment={deletePendingComment}
       onSubmit={values =>
         handleSubmit({
           reviewId: existingReview.current.id,
@@ -496,8 +499,7 @@ const ReviewPage = ({ match, ...props }) => {
       reviewForm={reviewForm}
       status={status}
       submissionForm={submissionForm}
-      threadedDiscussions={threadedDiscussions}
-      updatePendingComment={updatePendingComment}
+      threadedDiscussionProps={threadedDiscussionProps}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
       versions={versions}

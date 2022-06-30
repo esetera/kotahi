@@ -81,12 +81,16 @@ const ReviewPreviewPage = ({ match, currentUser }) => {
     haspopup: 'false',
   }
 
+  // Currently not expecting to preview threadedDiscussions from the ReviewPreviewPage
+  const threadedDiscussionDummyProps = {
+    threadedDiscussions: [],
+  }
+
   return (
     <ReviewPreview
-      currentUser={currentUser}
       manuscript={manuscript}
       submissionForm={submissionForm}
-      threadedDiscussions={[]}
+      threadedDiscussionProps={threadedDiscussionDummyProps}
     />
   )
 }

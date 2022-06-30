@@ -32,11 +32,7 @@ const ReviewLayout = ({
   deleteFile,
   validateDoi,
   decisionForm,
-  threadedDiscussions,
-  updatePendingComment,
-  completeComments,
-  completeComment,
-  deletePendingComment,
+  threadedDiscussionProps,
 }) => {
   const reviewSections = []
   const latestVersion = versions[0]
@@ -66,26 +62,23 @@ const ReviewLayout = ({
             <EditorSection manuscript={msVersion} readonly />
           )}
           <ReadonlyFormTemplate
-            currentUser={currentUser}
             form={submissionForm}
             formData={reviewData}
             listManuscriptFiles
             manuscript={msVersion}
             showEditorOnlyFields={false}
-            threadedDiscussions={threadedDiscussions}
+            threadedDiscussionProps={threadedDiscussionProps}
           />
           <SharedReviewerGroupReviews
-            currentUser={currentUser}
             manuscript={msVersion}
             reviewerId={currentUser.id}
             reviewForm={reviewForm}
-            threadedDiscussions={threadedDiscussions}
+            threadedDiscussionsProps={threadedDiscussionProps}
           />
           <Review
-            currentUser={currentUser}
             review={reviewForCurrentUser}
             reviewForm={reviewForm}
-            threadedDiscussions={threadedDiscussions}
+            threadedDiscussionProps={threadedDiscussionProps}
           />
         </div>
       ),
@@ -110,7 +103,6 @@ const ReviewLayout = ({
             <EditorSection manuscript={latestVersion} readonly />
           )}
           <ReadonlyFormTemplate // Display manuscript metadata
-            currentUser={currentUser}
             form={submissionForm}
             formData={{
               ...latestVersion,
@@ -119,34 +111,25 @@ const ReviewLayout = ({
             listManuscriptFiles
             manuscript={latestVersion}
             showEditorOnlyFields={false}
-            threadedDiscussions={threadedDiscussions}
+            threadedDiscussionProps={threadedDiscussionProps}
           />
           <SharedReviewerGroupReviews
-            currentUser={currentUser}
             manuscript={latestVersion}
             reviewerId={currentUser.id}
             reviewForm={reviewForm}
-            threadedDiscussions={threadedDiscussions}
+            threadedDiscussionProps={threadedDiscussionProps}
           />
           {status === 'completed' ? (
             <Review
-              currentUser={currentUser}
               review={review}
               reviewForm={reviewForm}
-              threadedDiscussions={threadedDiscussions}
+              threadedDiscussionProps={threadedDiscussionProps}
             />
           ) : (
             <SectionContent>
               <FormTemplate
-                completeComment={completeComment}
-                completeComments={completeComments}
                 createFile={createFile}
-                currentUser={currentUser}
                 deleteFile={deleteFile}
-                deletePendingComment={deletePendingComment}
-                firstVersionManuscriptId={
-                  latestVersion.parentId || latestVersion.id
-                }
                 form={reviewForm}
                 initialValues={reviewData}
                 manuscriptId={latestVersion.id}
@@ -158,20 +141,18 @@ const ReviewLayout = ({
                 showEditorOnlyFields={false}
                 submissionButtonText="Submit"
                 tagForFiles="review"
-                threadedDiscussions={threadedDiscussions}
-                updatePendingComment={updatePendingComment}
+                threadedDiscussionProps={threadedDiscussionProps}
                 validateDoi={validateDoi}
               />
             </SectionContent>
           )}
           {['colab'].includes(process.env.INSTANCE_NAME) && (
             <ReadonlyFormTemplate
-              currentUser={currentUser}
               form={decisionForm}
               formData={decision.jsonData || {}}
               hideSpecialInstructions
               manuscript={latestVersion}
-              threadedDiscussions={threadedDiscussions}
+              threadedDiscussionProps={threadedDiscussionProps}
               title="Evaluation summary"
             />
           )}

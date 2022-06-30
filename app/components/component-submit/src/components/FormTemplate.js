@@ -183,7 +183,6 @@ const InnerFormTemplate = ({
   manuscriptId,
   manuscriptShortId,
   manuscriptStatus,
-  firstVersionManuscriptId,
   setTouched, // formik
   values, // formik
   setFieldValue, // formik
@@ -202,11 +201,7 @@ const InnerFormTemplate = ({
   reviewId,
   shouldStoreFilesInForm,
   tagForFiles,
-  threadedDiscussions,
-  updatePendingComment,
-  completeComment,
-  deletePendingComment,
-  currentUser,
+  threadedDiscussionProps: tdProps,
   initializeReview,
   isSubmitting,
   submitCount,
@@ -311,22 +306,30 @@ const InnerFormTemplate = ({
           .filter(
             element =>
               element.component &&
-              (showEditorOnlyFields || element.hideFromAuthors !== 'true'),
+              (showEditorOnlyFields || element.hideFromAuthors !== 'true') &&
+              (element.component !== 'ThreadedDiscussion' ||
+                tdProps.threadedDiscussions.some(
+                  d => d.id === values[element.name],
+                )),
           )
           .map(prepareFieldProps)
           .map((element, i) => {
-            let threadedDiscussion
-            let updatePendingCommentFn
-            let fieldsToPublishSubset
+            let threadedDiscussionProps
 
             if (element.component === 'ThreadedDiscussion') {
-              threadedDiscussion = threadedDiscussions.find(
-                d => d.id === values[element.name],
-              )
-              updatePendingCommentFn = updatePendingComment
-              fieldsToPublishSubset = fieldsToPublish.filter(f =>
-                f.startsWith(`${element.name}:`),
-              )
+              threadedDiscussionProps = {
+                ...tdProps,
+                threadedDiscussion: tdProps.threadedDiscussions.find(
+                  d => d.id === values[element.name],
+                ),
+                threadedDiscussions: undefined,
+                fieldsToPublish: fieldsToPublish.filter(f =>
+                  f.startsWith(`${element.name}:`),
+                ),
+                shouldShowOptionToPublish:
+                  element.permitPublishing && shouldShowOptionToPublish,
+                setShouldPublishField,
+              }
             }
 
             return (
@@ -393,13 +396,8 @@ const InnerFormTemplate = ({
                       'labelColor',
                     ])}
                     aria-label={element.placeholder || element.title}
-                    completeComment={completeComment}
                     component={elements[element.component]}
-                    currentUser={currentUser}
                     data-testid={element.name} // TODO: Improve this
-                    deletePendingComment={deletePendingComment}
-                    fieldsToPublishSubset={fieldsToPublishSubset}
-                    firstVersionManuscriptId={firstVersionManuscriptId}
                     key={`validate-${element.id}`}
                     name={element.name}
                     onChange={value => {
@@ -419,12 +417,8 @@ const InnerFormTemplate = ({
                     }}
                     readonly={element.name === 'submission.editDate'}
                     setTouched={setTouched}
-                    shouldShowOptionToPublish={
-                      element.permitPublishing && shouldShowOptionToPublish
-                    }
                     spellCheck
-                    threadedDiscussion={threadedDiscussion}
-                    updatePendingComment={updatePendingCommentFn}
+                    threadedDiscussionProps={threadedDiscussionProps}
                     validate={validateFormField(
                       element.validate,
                       element.validateValue,
@@ -481,7 +475,6 @@ const FormTemplate = ({
   manuscriptId,
   manuscriptShortId,
   manuscriptStatus,
-  firstVersionManuscriptId,
   submissionButtonText,
   onChange,
   republish,
@@ -497,12 +490,7 @@ const FormTemplate = ({
   shouldStoreFilesInForm,
   initializeReview,
   tagForFiles,
-  threadedDiscussions,
-  updatePendingComment,
-  completeComments,
-  completeComment,
-  deletePendingComment,
-  currentUser,
+  threadedDiscussionProps,
   fieldsToPublish,
   setShouldPublishField,
   shouldShowOptionToPublish = false,
@@ -520,7 +508,9 @@ const FormTemplate = ({
         .map(field => get(values, field.name))
         .filter(Boolean)
         .map(async threadedDiscussionId =>
-          completeComments({ variables: { threadedDiscussionId } }),
+          threadedDiscussionProps.completeComments({
+            variables: { threadedDiscussionId },
+          }),
         ),
     )
   }
@@ -544,12 +534,8 @@ const FormTemplate = ({
           isSubmission={isSubmission}
           toggleConfirming={toggleConfirming}
           {...formProps}
-          completeComment={completeComment}
-          currentUser={currentUser}
-          deletePendingComment={deletePendingComment}
           displayShortIdAsIdentifier={displayShortIdAsIdentifier}
           fieldsToPublish={fieldsToPublish}
-          firstVersionManuscriptId={firstVersionManuscriptId}
           form={form}
           initializeReview={initializeReview}
           manuscriptId={manuscriptId}
@@ -564,8 +550,7 @@ const FormTemplate = ({
           showEditorOnlyFields={showEditorOnlyFields}
           submissionButtonText={submissionButtonText}
           tagForFiles={tagForFiles}
-          threadedDiscussions={threadedDiscussions}
-          updatePendingComment={updatePendingComment}
+          threadedDiscussionProps={threadedDiscussionProps}
           urlFrag={urlFrag}
           validateDoi={validateDoi}
         />

@@ -30,7 +30,7 @@ const DecisionReviews = ({
   manuscript,
   updateReview,
   canHideReviews,
-  threadedDiscussions,
+  threadedDiscussionProps,
   invitations,
   urlFrag,
 }) => {
@@ -73,7 +73,7 @@ const DecisionReviews = ({
                 reviewer={{ user: review.user, ordinal: index + 1 }}
                 reviewForm={reviewForm}
                 teams={manuscript.teams}
-                threadedDiscussions={threadedDiscussions}
+                threadedDiscussionProps={threadedDiscussionProps}
                 updateReview={updateReview}
               />
             </SectionRow>

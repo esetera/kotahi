@@ -23,12 +23,11 @@ const filesToAttachment = file => ({
 */
 
 const Review = ({
-  currentUser,
   review,
   reviewForm,
   user,
   showUserInfo = true,
-  threadedDiscussions,
+  threadedDiscussionProps,
 }) => (
   <Container>
     {!review.isHiddenReviewerName && showUserInfo && (
@@ -49,12 +48,11 @@ const Review = ({
     )}
 
     <ReadonlyFormTemplate
-      currentUser={currentUser}
       form={reviewForm}
       formData={ensureJsonIsParsed(review.jsonData) ?? {}}
       hideSpecialInstructions
       showEditorOnlyFields={user.admin}
-      threadedDiscussions={threadedDiscussions}
+      threadedDiscussionProps={threadedDiscussionProps}
     />
   </Container>
 )

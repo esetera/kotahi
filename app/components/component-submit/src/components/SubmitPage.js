@@ -97,7 +97,7 @@ const SubmitPage = ({ match, history }) => {
   const [createNewVersion] = useMutation(createNewVersionMutation)
   const [publishManuscript] = useMutation(publishManuscriptMutation)
   const [createFile] = useMutation(createFileMutation)
-  const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
+  const [updatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
   const [completeComments] = useMutation(COMPLETE_COMMENTS)
   const [completeComment] = useMutation(COMPLETE_COMMENT)
   const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
@@ -213,22 +213,25 @@ const SubmitPage = ({ match, history }) => {
     }
   }
 
-  const updatePendingComment = async variables => {
-    doUpdatePendingComment({ variables })
-  }
-
   const versions = gatherManuscriptVersions(manuscript)
+
+  const threadedDiscussionProps = {
+    threadedDiscussions: data.threadedDiscussions,
+    updatePendingComment,
+    completeComment,
+    completeComments,
+    deletePendingComment,
+    currentUser,
+    firstVersionManuscriptId: manuscript.parentId || manuscript.id,
+  }
 
   return (
     <Submit
-      completeComment={completeComment}
-      completeComments={completeComments}
       createFile={createFile}
       createNewVersion={createNewVersion}
       currentUser={currentUser}
       decisionForm={decisionForm}
       deleteFile={deleteFile}
-      deletePendingComment={deletePendingComment}
       match={match}
       onChange={handleChange}
       onSubmit={onSubmit}
@@ -236,9 +239,8 @@ const SubmitPage = ({ match, history }) => {
       republish={republish}
       reviewForm={reviewForm}
       submissionForm={submissionForm}
-      threadedDiscussions={data.threadedDiscussions}
+      threadedDiscussionProps={threadedDiscussionProps}
       updateManuscript={updateManuscript}
-      updatePendingComment={updatePendingComment}
       validateDoi={validateDoi(client)}
       versions={versions}
     />

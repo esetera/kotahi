@@ -36,11 +36,7 @@ const DecisionVersions = ({
   displayShortIdAsIdentifier,
   deleteFile,
   createFile,
-  threadedDiscussions,
-  updatePendingComment,
-  completeComments,
-  completeComment,
-  deletePendingComment,
+  threadedDiscussionProps,
   validateDoi,
   invitations,
   setExternalEmail,
@@ -86,8 +82,6 @@ const DecisionVersions = ({
               <DecisionVersion
                 allUsers={allUsers}
                 canHideReviews={canHideReviews}
-                completeComment={completeComment}
-                completeComments={completeComments}
                 createFile={createFile}
                 createTeam={createTeam}
                 current={index === 0}
@@ -95,7 +89,6 @@ const DecisionVersions = ({
                 currentUser={currentUser}
                 decisionForm={decisionForm}
                 deleteFile={deleteFile}
-                deletePendingComment={deletePendingComment}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
                 externalEmail={externalEmail}
                 form={form}
@@ -123,9 +116,8 @@ const DecisionVersions = ({
                   })
                 }
                 teamLabels={teamLabels}
-                threadedDiscussions={threadedDiscussions}
+                threadedDiscussionProps={threadedDiscussionProps}
                 updateManuscript={updateManuscript}
-                updatePendingComment={updatePendingComment}
                 updateReview={updateReview}
                 updateReviewJsonData={(value, path) =>
                   updateReviewJsonData(initialValue.id, value, path)

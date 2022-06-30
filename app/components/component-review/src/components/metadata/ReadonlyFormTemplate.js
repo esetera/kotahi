@@ -20,8 +20,7 @@ const showFieldData = (
   manuscript,
   fieldName,
   form,
-  threadedDiscussions,
-  currentUser,
+  threadedDiscussionProps,
 ) => {
   const data = get(manuscript, fieldName)
   const fieldDefinition = form.children?.find(field => field.name === fieldName)
@@ -55,15 +54,21 @@ const showFieldData = (
 
   if (fieldDefinition?.component === 'ThreadedDiscussion' && data) {
     // data should be the threadedDiscussion ID
-    const discussion = threadedDiscussions.find(d => d.id === data) || {
+    const discussion = threadedDiscussionProps.threadedDiscussions.find(
+      d => d.id === data,
+    ) || {
       threads: [],
+    }
+
+    const augmentedThreadedDiscussionProps = {
+      ...threadedDiscussionProps,
+      threadedDiscussion: discussion,
+      threadedDiscussions: undefined,
     }
 
     return (
       <ThreadedDiscussion
-        {...discussion}
-        currentUser={currentUser}
-        manuscriptId={manuscript.id}
+        threadedDiscussionProps={augmentedThreadedDiscussionProps}
       />
     )
   }
@@ -95,7 +100,6 @@ const shouldShowInPreview = (fieldName, form) => {
 }
 
 const ReadonlyFormTemplate = ({
-  currentUser,
   form,
   formData,
   hideSpecialInstructions,
@@ -105,7 +109,7 @@ const ReadonlyFormTemplate = ({
   title,
   displayShortIdAsIdentifier,
   listManuscriptFiles,
-  threadedDiscussions,
+  threadedDiscussionProps,
 }) => {
   return (
     <SectionContent>
@@ -141,8 +145,7 @@ const ReadonlyFormTemplate = ({
                   formData,
                   element.name,
                   form,
-                  threadedDiscussions,
-                  currentUser,
+                  threadedDiscussionProps,
                 )}
               </Cell>
             </SectionRowGrid>
