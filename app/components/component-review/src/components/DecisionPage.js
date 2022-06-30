@@ -120,7 +120,7 @@ const DecisionPage = ({ match }) => {
   const [createTeam] = useMutation(CREATE_TEAM_MUTATION)
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
-  const [doUpdatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
+  const [updatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
   const [completeComments] = useMutation(COMPLETE_COMMENTS)
   const [completeComment] = useMutation(COMPLETE_COMMENT)
   const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
@@ -187,9 +187,6 @@ const DecisionPage = ({ match }) => {
       },
     })
   }
-
-  const updatePendingComment = async variables =>
-    doUpdatePendingComment({ variables })
 
   if (loading && !data) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
