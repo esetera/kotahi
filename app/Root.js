@@ -97,6 +97,11 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
                 return (r && r.roles) || []
               },
             },
+            fieldsToPublish: {
+              merge(existing, incoming) {
+                return incoming
+              },
+            },
           },
         },
         ManuscriptVersion: {
@@ -107,6 +112,11 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
                 const currentId = readField('id')
                 const r = currentRoles.find(ro => ro.id === currentId)
                 return (r && r.roles) || []
+              },
+            },
+            fieldsToPublish: {
+              merge(existing, incoming) {
+                return incoming
               },
             },
           },
