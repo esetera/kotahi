@@ -83,6 +83,8 @@ const ButtonWrapper = styled.div`
 
 const ModalContainer = styled.div`
   background: ${th('colorBackground')};
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
   padding: 20px 24px;
   z-index: 9999;
 
