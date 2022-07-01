@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { v4 as uuid } from 'uuid'
+import ActionButton from '../../../../../shared/ActionButton'
 import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 import { SimpleWaxEditorWrapper } from '../../style'
 import ThreadedComment from './ThreadedComment'
+
+// TODO Consolidate all the different copies of this function in one place
+const hasValue = value =>
+  typeof value === 'string' &&
+  value &&
+  value !== '<p></p>' &&
+  value !== '<p class="paragraph"></p>'
 
 /** Returns an array of objects supplying useful into for each comment; and adds a new one at the end
  * if the user is permitted to add a new comment and haven't yet started doing so.
@@ -63,6 +71,7 @@ const ThreadedDiscussion = ({
     userCanAddThread,
     commentsToPublish: commsToPublish,
     setShouldPublishComment,
+    shouldRenderSubmitButton,
   },
   onChange,
   ...SimpleWaxEditorProps
@@ -78,7 +87,10 @@ const ThreadedDiscussion = ({
   const [threadId] = useState(threadedDiscussion?.threads?.[0]?.id || uuid())
   const threadComments = threadedDiscussion?.threads?.[0]?.comments || []
   const [comments, setComments] = useState([])
-  const [commentsToPublish, setCommentsToPublish] = useState(commsToPublish)
+
+  const [commentsToPublish, setCommentsToPublish] = useState(
+    commsToPublish || [],
+  )
 
   useEffect(() => {
     setComments(
@@ -98,24 +110,62 @@ const ThreadedDiscussion = ({
 
           if (isLastComment && comment.isEditing && !comment.existingComment)
             return (
-              <SimpleWaxEditorWrapper key={comment.id}>
-                <SimpleWaxEditor
-                  {...SimpleWaxEditorProps}
-                  onChange={content => {
-                    updatePendingComment({
-                      variables: {
-                        manuscriptId: firstVersionManuscriptId,
-                        threadedDiscussionId,
-                        threadId,
-                        commentId: comment.id,
-                        comment: content,
-                      },
-                    })
-                    if (!threadedDiscussion?.id) onChange(threadedDiscussionId)
-                  }}
-                  value={comment.comment}
-                />
-              </SimpleWaxEditorWrapper>
+              <div key={comment.id}>
+                <SimpleWaxEditorWrapper key={comment.id}>
+                  <SimpleWaxEditor
+                    {...SimpleWaxEditorProps}
+                    onChange={content => {
+                      updatePendingComment({
+                        variables: {
+                          manuscriptId: firstVersionManuscriptId,
+                          threadedDiscussionId,
+                          threadId,
+                          commentId: comment.id,
+                          comment: content,
+                        },
+                      })
+                      if (!threadedDiscussion?.id)
+                        onChange(threadedDiscussionId)
+                      setComments(
+                        comments.map(c =>
+                          c.id === comment.id ? { ...c, comment: content } : c,
+                        ),
+                      )
+                    }}
+                    value={comment.comment}
+                  />
+                </SimpleWaxEditorWrapper>
+                {shouldRenderSubmitButton && (
+                  <ActionButton
+                    onClick={() => {
+                      if (hasValue(comment.comment)) {
+                        completeComment({
+                          variables: {
+                            threadedDiscussionId,
+                            threadId,
+                            commentId: comment.id,
+                          },
+                        })
+
+                        setComments(
+                          comments.map(c =>
+                            c.id === comment.id
+                              ? {
+                                  ...c,
+                                  isEditing: false,
+                                  existingComment: undefined,
+                                }
+                              : c,
+                          ),
+                        )
+                      }
+                    }}
+                    primary
+                  >
+                    Submit
+                  </ActionButton>
+                )}
+              </div>
             )
 
           return (

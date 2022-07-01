@@ -64,6 +64,7 @@ const showFieldData = (
       ...threadedDiscussionProps,
       threadedDiscussion: discussion,
       threadedDiscussions: undefined,
+      shouldRenderSubmitButton: true,
     }
 
     return (
