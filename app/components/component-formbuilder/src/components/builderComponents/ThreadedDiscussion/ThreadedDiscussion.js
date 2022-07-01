@@ -13,21 +13,18 @@ const getExistingOrInitialComments = (
   userCanAddComment,
 ) => {
   const result = comments
-    .filter(c => c.pendingVersions.length || c.commentVersions.length)
+    .filter(c => c.pendingVersion || c.commentVersions.length)
     .map(c => {
-      if (c.pendingVersions.length) {
+      if (c.pendingVersion) {
         // This comment is currently being edited!
-        // Note that the server strips all pendingComments for other users before sending to the client,
-        // so if there is a pendingVersion it is for the current user.
-        const pv = c.pendingVersions[c.pendingVersions.length - 1]
+        // Note that the server gives us only a pendingVersion for the current user.
         return {
-          ...pv,
+          ...c.pendingVersion,
           id: c.id,
           isEditing: true,
           existingComment: c.commentVersions.length
             ? c.commentVersions[c.commentVersions.length - 1]
             : null, // If null, this is a new, unsubmitted comment.
-          versionId: pv.id,
         }
       }
 
@@ -36,7 +33,6 @@ const getExistingOrInitialComments = (
       return {
         ...cv,
         id: c.id,
-        versionId: cv.id,
       }
     })
 
@@ -51,7 +47,6 @@ const getExistingOrInitialComments = (
       comment: '<p class="paragraph></p>',
       isEditing: true,
       author: currentUser,
-      versionId: uuid(),
     })
 
   return result
@@ -113,7 +108,6 @@ const ThreadedDiscussion = ({
                         threadedDiscussionId,
                         threadId,
                         commentId: comment.id,
-                        pendingVersionId: comment.versionId,
                         comment: content,
                       },
                     })
@@ -145,7 +139,6 @@ const ThreadedDiscussion = ({
                     threadedDiscussionId,
                     threadId,
                     commentId: comment.id,
-                    pendingVersionId: uuid(), // TODO generate better value?
                     comment: content,
                   },
                 })

@@ -180,8 +180,7 @@ export const query = gql`
             comment
             created
           }
-          pendingVersions {
-            id
+          pendingVersion {
             author {
               id
               username

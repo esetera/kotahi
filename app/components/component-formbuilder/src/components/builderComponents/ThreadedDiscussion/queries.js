@@ -19,8 +19,7 @@ const discussionFields = `
         comment
         created
       }
-      pendingVersions {
-        id
+      pendingVersion {
         author {
           id
           username
@@ -49,7 +48,6 @@ export const UPDATE_PENDING_COMMENT = gql`
     $threadedDiscussionId: ID!
     $threadId: ID!
     $commentId: ID!
-    $pendingVersionId: ID!
     $comment: String
   ) {
     updatePendingComment(
@@ -57,7 +55,6 @@ export const UPDATE_PENDING_COMMENT = gql`
       threadedDiscussionId: $threadedDiscussionId
       threadId: $threadId
       commentId: $commentId
-      pendingVersionId: $pendingVersionId
       comment: $comment
     ) {
       ${discussionFields}

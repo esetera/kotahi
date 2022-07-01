@@ -1,12 +1,6 @@
 const models = require('@pubsweet/models')
 const { v4: uuid } = require('uuid')
 
-const hasValue = value =>
-  typeof value === 'string' &&
-  value &&
-  value !== '<p></p>' &&
-  value !== '<p class="paragraph"></p>'
-
 const getOriginalVersionManuscriptId = async manuscriptId => {
   const ms = await models.Manuscript.query()
     .select('parentId')
@@ -40,7 +34,7 @@ const userIsEditorOfLatestVersion = async (
 }
 
 /** Returns a threadedDiscussion that strips out all pendingVersions not for this userId,
- * then all comments that don't have any remaining pendingVersions or commentVersions,
+ * then all comments that don't have any remaining pendingVersion or commentVersions,
  * then all threads that don't have any remaining comments.
  * Also adds flags indicating what the user is permitted to do.
  */
@@ -77,9 +71,9 @@ const stripHiddenAndAddUserInfo = async (discussion, userId) => {
               ...cv,
               author: usersMap[cv.userId],
             })),
-            pendingVersions: c.pendingVersions
+            pendingVersion: c.pendingVersions
               .filter(pv => pv.userId === userId)
-              .map(pv => ({ ...pv, author: usersMap[pv.userId] })),
+              .map(pv => ({ ...pv, author: usersMap[pv.userId] }))[0], // Should be no more than 1 pendingVersion per user
           }))
           .filter(c => c.commentVersions.length || c.pendingVersions.length),
       }))
@@ -96,7 +90,7 @@ const convertUsersPendingVersionsToCommentVersions = (userId, comment, now) => {
 
   // Should be only one pendingVersion for a user, but to be safe we assume there could be multiple
   for (const pendingVersion of comment.pendingVersions.filter(
-    pv => pv.userId === userId && hasValue(pv.comment),
+    pv => pv.userId === userId,
   )) {
     if (!comment.commentVersions) comment.commentVersions = []
 
@@ -107,12 +101,13 @@ const convertUsersPendingVersionsToCommentVersions = (userId, comment, now) => {
       userId,
       comment: pendingVersion.comment,
     })
-    comment.pendingVersions = comment.pendingVersions.filter(
-      pv => pv.id !== pendingVersion.id,
-    )
     hasUpdated = true
     comment.updated = now
   }
+
+  comment.pendingVersions = comment.pendingVersions.filter(
+    pv => pv.userId !== userId,
+  )
 
   return hasUpdated
 }
@@ -143,7 +138,6 @@ const resolvers = {
         threadedDiscussionId,
         threadId,
         commentId,
-        pendingVersionId,
         comment,
       },
       ctx,
@@ -183,12 +177,11 @@ const resolvers = {
       }
 
       let pendingVersion = commnt.pendingVersions.find(
-        pv => pv.id === pendingVersionId,
+        pv => pv.userId === ctx.user,
       )
 
       if (!pendingVersion) {
         pendingVersion = {
-          id: pendingVersionId,
           userId: ctx.user,
           created: now,
         }
@@ -196,12 +189,6 @@ const resolvers = {
       }
 
       pendingVersion.updated = now
-
-      if (pendingVersion.userId !== ctx.user)
-        throw new Error(
-          `Illegal attempt by user ${ctx.user} to edit a pending comment by user ${pendingVersion.userId}`,
-        )
-
       pendingVersion.comment = comment
 
       await models.ThreadedDiscussion.query().upsertGraphAndFetch(
@@ -325,7 +312,7 @@ extend type Query {
   threadedDiscussions(manuscriptId: ID!): [ThreadedDiscussion!]!
 }
 extend type Mutation {
-  updatePendingComment(manuscriptId: ID!, threadedDiscussionId: ID!, threadId: ID!, commentId: ID!, pendingVersionId: ID!, comment: String): ThreadedDiscussion!
+  updatePendingComment(manuscriptId: ID!, threadedDiscussionId: ID!, threadId: ID!, commentId: ID!, comment: String): ThreadedDiscussion!
   completeComments(threadedDiscussionId: ID!): ThreadedDiscussion!
   completeComment(threadedDiscussionId: ID!, threadId: ID!, commentId: ID!): ThreadedDiscussion!
   deletePendingComment(threadedDiscussionId: ID!, threadId: ID!, commentId: ID!): ThreadedDiscussion!
@@ -354,11 +341,18 @@ type ThreadComment {
   created: DateTime!
   updated: DateTime
   commentVersions: [ThreadedCommentVersion!]!
-  pendingVersions: [ThreadedCommentVersion!]!
+  pendingVersion: PendingThreadComment
 }
 
 type ThreadedCommentVersion {
   id: ID!
+  created: DateTime!
+  updated: DateTime
+  author: User!
+  comment: String!
+}
+
+type PendingThreadComment {
   created: DateTime!
   updated: DateTime
   author: User!

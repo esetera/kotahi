@@ -146,11 +146,6 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
                 return incoming
               },
             },
-            pendingVersions: {
-              merge(existing, incoming) {
-                return incoming
-              },
-            },
           },
         },
         User: {
