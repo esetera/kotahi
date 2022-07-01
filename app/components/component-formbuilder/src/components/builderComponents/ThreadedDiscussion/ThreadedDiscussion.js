@@ -87,6 +87,7 @@ const ThreadedDiscussion = ({
   const [threadId] = useState(threadedDiscussion?.threads?.[0]?.id || uuid())
   const threadComments = threadedDiscussion?.threads?.[0]?.comments || []
   const [comments, setComments] = useState([])
+  const mustCreateNewThreadedDiscussion = !threadedDiscussion?.id
 
   const [commentsToPublish, setCommentsToPublish] = useState(
     commsToPublish || [],
@@ -108,60 +109,73 @@ const ThreadedDiscussion = ({
         comments.map((comment, index) => {
           const isLastComment = index >= comments.length - 1
 
+          const handleUpdateComment = content => {
+            updatePendingComment({
+              variables: {
+                manuscriptId: firstVersionManuscriptId,
+                threadedDiscussionId,
+                threadId,
+                commentId: comment.id,
+                comment: content,
+              },
+            })
+          }
+
+          const handleUpdateNewComment = content => {
+            handleUpdateComment(content)
+            if (mustCreateNewThreadedDiscussion) onChange(threadedDiscussionId) // This will record the threadedDiscussion ID in the form data
+            setComments(
+              comments.map(c =>
+                c.id === comment.id ? { ...c, comment: content } : c,
+              ),
+            )
+          }
+
+          const handleCancelEditingComment = () =>
+            deletePendingComment({
+              variables: {
+                threadedDiscussionId,
+                threadId,
+                commentId: comment.id,
+              },
+            })
+
+          const handleSubmitButtonClick = () => {
+            if (hasValue(comment.comment)) {
+              completeComment({
+                variables: {
+                  threadedDiscussionId,
+                  threadId,
+                  commentId: comment.id,
+                },
+              })
+
+              setComments(
+                comments.map(c =>
+                  c.id === comment.id
+                    ? {
+                        ...c,
+                        isEditing: false,
+                        existingComment: undefined,
+                      }
+                    : c,
+                ),
+              )
+            }
+          }
+
           if (isLastComment && comment.isEditing && !comment.existingComment)
             return (
               <div key={comment.id}>
                 <SimpleWaxEditorWrapper key={comment.id}>
                   <SimpleWaxEditor
                     {...SimpleWaxEditorProps}
-                    onChange={content => {
-                      updatePendingComment({
-                        variables: {
-                          manuscriptId: firstVersionManuscriptId,
-                          threadedDiscussionId,
-                          threadId,
-                          commentId: comment.id,
-                          comment: content,
-                        },
-                      })
-                      if (!threadedDiscussion?.id)
-                        onChange(threadedDiscussionId)
-                      setComments(
-                        comments.map(c =>
-                          c.id === comment.id ? { ...c, comment: content } : c,
-                        ),
-                      )
-                    }}
+                    onChange={handleUpdateNewComment}
                     value={comment.comment}
                   />
                 </SimpleWaxEditorWrapper>
                 {shouldRenderSubmitButton && (
-                  <ActionButton
-                    onClick={() => {
-                      if (hasValue(comment.comment)) {
-                        completeComment({
-                          variables: {
-                            threadedDiscussionId,
-                            threadId,
-                            commentId: comment.id,
-                          },
-                        })
-
-                        setComments(
-                          comments.map(c =>
-                            c.id === comment.id
-                              ? {
-                                  ...c,
-                                  isEditing: false,
-                                  existingComment: undefined,
-                                }
-                              : c,
-                          ),
-                        )
-                      }
-                    }}
-                    primary
-                  >
+                  <ActionButton onClick={handleSubmitButtonClick} primary>
                     Submit
                   </ActionButton>
                 )}
@@ -173,26 +187,8 @@ const ThreadedDiscussion = ({
               comment={comment}
               currentUser={currentUser}
               key={comment.id}
-              onCancel={() =>
-                deletePendingComment({
-                  variables: {
-                    threadedDiscussionId,
-                    threadId,
-                    commentId: comment.id,
-                  },
-                })
-              }
-              onChange={content => {
-                updatePendingComment({
-                  variables: {
-                    manuscriptId: firstVersionManuscriptId,
-                    threadedDiscussionId,
-                    threadId,
-                    commentId: comment.id,
-                    comment: content,
-                  },
-                })
-              }}
+              onCancel={handleCancelEditingComment}
+              onChange={handleUpdateComment}
               onSubmit={() =>
                 completeComment({
                   variables: {
