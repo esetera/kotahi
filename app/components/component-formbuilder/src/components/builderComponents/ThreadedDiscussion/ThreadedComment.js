@@ -19,6 +19,12 @@ import { UserAvatar } from '../../../../../component-avatar/src'
 import Modal from '../../../../../component-modal/src'
 import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 
+const hasValue = value =>
+  typeof value === 'string' &&
+  value &&
+  value !== '<p></p>' &&
+  value !== '<p class="paragraph"></p>'
+
 const ThreadedComment = ({
   comment,
   currentUser,
@@ -102,15 +108,19 @@ const ThreadedComment = ({
             </Collapse>
           </ActionWrapper>
         </CommentWrapper>
-        <SimpleWaxEditorWrapper collapse={collapse}>
-          <SimpleWaxEditor
-            {...simpleWaxEditorProps}
-            key={counter}
-            readonly
-            value={existingComment?.comment || modalFieldValue}
-          />
-          <CollapseOverlay collapse={collapse} />
-        </SimpleWaxEditorWrapper>
+        {hasValue(existingComment?.comment || modalFieldValue) ? (
+          <SimpleWaxEditorWrapper collapse={collapse}>
+            <SimpleWaxEditor
+              {...simpleWaxEditorProps}
+              key={counter}
+              readonly
+              value={existingComment?.comment || modalFieldValue}
+            />
+            <CollapseOverlay collapse={collapse} />
+          </SimpleWaxEditorWrapper>
+        ) : (
+          'Comment is deleted'
+        )}
         <Modal isOpen={openModal}>
           <ModalContainer>
             <SimpleWaxEditor
