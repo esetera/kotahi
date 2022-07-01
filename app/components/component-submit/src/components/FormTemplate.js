@@ -306,11 +306,7 @@ const InnerFormTemplate = ({
           .filter(
             element =>
               element.component &&
-              (showEditorOnlyFields || element.hideFromAuthors !== 'true') &&
-              (element.component !== 'ThreadedDiscussion' ||
-                tdProps.threadedDiscussions.some(
-                  d => d.id === values[element.name],
-                )),
+              (showEditorOnlyFields || element.hideFromAuthors !== 'true'),
           )
           .map(prepareFieldProps)
           .map((element, i) => {

@@ -120,7 +120,12 @@ const DecisionVersions = ({
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}
                 updateReviewJsonData={(value, path) =>
-                  updateReviewJsonData(initialValue.id, value, path)
+                  updateReviewJsonData(
+                    initialValue.id,
+                    value,
+                    path,
+                    version.manuscript.id,
+                  )
                 }
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}

@@ -241,7 +241,7 @@ const DecisionPage = ({ match }) => {
   }
 
   /** This will only send the modified field, not the entire review object */
-  const updateReviewJsonData = (reviewId, value, path) => {
+  const updateReviewJsonData = (reviewId, value, path, manuscriptVersionId) => {
     const reviewDelta = {} // Only the changed fields
     // E.g. if path is 'meta.title' and value is 'Foo' this gives { meta: { title: 'Foo' } }
     set(reviewDelta, path, value)
@@ -249,11 +249,11 @@ const DecisionPage = ({ match }) => {
     const reviewPayload = {
       isDecision: true,
       jsonData: JSON.stringify(reviewDelta),
-      manuscriptId: manuscript.id,
+      manuscriptId: manuscriptVersionId,
       userId: currentUser.id,
     }
 
-    updateReview(reviewId, reviewPayload, manuscript.id)
+    updateReview(reviewId, reviewPayload, manuscriptVersionId)
   }
 
   const threadedDiscussionProps = {

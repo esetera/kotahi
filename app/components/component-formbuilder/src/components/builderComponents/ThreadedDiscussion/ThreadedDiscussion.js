@@ -108,12 +108,14 @@ const ThreadedDiscussion = ({
                   {...SimpleWaxEditorProps}
                   onChange={content => {
                     updatePendingComment({
-                      manuscriptId: firstVersionManuscriptId,
-                      threadedDiscussionId,
-                      threadId,
-                      commentId: comment.id,
-                      pendingVersionId: comment.versionId,
-                      comment: content,
+                      variables: {
+                        manuscriptId: firstVersionManuscriptId,
+                        threadedDiscussionId,
+                        threadId,
+                        commentId: comment.id,
+                        pendingVersionId: comment.versionId,
+                        comment: content,
+                      },
                     })
                     if (!threadedDiscussion?.id) onChange(threadedDiscussionId)
                   }}
