@@ -18,12 +18,7 @@ import { FieldPublishingSelector, Icon } from '../../../../../shared'
 import { UserAvatar } from '../../../../../component-avatar/src'
 import Modal from '../../../../../component-modal/src'
 import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
-
-const hasValue = value =>
-  typeof value === 'string' &&
-  value &&
-  value !== '<p></p>' &&
-  value !== '<p class="paragraph"></p>'
+import { hasValue } from '../../../../../../shared/htmlUtils'
 
 const ThreadedComment = ({
   comment,

@@ -22,6 +22,7 @@ import { articleStatuses } from '../../../../globals'
 import { validateFormField } from '../../../../shared/formValidation'
 import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
 import ActionButton from '../../../shared/ActionButton'
+import { hasValue } from '../../../../shared/htmlUtils'
 
 const Intro = styled.div`
   font-style: italic;
@@ -93,12 +94,6 @@ const FieldHead = styled.div`
   width: auto;
 `
 
-const hasValue = value =>
-  typeof value === 'string' &&
-  value &&
-  value !== '<p></p>' &&
-  value !== '<p class="paragraph"></p>'
-
 const filterFileManuscript = files =>
   files.filter(
     file =>
@@ -133,7 +128,7 @@ elements.AbstractEditor = ({
       }}
       onChange={val => {
         setTouched(set({}, rest.name, true))
-        const cleanedVal = val === '<p class="paragraph"></p>' ? '' : val
+        const cleanedVal = hasValue(val) ? val : ''
         onChange(cleanedVal)
       }}
     />

@@ -4,13 +4,7 @@ import ActionButton from '../../../../../shared/ActionButton'
 import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 import { SimpleWaxEditorWrapper } from '../../style'
 import ThreadedComment from './ThreadedComment'
-
-// TODO Consolidate all the different copies of this function in one place
-const hasValue = value =>
-  typeof value === 'string' &&
-  value &&
-  value !== '<p></p>' &&
-  value !== '<p class="paragraph"></p>'
+import { hasValue } from '../../../../../../shared/htmlUtils'
 
 /** Returns an array of objects supplying useful into for each comment; and adds a new one at the end
  * if the user is permitted to add a new comment and haven't yet started doing so.
