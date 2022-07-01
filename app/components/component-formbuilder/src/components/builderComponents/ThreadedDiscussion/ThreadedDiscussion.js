@@ -140,12 +140,14 @@ const ThreadedDiscussion = ({
               }
               onChange={content => {
                 updatePendingComment({
-                  manuscriptId: firstVersionManuscriptId,
-                  threadedDiscussionId,
-                  threadId,
-                  commentId: comment.id,
-                  pendingVersionId: uuid(), // TODO generate better value?
-                  comment: content,
+                  variables: {
+                    manuscriptId: firstVersionManuscriptId,
+                    threadedDiscussionId,
+                    threadId,
+                    commentId: comment.id,
+                    pendingVersionId: uuid(), // TODO generate better value?
+                    comment: content,
+                  },
                 })
               }}
               onSubmit={() =>
