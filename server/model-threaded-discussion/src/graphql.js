@@ -12,8 +12,9 @@ const getOriginalVersionManuscriptId = async manuscriptId => {
 
 const filterDistinct = (id, index, arr) => arr.indexOf(id) === index
 
-const userIsEditorOfLatestVersion = async (
+const userHasRoleInLatestVersion = async (
   userId,
+  roles,
   firstVersionManuscriptId,
 ) => {
   const latestVersionMs = (
@@ -27,11 +28,19 @@ const userIsEditorOfLatestVersion = async (
   )[0]
 
   return latestVersionMs.teams.some(
-    t =>
-      ['seniorEditor', 'handlingEditor', 'editor'].includes(t.role) &&
-      t.members.some(m => m.userId === userId),
+    t => roles.includes(t.role) && t.members.some(m => m.userId === userId),
   )
 }
+
+const userIsEditorOfLatestVersion = async (userId, firstVersionManuscriptId) =>
+  userHasRoleInLatestVersion(
+    userId,
+    ['seniorEditor', 'handlingEditor', 'editor'],
+    firstVersionManuscriptId,
+  )
+
+const userIsAuthorOfLatestVersion = async (userId, firstVersionManuscriptId) =>
+  userHasRoleInLatestVersion(userId, ['author'], firstVersionManuscriptId)
 
 /** Returns a threadedDiscussion that strips out all pendingVersions not for this userId,
  * then all comments that don't have any remaining pendingVersion or commentVersions,
@@ -59,6 +68,11 @@ const stripHiddenAndAddUserInfo = async (discussion, userId) => {
     usersMap[userId].admin ||
     (await userIsEditorOfLatestVersion(userId, discussion.manuscriptId))
 
+  const userIsAuthor = await userIsAuthorOfLatestVersion(
+    userId,
+    discussion.manuscriptId,
+  )
+
   return {
     ...discussion,
     threads: discussion.threads
@@ -78,7 +92,7 @@ const stripHiddenAndAddUserInfo = async (discussion, userId) => {
           .filter(c => c.commentVersions.length || c.pendingVersions.length),
       }))
       .filter(t => t.comments.length),
-    userCanAddComment: true, // Current logic is that all users can add comments
+    userCanAddComment: userIsAuthor || userIsAdminOrEditor, // Current use case prohibits reviewers from commenting
     userCanEditOwnComment: userIsAdminOrEditor,
     userCanEditAnyComment: userIsAdminOrEditor,
   }
