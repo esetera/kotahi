@@ -7,4 +7,4 @@ CREATE TABLE IF NOT EXISTS threaded_discussions (
 );
 
 ALTER TABLE threaded_discussions
-  ADD CONSTRAINT threaded_discussions_manuscript_id_fkey FOREIGN KEY (manuscript_id) REFERENCES manuscripts(id);
+  ADD CONSTRAINT threaded_discussions_manuscript_id_fkey FOREIGN KEY (manuscript_id) REFERENCES manuscripts(id) ON DELETE CASCADE;
