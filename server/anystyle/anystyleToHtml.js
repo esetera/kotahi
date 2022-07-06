@@ -19,6 +19,9 @@ const rawData = fs.readFileSync(
 //
 // <ref-list> —> <section class="reflist">
 // <ref id="ref-###"><mixed-citation> --> <p class="mixedcitation" id="ref=###">
+//
+// AUTHORS
+//
 // <person-group person-group-type="author"> --> <span class="authorgroup">
 // <name> --> <span class="authorname">
 // <surname> --> <span class="surname">
@@ -26,6 +29,14 @@ const rawData = fs.readFileSync(
 // <suffix> --> <span class="suffix">
 // <etal> --> <span class="etal" />
 // <string-name> --> <span class="stringname"> (it would be nice if we didn't have to use this!)
+//
+// TITLES
+//
+// <source> ––> <span class="source">
+// <article-title> --< <span class="articletitle">
+// <volume> --> <span class="volume">
+// <fpage> --> <span class="fpage">
+// <lpage> --> <span class="lpage">
 
 const arrayOfRawData = rawData.split('\n').filter(x => x.length)
 
@@ -51,7 +62,8 @@ const anyStyleToHtml = referenceArray => {
 
     // 1. deal with citation numbers
     // Query: why does citation-number come in as an array?
-    // If we don't have a citation number, we're just sending this back as the index. This is not necessarily unique.
+    // If we don't have a citation number, we're just sending this back as the index. This is not necessarily unique. Do this in a smarter way?
+
     console.log(
       `Citation number found for citation ${i}: ${JSON.stringify(
         thisRef['citation-number'],
@@ -64,7 +76,15 @@ const anyStyleToHtml = referenceArray => {
         : i + 1
 
     delete thisRef['citation-number']
-    thisOut += `<p class="mixedcitaion" id="ref-${citationNumber}">`
+
+    // If type is coming in, add it as a class to the <p class="mixedcitation">
+
+    const type = thisRef.type ? makeStringSafeId(thisRef.type) : ''
+    delete thisRef.type
+
+    thisOut += `<p class="mixedcitation type-${type}" id="ref-${citationNumber}">`
+
+    // Deal with authors
 
     if (thisRef.author) {
       let thisAuthorGroup = `<span class="authorgroup">`
@@ -119,8 +139,82 @@ const anyStyleToHtml = referenceArray => {
       delete thisRef.author
     }
 
+    // deal with article title
+
+    if (thisRef.title && thisRef.title.length) {
+      thisOut += `<span class="articletitle">${thisRef.title[0]}</span>`
+
+      if (thisRef.title.length === 1) {
+        delete thisRef.title
+      } else {
+        // In what we have so far, title is always an array of length 1. Just in case, let's throw an error if it's not.
+        console.log(
+          'Title is longer than expected: ',
+          JSON.stringify(thisRef.title),
+        )
+      }
+    }
+
+    // deal with source title
+
+    if (thisRef['container-title'] && thisRef['container-title'].length) {
+      thisOut += `<span class="source">${thisRef['container-title'][0]}</span>`
+
+      if (thisRef['container-title'].length === 1) {
+        delete thisRef['container-title']
+      } else {
+        // In what we have so far, container-title is always an array of length 1. Just in case, let's throw an error if it's not.
+        console.log(
+          'Container-title is longer than expected: ',
+          JSON.stringify(thisRef['container-title']),
+        )
+      }
+    }
+
+    // deal with volume, which comes in as an array for some reason.
+
+    if (thisRef.volume && thisRef.volume.length) {
+      thisOut += `<span class="volume">${thisRef.volume[0]}</span>`
+
+      if (thisRef.volume.length === 1) {
+        delete thisRef.volume
+      } else {
+        // In what we have so far, volume is always an array of length 1. Just in case, let's throw an error if it's not.
+        console.log(
+          'Volume is longer than expected: ',
+          JSON.stringify(thisRef.volume),
+        )
+      }
+    }
+
+    // deal with page numbers, which comes in as an array for some reason.
+
+    if (thisRef.pages && thisRef.pages.length) {
+      const pageString = thisRef.pages[0].split(/[-,–]/)
+      thisOut += `<span class="fpage">${pageString[0]}</span>`
+
+      if (pageString.length > 1) {
+        // if here, pages came in as a range
+        thisOut += `&ndash;<span class="lpage">${pageString[1]}</span>`
+
+        if (pageString.length > 2) {
+          console.log('Pages length is greater than 2!', pageString)
+        }
+      }
+
+      if (thisRef.pages.length === 1) {
+        delete thisRef.pages
+      } else {
+        // In what we have so far, pages is always an array of length 1. Just in case, let's throw an error if it's not.
+        console.log(
+          'Pages is longer than expected: ',
+          JSON.stringify(thisRef.pages),
+        )
+      }
+    }
+
     console.log(
-      `\n## Remainder for citation ${i}:`,
+      `\n## Unprocessed JSON remainder for citation ${i}:`,
       '\n```json\n',
       thisRef,
       '\n```\n',
@@ -129,7 +223,7 @@ const anyStyleToHtml = referenceArray => {
     thisOut += JSON.stringify(thisRef)
     thisOut += `</p>`
 
-    console.log(`\n## Output ${i}:`, '\n````html\n', thisOut, '\n````\n\n')
+    console.log(`\n## HTML output:`, '\n````html\n', thisOut, '\n````\n\n')
 
     outText += thisOut
   }
@@ -140,7 +234,7 @@ const anyStyleToHtml = referenceArray => {
 
 // This is designed for testing anystyle's conversion. To run:
 //
-// node server/anystyle/anystyleToHtml.js > server/anystyle/output/output.md
+// node server/anystyle/anystyleToHtml.js > server/anystyle/output/log.md
 
 anyStyleToHtml(sampleReferenceArray)
 
