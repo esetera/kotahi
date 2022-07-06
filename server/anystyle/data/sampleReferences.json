@@ -1,0 +1,385 @@
+[
+  {
+    "citation-number": [
+      "1."
+    ],
+    "author": [
+      {
+        "literal": "Delis DC, Kaplan E,. Kramer JH"
+      }
+    ],
+    "date": [
+      "2001"
+    ],
+    "title": [
+      "Delis-Kaplan Executive Function"
+    ],
+    "location": [
+      "System"
+    ],
+    "publisher": [
+      "D-KEFS"
+    ],
+    "type": "book"
+  },
+  {
+    "citation-number": [
+      "2."
+    ],
+    "date": [
+      "2015"
+    ],
+    "container-title": [
+      "GB of DS (2017): Global Burden of Disease Study 2015 (GBD 2015) Obesity and Overweight Prevalence 1980—2015. United States: Institute for Health Metrics and Evaluation (IHME"
+    ],
+    "location": [
+      "Seattle"
+    ],
+    "type": "chapter"
+  },
+  {
+    "citation-number": [
+      "3."
+    ],
+    "author": [
+      {
+        "family": "Hales",
+        "given": "C.M."
+      },
+      {
+        "family": "Carroll",
+        "given": "M.D."
+      },
+      {
+        "family": "Fryar",
+        "given": "C.D."
+      },
+      {
+        "family": "Ogden",
+        "given": "C.L."
+      }
+    ],
+    "date": [
+      "2020",
+      "2017"
+    ],
+    "title": [
+      "Prevalence of obesity and severe obesity among adults: United States"
+    ],
+    "note": [
+      "Retrieved from"
+    ],
+    "url": [
+      "https://stacks.cdc.gov/view/cdc/85451"
+    ],
+    "type": null
+  },
+  {
+    "citation-number": [
+      "4."
+    ],
+    "author": [
+      {
+        "family": "Organization",
+        "given": "W.H."
+      },
+      {
+        "given": "Others"
+      }
+    ],
+    "date": [
+      "2017"
+    ],
+    "title": [
+      "Obesity and overweight"
+    ],
+    "publisher": [
+      "Geneva. World Health Organization"
+    ],
+    "type": "book"
+  },
+  {
+    "citation-number": [
+      "5."
+    ],
+    "author": [
+      {
+        "family": "Huang",
+        "given": "Y."
+      },
+      {
+        "family": "Lu",
+        "given": "Y."
+      },
+      {
+        "family": "Huang",
+        "given": "Y.-M."
+      },
+      {
+        "family": "Wang",
+        "given": "M."
+      },
+      {
+        "family": "Ling",
+        "given": "W."
+      },
+      {
+        "family": "Sui",
+        "given": "Y."
+      },
+      {
+        "family": "Zhao",
+        "given": "H.-L."
+      }
+    ],
+    "date": [
+      "2020"
+    ],
+    "title": [
+      "Obesity in patients with COVID–19: a systematic review and meta-analysis"
+    ],
+    "volume": [
+      "113"
+    ],
+    "pages": [
+      "154378"
+    ],
+    "type": "article-journal",
+    "container-title": [
+      "Metabolism"
+    ]
+  },
+  {
+    "citation-number": [
+      "6."
+    ],
+    "author": [
+      {
+        "family": "Singh",
+        "given": "G.M."
+      },
+      {
+        "family": "Danaei",
+        "given": "G."
+      },
+      {
+        "family": "Farzadfar",
+        "given": "F."
+      },
+      {
+        "family": "Stevens",
+        "given": "G.A."
+      },
+      {
+        "family": "Woodward",
+        "given": "M."
+      },
+      {
+        "family": "Wormser",
+        "given": "D."
+      },
+      {
+        "others": true
+      }
+    ],
+    "date": [
+      "2013"
+    ],
+    "title": [
+      "The age-specific quantitative effects of metabolic risk factors on cardiovascular diseases and diabetes: a pooled analysis"
+    ],
+    "volume": [
+      "8"
+    ],
+    "pages": [
+      "65174"
+    ],
+    "type": "article-journal",
+    "container-title": [
+      "PLoS One"
+    ]
+  },
+  {
+    "citation-number": [
+      "7."
+    ],
+    "author": [
+      {
+        "family": "Miller",
+        "given": "A.A."
+      },
+      {
+        "family": "Spencer",
+        "given": "S.J."
+      }
+    ],
+    "date": [
+      "2014"
+    ],
+    "title": [
+      "Obesity and neuroinflammation: a pathway to cognitive impairment"
+    ],
+    "volume": [
+      "42"
+    ],
+    "pages": [
+      "10–21"
+    ],
+    "type": "article-journal",
+    "container-title": [
+      "Brain Behav Immun"
+    ]
+  },
+  {
+    "citation-number": [
+      "8."
+    ],
+    "author": [
+      {
+        "family": "Rochette",
+        "given": "A.D."
+      },
+      {
+        "family": "Spitznagel",
+        "given": "M.B."
+      },
+      {
+        "family": "Strain",
+        "given": "G."
+      },
+      {
+        "family": "Devlin",
+        "given": "M."
+      },
+      {
+        "family": "Crosby",
+        "given": "R.D."
+      },
+      {
+        "family": "Mitchell",
+        "given": "J.E."
+      },
+      {
+        "others": true
+      }
+    ],
+    "date": [
+      "2016"
+    ],
+    "title": [
+      "Mild cognitive impairment is prevalent in persons with severe obesity"
+    ],
+    "volume": [
+      "24"
+    ],
+    "pages": [
+      "1427–1429"
+    ],
+    "type": "article-journal",
+    "container-title": [
+      "Obesity"
+    ]
+  },
+  {
+    "citation-number": [
+      "9."
+    ],
+    "author": [
+      {
+        "family": "Fitzpatrick",
+        "given": "A.L."
+      },
+      {
+        "family": "Kuller",
+        "given": "L.H."
+      },
+      {
+        "family": "Lopez",
+        "given": "O.L."
+      },
+      {
+        "family": "Diehr",
+        "given": "P."
+      },
+      {
+        "family": "O’Meara",
+        "given": "E.S."
+      },
+      {
+        "family": "WT",
+        "given": "Longstreth",
+        "suffix": "Jr"
+      },
+      {
+        "family": "Luchsinger",
+        "given": "J.A."
+      }
+    ],
+    "date": [
+      "2009"
+    ],
+    "title": [
+      "Midlife and late-life obesity and the risk of dementia: cardiovascular health study"
+    ],
+    "volume": [
+      "66"
+    ],
+    "pages": [
+      "336–342"
+    ],
+    "type": "article-journal",
+    "container-title": [
+      "Arch Neurol"
+    ]
+  },
+  {
+    "citation-number": [
+      "10."
+    ],
+    "author": [
+      {
+        "family": "Bocarsly",
+        "given": "M.E."
+      },
+      {
+        "family": "Fasolino",
+        "given": "M."
+      },
+      {
+        "family": "Kane",
+        "given": "G.A."
+      },
+      {
+        "family": "LaMarca",
+        "given": "E.A."
+      },
+      {
+        "family": "Kirschen",
+        "given": "G.W."
+      },
+      {
+        "family": "Karatsoreos",
+        "given": "I.N."
+      },
+      {
+        "others": true
+      }
+    ],
+    "date": [
+      "2015"
+    ],
+    "title": [
+      "Obesity diminishes synaptic markers, alters microglial morphology, and impairs cognitive function"
+    ],
+    "volume": [
+      "112"
+    ],
+    "pages": [
+      "15731–15736"
+    ],
+    "type": "article-journal",
+    "container-title": [
+      "Proc Natl Acad Sci U S A"
+    ]
+  }
+]
