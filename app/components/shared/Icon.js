@@ -17,7 +17,7 @@ const IconWrapper = styled.div`
 
   svg {
     height: calc(${props => props.size} * ${th('gridUnit')});
-    stroke: ${props => props.color || props.theme.colorText};
+    stroke: ${props => props.iconColor || props.theme.colorText};
     width: calc(${props => props.size} * ${th('gridUnit')});
   }
 `
@@ -31,6 +31,7 @@ export const Icon = ({
   noPadding,
   inline,
   top,
+  onClick,
   ...props
 }) => {
   const name = _.upperFirst(_.camelCase(children))
@@ -38,9 +39,10 @@ export const Icon = ({
   return (
     <IconWrapper
       className={className}
-      color={color}
+      iconColor={color}
       inline={inline}
       noPadding={noPadding}
+      onClick={onClick}
       role="img"
       size={size}
       top={top}
@@ -52,11 +54,11 @@ export const Icon = ({
 
 Icon.defaultProps = {
   size: 3,
-  color: '#111',
+  color: '#111111',
 }
 
 Icon.propTypes = {
   children: PropTypes.string.isRequired,
   size: PropTypes.number,
-  color: PropTypes.string,
+  color: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 }

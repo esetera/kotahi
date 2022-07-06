@@ -1,7 +1,8 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { ThemeProvider } from 'styled-components'
 import { Wax } from 'wax-prosemirror-core'
+import { JournalContext } from '../../xpub-journal/src'
 import waxTheme from './layout/waxTheme'
 import fixAstralUnicode from './fixAstralUnicode'
 
@@ -25,6 +26,7 @@ const renderImage = file => {
 }
 
 const FullWaxEditor = ({
+  onAssetManager,
   value,
   validationStatus,
   readonly,
@@ -35,8 +37,11 @@ const FullWaxEditor = ({
   authorComments,
   fileUpload,
   user,
+  manuscriptId,
   ...rest
 }) => {
+  const handleAssetManager = () => onAssetManager(manuscriptId)
+  const journal = useContext(JournalContext)
   // TODO remove this step once we have a fix in Wax for https://gitlab.coko.foundation/kotahi/kotahi/-/issues/693
   // eslint-disable-next-line no-param-reassign
   value = fixAstralUnicode(value)
@@ -52,27 +57,24 @@ const FullWaxEditor = ({
 
   const editorRef = useRef(null)
 
-  console.log('rendering FullWaxEditor') // Why is this rerendering after we save?
-
   /* eslint-disable jsx-a11y/no-noninteractive-tabindex,  jsx-a11y/tabindex-no-positive */
-
   useEffect(() => {
     return () => {
-      if (editorRef.current) {
+      if (editorRef.current && saveSource !== null) {
         saveSource(editorRef.current.getContent())
       }
     }
   }, [])
-
   // return useMemo(
   //   () =>
   return (
-    <ThemeProvider theme={waxTheme}>
+    <ThemeProvider theme={{ textStyles: journal.textStyles, ...waxTheme }}>
       <div
         className={validationStatus}
         // onBlur={e => {
         //   e.stopPropagation()
         //   e.preventDefault()
+        // eslint-disable-next-line no-console
         //   console.log('onBlur firing in FullWaxEditor.js')
         //   saveSource(editorRef.current.getContent())
         // }}
@@ -81,7 +83,7 @@ const FullWaxEditor = ({
       >
         <Wax
           autoFocus={autoFocus}
-          config={fullWaxEditorConfig()}
+          config={fullWaxEditorConfig(handleAssetManager)}
           fileUpload={file => renderImage(file)}
           layout={
             useComments
@@ -89,7 +91,6 @@ const FullWaxEditor = ({
               : FullWaxEditorLayout(readonly)
           }
           onChange={source => {
-            console.log('onChange firign')
             saveSource(source)
           }}
           placeholder={placeholder}
