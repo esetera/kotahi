@@ -87,8 +87,9 @@ const deletePublication = async publicationId => {
   }
 }
 
-const publishToHypothesis = async manuscript => {
+const prepareTurndownService = () => {
   const turndownService = new TurndownService({ bulletListMarker: '-' })
+
   turndownService.addRule('unorderedLists', {
     filter: ['ul'],
     replacement(content, node) {
@@ -117,6 +118,11 @@ const publishToHypothesis = async manuscript => {
     },
   })
 
+  return turndownService
+}
+
+const publishToHypothesis = async manuscript => {
+  const turndownService = prepareTurndownService()
   const uri = manuscript.submission.biorxivURL || manuscript.submission.link
 
   const title =

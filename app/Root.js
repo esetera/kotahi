@@ -97,7 +97,7 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
                 return (r && r.roles) || []
               },
             },
-            fieldsToPublish: {
+            formFieldsToPublish: {
               merge(existing, incoming) {
                 return incoming
               },

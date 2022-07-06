@@ -288,7 +288,7 @@ class Manuscript extends BaseModel {
         importSource: { type: ['string', 'null'], format: 'uuid' },
         importSourceServer: { type: ['string', 'null'] },
         isHidden: { type: ['boolean', 'null'] },
-        fieldsToPublish: { type: 'array' },
+        formFieldsToPublish: { type: 'array' },
       },
     }
   }
