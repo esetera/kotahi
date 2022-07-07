@@ -186,9 +186,18 @@ const permitPublishingField = {
         label: 'No',
       },
     ],
-    label: 'Allow this field to be selected for publishing?',
+    label: 'Include when sharing or publishing?',
   },
   defaultValue: 'false',
+}
+
+const publishingTagField = {
+  component: 'TextField',
+  props: {
+    label: 'Hypothes.is tag',
+    description:
+      'You may specify a tag to use when sharing this field as a Hypothes.is annotation.',
+  },
 }
 
 const submissionElements = {
@@ -221,6 +230,8 @@ const submissionElements = {
     validate: validateOther,
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   LinksInput: {
     id: textfield,
@@ -231,6 +242,8 @@ const submissionElements = {
     validate: validateCollection,
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   AbstractEditor: {
     id: textfield,
@@ -243,6 +256,7 @@ const submissionElements = {
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   ThreadedDiscussion: {
     id: textfield,
@@ -254,6 +268,7 @@ const submissionElements = {
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   TextField: {
     id: textfield,
@@ -316,6 +331,7 @@ const submissionElements = {
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   CheckboxGroup: {
     id: textfield,
@@ -327,6 +343,8 @@ const submissionElements = {
     validate: validateCollection,
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   Select: {
     id: textfield,
@@ -339,6 +357,8 @@ const submissionElements = {
     validate: validateOther,
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   RadioGroup: {
     id: textfield,
@@ -352,6 +372,8 @@ const submissionElements = {
     validate: validateOther,
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
 }
 
@@ -382,6 +404,8 @@ const elements = {
     shortDescription: shortDescriptionField,
     validate: validateOther,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   LinksInput: {
     id: textfield,
@@ -391,6 +415,8 @@ const elements = {
     shortDescription: shortDescriptionField,
     validate: validateCollection,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   AbstractEditor: {
     id: textfield,
@@ -402,6 +428,7 @@ const elements = {
     validate: validateText,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   ThreadedDiscussion: {
     id: textfield,
@@ -413,6 +440,7 @@ const elements = {
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   TextField: {
     id: textfield,
@@ -474,6 +502,7 @@ const elements = {
     },
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   CheckboxGroup: {
     id: textfield,
@@ -484,6 +513,8 @@ const elements = {
     shortDescription: shortDescriptionField,
     validate: validateCollection,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   Select: {
     id: textfield,
@@ -495,6 +526,8 @@ const elements = {
     shortDescription: shortDescriptionField,
     validate: validateOther,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
   RadioGroup: {
     id: textfield,
@@ -507,6 +540,8 @@ const elements = {
     shortDescription: shortDescriptionField,
     validate: validateOther,
     hideFromAuthors: hideFromAuthorsField,
+    permitPublishing: permitPublishingField,
+    publishingTag: publishingTagField,
   },
 }
 

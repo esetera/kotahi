@@ -96,6 +96,7 @@ const query = gql`
           }
           hideFromAuthors
           permitPublishing
+          publishingTag
         }
       }
     }

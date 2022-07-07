@@ -1,5 +1,5 @@
 const models = require('@pubsweet/models')
-const { get } = require('lodash')
+const { get, escape } = require('lodash')
 
 /** For form for given purpose and category, return a list of all fields that are not confidential, each in the form
  * { name, title, component }
@@ -22,6 +22,15 @@ const getPublicFields = async (purpose, category) => {
     }))
 }
 
+const hasText = val => {
+  return (
+    typeof val === 'string' &&
+    val &&
+    val !== '<p class="paragraph"></p>' &&
+    val !== '<p></p>'
+  )
+}
+
 const getPublishableTextFromComment = commentObject => {
   if (!commentObject.commentVersions || !commentObject.commentVersions.length)
     return null
@@ -29,7 +38,79 @@ const getPublishableTextFromComment = commentObject => {
   const comment =
     commentObject.commentVersions[commentObject.commentVersions.length - 1]
 
-  return `<p><b>${comment.userId}:</b></p>${comment.comment}` // TODO Get author name instead of ID
+  if (!hasText(comment.comment)) return null
+  return `<p><b>${escape(comment.userId)}:</b></p>${comment.comment}` // TODO Get author name instead of ID
+}
+
+const getPublishableTextFromValue = (value, field) => {
+  if (field.component === 'TextField') {
+    if (!value) return null
+    return `<p>${escape(value)}</p>`
+  }
+
+  if (field.component === 'AbstractEditor') {
+    if (!hasText(value)) return null
+    return value
+  }
+
+  if (field.component === 'CheckboxGroup') {
+    const optionLabels = value.map(
+      val => (field.options.find(o => o.value === val) || { label: val }).label,
+    )
+
+    if (!optionLabels.length) return null
+    return `<p>${escape(
+      field.shortDescription || field.title,
+    )}:</p><ul>${optionLabels
+      .map(label => `<li>${escape(label)}</li>`)
+      .join('')}</ul>`
+  }
+
+  if (['Select', 'RadioGroup'].includes(field.component)) {
+    const { label } = field.options.find(o => o.value === value) || {
+      label: value,
+    }
+
+    return `<p>${escape(field.shortDescription || field.title)}: ${escape(
+      label,
+    )}</p>`
+  }
+
+  if (field.component === 'LinksInput') {
+    if (!value || !value.length) return null
+
+    return `<p>${escape(
+      field.shortDescription || field.title,
+    )}:</p><ul>${value
+      .map(
+        link =>
+          `<li><a href="${escape(link.url)}">${escape(link.url)}</a></li>`,
+      )
+      .join('')}</ul>`
+  }
+
+  if (field.component === 'AuthorsInput') {
+    if (!value || !value.length) return null
+    return `<p>${escape(
+      field.shortDescription || field.title,
+    )}:</p><ul>${value.map(author => {
+      const escapedName = escape(`${author.firstName} ${author.lastName}`)
+
+      const affiliationMarkup = author.affiliation
+        ? ` (${escape(author.affiliation)})`
+        : ''
+
+      const emailMarkup = author.email
+        ? ` <a href="mailto:${escape(author.email)}">${escape(
+            author.email,
+          )}</a>`
+        : ''
+
+      return `<li>${escapedName}${affiliationMarkup}${emailMarkup}</li>`
+    })}</ul>`
+  }
+
+  return value
 }
 
 const getPublishableFieldsForObject = (
@@ -49,6 +130,7 @@ const getPublishableFieldsForObject = (
   return fields
     .filter(f => f.permitPublishing === 'true' && f.hideFromAuthors !== 'true')
     .map(field => {
+      const { publishingTag } = field
       const value = get(data, field.name)
 
       if (field.component === 'ThreadedDiscussion') {
@@ -57,18 +139,19 @@ const getPublishableFieldsForObject = (
 
         return discussion.threads.map(t =>
           t.comments.map(c => {
-            const shouldPublish = fieldsToPublish.includes(
-              `${field.name}:${c.id}`,
-            )
+            const text = getPublishableTextFromComment(c)
 
-            const comment = getPublishableTextFromComment(c)
-            return { field, comment, shouldPublish, index } // TODO incorporate author name... and other info?
+            const shouldPublish =
+              text && fieldsToPublish.includes(`${field.name}:${c.id}`)
+
+            return { field, text, shouldPublish, publishingTag, index }
           }),
         )
       }
 
-      const shouldPublish = fieldsToPublish.includes(field.name)
-      return { field, value, shouldPublish, index }
+      const text = getPublishableTextFromValue(value, field)
+      const shouldPublish = text && fieldsToPublish.includes(field.name)
+      return { field, text, shouldPublish, publishingTag, index }
     })
     .flat(3)
 }
@@ -87,6 +170,8 @@ const getPublishableFields = async manuscript => {
   const threadedDiscussions = await models.ThreadedDiscussion.query().where({
     manuscriptId: manuscript.parentId || manuscript.id,
   })
+
+  // TODO The rest could be extracted into formUtils.js and made testable
 
   const result = []
 
