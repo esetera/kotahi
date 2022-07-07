@@ -188,9 +188,6 @@ const DecisionPage = ({ match }) => {
     })
   }
 
-  if (loading && !data) return <Spinner />
-  if (error) return <CommsErrorBanner error={error} />
-
   const {
     manuscript,
     submissionForm,

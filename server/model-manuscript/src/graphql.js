@@ -923,18 +923,18 @@ const resolvers = {
     },
     async setShouldPublishField(
       _,
-      { manuscriptId, category, fieldName, shouldPublish },
+      { manuscriptId, objectId, fieldName, shouldPublish },
     ) {
       const manuscript = await models.Manuscript.query().findById(manuscriptId)
 
       if (shouldPublish) {
         // Add
         let formFields = manuscript.formFieldsToPublish.find(
-          ff => ff.category === category,
+          ff => ff.objectId === objectId,
         )
 
         if (!formFields) {
-          formFields = { category, fieldsToPublish: [] }
+          formFields = { objectId, fieldsToPublish: [] }
           manuscript.formFieldsToPublish.push(formFields)
         }
 
@@ -944,10 +944,10 @@ const resolvers = {
         // Remove
         manuscript.formFieldsToPublish = manuscript.formFieldsToPublish
           .map(ff => {
-            if (ff.category !== category) return ff
+            if (ff.objectId !== objectId) return ff
 
             return {
-              category,
+              objectId,
               fieldsToPublish: ff.fieldsToPublish.filter(f => f !== fieldName),
             }
           })
@@ -1512,7 +1512,7 @@ const typeDefs = `
     publishManuscript(id: ID!): PublishingResult!
     createNewVersion(id: ID!): Manuscript
     importManuscripts: Boolean!
-    setShouldPublishField(manuscriptId: ID!, category: String!, fieldName: String!, shouldPublish: Boolean!): Manuscript!
+    setShouldPublishField(manuscriptId: ID!, objectId: ID!, fieldName: String!, shouldPublish: Boolean!): Manuscript!
   }
 
   type Manuscript implements Object {
@@ -1683,7 +1683,7 @@ const typeDefs = `
   }
 
   type FormFieldsToPublish {
-    category: String!
+    objectId: ID!
     fieldsToPublish: [String!]!
   }
 

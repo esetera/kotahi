@@ -3,8 +3,12 @@ const TurndownService = require('turndown')
 const axios = require('axios')
 const config = require('config')
 const { get } = require('lodash')
-const { getPublicFields } = require('../../model-form/src/formCommsUtils')
 const { ensureJsonIsParsed } = require('../../utils/objectUtils')
+
+const {
+  getPublicFields,
+  getPublishableFields,
+} = require('../../model-form/src/formCommsUtils')
 
 const {
   getFieldNamesAndTags,
@@ -129,6 +133,8 @@ const publishToHypothesis = async manuscript => {
     manuscript.meta.title ||
     manuscript.submission.title ||
     manuscript.submission.description
+
+  console.log(await getPublishableFields(manuscript))
 
   const publishableReviewFields = (
     await getPublicFields('review', 'review')

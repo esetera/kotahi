@@ -265,7 +265,7 @@ const DecisionVersion = ({
                   deleteFile={deleteFile}
                   fieldsToPublish={
                     version.formFieldsToPublish.find(
-                      ff => ff.category === 'decision',
+                      ff => ff.objectId === currentDecisionData.id,
                     )?.fieldsToPublish ?? []
                   }
                   form={decisionForm}
@@ -293,7 +293,7 @@ const DecisionVersion = ({
                     setShouldPublishField({
                       variables: {
                         manuscriptId: version.id,
-                        category: 'decision',
+                        objectId: currentDecisionData.id,
                         fieldName,
                         shouldPublish,
                       },

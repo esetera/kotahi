@@ -99,7 +99,7 @@ const manuscriptFields = `
   }
   published
   formFieldsToPublish {
-    category
+    objectId
     fieldsToPublish
   }
 `
@@ -286,10 +286,10 @@ export const sendEmail = gql`
 `
 
 export const setShouldPublishFieldMutation = gql`
-  mutation($manuscriptId: ID!, $category: String!, $fieldName: String!, $shouldPublish: Boolean!) {
+  mutation($manuscriptId: ID!, $objectId: ID!, $fieldName: String!, $shouldPublish: Boolean!) {
     setShouldPublishField(
       manuscriptId: $manuscriptId
-      category: $category
+      objectId: $objectId
       fieldName: $fieldName
       shouldPublish: $shouldPublish
     ) {
