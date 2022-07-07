@@ -19,13 +19,13 @@ String-name being used for unstructured author name: {"literal":"Delis DC, Kapla
 
 ## Unprocessed JSON remainder for citation 0: 
 ```json
- { date: [ '2001' ], location: [ 'System' ], publisher: [ 'D-KEFS' ] } 
+ { location: [ 'System' ], publisher: [ 'D-KEFS' ] } 
 ```
 
 
 ## HTML output: 
 ````html
- <p class="mixedcitation type-book" id="ref-1"><span class="authorgroup"><span class="stringname">Delis DC, Kaplan E,. Kramer JH</span></span><span class="articletitle">Delis-Kaplan Executive Function</span>{"date":["2001"],"location":["System"],"publisher":["D-KEFS"]}</p> 
+ <p class="mixedcitation type-book" id="ref-1"><span class="authorgroup"><span class="stringname">Delis DC, Kaplan E,. Kramer JH</span></span><span class="year">2001</span><span class="articletitle">Delis-Kaplan Executive Function</span>{"location":["System"],"publisher":["D-KEFS"]}</p> 
 ````
 
 
@@ -49,13 +49,13 @@ Citation number found for citation 1: ["2."]
 
 ## Unprocessed JSON remainder for citation 1: 
 ```json
- { date: [ '2015' ], location: [ 'Seattle' ] } 
+ { location: [ 'Seattle' ] } 
 ```
 
 
 ## HTML output: 
 ````html
- <p class="mixedcitation type-chapter" id="ref-2"><span class="source">GB of DS (2017): Global Burden of Disease Study 2015 (GBD 2015) Obesity and Overweight Prevalence 1980—2015. United States: Institute for Health Metrics and Evaluation (IHME</span>{"date":["2015"],"location":["Seattle"]}</p> 
+ <p class="mixedcitation type-chapter" id="ref-2"><span class="year">2015</span><span class="source">GB of DS (2017): Global Burden of Disease Study 2015 (GBD 2015) Obesity and Overweight Prevalence 1980—2015. United States: Institute for Health Metrics and Evaluation (IHME</span>{"location":["Seattle"]}</p> 
 ````
 
 
@@ -83,6 +83,7 @@ Citation number found for citation 1: ["2."]
 ```
 
 Citation number found for citation 2: ["3."]
+Date is longer than expected:  ["2020","2017"]
 
 ## Unprocessed JSON remainder for citation 2: 
 ```json
@@ -96,7 +97,7 @@ Citation number found for citation 2: ["3."]
 
 ## HTML output: 
 ````html
- <p class="mixedcitation type-" id="ref-3"><span class="authorgroup"><span class="author"><span class="surname">Hales</span><span class="givennames">C.M.</span></span><span class="author"><span class="surname">Carroll</span><span class="givennames">M.D.</span></span><span class="author"><span class="surname">Fryar</span><span class="givennames">C.D.</span></span><span class="author"><span class="surname">Ogden</span><span class="givennames">C.L.</span></span></span><span class="articletitle">Prevalence of obesity and severe obesity among adults: United States</span>{"date":["2020","2017"],"note":["Retrieved from"],"url":["https://stacks.cdc.gov/view/cdc/85451"]}</p> 
+ <p class="mixedcitation type-" id="ref-3"><span class="authorgroup"><span class="author"><span class="surname">Hales</span><span class="givennames">C.M.</span></span><span class="author"><span class="surname">Carroll</span><span class="givennames">M.D.</span></span><span class="author"><span class="surname">Fryar</span><span class="givennames">C.D.</span></span><span class="author"><span class="surname">Ogden</span><span class="givennames">C.L.</span></span></span><span class="year">2020,2017</span><span class="articletitle">Prevalence of obesity and severe obesity among adults: United States</span>{"date":["2020","2017"],"note":["Retrieved from"],"url":["https://stacks.cdc.gov/view/cdc/85451"]}</p> 
 ````
 
 
@@ -119,16 +120,13 @@ Citation number found for citation 3: ["4."]
 
 ## Unprocessed JSON remainder for citation 3: 
 ```json
- {
-  date: [ '2017' ],
-  publisher: [ 'Geneva. World Health Organization' ]
-} 
+ { publisher: [ 'Geneva. World Health Organization' ] } 
 ```
 
 
 ## HTML output: 
 ````html
- <p class="mixedcitation type-book" id="ref-4"><span class="authorgroup"><span class="author"><span class="surname">Organization</span><span class="givennames">W.H.</span></span><span class="author"><span class="givennames">Others</span></span></span><span class="articletitle">Obesity and overweight</span>{"date":["2017"],"publisher":["Geneva. World Health Organization"]}</p> 
+ <p class="mixedcitation type-book" id="ref-4"><span class="authorgroup"><span class="author"><span class="surname">Organization</span><span class="givennames">W.H.</span></span><span class="author"><span class="givennames">Others</span></span></span><span class="year">2017</span><span class="articletitle">Obesity and overweight</span>{"publisher":["Geneva. World Health Organization"]}</p> 
 ````
 
 
@@ -161,15 +159,9 @@ Citation number found for citation 3: ["4."]
 
 Citation number found for citation 4: ["5."]
 
-## Unprocessed JSON remainder for citation 4: 
-```json
- { date: [ '2020' ] } 
-```
-
-
 ## HTML output: 
 ````html
- <p class="mixedcitation type-article-journal" id="ref-5"><span class="authorgroup"><span class="author"><span class="surname">Huang</span><span class="givennames">Y.</span></span><span class="author"><span class="surname">Lu</span><span class="givennames">Y.</span></span><span class="author"><span class="surname">Huang</span><span class="givennames">Y.-M.</span></span><span class="author"><span class="surname">Wang</span><span class="givennames">M.</span></span><span class="author"><span class="surname">Ling</span><span class="givennames">W.</span></span><span class="author"><span class="surname">Sui</span><span class="givennames">Y.</span></span><span class="author"><span class="surname">Zhao</span><span class="givennames">H.-L.</span></span></span><span class="articletitle">Obesity in patients with COVID–19: a systematic review and meta-analysis</span><span class="source">Metabolism</span><span class="volume">113</span><span class="fpage">154378</span>{"date":["2020"]}</p> 
+ <p class="mixedcitation type-article-journal" id="ref-5"><span class="authorgroup"><span class="author"><span class="surname">Huang</span><span class="givennames">Y.</span></span><span class="author"><span class="surname">Lu</span><span class="givennames">Y.</span></span><span class="author"><span class="surname">Huang</span><span class="givennames">Y.-M.</span></span><span class="author"><span class="surname">Wang</span><span class="givennames">M.</span></span><span class="author"><span class="surname">Ling</span><span class="givennames">W.</span></span><span class="author"><span class="surname">Sui</span><span class="givennames">Y.</span></span><span class="author"><span class="surname">Zhao</span><span class="givennames">H.-L.</span></span></span><span class="year">2020</span><span class="articletitle">Obesity in patients with COVID–19: a systematic review and meta-analysis</span><span class="source">Metabolism</span><span class="volume">113</span><span class="fpage">154378</span>{}</p> 
 ````
 
 
@@ -202,15 +194,9 @@ Citation number found for citation 4: ["5."]
 
 Citation number found for citation 5: ["6."]
 
-## Unprocessed JSON remainder for citation 5: 
-```json
- { date: [ '2013' ] } 
-```
-
-
 ## HTML output: 
 ````html
- <p class="mixedcitation type-article-journal" id="ref-6"><span class="authorgroup"><span class="author"><span class="surname">Singh</span><span class="givennames">G.M.</span></span><span class="author"><span class="surname">Danaei</span><span class="givennames">G.</span></span><span class="author"><span class="surname">Farzadfar</span><span class="givennames">F.</span></span><span class="author"><span class="surname">Stevens</span><span class="givennames">G.A.</span></span><span class="author"><span class="surname">Woodward</span><span class="givennames">M.</span></span><span class="author"><span class="surname">Wormser</span><span class="givennames">D.</span></span><span class="etal" /></span><span class="articletitle">The age-specific quantitative effects of metabolic risk factors on cardiovascular diseases and diabetes: a pooled analysis</span><span class="source">PLoS One</span><span class="volume">8</span><span class="fpage">65174</span>{"date":["2013"]}</p> 
+ <p class="mixedcitation type-article-journal" id="ref-6"><span class="authorgroup"><span class="author"><span class="surname">Singh</span><span class="givennames">G.M.</span></span><span class="author"><span class="surname">Danaei</span><span class="givennames">G.</span></span><span class="author"><span class="surname">Farzadfar</span><span class="givennames">F.</span></span><span class="author"><span class="surname">Stevens</span><span class="givennames">G.A.</span></span><span class="author"><span class="surname">Woodward</span><span class="givennames">M.</span></span><span class="author"><span class="surname">Wormser</span><span class="givennames">D.</span></span><span class="etal" /></span><span class="year">2013</span><span class="articletitle">The age-specific quantitative effects of metabolic risk factors on cardiovascular diseases and diabetes: a pooled analysis</span><span class="source">PLoS One</span><span class="volume">8</span><span class="fpage">65174</span>{}</p> 
 ````
 
 
@@ -238,15 +224,9 @@ Citation number found for citation 5: ["6."]
 
 Citation number found for citation 6: ["7."]
 
-## Unprocessed JSON remainder for citation 6: 
-```json
- { date: [ '2014' ] } 
-```
-
-
 ## HTML output: 
 ````html
- <p class="mixedcitation type-article-journal" id="ref-7"><span class="authorgroup"><span class="author"><span class="surname">Miller</span><span class="givennames">A.A.</span></span><span class="author"><span class="surname">Spencer</span><span class="givennames">S.J.</span></span></span><span class="articletitle">Obesity and neuroinflammation: a pathway to cognitive impairment</span><span class="source">Brain Behav Immun</span><span class="volume">42</span><span class="fpage">10</span><span class="lpage">21</span>{"date":["2014"]}</p> 
+ <p class="mixedcitation type-article-journal" id="ref-7"><span class="authorgroup"><span class="author"><span class="surname">Miller</span><span class="givennames">A.A.</span></span><span class="author"><span class="surname">Spencer</span><span class="givennames">S.J.</span></span></span><span class="year">2014</span><span class="articletitle">Obesity and neuroinflammation: a pathway to cognitive impairment</span><span class="source">Brain Behav Immun</span><span class="volume">42</span><span class="fpage">10</span>&ndash;<span class="lpage">21</span>{}</p> 
 ````
 
 
@@ -279,15 +259,9 @@ Citation number found for citation 6: ["7."]
 
 Citation number found for citation 7: ["8."]
 
-## Unprocessed JSON remainder for citation 7: 
-```json
- { date: [ '2016' ] } 
-```
-
-
 ## HTML output: 
 ````html
- <p class="mixedcitation type-article-journal" id="ref-8"><span class="authorgroup"><span class="author"><span class="surname">Rochette</span><span class="givennames">A.D.</span></span><span class="author"><span class="surname">Spitznagel</span><span class="givennames">M.B.</span></span><span class="author"><span class="surname">Strain</span><span class="givennames">G.</span></span><span class="author"><span class="surname">Devlin</span><span class="givennames">M.</span></span><span class="author"><span class="surname">Crosby</span><span class="givennames">R.D.</span></span><span class="author"><span class="surname">Mitchell</span><span class="givennames">J.E.</span></span><span class="etal" /></span><span class="articletitle">Mild cognitive impairment is prevalent in persons with severe obesity</span><span class="source">Obesity</span><span class="volume">24</span><span class="fpage">1427</span><span class="lpage">1429</span>{"date":["2016"]}</p> 
+ <p class="mixedcitation type-article-journal" id="ref-8"><span class="authorgroup"><span class="author"><span class="surname">Rochette</span><span class="givennames">A.D.</span></span><span class="author"><span class="surname">Spitznagel</span><span class="givennames">M.B.</span></span><span class="author"><span class="surname">Strain</span><span class="givennames">G.</span></span><span class="author"><span class="surname">Devlin</span><span class="givennames">M.</span></span><span class="author"><span class="surname">Crosby</span><span class="givennames">R.D.</span></span><span class="author"><span class="surname">Mitchell</span><span class="givennames">J.E.</span></span><span class="etal" /></span><span class="year">2016</span><span class="articletitle">Mild cognitive impairment is prevalent in persons with severe obesity</span><span class="source">Obesity</span><span class="volume">24</span><span class="fpage">1427</span>&ndash;<span class="lpage">1429</span>{}</p> 
 ````
 
 
@@ -320,15 +294,9 @@ Citation number found for citation 7: ["8."]
 
 Citation number found for citation 8: ["9."]
 
-## Unprocessed JSON remainder for citation 8: 
-```json
- { date: [ '2009' ] } 
-```
-
-
 ## HTML output: 
 ````html
- <p class="mixedcitation type-article-journal" id="ref-9"><span class="authorgroup"><span class="author"><span class="surname">Fitzpatrick</span><span class="givennames">A.L.</span></span><span class="author"><span class="surname">Kuller</span><span class="givennames">L.H.</span></span><span class="author"><span class="surname">Lopez</span><span class="givennames">O.L.</span></span><span class="author"><span class="surname">Diehr</span><span class="givennames">P.</span></span><span class="author"><span class="surname">O’Meara</span><span class="givennames">E.S.</span></span><span class="author"><span class="surname">WT</span><span class="givennames">Longstreth</span><span class="suffix">Jr</span></span><span class="author"><span class="surname">Luchsinger</span><span class="givennames">J.A.</span></span></span><span class="articletitle">Midlife and late-life obesity and the risk of dementia: cardiovascular health study</span><span class="source">Arch Neurol</span><span class="volume">66</span><span class="fpage">336</span><span class="lpage">342</span>{"date":["2009"]}</p> 
+ <p class="mixedcitation type-article-journal" id="ref-9"><span class="authorgroup"><span class="author"><span class="surname">Fitzpatrick</span><span class="givennames">A.L.</span></span><span class="author"><span class="surname">Kuller</span><span class="givennames">L.H.</span></span><span class="author"><span class="surname">Lopez</span><span class="givennames">O.L.</span></span><span class="author"><span class="surname">Diehr</span><span class="givennames">P.</span></span><span class="author"><span class="surname">O’Meara</span><span class="givennames">E.S.</span></span><span class="author"><span class="surname">WT</span><span class="givennames">Longstreth</span><span class="suffix">Jr</span></span><span class="author"><span class="surname">Luchsinger</span><span class="givennames">J.A.</span></span></span><span class="year">2009</span><span class="articletitle">Midlife and late-life obesity and the risk of dementia: cardiovascular health study</span><span class="source">Arch Neurol</span><span class="volume">66</span><span class="fpage">336</span>&ndash;<span class="lpage">342</span>{}</p> 
 ````
 
 
@@ -361,15 +329,9 @@ Citation number found for citation 8: ["9."]
 
 Citation number found for citation 9: ["10."]
 
-## Unprocessed JSON remainder for citation 9: 
-```json
- { date: [ '2015' ] } 
-```
-
-
 ## HTML output: 
 ````html
- <p class="mixedcitation type-article-journal" id="ref-10"><span class="authorgroup"><span class="author"><span class="surname">Bocarsly</span><span class="givennames">M.E.</span></span><span class="author"><span class="surname">Fasolino</span><span class="givennames">M.</span></span><span class="author"><span class="surname">Kane</span><span class="givennames">G.A.</span></span><span class="author"><span class="surname">LaMarca</span><span class="givennames">E.A.</span></span><span class="author"><span class="surname">Kirschen</span><span class="givennames">G.W.</span></span><span class="author"><span class="surname">Karatsoreos</span><span class="givennames">I.N.</span></span><span class="etal" /></span><span class="articletitle">Obesity diminishes synaptic markers, alters microglial morphology, and impairs cognitive function</span><span class="source">Proc Natl Acad Sci U S A</span><span class="volume">112</span><span class="fpage">15731</span><span class="lpage">15736</span>{"date":["2015"]}</p> 
+ <p class="mixedcitation type-article-journal" id="ref-10"><span class="authorgroup"><span class="author"><span class="surname">Bocarsly</span><span class="givennames">M.E.</span></span><span class="author"><span class="surname">Fasolino</span><span class="givennames">M.</span></span><span class="author"><span class="surname">Kane</span><span class="givennames">G.A.</span></span><span class="author"><span class="surname">LaMarca</span><span class="givennames">E.A.</span></span><span class="author"><span class="surname">Kirschen</span><span class="givennames">G.W.</span></span><span class="author"><span class="surname">Karatsoreos</span><span class="givennames">I.N.</span></span><span class="etal" /></span><span class="year">2015</span><span class="articletitle">Obesity diminishes synaptic markers, alters microglial morphology, and impairs cognitive function</span><span class="source">Proc Natl Acad Sci U S A</span><span class="volume">112</span><span class="fpage">15731</span>&ndash;<span class="lpage">15736</span>{}</p> 
 ````
 
 

@@ -37,6 +37,7 @@ const rawData = fs.readFileSync(
 // <volume> --> <span class="volume">
 // <fpage> --> <span class="fpage">
 // <lpage> --> <span class="lpage">
+// <year> --> <span class="year">
 
 const arrayOfRawData = rawData.split('\n').filter(x => x.length)
 
@@ -139,6 +140,23 @@ const anyStyleToHtml = referenceArray => {
       delete thisRef.author
     }
 
+    // deal with date
+    // ASSUMPTIONS: This is assuming that the date is always a year, and that the first date coming in is the publication date.
+
+    if (thisRef.date && thisRef.date.length) {
+      thisOut += `<span class="year">${thisRef.date}</span>`
+
+      if (thisRef.date.length === 1) {
+        delete thisRef.date
+      } else {
+        // In what we have so far, title is always an array of length 1. Just in case, let's throw an error if it's not.
+        console.log(
+          'Date is longer than expected: ',
+          JSON.stringify(thisRef.date),
+        )
+      }
+    }
+
     // deal with article title
 
     if (thisRef.title && thisRef.title.length) {
@@ -213,12 +231,14 @@ const anyStyleToHtml = referenceArray => {
       }
     }
 
-    console.log(
-      `\n## Unprocessed JSON remainder for citation ${i}:`,
-      '\n```json\n',
-      thisRef,
-      '\n```\n',
-    )
+    if (Object.keys(thisRef).length) {
+      console.log(
+        `\n## Unprocessed JSON remainder for citation ${i}:`,
+        '\n```json\n',
+        thisRef,
+        '\n```\n',
+      )
+    }
 
     thisOut += JSON.stringify(thisRef)
     thisOut += `</p>`
