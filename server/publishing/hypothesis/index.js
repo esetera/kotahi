@@ -32,39 +32,8 @@ const deletePublication = async publicationId => {
   }
 }
 
-const prepareTurndownService = () => {
-  const turndownService = new TurndownService({ bulletListMarker: '-' })
-
-  turndownService.addRule('unorderedLists', {
-    filter: ['ul'],
-    replacement(content, node) {
-      const unorderedListResult = [...node.childNodes]
-        .map((childNode, index) => {
-          return ` - ${turndownService.turndown(childNode.innerHTML)}\n\n`
-        })
-        .join('')
-
-      return unorderedListResult
-    },
-  })
-
-  turndownService.addRule('orderedLists', {
-    filter: ['ol'],
-    replacement(content, node) {
-      const orderedListResult = [...node.childNodes]
-        .map((childNode, index) => {
-          return `${index + 1}. ${turndownService.turndown(
-            childNode.innerHTML,
-          )}\n\n`
-        })
-        .join('')
-
-      return orderedListResult
-    },
-  })
-
-  return turndownService
-}
+const prepareTurndownService = () =>
+  new TurndownService({ bulletListMarker: '*' })
 
 const publishToHypothesis = async manuscript => {
   const turndownService = prepareTurndownService()
