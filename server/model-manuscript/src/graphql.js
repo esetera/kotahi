@@ -925,7 +925,9 @@ const resolvers = {
       _,
       { manuscriptId, objectId, fieldName, shouldPublish },
     ) {
-      const manuscript = await models.Manuscript.query().findById(manuscriptId)
+      const manuscript = await models.Manuscript.query()
+        .findById(manuscriptId)
+        .withGraphFetched('[teams, channels, files, reviews.user]')
 
       if (shouldPublish) {
         // Add

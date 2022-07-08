@@ -4,17 +4,23 @@ const axios = require('axios')
 const config = require('config')
 const { get } = require('lodash')
 const { ensureJsonIsParsed } = require('../../utils/objectUtils')
+const { getUsersById } = require('../../model-user/src/userCommsUtils')
 
 const {
   getPublicFields,
-  getPublishableFields,
+  getActiveForms,
 } = require('../../model-form/src/formCommsUtils')
 
 const {
+  getPublishableFields,
   getFieldNamesAndTags,
   hasText,
   normalizeUri,
 } = require('./hypothesisTools')
+
+const {
+  getThreadedDiscussionsForManuscript,
+} = require('../../model-threaded-discussion/src/threadedDiscussionCommsUtils')
 
 const headers = {
   headers: {
@@ -134,7 +140,13 @@ const publishToHypothesis = async manuscript => {
     manuscript.submission.title ||
     manuscript.submission.description
 
-  console.log(await getPublishableFields(manuscript))
+  console.log(
+    getPublishableFields(
+      manuscript,
+      await getActiveForms(),
+      await getThreadedDiscussionsForManuscript(manuscript, getUsersById),
+    ),
+  )
 
   const publishableReviewFields = (
     await getPublicFields('review', 'review')
