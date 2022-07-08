@@ -239,7 +239,7 @@ Submit.propTypes = {
   reviewForm: formPropTypes.isRequired,
   createNewVersion: PropTypes.func.isRequired,
   currentUser: PropTypes.shape({
-    admin: PropTypes.bool.isRequired,
+    admin: PropTypes.bool,
   }),
   parent: PropTypes.shape({
     channels: PropTypes.arrayOf(
