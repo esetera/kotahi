@@ -1,5 +1,10 @@
 const models = require('@pubsweet/models')
 const { get, escape } = require('lodash')
+const { getUsersById } = require('../../model-user/src/userCommsUtils')
+
+const {
+  addUserObjectsToDiscussion,
+} = require('../../model-threaded-discussion/src/threadedDiscussionUtils')
 
 /** For form for given purpose and category, return a list of all fields that are not confidential, each in the form
  * { name, title, component }
@@ -38,8 +43,10 @@ const getPublishableTextFromComment = commentObject => {
   const comment =
     commentObject.commentVersions[commentObject.commentVersions.length - 1]
 
+  const authorName = commentObject.commentVersions[0].author.username
+
   if (!hasText(comment.comment)) return null
-  return `<p><b>${escape(comment.userId)}:</b></p>${comment.comment}` // TODO Get author name instead of ID
+  return `<p><b>${escape(authorName)}:</b></p>${comment.comment}` // TODO Get author name instead of ID
 }
 
 const getPublishableTextFromValue = (value, field) => {
@@ -54,6 +61,8 @@ const getPublishableTextFromValue = (value, field) => {
   }
 
   if (field.component === 'CheckboxGroup') {
+    if (!value) return null
+
     const optionLabels = value.map(
       val => (field.options.find(o => o.value === val) || { label: val }).label,
     )
@@ -167,9 +176,13 @@ const getPublishableFields = async manuscript => {
     .orWhere({ category: 'review', purpose: 'review' })
     .orWhere({ category: 'decision', purpose: 'decision' })
 
-  const threadedDiscussions = await models.ThreadedDiscussion.query().where({
-    manuscriptId: manuscript.parentId || manuscript.id,
-  })
+  const threadedDiscussions = await Promise.all(
+    (
+      await models.ThreadedDiscussion.query().where({
+        manuscriptId: manuscript.parentId || manuscript.id,
+      })
+    ).map(discussion => addUserObjectsToDiscussion(discussion, getUsersById)),
+  )
 
   // TODO The rest could be extracted into formUtils.js and made testable
 
