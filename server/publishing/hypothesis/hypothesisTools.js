@@ -72,23 +72,23 @@ const getPublishableTextFromValue = (value, field) => {
 
   if (field.component === 'AuthorsInput') {
     if (!value || !value.length) return null
-    return `<p>${escape(
-      field.shortDescription || field.title,
-    )}:</p><ul>${value.map(author => {
-      const escapedName = escape(`${author.firstName} ${author.lastName}`)
+    return `<p>${escape(field.shortDescription || field.title)}:</p><ul>${value
+      .map(author => {
+        const escapedName = escape(`${author.firstName} ${author.lastName}`)
 
-      const affiliationMarkup = author.affiliation
-        ? ` (${escape(author.affiliation)})`
-        : ''
+        const affiliationMarkup = author.affiliation
+          ? ` (${escape(author.affiliation)})`
+          : ''
 
-      const emailMarkup = author.email
-        ? ` <a href="mailto:${escape(author.email)}">${escape(
-            author.email,
-          )}</a>`
-        : ''
+        const emailMarkup = author.email
+          ? ` <a href="mailto:${escape(author.email)}">${escape(
+              author.email,
+            )}</a>`
+          : ''
 
-      return `<li>${escapedName}${affiliationMarkup}${emailMarkup}</li>`
-    })}</ul>`
+        return `<li>${escapedName}${affiliationMarkup}${emailMarkup}</li>`
+      })
+      .join('')}</ul>`
   }
 
   return value
@@ -99,7 +99,7 @@ const getPublishableFieldsForObject = (
   data,
   form,
   threadedDiscussions,
-  index,
+  objectId,
 ) => {
   if (!form) return []
   const { fieldsToPublish } = formFieldsToPublish || { fieldsToPublish: [] }
@@ -121,18 +121,33 @@ const getPublishableFieldsForObject = (
         return discussion.threads.map(t =>
           t.comments.map(c => {
             const text = getPublishableTextFromComment(c)
+            const expandedFieldName = `${field.name}:${c.id}`
 
             const shouldPublish =
-              text && fieldsToPublish.includes(`${field.name}:${c.id}`)
+              text && fieldsToPublish.includes(expandedFieldName)
 
-            return { field, text, shouldPublish, publishingTag, index }
+            return {
+              field,
+              fieldName: expandedFieldName,
+              text,
+              shouldPublish,
+              publishingTag,
+              objectId,
+            }
           }),
         )
       }
 
       const text = getPublishableTextFromValue(value, field)
       const shouldPublish = text && fieldsToPublish.includes(field.name)
-      return { field, text, shouldPublish, publishingTag, index }
+      return {
+        field,
+        fieldName: field.name,
+        text,
+        shouldPublish,
+        publishingTag,
+        objectId,
+      }
     })
     .flat(3)
 }
@@ -151,6 +166,7 @@ const getPublishableFields = (manuscript, forms, threadedDiscussions) => {
       manuscript,
       forms.find(f => f.category === 'submission'),
       threadedDiscussions,
+      manuscript.id,
     ),
   )
 
@@ -163,6 +179,7 @@ const getPublishableFields = (manuscript, forms, threadedDiscussions) => {
           r.jsonData,
           forms.find(f => f.category === 'decision'),
           threadedDiscussions,
+          r.id,
         ),
       ),
     )
@@ -170,56 +187,19 @@ const getPublishableFields = (manuscript, forms, threadedDiscussions) => {
   manuscript.reviews
     .sort((a, b) => a.created - b.created)
     .filter(r => !r.isDecision)
-    .forEach((r, index) =>
+    .forEach(r =>
       result.push(
         ...getPublishableFieldsForObject(
           manuscript.formFieldsToPublish.find(ff => ff.objectId === r.id),
           r.jsonData,
-          forms.find(f => f.category === 'submit'),
+          forms.find(f => f.category === 'review'),
           threadedDiscussions,
-          index,
+          r.id,
         ),
       ),
     )
 
   return result
-}
-
-/** Gets fieldNames and (optional) tags from a comma-separated list with with each field optionally followed by colon and tag name.
- * If fieldName is 'reviews', this is converted into multiple fields 'review#0', 'review#1' etc up to MAX_REVIEW_COUNT.
- * Field names containing '#' are not permitted in the input comma-separated list, though.
- */
-const getFieldNamesAndTags = fieldsString => {
-  if (!fieldsString) return []
-
-  return fieldsString
-    .split(',')
-    .map(f => {
-      const parts = f.split(':')
-      const fieldName = parts[0].trim()
-      const tag = parts[1] ? parts[1].trim() : null
-
-      if (fieldName === 'reviews') {
-        return [...Array(MAX_REVIEW_COUNT).keys()].map(i => ({
-          fieldName: `review#${i}`,
-          tag,
-        }))
-      }
-
-      if (fieldName.includes('#')) {
-        console.error(
-          `Ignoring misconfigured field "${fieldName}" containing "#" in HYPOTHESIS_PUBLISH_FIELDS.`,
-        )
-        return []
-      }
-
-      return { fieldName, tag }
-    })
-    .flat()
-    .filter(
-      (f, i, arr) =>
-        f.fieldName && arr.findIndex(x => x.fieldName === f.fieldName) === i, // exclude blank or repeated fieldNames
-    )
 }
 
 /** If the URI published to hypothes.is doesn't match the URI of the viewed page, annotations will not be visible in the context of that page.
@@ -231,7 +211,6 @@ const normalizeUri = uri =>
 
 module.exports = {
   hasText,
-  getFieldNamesAndTags,
   getPublishableFields,
   normalizeUri,
   MAX_REVIEW_COUNT,

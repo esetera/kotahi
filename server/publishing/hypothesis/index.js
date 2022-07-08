@@ -2,21 +2,9 @@
 const TurndownService = require('turndown')
 const axios = require('axios')
 const config = require('config')
-const { get } = require('lodash')
-const { ensureJsonIsParsed } = require('../../utils/objectUtils')
 const { getUsersById } = require('../../model-user/src/userCommsUtils')
-
-const {
-  getPublicFields,
-  getActiveForms,
-} = require('../../model-form/src/formCommsUtils')
-
-const {
-  getPublishableFields,
-  getFieldNamesAndTags,
-  hasText,
-  normalizeUri,
-} = require('./hypothesisTools')
+const { getActiveForms } = require('../../model-form/src/formCommsUtils')
+const { getPublishableFields, normalizeUri } = require('./hypothesisTools')
 
 const {
   getThreadedDiscussionsForManuscript,
@@ -29,59 +17,6 @@ const headers = {
 }
 
 const REQUEST_URL = `https://api.hypothes.is/api/annotations`
-
-// We could support publishing other field types, but these were the easiest and only ones needed for now.
-const isPublishableFieldType = ({ component }) =>
-  ['TextField', 'AbstractEditor'].includes(component)
-
-/** For an identifier such as 'review#0', return the corresponding review (with parsed jsonData),
- * or return { jsonData: {} } if not found or the review is hidden.
- */
-const getReview = (manuscript, reviewIdentifier) => {
-  const index = parseInt(reviewIdentifier.split('#')[1], 10)
-  const reviews = manuscript.reviews.filter(r => !r.isDecision)
-
-  const review =
-    index < reviews.length ? { ...reviews[index] } : { jsonData: {} }
-
-  if (review.isHiddenFromAuthor) return { jsonData: {} }
-  review.jsonData = ensureJsonIsParsed(review.jsonData)
-  return review
-}
-
-/** Returns the decision or { jsonData: {} } if not found */
-const getDecision = manuscript => {
-  const decisions = manuscript.reviews.filter(r => r.isDecision)
-  const decision = decisions.length ? { ...decisions[0] } : { jsonData: {} }
-  if (typeof decision.jsonData === 'string')
-    decision.jsonData = JSON.parse(decision.jsonData)
-  return decision
-}
-
-/** Returns a single piece of html containing all nominated fields (that are not empty).
- * If multiple fields are nominated, then a heading will precede the content of each field,
- * but if only one is nominated, the heading is omitted. */
-const composeHtmlFromPublishableFields = (review, publishableFields) => {
-  const fieldsToPublish = publishableFields
-    .filter(f => review.jsonData[f.name])
-    .map(f => ({
-      title: f.title,
-      value: review.jsonData[f.name],
-      component: f.component,
-    }))
-
-  if (fieldsToPublish.length)
-    return fieldsToPublish
-      .map(
-        f =>
-          `${publishableFields.length > 1 ? `<h5>${f.title}</h5>` : ''}${
-            f.component === 'AbstractEditor' ? f.value : `<p>${f.value}</p>`
-          }`,
-      )
-      .join('\n')
-
-  return null
-}
 
 /** DELETE a publication from Hypothesis via REST */
 const deletePublication = async publicationId => {
@@ -140,46 +75,22 @@ const publishToHypothesis = async manuscript => {
     manuscript.submission.title ||
     manuscript.submission.description
 
-  console.log(
-    getPublishableFields(
-      manuscript,
-      await getActiveForms(),
-      await getThreadedDiscussionsForManuscript(manuscript, getUsersById),
-    ),
+  const publishableFieldData = getPublishableFields(
+    manuscript,
+    await getActiveForms(),
+    await getThreadedDiscussionsForManuscript(manuscript, getUsersById),
   )
 
-  const publishableReviewFields = (
-    await getPublicFields('review', 'review')
-  ).filter(isPublishableFieldType)
+  // TODO remove the old .env setting for fields to publish; update docs
 
-  const publishableDecisionFields = (
-    await getPublicFields('decision', 'decision')
-  ).filter(isPublishableFieldType)
-
+  // TODO getPublishableFields should be returning its data in the form this block needs, so we don't need a conversion
   const fields = await Promise.all(
-    getFieldNamesAndTags(config.hypothesis.publishFields).map(async x => {
-      let value = null
-
-      if (x.fieldName.startsWith('review#')) {
-        const review = getReview(manuscript, x.fieldName)
-        value = composeHtmlFromPublishableFields(
-          review,
-          publishableReviewFields,
-        )
-      } else if (x.fieldName === 'decision') {
-        const decision = getDecision(manuscript)
-        value = composeHtmlFromPublishableFields(
-          decision,
-          publishableDecisionFields,
-        )
-      } else {
-        value = get(manuscript, x.fieldName)
-      }
-
-      const annotationId = manuscript.evaluationsHypothesisMap[x.fieldName]
+    publishableFieldData.map(async d => {
+      const annotationName = `${d.objectId}.${d.fieldName}`
+      const annotationId = manuscript.evaluationsHypothesisMap[annotationName]
       const hasPreviousValue = !!annotationId
       let action
-      if (hasText(value)) action = hasPreviousValue ? 'update' : 'create'
+      if (d.shouldPublish) action = hasPreviousValue ? 'update' : 'create'
       else action = hasPreviousValue ? 'delete' : null
 
       if (['update', 'delete'].includes(action)) {
@@ -198,7 +109,13 @@ const publishToHypothesis = async manuscript => {
           'Missing field submission.biorxivURL or submission.link',
         )
 
-      return { action, fieldName: x.fieldName, value, tag: x.tag, annotationId }
+      return {
+        action,
+        fieldName: annotationName,
+        value: d.text,
+        tag: d.publishingTag,
+        annotationId,
+      }
     }),
   )
 
