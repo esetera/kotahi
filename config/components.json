@@ -17,5 +17,6 @@
   "./server/auth-orcid",
   "@coko/server/src/models/file",
 	"./server/pdfexport",
-	"./server/jatsexport"
+	"./server/jatsexport",
+	"./server/anystyle"
 ]
