@@ -9,6 +9,7 @@ export const validateFormField = (
   doiValidation = false,
   validateDoi,
   componentType,
+  threadedDiscussion,
 ) => async value => {
   const validator = vld || []
 
@@ -19,6 +20,39 @@ export const validateFormField = (
     )
       return 'Required'
     return validateAuthors(value)
+  }
+
+  if (componentType === 'ThreadedDiscussion') {
+    let isThreadedDiscussionValid = false
+
+    if (threadedDiscussion) {
+      const threadedDiscussionData =
+        threadedDiscussion?.threadedDiscussion?.threads[0].comments[0]
+
+      const commentVersionsLength =
+        threadedDiscussionData?.commentVersions.length
+
+      if (
+        threadedDiscussionData?.pendingVersion &&
+        threadedDiscussionData?.pendingVersion.comment !==
+          '<p class="paragraph"></p>'
+      ) {
+        isThreadedDiscussionValid = true
+      }
+
+      if (
+        commentVersionsLength &&
+        threadedDiscussionData?.commentVersions[commentVersionsLength - 1]
+      ) {
+        isThreadedDiscussionValid = true
+      }
+    }
+
+    if (isThreadedDiscussionValid) {
+      return undefined
+    }
+
+    return 'Required'
   }
 
   const errors = validator

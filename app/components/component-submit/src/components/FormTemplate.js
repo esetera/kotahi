@@ -171,6 +171,7 @@ const prepareFieldProps = rawField => ({
 })
 
 const InnerFormTemplate = ({
+  // Not a very strong reason to use InnerFormTemplate
   form,
   handleSubmit, // formik
   toggleConfirming,
@@ -425,6 +426,10 @@ const InnerFormTemplate = ({
                       ),
                       validateDoi,
                       element.component,
+                      {
+                        threadedDiscussion:
+                          threadedDiscussionProps?.threadedDiscussion,
+                      },
                     )}
                     values={values}
                   />
