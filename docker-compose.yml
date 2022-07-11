@@ -260,5 +260,12 @@ services:
       /usr/bin/mc admin policy set cokoServer/ readwrite user=${S3_ACCESS_KEY_ID:-nonRootUser};
       exit 0;
       "
+
+  anystyle:
+    image: boosen/anystyle
+    ports:
+      - "4567:4567"
+
+
 volumes:
   minio_storage:
