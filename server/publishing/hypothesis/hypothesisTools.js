@@ -199,7 +199,15 @@ const getPublishableFields = (manuscript, forms, threadedDiscussions) => {
       ),
     )
 
-  return result
+  return result.map(d => {
+    const annotationName = `${d.objectId}.${d.fieldName}`
+    const annotationId = manuscript.evaluationsHypothesisMap[annotationName]
+    const hasPreviousValue = !!annotationId
+    let action
+    if (d.shouldPublish) action = hasPreviousValue ? 'update' : 'create'
+    else action = hasPreviousValue ? 'delete' : null
+    return { ...d, annotationName, annotationId, action }
+  })
 }
 
 /** If the URI published to hypothes.is doesn't match the URI of the viewed page, annotations will not be visible in the context of that page.

@@ -32,6 +32,18 @@ const deletePublication = async publicationId => {
   }
 }
 
+/** Check with hypothes.is that this annotation already exists; return true or false. */
+const annotationActuallyExists = async data => {
+  try {
+    await axios.get(`${REQUEST_URL}/${data.annotationId}`, {
+      ...headers,
+    })
+    return true
+  } catch (e) {
+    return false
+  }
+}
+
 const prepareTurndownService = () =>
   new TurndownService({ bulletListMarker: '*' })
 
@@ -50,41 +62,19 @@ const publishToHypothesis = async manuscript => {
     await getThreadedDiscussionsForManuscript(manuscript, getUsersById),
   )
 
-  // TODO remove the old .env setting for fields to publish; update docs
-
-  // TODO getPublishableFields should be returning its data in the form this block needs, so we don't need a conversion
   const fields = await Promise.all(
     publishableFieldData.map(async d => {
-      const annotationName = `${d.objectId}.${d.fieldName}`
-      const annotationId = manuscript.evaluationsHypothesisMap[annotationName]
-      const hasPreviousValue = !!annotationId
-      let action
-      if (d.shouldPublish) action = hasPreviousValue ? 'update' : 'create'
-      else action = hasPreviousValue ? 'delete' : null
-
-      if (['update', 'delete'].includes(action)) {
-        // Check with Hypothesis that there truly is an annotation to update or delete
-        try {
-          await axios.get(`${REQUEST_URL}/${annotationId}`, {
-            ...headers,
-          })
-        } catch (e) {
-          action = action === 'update' ? 'create' : null
-        }
-      }
-
-      if (['create', 'update'].includes(action) && !uri)
+      if (['create', 'update'].includes(d.action) && !uri)
         throw new Error(
           'Missing field submission.biorxivURL or submission.link',
         )
 
-      return {
-        action,
-        fieldName: annotationName,
-        value: d.text,
-        tag: d.publishingTag,
-        annotationId,
-      }
+      if (d.action === 'update' && !(await annotationActuallyExists(d)))
+        return { ...d, action: 'create' }
+      if (d.action === 'delete' && !(await annotationActuallyExists(d)))
+        return { ...d, action: null }
+
+      return d
     }),
   )
 
@@ -97,20 +87,20 @@ const publishToHypothesis = async manuscript => {
         permissions: { read: [`group:${config.hypothesis.group}`] },
         uri: normalizeUri(uri),
         document: { title: [title] },
-        text: turndownService.turndown(f.value),
-        tags: f.tag ? [f.tag] : [],
+        text: turndownService.turndown(f.text),
+        tags: f.publishingTag ? [f.publishingTag] : [],
       }
 
       if (f.action === 'create') {
         const response = await axios.post(REQUEST_URL, requestBody, headers)
-        newHypothesisMap[f.fieldName] = response.data.id
+        newHypothesisMap[f.annotationName] = response.data.id
       } else if (f.action === 'update') {
         await axios.patch(
           `${REQUEST_URL}/${f.annotationId}`,
           requestBody,
           headers,
         )
-        newHypothesisMap[f.fieldName] = f.annotationId
+        newHypothesisMap[f.annotationName] = f.annotationId
       }
     } else if (f.action === 'delete') {
       await deletePublication(f.annotationId)
