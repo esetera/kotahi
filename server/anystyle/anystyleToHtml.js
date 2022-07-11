@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const sampleReferenceArray = require('./data/sampleReferences.json')
+// const sampleReferenceArray = require('./data/sampleReferences.json')
 
 const rawData = fs.readFileSync(
   path.resolve(__dirname, 'data/sampleReferences.txt'),
@@ -40,14 +40,14 @@ const rawData = fs.readFileSync(
 // <lpage> --> <span class="lpage">
 // <year> --> <span class="year">
 
-const arrayOfRawData = rawData.split('\n').filter(x => x.length)
-
 const makeStringSafeId = str =>
   encodeURIComponent(str)
     .toLowerCase()
     .replace(/\.|%[0-9a-z]{2}/gi, '')
 
-const anyStyleToHtml = referenceArray => {
+const anyStyleToHtml = async referenceString => {
+  console.log(referenceString)
+  const referenceArray = referenceString.split('\n').filter(x => x.length)
   let outText = '<section class="reflist">'
 
   for (let i = 0; i < referenceArray.length; i += 1) {
