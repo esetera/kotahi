@@ -1036,6 +1036,7 @@ const resolvers = {
           )
           succeeded = true
         } catch (err) {
+          console.error(err)
           let message = 'Publishing to hypothes.is failed!\n'
           if (err.response) {
             message += `${err.response.status} ${err.response.statusText}\n`
@@ -1096,7 +1097,9 @@ const resolvers = {
         .findById(id)
         .withGraphFetched('[teams, channels, files, reviews.user]')
 
-      const user = await models.User.query().findById(ctx.user)
+      const user = ctx.user
+        ? await models.User.query().findById(ctx.user)
+        : null
 
       if (!manuscript) return null
 
