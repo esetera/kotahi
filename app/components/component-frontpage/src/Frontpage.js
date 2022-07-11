@@ -370,6 +370,7 @@ const Frontpage = () => {
               ? manuscript.submission.description
               : manuscript.meta.title
 
+          // eslint-disable-next-line no-unused-vars
           const annotations = getAnnotations(
             manuscript,
             submissionFields,
@@ -383,7 +384,7 @@ const Frontpage = () => {
               <SectionHeader>
                 <Title>{title}</Title>
               </SectionHeader>
-              {annotations}
+              {/* annotations TODO reinstate when we have time to fix these annotations and links properly */}
               <SectionRow>
                 {manuscript.submission?.abstract && (
                   <>
