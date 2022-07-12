@@ -13,16 +13,6 @@ import {
 import * as elements from './builderComponents'
 import { Section, Legend, Page, Heading, DetailText } from './style'
 
-const MenuComponents = input => (
-  <Menu
-    options={Object.keys(components).map(value => ({
-      value,
-      label: value,
-    }))}
-    {...input}
-  />
-)
-
 const InvalidWarning = styled.div`
   color: ${th('colorError')};
 `
@@ -53,6 +43,16 @@ const ComponentProperties = ({
     )
   }
 
+  let componentTypeOptions = Object.keys(components).map(value => ({
+    value,
+    label: value,
+  }))
+  // Disable ThreadedDiscussion in review forms
+  if (category === 'review')
+    componentTypeOptions = componentTypeOptions.filter(
+      o => o.label !== 'ThreadedDiscussion',
+    )
+
   const editableProperties = getEditableComponentProperties(
     selectedComponent,
     category,
@@ -67,13 +67,14 @@ const ComponentProperties = ({
         <Section>
           <Legend space>Field type</Legend>
           <ValidatedFieldFormik
-            component={MenuComponents}
+            component={Menu}
             name="component"
             onChange={value => {
               setComponentType(value)
               setFieldValue('component', value)
               populateDefaultValues(value)
             }}
+            options={componentTypeOptions}
             required
           />
         </Section>
