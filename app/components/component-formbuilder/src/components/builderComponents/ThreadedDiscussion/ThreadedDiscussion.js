@@ -93,7 +93,7 @@ const ThreadedDiscussion = ({
       getExistingOrInitialComments(
         threadComments,
         currentUser,
-        userCanAddComment,
+        userCanAddComment && !!updatePendingComment && !!completeComment, // Don't allow editing if mutation functions aren't available
       ),
     )
   }, [updated])
@@ -102,8 +102,6 @@ const ThreadedDiscussion = ({
     <>
       {comments &&
         comments.map((comment, index) => {
-          const isLastComment = index >= comments.length - 1
-
           const handleUpdateComment = content => {
             updatePendingComment({
               variables: {
@@ -159,7 +157,7 @@ const ThreadedDiscussion = ({
             }
           }
 
-          if (isLastComment && comment.isEditing && !comment.existingComment)
+          if (!comment.existingComment)
             return (
               <div key={comment.id}>
                 <SimpleWaxEditorWrapper key={comment.id}>
