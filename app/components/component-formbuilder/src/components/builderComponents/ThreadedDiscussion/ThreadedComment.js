@@ -41,11 +41,17 @@ const ThreadedComment = ({
   } = comment
 
   const [openModal, setOpenModal] = useState(false)
+
+  const [submittedValue, setSubmittedValue] = useState(
+    existingComment?.comment || '',
+  )
+
   const [modalFieldValue, setModalFieldValue] = useState(value)
   const [counter, setCounter] = useState(1)
   const [collapse, setCollapse] = useState(true)
 
   const onSubmitClick = () => {
+    setSubmittedValue(modalFieldValue)
     setCounter(counter + 1)
     setOpenModal(false)
     onSubmit()
@@ -103,13 +109,13 @@ const ThreadedComment = ({
             </Collapse>
           </ActionWrapper>
         </CommentWrapper>
-        {hasValue(existingComment?.comment || modalFieldValue) ? (
+        {hasValue(submittedValue) ? (
           <SimpleWaxEditorWrapper collapse={collapse}>
             <SimpleWaxEditor
               {...simpleWaxEditorProps}
               key={counter}
               readonly
-              value={existingComment?.comment || modalFieldValue}
+              value={submittedValue}
             />
             <CollapseOverlay collapse={collapse} />
           </SimpleWaxEditorWrapper>

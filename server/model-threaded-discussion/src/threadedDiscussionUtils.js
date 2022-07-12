@@ -41,6 +41,10 @@ const addUserObjectsToDiscussion = async (discussion, getUsersByIdFunc) => {
   }
 }
 
+const isNewEmptyComment = (pendingVersion, commentVersions) =>
+  (!pendingVersion || pendingVersion.comment === '<p class="paragraph"></p>') &&
+  (!commentVersions || !commentVersions.length)
+
 /** Complete all pending comments for this user. That is, turn them into commentVersions.
  * Note: this modifies the discussion IN PLACE. */
 /* eslint-disable no-restricted-syntax, no-param-reassign */
@@ -49,7 +53,8 @@ const convertUsersPendingVersionsToCommentVersions = (userId, comment, now) => {
 
   // Should be only one pendingVersion for a user, but to be safe we assume there could be multiple
   for (const pendingVersion of comment.pendingVersions.filter(
-    pv => pv.userId === userId,
+    pv =>
+      pv.userId === userId && !isNewEmptyComment(pv, comment.commentVersions),
   )) {
     if (!comment.commentVersions) comment.commentVersions = []
 

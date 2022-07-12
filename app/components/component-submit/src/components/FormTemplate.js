@@ -171,6 +171,7 @@ const prepareFieldProps = rawField => ({
 })
 
 const InnerFormTemplate = ({
+  // TODO We could just combine InnerFormTemplate with FormTemplate. No good reason to separate them.
   form,
   handleSubmit, // formik
   toggleConfirming,
@@ -425,6 +426,7 @@ const InnerFormTemplate = ({
                       ),
                       validateDoi,
                       element.component,
+                      threadedDiscussionProps,
                     )}
                     values={values}
                   />
