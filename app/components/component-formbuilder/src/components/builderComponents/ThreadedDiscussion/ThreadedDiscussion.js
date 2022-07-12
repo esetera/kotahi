@@ -35,6 +35,7 @@ const getExistingOrInitialComments = (
       return {
         ...cv,
         id: c.id,
+        existingComment: cv,
       }
     })
 
