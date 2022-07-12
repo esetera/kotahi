@@ -284,7 +284,7 @@ const commonUpdateManuscript = async (id, input, ctx) => {
 
   const ms = await models.Manuscript.query()
     .findById(id)
-    .withGraphFetched('[reviews, files]')
+    .withGraphFetched('[reviews.user, files]')
 
   const updatedMs = deepMergeObjectsReplacingArrays(ms, msDelta)
 
