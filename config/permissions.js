@@ -63,6 +63,7 @@ const getLatestVersionOfManuscriptOfFile = async (file, ctx) => {
   const latestVersion = await ctx.connectors.Manuscript.model
     .query()
     .where({ parentId: firstVersionId })
+    .orWhere({ id: firstVersionId })
     .orderBy('created', 'desc')
     .limit(1)
 
