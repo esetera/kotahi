@@ -1,5 +1,5 @@
-const mathBlockRegex = /(?:(?<=<math-inline class="math-node">)|(?<=<math-display class="math-node">))(?:(?!<\/math-(?:inline|display)>)[\s\S])+(?=<\/math-(?:inline|display)>)/g
-const dollarDelimiterRegex = /(?:(?<=<math-inline class="math-node">)|(?<=<math-display class="math-node">))\s*\$\$?|\$\$?\s*(?=<\/math-(?:inline|display)>)/g
+const mathBlockRegex = /(?:(?:<math-inline class="math-node">)|(?:<math-display class="math-node">))(?:(?!<\/math-(?:inline|display)>)[\s\S])+(?=<\/math-(?:inline|display)>)/g
+const dollarDelimiterRegex = /(?:(?:<math-inline class="math-node">)|(?:<math-display class="math-node">))\s*\$\$?|\$\$?\s*(?=<\/math-(?:inline|display)>)/g
 const mathbfitRegex = /\\mathbfit\{/g
 const leftRegex = /\\left\b/g
 const rightRegex = /\\right\b/g
