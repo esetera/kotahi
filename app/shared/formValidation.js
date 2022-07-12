@@ -9,7 +9,7 @@ export const validateFormField = (
   doiValidation = false,
   validateDoi,
   componentType,
-  threadedDiscussion,
+  threadedDiscussionProps,
 ) => async value => {
   const validator = vld || []
 
@@ -22,27 +22,28 @@ export const validateFormField = (
     return validateAuthors(value)
   }
 
-  if (componentType === 'ThreadedDiscussion') {
+  if (
+    componentType === 'ThreadedDiscussion' &&
+    validator.some(v => v.value === 'required')
+  ) {
     let isThreadedDiscussionValid = false
+    const threadedDiscussion = threadedDiscussionProps?.threadedDiscussion
 
     if (threadedDiscussion) {
-      const threadedDiscussionData =
-        threadedDiscussion?.threadedDiscussion?.threads[0].comments[0]
+      const firstComment = threadedDiscussion.threads?.[0].comments?.[0]
 
-      const commentVersionsLength =
-        threadedDiscussionData?.commentVersions.length
+      const commentVersionsLength = firstComment?.commentVersions.length
 
       if (
-        threadedDiscussionData?.pendingVersion &&
-        threadedDiscussionData?.pendingVersion.comment !==
-          '<p class="paragraph"></p>'
+        firstComment?.pendingVersion &&
+        firstComment?.pendingVersion.comment !== '<p class="paragraph"></p>'
       ) {
         isThreadedDiscussionValid = true
       }
 
       if (
         commentVersionsLength &&
-        threadedDiscussionData?.commentVersions[commentVersionsLength - 1]
+        firstComment?.commentVersions[commentVersionsLength - 1]
       ) {
         isThreadedDiscussionValid = true
       }

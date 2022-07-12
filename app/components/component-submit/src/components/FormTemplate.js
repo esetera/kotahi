@@ -426,10 +426,7 @@ const InnerFormTemplate = ({
                       ),
                       validateDoi,
                       element.component,
-                      {
-                        threadedDiscussion:
-                          threadedDiscussionProps?.threadedDiscussion,
-                      },
+                      threadedDiscussionProps,
                     )}
                     values={values}
                   />
