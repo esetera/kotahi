@@ -48,9 +48,9 @@ const DecisionAndReviews = ({
     manuscript.reviews.find(review => review.isDecision)
 
   const reviews =
-    manuscript.reviews &&
-    !!manuscript.reviews.length &&
-    manuscript.reviews.filter(review => !review.isDecision)
+    (Array.isArray(manuscript.reviews) &&
+      manuscript.reviews.filter(review => !review.isDecision)) ||
+    []
 
   if (!currentUser) return null
 
