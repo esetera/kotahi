@@ -57,7 +57,7 @@ const ComponentProperties = ({
     label: value,
   }))
   // Disable ThreadedDiscussion in review forms
-  if (category === 'review')
+  if (['submission', 'review'].includes(category))
     componentTypeOptions = componentTypeOptions.filter(
       o => o.label !== 'ThreadedDiscussion',
     )
