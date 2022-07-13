@@ -18,7 +18,7 @@ const getPublishableTextFromComment = commentObject => {
   const authorName = commentObject.commentVersions[0].author.username
 
   if (!hasText(comment.comment)) return null
-  return `<p><b>${escape(authorName)}:</b></p>${comment.comment}` // TODO Get author name instead of ID
+  return `<p><b>${escape(authorName)}:</b></p>${comment.comment}`
 }
 
 const getPublishableTextFromValue = (value, field) => {
