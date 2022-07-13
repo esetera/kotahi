@@ -921,6 +921,11 @@ const resolvers = {
 
       return reviewerTeam.$query().withGraphFetched('members.[user]')
     },
+    /** To identify which data we're making publishable/unpublishable, we need:
+     * manuscriptId; the ID of the owning review/decision or manuscript object; and the fieldName.
+     * For threaded discussion comments, the fieldName should have the commentId concatenated onto it, like this:
+     * 'discussion:97b49766-8513-427e-9f4e-9c463fa9878c'
+     */
     async setShouldPublishField(
       _,
       { manuscriptId, objectId, fieldName, shouldPublish },
