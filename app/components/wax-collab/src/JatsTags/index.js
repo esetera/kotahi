@@ -11,17 +11,25 @@ import AcknowledgementsSection from './AcknowledgementSection'
 // copied from here: https://gitlab.coko.foundation/wax/wax-prosemirror/-/blob/master/wax-prosemirror-services/src/DisplayBlockLevel/HeadingService/HeadingService.js
 
 class JatsTagsService extends Service {
+  name = 'JatsTagsService'
   // boot() {}
 
   register() {
+    // this shows the method passed to the production editor:
+    console.log(this.config)
+    //
     this.container.bind('MixedCitation').to(MixedCitation)
     this.container.bind('Appendix').to(Appendix)
     this.container.bind('AppendixHeader').to(AppendixHeader)
-    this.container.bind('RefList').to(RefList)
+    // this.container.bind('RefList').to(RefList)
     this.container.bind('ReferenceHeader').to(ReferenceHeader)
     this.container.bind('FrontMatter').to(FrontMatter)
     this.container.bind('Abstract').to(Abstract)
     this.container.bind('AcknowledgementsSection').to(AcknowledgementsSection)
+    this.container.bind('RefList').toDynamicValue(() => {
+      return new RefList(this.config)
+    })
+
     const createNode = this.container.get('CreateNode')
     createNode({
       mixedCitation: {
@@ -71,6 +79,20 @@ class JatsTagsService extends Service {
           },
         ],
         toDOM(hook) {
+          // console.log(this)
+          console.log('in toDom hook')
+          console.log(hook.content, hook.content.content)
+
+          if (hook?.content?.content.length) {
+            const plainText = hook.content.content
+              .map(node => node.textContent) // does this need to be done recursively?
+              .join('\n')
+
+            console.log('Plaintext: ', plainText)
+          }
+
+          // TODO: make an array of all block-level elements in hook.content, then take TextNodes out of them, concat, send to anyStyle
+          // probably need to remake the HTML as nodes? How do we do that?
           const attrs = { class: hook.node?.attrs?.class || 'reflist' }
           return ['section', attrs, 0]
         },

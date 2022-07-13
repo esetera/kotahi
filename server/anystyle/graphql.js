@@ -1,19 +1,15 @@
-// const fs = require('fs')
-// const path = require('path')
+const fs = require('fs')
+const path = require('path')
 const axios = require('axios')
 const FormData = require('form-data')
 const anyStyleToHtml = require('./anystyleToHtml')
 
 // this is loading a text file of references for testing
 
-// const sampleReferences = fs.readFileSync(
-//   path.resolve(__dirname, 'data/sampleReferences.txt'),
-//   'utf8',
-// )
-
-// const output = parseCitations(sampleReferences)
-
-// console.log('Final output: ', output)
+const sampleReferences = fs.readFileSync(
+  path.resolve(__dirname, 'data/sampleReferences.txt'),
+  'utf8',
+)
 
 const serverUrl = 'http://localhost:4567'
 
@@ -65,3 +61,7 @@ const typeDefs = `
 `
 
 module.exports = { resolvers, typeDefs }
+
+const output = parseCitations(sampleReferences)
+
+console.log('Final output: ', output)

@@ -9,7 +9,10 @@ import productionWaxEditorConfig from './config/ProductionWaxEditorConfig'
 import ProductionWaxEditorLayout from './layout/ProductionWaxEditorLayout'
 import ProductionWaxEditorNoCommentsLayout from './layout/ProductionWaxEditorNoCommentsLayout'
 
-// this was forked from FullWaxEditor.js
+const processReferences = references => {
+  console.log('In processReferences!', references)
+  return 'processed references!'
+}
 
 // TODO Save this image via the server
 const renderImage = file => {
@@ -80,6 +83,7 @@ const ProductionWaxEditor = ({
           config={productionWaxEditorConfig(
             readOnlyComments,
             handleAssetManager,
+            processReferences,
           )}
           fileUpload={file => renderImage(file)}
           layout={
@@ -93,6 +97,7 @@ const ProductionWaxEditor = ({
           placeholder={placeholder}
           readonly={readonly}
           ref={editorRef}
+          refListProcess={references => processReferences(references)}
           user={waxUser}
           value={value}
           {...rest}

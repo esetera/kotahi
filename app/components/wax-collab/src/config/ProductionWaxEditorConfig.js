@@ -48,7 +48,11 @@ const updateTitle = title => {
   // console.log(`Title changed: ${title}`)
 }
 
-const productionWaxEditorConfig = (readOnlyComments, handleAssetManager) => ({
+const productionWaxEditorConfig = (
+  readOnlyComments,
+  handleAssetManager,
+  processReferences,
+) => ({
   EnableTrackChangeService: {
     enabled: false,
     toggle: true,
@@ -70,6 +74,7 @@ const productionWaxEditorConfig = (readOnlyComments, handleAssetManager) => ({
       reject: true,
     },
   },
+  JatsTagsService: processReferences,
   SchemaService: DefaultSchema,
   CommentsService: { readOnly: readOnlyComments || false }, // this should make it work though this is not yet in Wax
   MenuService: [
