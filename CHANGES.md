@@ -11,6 +11,12 @@ Fields for publishing are now specified in the form-builder, rather than via `HY
 5. If the `reviews` pseudo-field was specified, do the same for the review form.
 6. You may remove `HYPOTHESIS_PUBLISH_FIELDS` from the `.env` file.
 
+Instances publishing to Hypothes.is should add the following to their .env file:
+
+```
+HYPOTHESIS_ALLOW_TAGGING=true
+```
+
 ### 2022-04-13
 
 For dev instances, remove the old `minio/minio` image and container:

@@ -175,6 +175,7 @@ Using these keys, set the following `.env` variables:
 ```
 HYPOTHESIS_API_KEY=<your API key here>
 HYPOTHESIS_GROUP=<group key here>
+HYPOTHESIS_ALLOW_TAGGING=true
 ```
 
 Your submission form must also contain a field with the internal name `submission.biorxivURL` or `submission.link`, which should contain the URL of the page to be annotated.
