@@ -548,7 +548,7 @@ const FormTemplate = ({
               setLastChangedField(fieldName)
             }
 
-            debounceChange(value)
+            debounceChange(value, fieldName)
           }}
           republish={republish}
           reviewId={reviewId}
