@@ -171,7 +171,7 @@ const prepareFieldProps = rawField => ({
 })
 
 const InnerFormTemplate = ({
-  // Not a very strong reason to use InnerFormTemplate
+  // TODO We could just combine InnerFormTemplate with FormTemplate. No good reason to separate them.
   form,
   handleSubmit, // formik
   toggleConfirming,

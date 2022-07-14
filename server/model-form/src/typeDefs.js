@@ -43,6 +43,7 @@ const typeDefs = `
     validateValue: FormElementValidationInput
     hideFromAuthors: String
     permitPublishing: String
+    publishingTag: String
   }
 
   input FormElementOptionInput {
@@ -95,6 +96,7 @@ const typeDefs = `
     validateValue: FormElementValidation
     hideFromAuthors: String
     permitPublishing: String
+    publishingTag: String
   }
 
   type FormElementOption {

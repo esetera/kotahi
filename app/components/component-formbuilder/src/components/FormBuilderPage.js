@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { cloneDeep, omitBy } from 'lodash'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import config from 'config'
 import FormBuilderLayout from './FormBuilderLayout'
 import { Spinner, CommsErrorBanner } from '../../../shared'
 import pruneEmpty from '../../../../shared/pruneEmpty'
@@ -96,6 +97,7 @@ const query = gql`
           }
           hideFromAuthors
           permitPublishing
+          publishingTag
         }
       }
     }
@@ -249,6 +251,9 @@ const FormBuilderPage = ({ category }) => {
                 moveFieldUp={moveFieldUp}
                 setActiveFieldId={setActiveFieldId}
                 setActiveFormId={setActiveFormId}
+                shouldAllowHypothesisTagging={
+                  config.hypothesis.shouldAllowTagging
+                }
                 updateField={updateFormElement}
                 updateForm={updateForm}
               />

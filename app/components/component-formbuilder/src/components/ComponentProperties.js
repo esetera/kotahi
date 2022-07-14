@@ -22,9 +22,15 @@ const getComponentProperties = (componentType, formCategory) =>
     ? submissionComponents[componentType] ?? {}
     : components[componentType] ?? {}
 
-const getEditableComponentProperties = (componentType, formCategory) =>
+const getEditableComponentProperties = (
+  componentType,
+  formCategory,
+  shouldAllowHypothesisTagging,
+) =>
   Object.entries(getComponentProperties(componentType, formCategory)).filter(
-    ([key]) => key !== 'id',
+    ([key]) =>
+      key !== 'id' &&
+      (key !== 'publishingTag' || shouldAllowHypothesisTagging === 'true'),
   )
 
 const ComponentProperties = ({
@@ -34,13 +40,16 @@ const ComponentProperties = ({
   setComponentType,
   setFieldValue,
   category,
+  shouldAllowHypothesisTagging,
 }) => {
   const populateDefaultValues = componentType => {
-    getEditableComponentProperties(componentType, category).forEach(
-      ([key, value]) => {
-        if (value.defaultValue) setFieldValue(key, value.defaultValue)
-      },
-    )
+    getEditableComponentProperties(
+      componentType,
+      category,
+      shouldAllowHypothesisTagging,
+    ).forEach(([key, value]) => {
+      if (value.defaultValue) setFieldValue(key, value.defaultValue)
+    })
   }
 
   let componentTypeOptions = Object.keys(components).map(value => ({
@@ -48,7 +57,7 @@ const ComponentProperties = ({
     label: value,
   }))
   // Disable ThreadedDiscussion in review forms
-  if (category === 'review')
+  if (['submission', 'review'].includes(category))
     componentTypeOptions = componentTypeOptions.filter(
       o => o.label !== 'ThreadedDiscussion',
     )
@@ -56,6 +65,7 @@ const ComponentProperties = ({
   const editableProperties = getEditableComponentProperties(
     selectedComponent,
     category,
+    shouldAllowHypothesisTagging,
   )
 
   const formIsValid = !Object.keys(formErrors).length
@@ -145,7 +155,13 @@ const prepareForSubmit = values => {
   return cleanedValues
 }
 
-const ComponentForm = ({ category, field, formId, updateField }) => {
+const ComponentForm = ({
+  category,
+  field,
+  formId,
+  updateField,
+  shouldAllowHypothesisTagging,
+}) => {
   const [componentType, setComponentType] = useState(field.component)
 
   const component = components[componentType] || {}
@@ -179,6 +195,7 @@ const ComponentForm = ({ category, field, formId, updateField }) => {
           selectedComponent={componentType}
           setComponentType={setComponentType}
           setFieldValue={formikProps.setFieldValue}
+          shouldAllowHypothesisTagging={shouldAllowHypothesisTagging}
         />
       )}
     </Formik>

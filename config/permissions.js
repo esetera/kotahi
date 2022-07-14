@@ -352,6 +352,17 @@ const userIsTheReviewerOfTheManuscriptOfTheFileAndReviewNotComplete = rule({
   return false
 })
 
+const manuscriptIsPublished = rule({
+  cache: 'strict',
+})(async (parent, args, ctx, info) => {
+  const manuscript = await ctx.connectors.Manuscript.model
+    .query()
+    .select('published')
+    .findById(args.id)
+
+  return !!manuscript.published
+})
+
 const permissions = {
   Query: {
     currentUser: isAuthenticated,
@@ -359,7 +370,7 @@ const permissions = {
     publishedManuscripts: allow,
     manuscriptsUserHasCurrentRoleIn: isAuthenticated,
     manuscripts: isAuthenticated,
-    manuscript: isAuthenticated,
+    manuscript: or(isAuthenticated, manuscriptIsPublished),
     manuscriptsPublishedSinceDate: allow,
     publishedManuscript: allow,
     messages: isAuthenticated,

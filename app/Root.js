@@ -97,7 +97,7 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
                 return (r && r.roles) || []
               },
             },
-            fieldsToPublish: {
+            formFieldsToPublish: {
               merge(existing, incoming) {
                 return incoming
               },
@@ -151,6 +151,15 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
         User: {
           fields: {
             teams: {
+              merge(existing, incoming) {
+                return incoming
+              },
+            },
+          },
+        },
+        CurrentRole: {
+          fields: {
+            roles: {
               merge(existing, incoming) {
                 return incoming
               },

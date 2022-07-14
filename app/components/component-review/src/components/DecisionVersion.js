@@ -143,6 +143,11 @@ const DecisionVersion = ({
                 createFile={createFile}
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+                fieldsToPublish={
+                  version.formFieldsToPublish.find(
+                    ff => ff.objectId === version.id,
+                  )?.fieldsToPublish ?? []
+                }
                 form={form}
                 initialValues={versionValues}
                 isSubmission
@@ -154,6 +159,17 @@ const DecisionVersion = ({
                   onChange(value, path, versionId)
                 }}
                 republish={() => null}
+                setShouldPublishField={async (fieldName, shouldPublish) =>
+                  setShouldPublishField({
+                    variables: {
+                      manuscriptId: version.id,
+                      objectId: version.id,
+                      fieldName,
+                      shouldPublish,
+                    },
+                  })
+                }
+                shouldShowOptionToPublish
                 showEditorOnlyFields
                 threadedDiscussionProps={threadedDiscussionProps}
                 urlFrag={urlFrag}
@@ -263,7 +279,11 @@ const DecisionVersion = ({
                 <FormTemplate
                   createFile={createFile}
                   deleteFile={deleteFile}
-                  fieldsToPublish={version.fieldsToPublish}
+                  fieldsToPublish={
+                    version.formFieldsToPublish.find(
+                      ff => ff.objectId === currentDecisionData.id,
+                    )?.fieldsToPublish ?? []
+                  }
                   form={decisionForm}
                   initialValues={
                     currentDecisionData?.jsonData
@@ -285,7 +305,16 @@ const DecisionVersion = ({
                     actions.setSubmitting(false)
                   }}
                   reviewId={currentDecisionData.id}
-                  setShouldPublishField={setShouldPublishField}
+                  setShouldPublishField={async (fieldName, shouldPublish) =>
+                    setShouldPublishField({
+                      variables: {
+                        manuscriptId: version.id,
+                        objectId: currentDecisionData.id,
+                        fieldName,
+                        shouldPublish,
+                      },
+                    })
+                  }
                   shouldShowOptionToPublish
                   shouldStoreFilesInForm
                   showEditorOnlyFields
