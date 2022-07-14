@@ -391,6 +391,7 @@ const FormTemplate = ({
   const toggleConfirming = () => {
     setConfirming(confirm => !confirm)
   }
+
   const [lastChangedField, setLastChangedField] = useState(null)
   const debounceChange = useCallback(debounce(onChange ?? (() => {}), 1000), [])
   return (
@@ -420,9 +421,9 @@ const FormTemplate = ({
               debounceChange.flush()
               setLastChangedField(fieldName)
             }
-            debounceChange(value)
-          }
-        }
+
+            debounceChange(value, fieldName)
+          }}
           republish={republish}
           reviewId={reviewId}
           shouldStoreFilesInForm={shouldStoreFilesInForm}
