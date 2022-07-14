@@ -1,11 +1,10 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
-import { unescape, get, set } from 'lodash'
+import { unescape, get, set, debounce } from 'lodash'
 import { TextField, RadioGroup, CheckboxGroup } from '@pubsweet/ui'
 import { th, grid } from '@pubsweet/ui-toolkit'
-import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
 import {
   Section as Container,
   Select,
@@ -23,6 +22,7 @@ import { validateFormField } from '../../../../shared/formValidation'
 import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
 import ActionButton from '../../../shared/ActionButton'
 import { hasValue } from '../../../../shared/htmlUtils'
+import FormWaxEditor from '../../../component-formbuilder/src/components/FormWaxEditor'
 
 const Intro = styled.div`
   font-style: italic;
@@ -120,7 +120,7 @@ elements.AbstractEditor = ({
   ...rest
 }) => {
   return (
-    <SimpleWaxEditor
+    <FormWaxEditor
       validationStatus={validationStatus}
       {...rest}
       onBlur={() => {
@@ -514,6 +514,8 @@ const FormTemplate = ({
     )
   }
 
+  const [lastChangedField, setLastChangedField] = useState(null)
+  const debounceChange = useCallback(debounce(onChange ?? (() => {}), 1000), [])
   return (
     <Formik
       displayName={form.name}
@@ -540,7 +542,14 @@ const FormTemplate = ({
           manuscriptId={manuscriptId}
           manuscriptShortId={manuscriptShortId}
           manuscriptStatus={manuscriptStatus}
-          onChange={onChange}
+          onChange={(value, fieldName) => {
+            if (fieldName !== lastChangedField) {
+              debounceChange.flush()
+              setLastChangedField(fieldName)
+            }
+
+            debounceChange(value)
+          }}
           republish={republish}
           reviewId={reviewId}
           setShouldPublishField={setShouldPublishField}

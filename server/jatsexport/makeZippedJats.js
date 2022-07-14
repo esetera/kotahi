@@ -1,4 +1,3 @@
-const http = require('http')
 const fs = require('fs-extra')
 const fsPromised = require('fs').promises
 const crypto = require('crypto')
@@ -11,16 +10,6 @@ const makeSvgsFromLatex = require('./makeSvgsFromLatex')
 const { getFileWithUrl } = require('../utils/fileStorageUtils')
 
 const randomBytes = promisify(crypto.randomBytes)
-
-const downloadFile = (url, dest, cb) => {
-  const file = fs.createWriteStream(dest)
-  http.get(url, response => {
-    response.pipe(file)
-    file.on('finish', () => {
-      file.close(cb)
-    })
-  })
-}
 
 const makeZipFile = async (manuscriptId, jats) => {
   // jats is a string with the semi-processed JATS in it
@@ -82,9 +71,9 @@ const makeZipFile = async (manuscriptId, jats) => {
   // 3. check if there are supplementary files
   // 4. if so, get a list of all the files
 
-  const supplementaryFiles = manuscriptFiles.filter(
-    x => x.tags.includes('supplementary') || x.tags.includes('visualAbstract'),
-  )
+  const supplementaryFiles = manuscriptFiles.filter(x =>
+    x.tags.includes('supplementary'),
+  ) // || x.tags.includes('visualAbstract')),
 
   if (supplementaryFiles && supplementaryFiles.length) {
     console.error('Supplementary files found!')
@@ -120,7 +109,6 @@ const makeZipFile = async (manuscriptId, jats) => {
 
   // console.log(outJats)
   const { svgedSource, svgList } = await makeSvgsFromLatex(outJats)
-  // console.log(svgedSource, svgList)
 
   // 5. make a directory with the JATS file as index.xml
 
@@ -137,18 +125,19 @@ const makeZipFile = async (manuscriptId, jats) => {
     if (imageList.length) {
       const imageObjects = imageList.flatMap(x => x.storedObjects)
 
-      imageObjects.forEach(async imageObject => {
-        const url = await fileStorage.getURL(imageObject.key)
-
+      await Promise.all(imageObjects.map(async imageObject => {
         const targetPath = `${imageDirName}/${imageObject.key}`
-        downloadFile(url, targetPath, () => {
-          console.error(`Attached image ${imageObject.key}`)
-        })
-      })
+        await fileStorage.download(imageObject.key, targetPath)
+        console.error(`Attached image ${imageObject.key}`)
+      }))
     }
 
     if (svgList.length) {
-      // TODO: go through the list of SVGs, make files from them in the images directory
+      // go through the list of SVGs, make files from them in the images directory
+      svgList.forEach(async svg => {
+        await fsPromised.appendFile(`${imageDirName}/${svg.name}`, svg.svg)
+        console.error(`Attached formual ${svg.name}`)
+      })
     }
   }
 
@@ -168,13 +157,11 @@ const makeZipFile = async (manuscriptId, jats) => {
     //   .flatMap(x => x.storedObjects)
     //   .filter(x => x.type === 'original')
 
-    suppObjects.forEach(async suppObject => {
-      const url = await fileStorage.getURL(suppObject.key)
+    await Promise.all(suppObjects.map(async suppObject => {
       const targetPath = `${suppDirName}/${suppObject.name}`
-      downloadFile(url, targetPath, () => {
-        console.error(`Attached supplementary file ${suppObject.name}.`)
-      })
-    })
+      await fileStorage.download(suppObject.key, targetPath)
+      console.error(`Attached supplementary file ${suppObject.name}.`)
+    }))
   }
 
   const zipPath = await makeZip(dirName)
@@ -192,7 +179,7 @@ const makeZipFile = async (manuscriptId, jats) => {
 
   const { url } = downloadReadyZipFile.storedObjects[0]
 
-  // TODO: cleanup???
+  await fsPromised.rmdir('tmp', { recursive: true })
 
   return { link: url, jats: svgedSource } // returns link to where the ZIP file is.
 }
