@@ -102,6 +102,8 @@ const ThreadedDiscussion = ({
     <>
       {comments &&
         comments.map((comment, index) => {
+          const isLastComment = [comments.index - 1]
+
           const handleUpdateComment = content => {
             updatePendingComment({
               variables: {
@@ -178,6 +180,7 @@ const ThreadedDiscussion = ({
           return (
             <ThreadedComment
               comment={comment}
+              isCollapsed={isLastComment}
               currentUser={currentUser}
               key={comment.id}
               onCancel={handleCancelEditingComment}
