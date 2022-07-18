@@ -103,6 +103,7 @@ const ThreadedDiscussion = ({
       {comments &&
         comments.map((comment, index) => {
           const isLastComment = comments.length - 1 === index
+
           const handleUpdateComment = content => {
             updatePendingComment({
               variables: {

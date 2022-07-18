@@ -111,7 +111,7 @@ const ThreadedComment = ({
           </ActionWrapper>
         </CommentWrapper>
         {hasValue(submittedValue) ? (
-          <SimpleWaxEditorWrapper collapse={true}>
+          <SimpleWaxEditorWrapper collapse>
             <SimpleWaxEditor
               {...simpleWaxEditorProps}
               key={counter}
