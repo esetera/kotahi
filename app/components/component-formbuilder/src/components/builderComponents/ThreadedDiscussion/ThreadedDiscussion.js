@@ -180,8 +180,8 @@ const ThreadedDiscussion = ({
           return (
             <ThreadedComment
               comment={comment}
-              isCollapsed={isLastComment}
               currentUser={currentUser}
+              isCollapsed={isLastComment}
               key={comment.id}
               onCancel={handleCancelEditingComment}
               onChange={handleUpdateComment}
