@@ -46,7 +46,6 @@ const ThreadedComment = ({
   const [submittedValue, setSubmittedValue] = useState(
     existingComment?.comment || '',
   )
-
   const [modalFieldValue, setModalFieldValue] = useState(value)
   const [counter, setCounter] = useState(1)
   const [collapse, setCollapse] = useState(true)
@@ -111,7 +110,7 @@ const ThreadedComment = ({
           </ActionWrapper>
         </CommentWrapper>
         {hasValue(submittedValue) ? (
-          <SimpleWaxEditorWrapper collapse={isCollapsed} >
+          <SimpleWaxEditorWrapper collapse={collapse} >
             <SimpleWaxEditor
               {...simpleWaxEditorProps}
               key={counter}
