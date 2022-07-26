@@ -429,6 +429,7 @@ const makeFootnotesSection = html => {
 
   while (deFootnotedHtml.indexOf(`<footnote id="`) > -1) {
     // get id and text from Wax markup
+    // TODO: check if footnote is actually a citation. Could we do this with a className?
     const [id, text] = deFootnotedHtml
       .split('<footnote id="')[1]
       .split('</footnote')[0]

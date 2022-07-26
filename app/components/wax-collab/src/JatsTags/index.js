@@ -33,15 +33,16 @@ class JatsTagsService extends Service {
     const createNode = this.container.get('CreateNode')
     createNode({
       mixedCitation: {
-        content: 'inline*',
-        group: 'block',
+        content: 'inline*', // 'inline*', TODO: can this be 'inline+' if this is in a reflist?
+        group: 'inline', // 'block',
         defining: true,
+        inline: true,
         attrs: {
           class: { default: 'mixedcitation' },
         },
         parseDOM: [
           {
-            tag: 'p.mixedcitation',
+            tag: 'span.mixedcitation', // 'p.mixedcitation'
             getAttrs(hook, next) {
               Object.assign(hook, {
                 // this conked out in FullWaxEditor so I adjusted
@@ -52,9 +53,10 @@ class JatsTagsService extends Service {
             },
           },
         ],
-        toDOM(hook) {
-          const attrs = { class: hook.node?.attrs?.class || 'mixedcitation' }
-          return ['p', attrs, 0]
+        toDOM(hook, next) {
+          // eslint-disable-next-line no-param-reassign
+          hook.value = ['span', { class: 'mixedcitation' }]
+          typeof next !== 'undefined' && next()
         },
       },
     })

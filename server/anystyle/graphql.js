@@ -30,7 +30,8 @@ const parseCitations = async references => {
       })
       .then(async res => {
         // 2 pass citations to HTML wrapper
-        const htmledResult = await anyStyleToHtml(res.data)
+        // res.data is Anystyle JSON
+        const htmledResult = await anyStyleToHtml(references, res.data)
         resolve(htmledResult)
       })
       .catch(async err => {

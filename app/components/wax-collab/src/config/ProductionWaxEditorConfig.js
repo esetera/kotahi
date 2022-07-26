@@ -1,4 +1,3 @@
-import { DefaultSchema } from 'wax-prosemirror-utilities'
 // import { WaxSelectionPlugin } from 'wax-prosemirror-plugins'
 import { emDash, ellipsis } from 'prosemirror-inputrules'
 import { columnResizing, tableEditing } from 'prosemirror-tables'
@@ -35,6 +34,7 @@ import {
   EditingSuggestingService,
   TrackingAndEditingToolGroupService,
 } from 'wax-prosemirror-services'
+import KotahiSchema from './KotahiSchema'
 import {
   KotahiBlockDropDownToolGroupService,
   JatsSideMenuToolGroupService,
@@ -75,7 +75,7 @@ const productionWaxEditorConfig = (
     },
   },
   JatsTagsService: processReferences,
-  SchemaService: DefaultSchema,
+  SchemaService: KotahiSchema,
   CommentsService: { readOnly: readOnlyComments || false }, // this should make it work though this is not yet in Wax
   MenuService: [
     {

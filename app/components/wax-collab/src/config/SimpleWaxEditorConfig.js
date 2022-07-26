@@ -1,5 +1,4 @@
 import { emDash, ellipsis } from 'prosemirror-inputrules'
-import { DefaultSchema } from 'wax-prosemirror-utilities'
 import {
   AnnotationToolGroupService,
   BottomInfoService,
@@ -18,6 +17,7 @@ import {
   TextToolGroupService,
   DisplayBlockLevelService,
 } from 'wax-prosemirror-services'
+import KotahiSchema from './KotahiSchema'
 import { KotahiBlockDropDownToolGroupService } from '../CustomWaxToolGroups'
 import CharactersList from './CharactersList'
 
@@ -27,7 +27,7 @@ const updateTitle = title => {
 }
 
 const simpleWaxEditorConfig = () => ({
-  SchemaService: DefaultSchema,
+  SchemaService: KotahiSchema,
   MenuService: [
     {
       templateArea: 'topBar',

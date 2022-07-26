@@ -1,5 +1,9 @@
 # TODO LIST FOR ANYSTYLE IMPLEMENTATION
 
+## Docker
+
+ - make image so that it provides both XML and JSON (use CSL JSON if we can)
+ - publish image?
 ## Back end
 
  - rework so that it's mapping JSON data to the initial text
