@@ -328,7 +328,7 @@ const makeJournalMeta = journalMeta => {
   return thisJournalMeta && `<journal-meta>${thisJournalMeta}</journal-meta>`
 }
 
-const makeArticleMeta = (metadata, abstract, title) => {
+const makeArticleMeta = (metadata, abstract, title, keywords) => {
   // metadata:
   // --pubDate: date
   // --id: id
@@ -408,12 +408,25 @@ const makeArticleMeta = (metadata, abstract, title) => {
     )}</abstract>`
   }
 
-  if (formData.content && formData.content.length) {
-    // this is for keywords
+  if (
+    (keywords && keywords.length) ||
+    (formData.content && formData.content.length)
+  ) {
+    // TODO: right now we're using both keynotes added in Wax if we have them. We need to make this bidirectional so that these do the same thing.
     let contentList = ''
 
-    for (let i = 0; i < formData.content.length; i += 1) {
-      contentList += `<kwd>${formData.content[i]}</kwd>`
+    if (keywords && keywords.length) {
+      for (let i = 0; i < keywords.length; i += 1) {
+        contentList += `<kwd>${keywords[i]}</kwd>`
+      }
+    }
+
+    // this is for keywords that are in the form
+
+    if (formData.content && formData.content.length) {
+      for (let i = 0; i < formData.content.length; i += 1) {
+        contentList += `<kwd>${formData.content[i]}</kwd>`
+      }
     }
 
     thisArticleMeta += `<kwd-group kwd-group-type="author">${contentList}</kwd-group>`
@@ -554,6 +567,29 @@ const makeAppendices = html => {
     appendices: appendices.length
       ? `<app-group>${appendices.join('')}</app-group>`
       : '',
+  }
+}
+
+// TODO: fix this!
+const makeKeywordList = html => {
+  const keywords = []
+
+  const dom = htmlparser2.parseDocument(html)
+
+  const $ = cheerio.load(dom, { xmlMode: true })
+
+  $('section.keywordlist').replaceWith((index, el) => {
+    const innercontent = $(el).children()
+    innercontent.each((indexx, x) => {
+      keywords.push($(x).text())
+    })
+    return $('')
+  })
+
+  const output = $.html()
+  return {
+    deKeywordedHtml: output,
+    keywords,
   }
 }
 
@@ -796,15 +832,22 @@ const makeJats = (html, articleMeta, journalMeta) => {
 
   const { deCitedHtml, refList } = makeCitations(deAppendixedHtml)
 
+  const { deKeywordedHtml, keywords } = makeKeywordList(deCitedHtml)
+
   // 3 deal with faux frontmatter – these just get thrown away
 
-  const { abstract, deFrontedHtml, title } = makeFrontMatter(deCitedHtml)
+  const { abstract, deFrontedHtml, title } = makeFrontMatter(deKeywordedHtml)
 
   // 4 deal with article and journal metadata
 
   const journalMetaSection = makeJournalMeta(journalMeta || {})
 
-  const articleMetaSection = makeArticleMeta(articleMeta || {}, abstract, title)
+  const articleMetaSection = makeArticleMeta(
+    articleMeta || {},
+    abstract,
+    title,
+    keywords,
+  )
 
   const front = `<front>${journalMetaSection}${articleMetaSection}</front>`
 

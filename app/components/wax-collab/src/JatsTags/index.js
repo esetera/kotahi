@@ -7,6 +7,7 @@ import RefList from './RefList'
 import ReferenceHeader from './ReferenceHeader'
 import Abstract from './Abstract'
 import AcknowledgementsSection from './AcknowledgementSection'
+import KeywordList from './KeywordList'
 
 // copied from here: https://gitlab.coko.foundation/wax/wax-prosemirror/-/blob/master/wax-prosemirror-services/src/DisplayBlockLevel/HeadingService/HeadingService.js
 
@@ -14,6 +15,7 @@ class JatsTagsService extends Service {
   // boot() {}
 
   register() {
+    this.container.bind('KeywordList').to(KeywordList)
     this.container.bind('MixedCitation').to(MixedCitation)
     this.container.bind('Appendix').to(Appendix)
     this.container.bind('AppendixHeader').to(AppendixHeader)
@@ -77,6 +79,31 @@ class JatsTagsService extends Service {
       },
     })
     createNode({
+      keywordList: {
+        content: 'block+',
+        group: 'block',
+        defining: true,
+        attrs: {
+          class: { default: 'keywordlist' },
+        },
+        parseDOM: [
+          {
+            tag: 'section.keywordlist',
+            getAttrs(hook, next) {
+              Object.assign(hook, {
+                class: hook?.dom?.getAttribute('class') || 'keywordlist',
+              })
+              typeof next !== 'undefined' && next()
+            },
+          },
+        ],
+        toDOM(hook) {
+          const attrs = { class: hook.node?.attrs?.class || 'keywordlist' }
+          return ['section', attrs, 0]
+        },
+      },
+    })
+    createNode({
       referenceHeader: {
         content: 'inline*',
         group: 'block',
@@ -97,7 +124,10 @@ class JatsTagsService extends Service {
           },
         ],
         toDOM(hook) {
-          const attrs = { class: hook.node?.attrs?.class || 'referenceheader' }
+          const attrs = {
+            class: hook.node?.attrs?.class || 'referenceheader',
+          }
+
           return ['h1', attrs, 0]
         },
       },

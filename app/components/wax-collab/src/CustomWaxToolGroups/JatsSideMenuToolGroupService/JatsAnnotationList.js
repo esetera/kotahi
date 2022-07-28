@@ -48,9 +48,12 @@ class AcknowledgementsList extends ToolGroup {
   tools = []
   title = (<LeftMenuTitle title="Acknowledgements" />)
 
-  constructor(@inject('AcknowledgementsSection') acknowledgementsSection) {
+  constructor(
+    @inject('AcknowledgementsSection') acknowledgementsSection,
+    @inject('KeywordList') keywordList,
+  ) {
     super()
-    this.tools = [acknowledgementsSection]
+    this.tools = [acknowledgementsSection, keywordList]
   }
 }
 

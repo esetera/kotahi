@@ -411,6 +411,31 @@ const EditorStyles = css`
     }
   }
 
+  section.keywordlist {
+    background-color: rgba(25, 112, 112, 0.25);
+    border: 1px solid slateblue;
+    margin-bottom: 8px;
+    padding: 16px 16px 8px 16px;
+    position: relative;
+
+    &:before {
+      color: slateblue;
+      content: 'KEYWORD LIST';
+      font-weight: bold;
+      left: 2px;
+      letter-spacing: 1px;
+      position: absolute;
+      top: -4px;
+    }
+
+    & p {
+      margin: 0;
+      &:before {
+        content: '— ';
+      }
+    }
+  }
+
   h1.referenceheader {
     background-color: midnightblue;
     border-radius: 8px;
