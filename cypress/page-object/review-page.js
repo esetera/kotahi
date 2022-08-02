@@ -5,8 +5,7 @@
  */
 const REVIEW_METADATA_CELL = 'ReviewMetadata__Cell'
 
-const ABSTRACT_EDITOR_FIELD =
-  '[class*=SimpleWaxEditor__Editor] > [contenteditable]'
+const ABSTRACT_EDITOR_FIELD = '.ProseMirror > .paragraph'
 
 // const REVIEW_COMMENT_FIELD = 'reviewComment'
 // const CONFIDENTIAL_COMMENT_FIELD = 'confidentialComment'
@@ -33,7 +32,10 @@ export const ReviewPage = {
     return cy.getByContainsClass(REVIEW_METADATA_CELL).eq(nth)
   },
   getReviewCommentField() {
-    return cy.get(ABSTRACT_EDITOR_FIELD).eq(0)
+    // return cy.get(ABSTRACT_EDITOR_FIELD).eq(0)
+    return cy.get(
+      ':nth-child(1) > :nth-child(2) > :nth-child(1) > :nth-child(1) > .EditorStyles__SimpleGrid-k4rcxo-9 > .EditorStyles__SimpleEditorDiv-k4rcxo-11 > .sc-kNMOeM > .ProseMirror > .paragraph',
+    )
   },
   fillInReviewComment(reviewComment) {
     this.getReviewCommentField().fillInput(reviewComment)
