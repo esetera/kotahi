@@ -15,16 +15,11 @@ const doReview = name => {
   // submit the email
   cy.contains('Next').click()
   cy.get('nav').contains('Dashboard').click()
-  cy.visit('http://localhost:4000/kotahi/dashboard')
+  // cy.visit(dashboard)
   DashboardPage.clickAcceptReview()
   DashboardPage.clickDoReview()
-  //   cy.fixture('submission_form_data').then(data => {
-  //     ReviewPage.getReviewMetadataCell(1).should('contain', data.title)
-  //     ReviewPage.getReviewMetadataCell(6).should('contain', data.dataCode)
-  //   })
-  ReviewPage.fillInReviewComment(`Great paper, congratulations! ${name}`)
-  ReviewPage.fillInConfidentialComment(
-    `This is a very important paper. ${name}`,
+  ReviewPage.getReviewCommentField().type(
+    `Great paper, congratulations! ${name}`,
   )
   ReviewPage.clickAccept()
   ReviewPage.clickSubmit()
@@ -38,18 +33,31 @@ describe('Completing a review', () => {
     cy.task('seedForms')
     cy.fixture('role_names').then(name => {
       // Reviewers
+      // TODO: Uncomment next three lines
       doReview(name.role.reviewers.reviewer1)
       doReview(name.role.reviewers.reviewer2)
       doReview(name.role.reviewers.reviewer3)
 
       // login as seniorEditor and assert the 3 reviews are completed
-      cy.login(name.role.seniorEditor, dashboard)
-
-      DashboardPage.getCompletedReviewsButton().should(
-        'have.text',
-        '3completed',
+      cy.login(name.role.seniorEditor.name, dashboard)
+      cy.contains('Enter Email').click()
+      cy.get('#enter-email').type(
+        `${name.role.seniorEditor.name
+          .toLowerCase()
+          .replace(/\s+/g, '')}@example.com`,
       )
+      // submit the email
+      cy.contains('Next').click()
+      cy.get('nav').contains('Manuscripts').click()
+      //
+      // DashboardPage.getCompletedReviewsButton().should(
+      //   'have.text',
+      //   '3completed',
+      // )
     })
+    cy.get(
+      '[href="/kotahi/versions/8f05064b-b00d-4aec-a98f-f7ba3656cc2f/decision"]',
+    ).click()
 
     // task to dump data in dumps/three_reviews_completed.sql
     cy.task('dump', 'three_reviews_completed')

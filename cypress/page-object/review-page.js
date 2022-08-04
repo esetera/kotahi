@@ -9,10 +9,10 @@ const ABSTRACT_EDITOR_FIELD = '.ProseMirror > .paragraph'
 
 // const REVIEW_COMMENT_FIELD = 'reviewComment'
 // const CONFIDENTIAL_COMMENT_FIELD = 'confidentialComment'
-const ACCEPT_RADIO_BUTTON = 'span[color=green]'
+const ACCEPT_RADIO_BUTTON = '.ALZiZ > .sc-dmlrTW'
 const REVISE_RADIO_BUTTON = 'span[color=orange]'
 const REJECT_RADIO_BUTTON = 'span[color=red]'
-const SUBMIT_BUTTON = '[class*=General__SectionAction] > button'
+const SUBMIT_BUTTON = '.ActionButton__LabelOnlySpan-sc-1ja3w98-3'
 // const DECISION_COMMENT_FIELD = 'decisionComment'
 const ERROR_TEXT = 'style__ErrorText-'
 const FORM_STATUS = 'style__FormStatus-'
@@ -33,8 +33,11 @@ export const ReviewPage = {
   },
   getReviewCommentField() {
     // return cy.get(ABSTRACT_EDITOR_FIELD).eq(0)
+    // return cy.get(
+    //   ':nth-child(1) > :nth-child(2) > :nth-child(1) > :nth-child(1) > .EditorStyles__SimpleGrid-k4rcxo-9 > .EditorStyles__SimpleEditorDiv-k4rcxo-11 > .sc-kNMOeM > .ProseMirror > .paragraph',
+    // )
     return cy.get(
-      ':nth-child(1) > :nth-child(2) > :nth-child(1) > :nth-child(1) > .EditorStyles__SimpleGrid-k4rcxo-9 > .EditorStyles__SimpleEditorDiv-k4rcxo-11 > .sc-kNMOeM > .ProseMirror > .paragraph',
+      ':nth-child(1) > :nth-child(2) > :nth-child(1) > :nth-child(1) > .EditorStyles__SimpleGrid-k4rcxo-9 > .EditorStyles__SimpleEditorDiv-k4rcxo-11',
     )
   },
   fillInReviewComment(reviewComment) {
