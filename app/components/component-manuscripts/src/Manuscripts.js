@@ -132,22 +132,22 @@ const Manuscripts = ({ history, ...props }) => {
     setSelectedNewManuscripts(currentSelectedManuscripts => {
       return isEveryNewManuscriptIsSelectedFromCurrentPage
         ? currentSelectedManuscripts.filter(selectedManuscript => {
-            if (newManuscriptsFromCurrentPageIds.includes(selectedManuscript))
-              return false
-            return true
-          })
+          if (newManuscriptsFromCurrentPageIds.includes(selectedManuscript))
+            return false
+          return true
+        })
         : [
-            ...new Set([
-              ...currentSelectedManuscripts,
-              ...manuscripts
-                .filter(
-                  manuscript =>
-                    manuscript.status === articleStatuses.new &&
-                    !manuscript.submission.labels,
-                )
-                .map(manuscript => manuscript.id),
-            ]),
-          ]
+          ...new Set([
+            ...currentSelectedManuscripts,
+            ...manuscripts
+              .filter(
+                manuscript =>
+                  manuscript.status === articleStatuses.new &&
+                  !manuscript.submission.labels,
+              )
+              .map(manuscript => manuscript.id),
+          ]),
+        ]
     })
   }
 
@@ -291,21 +291,21 @@ const Manuscripts = ({ history, ...props }) => {
               </FloatRightButton>
             )}
 
-            {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
-              <FloatRightButton
-                disabled={isImporting}
-                onClick={importManuscripts}
-                primary
-              >
-                {isImporting ? (
-                  <RefreshSpinnerWrapper>
-                    <RefreshText>Refreshing</RefreshText> <Loader />
-                  </RefreshSpinnerWrapper>
-                ) : (
-                  'Refresh'
-                )}
-              </FloatRightButton>
-            )}
+            {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME)
+              // <FloatRightButton
+              //   disabled={isImporting}
+              //   onClick={importManuscripts}
+              //   primary
+              // >
+              //   {isImporting ? (
+              //     <RefreshSpinnerWrapper>
+              //       <RefreshText>Refreshing</RefreshText> <Loader />
+              //     </RefreshSpinnerWrapper>
+              //   ) : (
+              //     ""
+              //   )}
+              // </FloatRightButton>
+            }
 
             {!isAdminChatOpen && (
               <ShowChatButton onClick={() => setIsAdminChatOpen(true)} />
@@ -321,9 +321,9 @@ const Manuscripts = ({ history, ...props }) => {
                       manuscript.status === articleStatuses.new &&
                       !manuscript.submission.labels,
                   ).length ===
-                    manuscripts.filter(manuscript =>
-                      selectedNewManuscripts.includes(manuscript.id),
-                    ).length && selectedNewManuscripts.length !== 0
+                  manuscripts.filter(manuscript =>
+                    selectedNewManuscripts.includes(manuscript.id),
+                  ).length && selectedNewManuscripts.length !== 0
                 }
                 label="Select All"
                 onChange={toggleAllNewManuscriptsCheck}
