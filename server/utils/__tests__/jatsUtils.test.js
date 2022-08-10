@@ -2,7 +2,9 @@ const { htmlToJats } = require('../jatsUtils')
 
 describe('htmlToJats', () => {
   test('illegalChars', () => {
-    expect(htmlToJats('ABC😉\x00\r\n\x0B\x9FXYZ')).toEqual('ABC😉\r\nXYZ')
+    expect(htmlToJats('ABC😉\x00\r\n\x0B\x9FXYZ')).toEqual(
+      'ABC&#x1F609;\r\nXYZ',
+    )
   })
   test('insertSections', () => {
     expect(
