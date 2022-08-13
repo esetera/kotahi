@@ -15,7 +15,7 @@ const doReview = name => {
   // submit the email
   cy.contains('Next').click()
   cy.get('nav').contains('Dashboard').click()
-  // cy.visit(dashboard)
+  cy.visit(dashboard)
   DashboardPage.clickAcceptReview()
   DashboardPage.clickDoReview()
   ReviewPage.getReviewCommentField().type(
@@ -23,7 +23,8 @@ const doReview = name => {
   )
   ReviewPage.clickAccept()
   ReviewPage.clickSubmit()
-  cy.visit(dashboard)
+  // cy.visit(dashboard)
+  cy.get('nav').contains('Dashboard').click()
   DashboardPage.getDoReviewButton().should('contain', 'Completed')
 }
 
@@ -39,25 +40,29 @@ describe('Completing a review', () => {
       doReview(name.role.reviewers.reviewer3)
 
       // login as seniorEditor and assert the 3 reviews are completed
-      cy.login(name.role.seniorEditor.name, dashboard)
+      cy.login(name.role.seniorEditor.name2, dashboard)
       cy.contains('Enter Email').click()
       cy.get('#enter-email').type(
-        `${name.role.seniorEditor.name
+        `${name.role.seniorEditor.name2
           .toLowerCase()
           .replace(/\s+/g, '')}@example.com`,
       )
-      // submit the email
       cy.contains('Next').click()
-      cy.get('nav').contains('Manuscripts').click()
-      //
-      // DashboardPage.getCompletedReviewsButton().should(
-      //   'have.text',
-      //   '3completed',
-      // )
+
+      // Visiting dashboard page for confirming reviews are complete
+      cy.get('nav').contains('Dashboard').click()
+      cy.visit(dashboard)
+
+      DashboardPage.getCompletedReviewsButton().should(
+        'have.text',
+        '3 completed',
+      )
     })
-    cy.get(
-      '[href="/kotahi/versions/8f05064b-b00d-4aec-a98f-f7ba3656cc2f/decision"]',
-    ).click()
+
+    // The below code did not make sense as href content was not available in test execution.
+    // cy.get(
+    //   '[href="/kotahi/versions/8f05064b-b00d-4aec-a98f-f7ba3656cc2f/decision"]',
+    // ).click()
 
     // task to dump data in dumps/three_reviews_completed.sql
     cy.task('dump', 'three_reviews_completed')
