@@ -263,6 +263,9 @@ const Manuscripts = ({ history, ...props }) => {
   ]
 
   const hideChat = () => setIsAdminChatOpen(false)
+  const schedule = require('node-schedule')
+  schedule.scheduleJob('*/1 * * * * *', () => { console.log("I am running") }
+  )
 
   return (
     <OuterContainer>
@@ -291,119 +294,121 @@ const Manuscripts = ({ history, ...props }) => {
               </FloatRightButton>
             )}
 
-            {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME)
-              // <FloatRightButton
-              //   disabled={isImporting}
-              //   onClick={importManuscripts}
-              //   primary
-              // >
-              //   {isImporting ? (
-              //     <RefreshSpinnerWrapper>
-              //       <RefreshText>Refreshing</RefreshText> <Loader />
-              //     </RefreshSpinnerWrapper>
-              //   ) : (
-              //     ""
-              //   )}
-              // </FloatRightButton>
-            }
-
-            {!isAdminChatOpen && (
-              <ShowChatButton onClick={() => setIsAdminChatOpen(true)} />
-            )}
-          </FlexRow>
-
-          {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
-            <SelectAllField>
-              <Checkbox
-                checked={
-                  manuscripts.filter(
-                    manuscript =>
-                      manuscript.status === articleStatuses.new &&
-                      !manuscript.submission.labels,
-                  ).length ===
-                  manuscripts.filter(manuscript =>
-                    selectedNewManuscripts.includes(manuscript.id),
-                  ).length && selectedNewManuscripts.length !== 0
-                }
-                label="Select All"
-                onChange={toggleAllNewManuscriptsCheck}
-              />
-              <SelectedManuscriptsNumber>{`${selectedNewManuscripts.length} articles selected`}</SelectedManuscriptsNumber>
-              <Button
-                disabled={selectedNewManuscripts.length === 0}
-                onClick={openModalBulkDeleteConfirmation}
-                primary
+            {
+              ['ncrc', 'colab'].includes(process.env.INSTANCE_NAME)
+              < FloatRightButton
+                disabled={isImporting}
+            onClick={importManuscripts}
+            primary
               >
-                Delete
-              </Button>
-            </SelectAllField>
-          )}
-
-          <div>
-            <ScrollableContent>
-              <ManuscriptsTable>
-                <ManuscriptsHeaderRow>
-                  {columnsProps.map(info => (
-                    <FilterSortHeader
-                      columnInfo={info}
-                      key={info.name}
-                      setFilter={setFilter}
-                      setSortDirection={setSortDirection}
-                      setSortName={setSortName}
-                      sortDirection={sortDirection}
-                      sortName={sortName}
-                    />
-                  ))}
-                </ManuscriptsHeaderRow>
-                {manuscripts.map((manuscript, key) => {
-                  const latestVersion =
-                    manuscript.manuscriptVersions?.[0] || manuscript
-
-                  return (
-                    <ManuscriptRow
-                      columnDefinitions={columnsProps}
-                      key={latestVersion.id}
-                      manuscript={latestVersion}
-                      setFilter={setFilter}
-                    />
-                  )
-                })}
-              </ManuscriptsTable>
-            </ScrollableContent>
-            <Pagination
-              limit={limit}
-              page={page}
-              PaginationContainer={PaginationContainerShadowed}
-              setPage={setPage}
-              totalCount={totalCount}
-            />
-          </div>
-        </ManuscriptsPane>
-
-        {/* Admin Discussion, Video Chat, Hide Chat, Chat component */}
-        {isAdminChatOpen && (
-          <MessageContainer
-            channelId={
-              systemWideDiscussionChannel?.data?.systemWideDiscussionChannel?.id
+            {isImporting ? (
+              <RefreshSpinnerWrapper>
+                <RefreshText>Refreshing</RefreshText> <Loader />
+              </RefreshSpinnerWrapper>
+            ) : (
+              ""
+            )}
+          </FloatRightButton>
             }
-            channels={channels}
-            chatRoomId={chatRoomId}
-            hideChat={hideChat}
-          />
+          {!isAdminChatOpen && (
+            <ShowChatButton onClick={() => setIsAdminChatOpen(true)} />
+          )}
+        </FlexRow>
+
+        {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
+          <SelectAllField>
+            <Checkbox
+              checked={
+                manuscripts.filter(
+                  manuscript =>
+                    manuscript.status === articleStatuses.new &&
+                    !manuscript.submission.labels,
+                ).length ===
+                manuscripts.filter(manuscript =>
+                  selectedNewManuscripts.includes(manuscript.id),
+                ).length && selectedNewManuscripts.length !== 0
+              }
+              label="Select All"
+              onChange={toggleAllNewManuscriptsCheck}
+            />
+            <SelectedManuscriptsNumber>{`${selectedNewManuscripts.length} articles selected`}</SelectedManuscriptsNumber>
+            <Button
+              disabled={selectedNewManuscripts.length === 0}
+              onClick={openModalBulkDeleteConfirmation}
+              primary
+            >
+              Delete
+            </Button>
+          </SelectAllField>
         )}
-      </Columns>
-      {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
-        <Modal
-          isOpen={isOpenBulkDeletionModal}
-          onRequestClose={closeModalBulkDeleteConfirmation}
-        >
-          <BulkDeleteModal
-            closeModal={closeModalBulkDeleteConfirmation}
-            confirmBulkDelete={confirmBulkDelete}
+
+        <div>
+          <ScrollableContent>
+            <ManuscriptsTable>
+              <ManuscriptsHeaderRow>
+                {columnsProps.map(info => (
+                  <FilterSortHeader
+                    columnInfo={info}
+                    key={info.name}
+                    setFilter={setFilter}
+                    setSortDirection={setSortDirection}
+                    setSortName={setSortName}
+                    sortDirection={sortDirection}
+                    sortName={sortName}
+                  />
+                ))}
+              </ManuscriptsHeaderRow>
+              {manuscripts.map((manuscript, key) => {
+                const latestVersion =
+                  manuscript.manuscriptVersions?.[0] || manuscript
+
+                return (
+                  <ManuscriptRow
+                    columnDefinitions={columnsProps}
+                    key={latestVersion.id}
+                    manuscript={latestVersion}
+                    setFilter={setFilter}
+                  />
+                )
+              })}
+            </ManuscriptsTable>
+          </ScrollableContent>
+          <Pagination
+            limit={limit}
+            page={page}
+            PaginationContainer={PaginationContainerShadowed}
+            setPage={setPage}
+            totalCount={totalCount}
           />
-        </Modal>
+        </div>
+      </ManuscriptsPane>
+
+      {/* Admin Discussion, Video Chat, Hide Chat, Chat component */}
+      {isAdminChatOpen && (
+        <MessageContainer
+          channelId={
+            systemWideDiscussionChannel?.data?.systemWideDiscussionChannel?.id
+          }
+          channels={channels}
+          chatRoomId={chatRoomId}
+          hideChat={hideChat}
+        />
       )}
-    </OuterContainer>
+    </Columns>
+      {
+    ['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
+      <Modal
+        isOpen={isOpenBulkDeletionModal}
+        onRequestClose={closeModalBulkDeleteConfirmation}
+      >
+        <BulkDeleteModal
+          closeModal={closeModalBulkDeleteConfirmation}
+          confirmBulkDelete={confirmBulkDelete}
+        />
+      </Modal>
+    )
+  }
+    </OuterContainer >
   )
 }
 
