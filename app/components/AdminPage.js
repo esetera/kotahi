@@ -27,6 +27,7 @@ import NewSubmissionPage from './component-submit/src/components/NewSubmissionPa
 import ReportPage from './component-reporting/src/ReportPage'
 import { Profile } from './component-profile/src'
 import ProductionPage from './component-production/src/components/ProductionPage'
+import ConfigPage from './component-config-manager/src/ConfigPage'
 
 import { GET_CURRENT_USER } from '../queries'
 
@@ -157,6 +158,7 @@ const AdminPage = () => {
   const decisionFormBuilderLink = `${urlFrag}/admin/decision-form-builder`
   const homeLink = `${urlFrag}/dashboard`
   const profileLink = `${urlFrag}/profile`
+  const configLink = `${urlFrag}/admin/config`
   const manuscriptsLink = `${urlFrag}/admin/manuscripts`
   const reportsLink = `${urlFrag}/admin/reports`
   const userAdminLink = `${urlFrag}/admin/users`
@@ -210,6 +212,9 @@ const AdminPage = () => {
   if (currentUser) {
     links.push({ link: profileLink, name: 'My profile', icon: 'user' })
   }
+
+  if (currentUser?.admin)
+    links.push({ link: configLink, name: 'Config', icon: 'settings' })
 
   return (
     <Root converting={conversion.converting}>
@@ -368,6 +373,13 @@ const AdminPage = () => {
               currentUser={currentUser}
               key="production"
               path={`${urlFrag}/versions/:version/production`}
+              redirectLink={redirectLink}
+            />,
+            <PrivateRoute
+              component={ConfigPage}
+              currentUser={currentUser}
+              key="config"
+              path={`${urlFrag}/admin/config`}
               redirectLink={redirectLink}
             />,
           ]}
