@@ -35,6 +35,9 @@ import getUriQueryParams from './getUriQueryParams'
 import FilterSortHeader from './FilterSortHeader'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
 
+// eslint-disable-next-line import/no-unresolved
+const schedule = require('node-schedule')
+
 const HeadingInFlexRow = styled(Heading)`
   flex-grow: 10;
 `
@@ -132,22 +135,22 @@ const Manuscripts = ({ history, ...props }) => {
     setSelectedNewManuscripts(currentSelectedManuscripts => {
       return isEveryNewManuscriptIsSelectedFromCurrentPage
         ? currentSelectedManuscripts.filter(selectedManuscript => {
-          if (newManuscriptsFromCurrentPageIds.includes(selectedManuscript))
-            return false
-          return true
-        })
+            if (newManuscriptsFromCurrentPageIds.includes(selectedManuscript))
+              return false
+            return true
+          })
         : [
-          ...new Set([
-            ...currentSelectedManuscripts,
-            ...manuscripts
-              .filter(
-                manuscript =>
-                  manuscript.status === articleStatuses.new &&
-                  !manuscript.submission.labels,
-              )
-              .map(manuscript => manuscript.id),
-          ]),
-        ]
+            ...new Set([
+              ...currentSelectedManuscripts,
+              ...manuscripts
+                .filter(
+                  manuscript =>
+                    manuscript.status === articleStatuses.new &&
+                    !manuscript.submission.labels,
+                )
+                .map(manuscript => manuscript.id),
+            ]),
+          ]
     })
   }
 
@@ -263,9 +266,11 @@ const Manuscripts = ({ history, ...props }) => {
   ]
 
   const hideChat = () => setIsAdminChatOpen(false)
-  const schedule = require('node-schedule')
-  schedule.scheduleJob('*/1 * * * * *', () => { console.log("I am running") }
-  )
+
+  schedule.scheduleJob('* * * * *', () => {
+    // eslint-disable-next-line no-console
+    console.log(schedule, 'I am running...')
+  })
 
   return (
     <OuterContainer>
@@ -294,121 +299,119 @@ const Manuscripts = ({ history, ...props }) => {
               </FloatRightButton>
             )}
 
-            {
-              ['ncrc', 'colab'].includes(process.env.INSTANCE_NAME)
-              < FloatRightButton
+            {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
+              <FloatRightButton
                 disabled={isImporting}
-            onClick={importManuscripts}
-            primary
+                onClick={importManuscripts}
+                primary
               >
-            {isImporting ? (
-              <RefreshSpinnerWrapper>
-                <RefreshText>Refreshing</RefreshText> <Loader />
-              </RefreshSpinnerWrapper>
-            ) : (
-              ""
+                {isImporting ? (
+                  <RefreshSpinnerWrapper>
+                    <RefreshText>Refreshing</RefreshText> <Loader />
+                  </RefreshSpinnerWrapper>
+                ) : (
+                  'Refresh'
+                )}
+              </FloatRightButton>
             )}
-          </FloatRightButton>
-            }
-          {!isAdminChatOpen && (
-            <ShowChatButton onClick={() => setIsAdminChatOpen(true)} />
+
+            {!isAdminChatOpen && (
+              <ShowChatButton onClick={() => setIsAdminChatOpen(true)} />
+            )}
+          </FlexRow>
+
+          {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
+            <SelectAllField>
+              <Checkbox
+                checked={
+                  manuscripts.filter(
+                    manuscript =>
+                      manuscript.status === articleStatuses.new &&
+                      !manuscript.submission.labels,
+                  ).length ===
+                    manuscripts.filter(manuscript =>
+                      selectedNewManuscripts.includes(manuscript.id),
+                    ).length && selectedNewManuscripts.length !== 0
+                }
+                label="Select All"
+                onChange={toggleAllNewManuscriptsCheck}
+              />
+              <SelectedManuscriptsNumber>{`${selectedNewManuscripts.length} articles selected`}</SelectedManuscriptsNumber>
+              <Button
+                disabled={selectedNewManuscripts.length === 0}
+                onClick={openModalBulkDeleteConfirmation}
+                primary
+              >
+                Delete
+              </Button>
+            </SelectAllField>
           )}
-        </FlexRow>
 
-        {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
-          <SelectAllField>
-            <Checkbox
-              checked={
-                manuscripts.filter(
-                  manuscript =>
-                    manuscript.status === articleStatuses.new &&
-                    !manuscript.submission.labels,
-                ).length ===
-                manuscripts.filter(manuscript =>
-                  selectedNewManuscripts.includes(manuscript.id),
-                ).length && selectedNewManuscripts.length !== 0
-              }
-              label="Select All"
-              onChange={toggleAllNewManuscriptsCheck}
+          <div>
+            <ScrollableContent>
+              <ManuscriptsTable>
+                <ManuscriptsHeaderRow>
+                  {columnsProps.map(info => (
+                    <FilterSortHeader
+                      columnInfo={info}
+                      key={info.name}
+                      setFilter={setFilter}
+                      setSortDirection={setSortDirection}
+                      setSortName={setSortName}
+                      sortDirection={sortDirection}
+                      sortName={sortName}
+                    />
+                  ))}
+                </ManuscriptsHeaderRow>
+                {manuscripts.map((manuscript, key) => {
+                  const latestVersion =
+                    manuscript.manuscriptVersions?.[0] || manuscript
+
+                  return (
+                    <ManuscriptRow
+                      columnDefinitions={columnsProps}
+                      key={latestVersion.id}
+                      manuscript={latestVersion}
+                      setFilter={setFilter}
+                    />
+                  )
+                })}
+              </ManuscriptsTable>
+            </ScrollableContent>
+            <Pagination
+              limit={limit}
+              page={page}
+              PaginationContainer={PaginationContainerShadowed}
+              setPage={setPage}
+              totalCount={totalCount}
             />
-            <SelectedManuscriptsNumber>{`${selectedNewManuscripts.length} articles selected`}</SelectedManuscriptsNumber>
-            <Button
-              disabled={selectedNewManuscripts.length === 0}
-              onClick={openModalBulkDeleteConfirmation}
-              primary
-            >
-              Delete
-            </Button>
-          </SelectAllField>
-        )}
+          </div>
+        </ManuscriptsPane>
 
-        <div>
-          <ScrollableContent>
-            <ManuscriptsTable>
-              <ManuscriptsHeaderRow>
-                {columnsProps.map(info => (
-                  <FilterSortHeader
-                    columnInfo={info}
-                    key={info.name}
-                    setFilter={setFilter}
-                    setSortDirection={setSortDirection}
-                    setSortName={setSortName}
-                    sortDirection={sortDirection}
-                    sortName={sortName}
-                  />
-                ))}
-              </ManuscriptsHeaderRow>
-              {manuscripts.map((manuscript, key) => {
-                const latestVersion =
-                  manuscript.manuscriptVersions?.[0] || manuscript
-
-                return (
-                  <ManuscriptRow
-                    columnDefinitions={columnsProps}
-                    key={latestVersion.id}
-                    manuscript={latestVersion}
-                    setFilter={setFilter}
-                  />
-                )
-              })}
-            </ManuscriptsTable>
-          </ScrollableContent>
-          <Pagination
-            limit={limit}
-            page={page}
-            PaginationContainer={PaginationContainerShadowed}
-            setPage={setPage}
-            totalCount={totalCount}
+        {/* Admin Discussion, Video Chat, Hide Chat, Chat component */}
+        {isAdminChatOpen && (
+          <MessageContainer
+            channelId={
+              systemWideDiscussionChannel?.data?.systemWideDiscussionChannel?.id
+            }
+            channels={channels}
+            chatRoomId={chatRoomId}
+            hideChat={hideChat}
           />
-        </div>
-      </ManuscriptsPane>
-
-      {/* Admin Discussion, Video Chat, Hide Chat, Chat component */}
-      {isAdminChatOpen && (
-        <MessageContainer
-          channelId={
-            systemWideDiscussionChannel?.data?.systemWideDiscussionChannel?.id
-          }
-          channels={channels}
-          chatRoomId={chatRoomId}
-          hideChat={hideChat}
-        />
+        )}
+      </Columns>
+      {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
+        <Modal
+          isOpen={isOpenBulkDeletionModal}
+          onRequestClose={closeModalBulkDeleteConfirmation}
+        >
+          <BulkDeleteModal
+            closeModal={closeModalBulkDeleteConfirmation}
+            confirmBulkDelete={confirmBulkDelete}
+          />
+        </Modal>
       )}
-    </Columns>
-      {
-    ['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
-      <Modal
-        isOpen={isOpenBulkDeletionModal}
-        onRequestClose={closeModalBulkDeleteConfirmation}
-      >
-        <BulkDeleteModal
-          closeModal={closeModalBulkDeleteConfirmation}
-          confirmBulkDelete={confirmBulkDelete}
-        />
-      </Modal>
-    )
-  }
-    </OuterContainer >
+    </OuterContainer>
   )
 }
 
