@@ -54,7 +54,7 @@ lint css:
     - postgres
 
 .test_before_script: &run_test_before_script
-  - apt-get update
+  - apt-get --allow-releaseinfo-change update
   - apt-get -y install postgresql-client
   - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
 
