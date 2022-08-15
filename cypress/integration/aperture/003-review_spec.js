@@ -49,7 +49,6 @@ describe('Completing a review', () => {
       cy.contains('Next').click()
 
       // Visit dashboard page to confirm reviews are complete
-      //cy.get('nav').contains('Dashboard').click()
       cy.visit(dashboard)
 
       DashboardPage.getCompletedReviewsButton().should(
