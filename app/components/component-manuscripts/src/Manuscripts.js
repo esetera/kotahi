@@ -267,9 +267,9 @@ const Manuscripts = ({ history, ...props }) => {
 
   const hideChat = () => setIsAdminChatOpen(false)
 
-  schedule.scheduleJob('* * * * *', () => {
-    // eslint-disable-next-line no-console
-    console.log(schedule, 'I am running...')
+  const mJob = schedule.scheduleJob('m-job', '* * * * *', () => {
+    console.log('Preprints are importing')
+    mJob.cancel()
   })
 
   return (
