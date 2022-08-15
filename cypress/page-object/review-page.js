@@ -10,7 +10,7 @@ const ABSTRACT_EDITOR_FIELD = '.ProseMirror > .paragraph'
 // const REVIEW_COMMENT_FIELD = 'reviewComment'
 // const CONFIDENTIAL_COMMENT_FIELD = 'confidentialComment'
 const ACCEPT_RADIO_BUTTON = 'span[color="#00ff7b"]'
-const REVISE_RADIO_BUTTON = 'span[color=orange]' // Need to update tag for organge and red color
+const REVISE_RADIO_BUTTON = 'span[color=orange]'
 const REJECT_RADIO_BUTTON = 'span[color=red]'
 const SUBMIT_BUTTON = '.ActionButton__LabelOnlySpan-sc-1ja3w98-3'
 // const DECISION_COMMENT_FIELD = 'decisionComment'

@@ -23,7 +23,6 @@ const doReview = name => {
   )
   ReviewPage.clickAccept()
   ReviewPage.clickSubmit()
-  // cy.visit(dashboard)
   cy.get('nav').contains('Dashboard').click()
   DashboardPage.getDoReviewButton().should('contain', 'Completed')
 }
@@ -49,7 +48,7 @@ describe('Completing a review', () => {
       )
       cy.contains('Next').click()
 
-      // Visiting dashboard page for confirming reviews are complete
+      // Visit dashboard page to confirm reviews are complete
       cy.get('nav').contains('Dashboard').click()
       cy.visit(dashboard)
 
@@ -58,11 +57,6 @@ describe('Completing a review', () => {
         '3 completed',
       )
     })
-
-    // The below code did not make sense as href content was not available in test execution.
-    // cy.get(
-    //   '[href="/kotahi/versions/8f05064b-b00d-4aec-a98f-f7ba3656cc2f/decision"]',
-    // ).click()
 
     // task to dump data in dumps/three_reviews_completed.sql
     cy.task('dump', 'three_reviews_completed')
