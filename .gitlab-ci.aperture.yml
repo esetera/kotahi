@@ -40,7 +40,7 @@ lint:
     GIT_STRATEGY: none
   script:
     - cd ${HOME}
-    - yarn lint
+    - yarn eslint .
 
 .test_template: &run_test_template
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
@@ -51,8 +51,7 @@ lint:
     - postgres
 
 .test_before_script: &run_test_before_script
-  - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-  - apt-get update --allow-releaseinfo-change
+  - apt-get update 
   - apt-get -y install postgresql-client
   - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
 
