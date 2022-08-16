@@ -65,7 +65,7 @@ test-chrome:
     - *run_test_before_script
   <<: *run_test_template
   variables:
-    TEST_ITEM: 'chrome'
+    TEST_ITEM: 'chrome:aperture'
   script:
     - *run_test_script
 
@@ -74,7 +74,7 @@ test-firefox:
     - *run_test_before_script
   <<: *run_test_template
   variables:
-    TEST_ITEM: 'firefox'
+    TEST_ITEM: 'firefox:aperture'
   script:
     - *run_test_script
 # test-chrome:
