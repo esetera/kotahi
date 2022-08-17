@@ -6,7 +6,6 @@ variables:
   POSTGRES_PASSWORD: kotahidev
   PGUSER: kotahidev
   PGPASSWORD: kotahidev
-  WORKDIR: /home/node/app
 
 stages:
   - build
@@ -49,7 +48,7 @@ lint js:
   variables:
     GIT_STRATEGY: none
   script:
-    - cd $WORKDIR
+    - cd ${HOME}
     - yarn eslint .
 
 lint css:
@@ -58,7 +57,7 @@ lint css:
   variables:
     GIT_STRATEGY: none
   script:
-    - cd $WORKDIR
+    - cd ${HOME}
     - yarn stylelint '{app,ui}/**/*.js'
 
 .test_template: &run_test_template
@@ -76,7 +75,7 @@ lint css:
   - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
 
 .test_script: &run_test_script
-  - cd $WORKDIR
+  - cd ${HOME}
   - cp .env.example .env
   - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
 
