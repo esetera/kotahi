@@ -76,7 +76,7 @@ lint css:
   - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
 
 .test_script: &run_test_script
-  - cd ${HOME}
+  - cd $WORKDIR
   - cp .env.example .env
   - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
 
