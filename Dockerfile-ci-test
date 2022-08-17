@@ -47,7 +47,7 @@ ENV S3_PROTOCOL "http"
 ENV S3_HOST "fileHosting"
 ENV S3_PORT "9000"
 ENV MINIO_ROOT_USER "admin"
-ENV MINIO_ROOT_PASSWORD "uperSecretAdminPassword"
+ENV MINIO_ROOT_PASSWORD "superSecretAdminPassword"
 ENV MINIO_CONSOLE_PORT "9001"
 ENV HOME "/home/simplej"
 
