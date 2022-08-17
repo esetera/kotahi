@@ -505,6 +505,7 @@ const resolvers = {
         }
       }
 
+      // This needs to be converted to a function and be called from scheduler/cron jobs
       const updatedManuscript = await models.Manuscript.query().updateAndFetchById(
         manuscript.id,
         manuscript,

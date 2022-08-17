@@ -35,9 +35,6 @@ import getUriQueryParams from './getUriQueryParams'
 import FilterSortHeader from './FilterSortHeader'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
 
-// eslint-disable-next-line import/no-unresolved
-const schedule = require('node-schedule')
-
 const HeadingInFlexRow = styled(Heading)`
   flex-grow: 10;
 `
@@ -266,11 +263,6 @@ const Manuscripts = ({ history, ...props }) => {
   ]
 
   const hideChat = () => setIsAdminChatOpen(false)
-
-  const mJob = schedule.scheduleJob('m-job', '* * * * *', () => {
-    console.log('Preprints are importing')
-    mJob.cancel()
-  })
 
   return (
     <OuterContainer>
