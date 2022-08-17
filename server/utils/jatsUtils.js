@@ -127,16 +127,39 @@ const insertSections = markup => {
   return result
 }
 
+const fixLinkUris = markup => {
+  let cleaned = markup.replace(/xlink:href/g, 'xlink:@href')
+
+  while (cleaned.indexOf('xlink:@href') >= 0) {
+    const start = cleaned.indexOf('xlink:@href="') + 13
+    const end = cleaned.indexOf('">', start)
+    const inside = cleaned.substring(start, end)
+    const fixedInside = he.decode(inside)
+    cleaned = cleaned.replace(
+      `xlink:@href="${inside}`,
+      `xlink:href="${fixedInside}`,
+    )
+  }
+
+  return cleaned
+}
+
 /** Replace <a href="..."> with <ext-link ...> ONLY IF the target starts with 'http://', 'https://' or 'ftp://'.
  * For other targets such as '#ref1' or 'mailto:a@b.com', just strip the <a> tags off leaving the inner content.
  */
 const convertLinks = markup => {
-  return markup
+  // this test string: `<p>before link <a href="http://x.com/asdf?a=123&b=456">link text</a> after link.</p>`
+  // comes through this function correctly, though it's getting screwed up elsewhere.
+  const precleaned = markup
     .replace(
       /<a href="((?:https?|ftp):\/\/[^"\s]+)"[^>]*>((?:(?!<\/a>)[\s\S])+)<\/a>/g,
       '<ext-link ext-link-type="uri" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="$1">$2</ext-link>',
     )
     .replace(/<a\b[^>]*>((?:(?!<\/a>)[\s\S])+)<\/a>/g, '$1')
+
+  const cleaned = fixLinkUris(precleaned)
+
+  return cleaned
 }
 
 const convertLists = markup => {
@@ -814,8 +837,8 @@ const makeJats = (html, articleMeta, journalMeta) => {
   const unfixedMath = htmlToJats(deFrontedHtml)
 
   // change math to JATS-suitable math
-
-  let body = fixMath(unfixedMath)
+  const fixedMath = fixMath(unfixedMath)
+  let body = fixLinkUris(fixedMath)
 
   // this is to clean out the bad table tags
   body = replaceAll(body, '<table>', '<table-wrap><table>')
