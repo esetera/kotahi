@@ -32,8 +32,17 @@ build:
       docker push $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
       docker push $IMAGE_ORG/$IMAGE_NAME:latest
 
-lint:
+#lint:
   # allow_failure: true
+  #image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+  #stage: test
+  #variables:
+    #GIT_STRATEGY: none
+  #script:
+  #  - cd ${HOME}
+  #  - yarn eslint .
+
+lint js:
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
   stage: test
   variables:
@@ -41,6 +50,16 @@ lint:
   script:
     - cd ${HOME}
     - yarn eslint .
+
+lint css:
+  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+  stage: test
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - cd ${HOME}
+    - yarn stylelint '{app,ui}/**/*.js'
+
 
 .test_template: &run_test_template
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
