@@ -47,7 +47,7 @@ ENV S3_PORT "9000"
 ENV MINIO_ROOT_USER "admin"
 ENV MINIO_ROOT_PASSWORD "superSecretAdminPassword"
 ENV MINIO_CONSOLE_PORT "9001"
-ENV HOME "/home/simplej"
+ENV HOME "/home/node/app"
 
 RUN mkdir -p ${HOME}
 WORKDIR ${HOME}
