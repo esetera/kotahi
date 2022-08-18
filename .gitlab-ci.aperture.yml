@@ -7,7 +7,6 @@ variables:
   PGUSER: kotahidev
   PGPASSWORD: kotahidev
 
-
 stages:
   - build
   - lint
