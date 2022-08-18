@@ -9,6 +9,7 @@ variables:
 
 stages:
   - build
+  - lint
   - test
   # - review
   # - staging
@@ -44,7 +45,7 @@ build:
 
 lint js:
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-  stage: test
+  stage: lint
   variables:
     GIT_STRATEGY: none
   script:
@@ -53,7 +54,7 @@ lint js:
 
 lint css:
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-  stage: test
+  stage: lint
   variables:
     GIT_STRATEGY: none
   script:
