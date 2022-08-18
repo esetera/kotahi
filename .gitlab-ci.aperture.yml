@@ -7,6 +7,7 @@ variables:
   PGUSER: kotahidev
   PGPASSWORD: kotahidev
 
+
 stages:
   - build
   - lint
@@ -50,16 +51,16 @@ lint js:
     GIT_STRATEGY: none
   script:
     - cd ${HOME}
-    - yarn eslint .
+    - yarn lint:js
 
-lint css:
+lint style:
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
   stage: lint
   variables:
     GIT_STRATEGY: none
   script:
     - cd ${HOME}
-    - yarn stylelint '{app,ui}/**/*.js'
+    - yarn lint:style
 
 .test_template: &run_test_template
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
