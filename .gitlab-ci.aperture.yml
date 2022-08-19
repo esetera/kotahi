@@ -72,10 +72,10 @@ lint style:
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
   - apt-get update --allow-releaseinfo-change
+  - which docker-compose || apk add --no-cache docker-compose
   - apt-get -y install postgresql-client
   - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
-  - docker-compose up 
-  
+  - docker-compose up
 
 .test_script: &run_test_script
   - cd ${HOME}
