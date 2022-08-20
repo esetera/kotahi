@@ -31,7 +31,7 @@ ENV REVIEW_SHARED=$review_shared
 ENV REVIEW_HIDE=$review_hide
 ENV HYPOTHESIS_ALLOW_TAGGING=$hypothesis_allow_tagging
 
-ENV HOME "/home/node/app"
+ENV HOME "/home/simplej"
 
 RUN mkdir -p ${HOME}
 WORKDIR ${HOME}
@@ -49,6 +49,7 @@ ENV NODE_ENV ${NODE_ENV}
 
 # The copy everything else that changes frequently
 COPY . .
-EXPOSE ${PORT}
+# Dispalbling as no value passd to port 
+#EXPOSE ${PORT}  
 
 CMD []
