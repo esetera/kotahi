@@ -81,7 +81,6 @@ aperture-pipeline:
     include:
       - local: .gitlab-ci.aperture.yml
     strategy: depend
-
 # aperture-test-chrome:
 #   only:
 #     refs:

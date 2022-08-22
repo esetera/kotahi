@@ -64,8 +64,7 @@ lint style:
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
   stage: test
   variables:
-    GIT_STRATEGY:
-      none
+    GIT_STRATEGY: none
   services:
     - postgres
 
@@ -74,7 +73,6 @@ lint style:
   - apt-get update --allow-releaseinfo-change
   - apt-get -y install postgresql-client
   - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
-  - docker compose up db
 
 .test_script: &run_test_script
   - cd ${HOME}
