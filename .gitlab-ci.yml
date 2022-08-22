@@ -82,14 +82,14 @@ aperture-pipeline:
       - local: .gitlab-ci.aperture.yml
     strategy: depend
 
-aperture-test-chrome:
-  only:
-    refs:
-      - schedules
-    variables:
-      - $SCHEDULE_TYPE == "test-chrome"
-  stage: run-pipeline
-  trigger:
-    include:
-      - local: .gitlab-ci.aperture-test-chrome.yml
-    strategy: depend
+# aperture-test-chrome:
+#   only:
+#     refs:
+#       - schedules
+#     variables:
+#       - $SCHEDULE_TYPE == "test-chrome"
+#   stage: run-pipeline
+#   trigger:
+#     include:
+#       - local: .gitlab-ci.aperture-test-chrome.yml
+#     strategy: depend
