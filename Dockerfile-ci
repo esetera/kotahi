@@ -23,13 +23,13 @@ ENV SERVER_PORT "3000"
 ENV CLIENT_PROTOCOL "http"
 ENV CLIENT_HOST "0.0.0.0"
 ENV CLIENT_PORT "4000"
-ENV INSTANCE_NAME=$instance_name
-ENV MANUSCRIPTS_TABLE_COLUMNS=$manuscripts_table_columns
-ENV MANUSCRIPTS_TABLE_FIRST_COLUMN_WIDTH=$manuscripts_table_first_column_width
-ENV DISPLAY_SHORTID_AS_IDENTIFIER=$display_shortid_as_identifier
-ENV REVIEW_SHARED=$review_shared
-ENV REVIEW_HIDE=$review_hide
-ENV HYPOTHESIS_ALLOW_TAGGING=$hypothesis_allow_tagging
+ENV INSTANCE_NAME $instance_name
+ENV MANUSCRIPTS_TABLE_COLUMNS $manuscripts_table_columns
+ENV MANUSCRIPTS_TABLE_FIRST_COLUMN_WIDTH $manuscripts_table_first_column_width
+ENV DISPLAY_SHORTID_AS_IDENTIFIER $display_shortid_as_identifier
+ENV REVIEW_SHARED $review_shared
+ENV REVIEW_HIDE $review_hide
+ENV HYPOTHESIS_ALLOW_TAGGING $hypothesis_allow_tagging
 
 ENV HOME "/home/simplej"
 
@@ -50,6 +50,6 @@ ENV NODE_ENV ${NODE_ENV}
 # The copy everything else that changes frequently
 COPY . .
 # Dispalbling as no value passd to port 
-#EXPOSE ${PORT}  
+EXPOSE ${PORT}  
 
 CMD []
