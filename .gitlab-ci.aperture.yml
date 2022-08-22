@@ -2,10 +2,10 @@ variables:
   IMAGE_ORG: simplej
   IMAGE_NAME: simplej
   POSTGRES_HOST_AUTH_METHOD: trust
- # POSTGRES_USER: kotahidev
- # POSTGRES_PASSWORD: kotahidev
- # PGUSER: kotahidev
- # PGPASSWORD: kotahidev
+  # POSTGRES_USER: kotahidev
+  # POSTGRES_PASSWORD: kotahidev
+  # PGUSER: kotahidev
+  # PGPASSWORD: kotahidev
 
 stages:
   - build
@@ -64,13 +64,14 @@ lint style:
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
   stage: test
   variables:
-    GIT_STRATEGY: none
-     # setup data for postgres image
-    POSTGRES_USER: kotahidev
-    POSTGRES_PASSWORD: kotahidev
+    GIT_STRATEGY:
+      none
+      # setup data for postgres image
+    POSTGRES_USER: kotahi_dev
+    POSTGRES_PASSWORD: kotahi_dev
     # used by psql
-    PGUSER: kotahidev
-    PGPASSWORD: kotahidev
+    PGUSER: kotahi_dev
+    PGPASSWORD: kotahi_dev
   services:
     - postgres
 
@@ -78,7 +79,7 @@ lint style:
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
   - apt-get update --allow-releaseinfo-change
   - apt-get -y install postgresql-client
-  - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
+  - psql -h postgres -U kotahi_dev -d kotahi_dev -c "create extension pgcrypto;"
 
 .test_script: &run_test_script
   - cd ${HOME}
