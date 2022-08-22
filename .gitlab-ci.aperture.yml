@@ -79,6 +79,7 @@ lint style:
 
 .test_script: &run_test_script
   - cd ${HOME}
+  - docker-compose -f docker-compose.yml run
   - cp .env.example .env
   - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
 
