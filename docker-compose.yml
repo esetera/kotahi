@@ -114,7 +114,7 @@ services:
       - NOTIFICATION_EMAIL_AUTOMATED=${NOTIFICATION_EMAIL_AUTOMATED:-false}
       - NOTIFICATION_EMAIL_CC_ENABLED=${NOTIFICATION_EMAIL_CC_ENABLED:-false}
       - S3_PROTOCOL=http
-      - S3_HOST=fileHosting
+      - S3_HOST=minio
       - S3_PORT=${S3_PORT:-9000}
       - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-nonRootUser}
       - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-nonRootPassword}
@@ -230,7 +230,7 @@ services:
   #     - ./certs:/etc/nginx/certs
 
   # Create the file server and give it a root user
-  fileHosting:
+  minio:
     image: minio/minio
     ports:
       - ${S3_PORT:-9000}:9000
@@ -251,10 +251,10 @@ services:
   createbucket:
     image: minio/mc
     depends_on:
-      - fileHosting
+      - minio
     entrypoint: >
       /bin/sh -c " 
-      /usr/bin/mc config host add cokoServer http://localhost:${S3_PORT:-9000} ${MINIO_ROOT_USER:-admin} ${MINIO_ROOT_PASSWORD:-superSecretAdminPassword};
+      /usr/bin/mc config host add cokoServer http://minio:${S3_PORT:-9000} ${MINIO_ROOT_USER:-admin} ${MINIO_ROOT_PASSWORD:-superSecretAdminPassword};
       /usr/bin/mc admin user add cokoServer/  ${S3_ACCESS_KEY_ID:-nonRootUser} ${S3_SECRET_ACCESS_KEY:-nonRootPassword};
       /usr/bin/mc admin user enable cokoServer/ ${S3_ACCESS_KEY_ID:-nonRootUser};
       /usr/bin/mc mb cokoServer/ ${S3_BUCKET:-uploads};
