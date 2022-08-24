@@ -69,8 +69,16 @@ lint style:
     - cd ${HOME}
     - yarn lint:style
 
-# Create the file server and give it a root user
-test:
+
+.test_template: &run_test_template
+  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+  stage: test
+  variables:
+    GIT_STRATEGY: none
+  services:
+    - postgres
+
+.test_before_script: &run_test_before_script
   image: minio/minio
   services:
     - minio
@@ -83,16 +91,7 @@ test:
     interval: 30s
     timeout: 20s
     retries: 3
-
-.test_template: &run_test_template
-  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-  stage: test
-  variables:
-    GIT_STRATEGY: none
-  services:
-    - postgres
-
-.test_before_script: &run_test_before_script
+  script:
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
   - apt-get update --allow-releaseinfo-change
   - apt-get -y install postgresql-client
