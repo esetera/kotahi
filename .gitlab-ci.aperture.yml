@@ -82,25 +82,16 @@ lint style:
 
 minio:
   image: minio/minio
-  ports:
-    - ${S3_PORT}:9000
-    - ${MINIO_CONSOLE_PORT}:9001
-  volumes:
-    - minio_storage:/data
-  command: server --console-address ":${MINIO_CONSOLE_PORT}" /data
-  healthcheck:
-    test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
-    interval: 30s
-    timeout: 20s
-    retries: 3
   script:
-      - wget https://dl.min.io/client/mc/release/linux-amd64/mc
-      - chmod +x ./mc
-      - ./mc config host add cokoServer http://localhost:${S3_PORT} ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}
-      - ./mc admin user add cokoServer/  ${S3_ACCESS_KEY_ID} ${S3_SECRET_ACCESS_KEY}
-      - ./mc admin user enable cokoServer/ ${S3_ACCESS_KEY_ID}
-      - ./mc mb cokoServer/${S3_BUCKET}
-      - ./mc admin policy set cokoServer/ readwrite user=${S3_ACCESS_KEY_ID}
+    - curl --connect-timeout 20  --retry 3  --retry-delay 30 -f http://localhost:9000/minio/health/live
+    - server --console-address ":${MINIO_CONSOLE_PORT}" /data
+    - wget https://dl.min.io/client/mc/release/linux-amd64/mc
+    - chmod +x ./mc
+    - ./mc config host add cokoServer http://localhost:${S3_PORT} ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}
+    - ./mc admin user add cokoServer/  ${S3_ACCESS_KEY_ID} ${S3_SECRET_ACCESS_KEY}
+    - ./mc admin user enable cokoServer/ ${S3_ACCESS_KEY_ID}
+    - ./mc mb cokoServer/${S3_BUCKET}
+    - ./mc admin policy set cokoServer/ readwrite user=${S3_ACCESS_KEY_ID}
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
