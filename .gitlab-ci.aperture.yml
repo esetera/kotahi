@@ -70,18 +70,9 @@ lint style:
     - cd ${HOME}
     - yarn lint:style
 
-.test_template: &run_test_template
-  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-  stage: test
-  variables:
-    GIT_STRATEGY: none
-  services:
-    - postgres
-  links:
-    - minio
-
 minio:
   image: minio/minio
+  stage: test
   script:
     - curl --connect-timeout 20  --retry 3  --retry-delay 30 -f http://localhost:9000/minio/health/live
     - server --console-address ":${MINIO_CONSOLE_PORT}" /data
@@ -92,6 +83,15 @@ minio:
     - ./mc admin user enable cokoServer/ ${S3_ACCESS_KEY_ID}
     - ./mc mb cokoServer/${S3_BUCKET}
     - ./mc admin policy set cokoServer/ readwrite user=${S3_ACCESS_KEY_ID}
+
+.test_template: &run_test_template
+  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+  stage: test
+  variables:
+    GIT_STRATEGY: none
+  services:
+    - postgres
+
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
