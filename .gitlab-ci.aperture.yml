@@ -69,7 +69,6 @@ lint style:
     - cd ${HOME}
     - yarn lint:style
 
-
 .test_template: &run_test_template
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
   stage: test
@@ -79,23 +78,10 @@ lint style:
     - postgres
 
 .test_before_script: &run_test_before_script
-  image: minio/minio
-  services:
-    - minio
-  stage: test
-  volumes:
-    - minio_storage:/data
-  command: server --console-address ":${MINIO_CONSOLE_PORT}" /data
-  healthcheck:
-    test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
-    interval: 30s
-    timeout: 20s
-    retries: 3
-  script:
-  - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-  - apt-get update --allow-releaseinfo-change
-  - apt-get -y install postgresql-client
-  - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
+    - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+    - apt-get update --allow-releaseinfo-change
+    - apt-get -y install postgresql-client
+    - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
 
 .test_script: &run_test_script
   - cd ${HOME}
