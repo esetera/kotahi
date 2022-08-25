@@ -74,8 +74,10 @@ minio:
   image: minio/minio
   stage: test
   before_script:
+    - echo "I am in befor script"
     - curl --connect-timeout 20  --retry 3  --retry-delay 30  http://localhost:9000/minio/health/live
   script:
+    - echo "I am in start of script"
     - wget -q -o https://dl.min.io/client/mc/release/linux-amd64/mc
     - chmod 001 mc
     - mc config host add cokoServer http://localhost:${S3_PORT} ${MINIO_ROOT_USER} {MINIO_ROOT_PASSWORD}
