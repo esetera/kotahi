@@ -70,19 +70,29 @@ lint style:
     - cd ${HOME}
     - yarn lint:style
 
-minio:
-  image:
-    name: minio/mc
-    entrypoint: ['']
+minio_service:
   stage: test
-  before_script:
-    - mc alias set minio http://127.0.0.1 $S3_ACCESS_KEY_ID $S3_ACCESS_KEY_ID
   script:
-    - mc config host add cokoServer http://localhost:${S3_PORT} ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}
-    - mc admin user add cokoServer/  ${S3_ACCESS_KEY_ID} ${S3_SECRET_ACCESS_KEY}
-    - mc admin user enable cokoServer/ ${S3_ACCESS_KEY_ID}
-    - mc mb cokoServer/${S3_BUCKET}
-    - mc admin policy set cokoServer/ readwrite user=${S3_ACCESS_KEY_ID}
+    - cd ${HOME}
+    - curl --connect-timeout 20  --retry 3  --retry-delay 30 -f http://localhost:9000/minio/health/live
+  services:
+    - name: minio/minio:latest
+    - entrypoint: ['']
+
+
+# minio:
+#   image:
+#     name: minio/mc
+#     entrypoint: ['']
+#   stage: test
+#   before_script:
+#     - mc alias set minio http://127.0.0.1 $S3_ACCESS_KEY_ID $S3_ACCESS_KEY_ID
+#   script:
+#     - mc config host add cokoServer http://localhost:${S3_PORT} ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}
+#     - mc admin user add cokoServer/  ${S3_ACCESS_KEY_ID} ${S3_SECRET_ACCESS_KEY}
+#     - mc admin user enable cokoServer/ ${S3_ACCESS_KEY_ID}
+#     - mc mb cokoServer/${S3_BUCKET}
+#     - mc admin policy set cokoServer/ readwrite user=${S3_ACCESS_KEY_ID}
 
 .test_template: &run_test_template
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
