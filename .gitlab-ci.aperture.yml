@@ -73,6 +73,7 @@ lint style:
 minio:
   image:
     name: minio/mc
+    entrypoint: ['']
   stage: test
   before_script:
     - echo "I am in befor script"
