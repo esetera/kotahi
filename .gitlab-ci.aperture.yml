@@ -78,12 +78,10 @@ minio_service:
   # before_script:
   #   - curl --connect-timeout 20  --retry 3  --retry-delay 30 -f http://host.docker.internal:${S3_PORT}/minio/health/live
   script:
-    - export MINIO_ACCESS_KEY = $S3_ACCESS_KEY_ID
-    - export MINIO_SECRET_KEY = $S3_SECRET_ACCESS_KEY
+    - export MINIO_ACCESS_KEY=$S3_ACCESS_KEY_ID
+    - export MINIO_SECRET_KEY=$S3_SECRET_ACCESS_KEY
     # - minio server --console-address :${MINIO_CONSOLE_PORT} /data
     - minio server /mnt/data{1...8}
-
-
 
 # minio:
 #   image:
