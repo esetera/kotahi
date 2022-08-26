@@ -82,9 +82,10 @@ minio:server:
     entrypoint: ['']
   stage: test
   script:
-    - export MINIO_ACCESS_KEY=$S3_ACCESS_KEY_ID
-    - export MINIO_SECRET_KEY=$S3_SECRET_ACCESS_KEY
     - minio server --console-address :${MINIO_CONSOLE_PORT} /data
+  environment:
+    - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+    - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
 
 
 # minio server:
