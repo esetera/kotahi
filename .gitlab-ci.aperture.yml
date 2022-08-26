@@ -72,8 +72,8 @@ lint style:
 
 minio_service:
   image:
-  name: minio/minio:latest
-  entrypoint: ['']
+    name: minio/minio:latest
+    entrypoint: ['']
   stage: test
   before_script:
     - curl --connect-timeout 20  --retry 3  --retry-delay 30 -f http://localhost:9000/minio/health/live
