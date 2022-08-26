@@ -77,9 +77,8 @@ minio_service:
   stage: test
   before_script:
     - curl --connect-timeout 20  --retry 3  --retry-delay 30 -f http://localhost:9000/minio/health/live
-  services:
+  script:
     - minio server --console-address:${MINIO_CONSOLE_PORT} /data
-   
 
 # minio:
 #   image:
