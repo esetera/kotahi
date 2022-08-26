@@ -75,12 +75,15 @@ minio_service:
     name: minio/minio:latest
     entrypoint: ['']
   stage: test
-  variables:
-    GIT_STRATEGY: none
   # before_script:
   #   - curl --connect-timeout 20  --retry 3  --retry-delay 30 -f http://host.docker.internal:${S3_PORT}/minio/health/live
   script:
-    - minio server --console-address :${MINIO_CONSOLE_PORT} /data
+    - export MINIO_ACCESS_KEY = $S3_ACCESS_KEY_ID
+    - export MINIO_SECRET_KEY = $S3_SECRET_ACCESS_KEY
+    # - minio server --console-address :${MINIO_CONSOLE_PORT} /data
+    - minio server /mnt/data{1...8}
+
+
 
 # minio:
 #   image:
