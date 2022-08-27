@@ -60,7 +60,6 @@ lint style:
     - cd ${HOME}
     - yarn lint:style
 
-
 minio:service:
   image:
     name: minio/minio:latest
@@ -81,15 +80,14 @@ minio:service:
     - export MINIO_ROOT_PASSWORD=$MINIO_ROOT_PASSWORD
     - minio server --console-address :${MINIO_CONSOLE_PORT} /data
   services:
-    image:
-    name: minio/mc:latest
+    image: minio/mc:latest
     entrypoint: ['']
     script:
-    - /usr/bin/mc config host add cokoServer http://172.17.0.2:$S3_PORT $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
-    - /usr/bin/mc admin user add cokoServer/  $S3_ACCESS_KEY_ID $S3_SECRET_ACCESS_KEY
-    - /usr/bin/mc admin user enable cokoServer/ $S3_ACCESS_KEY_ID
-    - /usr/bin/mc mb cokoServer/$S3_BUCKET
-    - /usr/bin/mc admin policy set cokoServer/ readwrite user=$S3_ACCESS_KEY_ID
+      - /usr/bin/mc config host add cokoServer http://172.17.0.2:$S3_PORT $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+      - /usr/bin/mc admin user add cokoServer/  $S3_ACCESS_KEY_ID $S3_SECRET_ACCESS_KEY
+      - /usr/bin/mc admin user enable cokoServer/ $S3_ACCESS_KEY_ID
+      - /usr/bin/mc mb cokoServer/$S3_BUCKET
+      - /usr/bin/mc admin policy set cokoServer/ readwrite user=$S3_ACCESS_KEY_ID
 
 .test_template: &run_test_template
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
