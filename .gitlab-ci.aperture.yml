@@ -60,10 +60,9 @@ lint style:
     - cd ${HOME}
     - yarn lint:style
 
-minio:
-  image:
-    name: minio/minio:latest
-    entrypoint: ['']
+minio service:
+  image: minio/minio:latest
+  entrypoint: ['']
   stage: test
   variables:
     S3_PROTOCOL: http
