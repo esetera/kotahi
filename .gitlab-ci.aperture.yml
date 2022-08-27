@@ -60,7 +60,7 @@ lint style:
     - cd ${HOME}
     - yarn lint:style
 
-minio:service:
+minio:
   image:
     name: minio/minio:latest
     entrypoint: ['']
