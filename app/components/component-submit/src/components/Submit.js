@@ -25,7 +25,7 @@ export const createBlankSubmissionBasedOnForm = form => {
   const allBlankedFields = {}
   const fieldNames = form.children.map(field => field.name)
   fieldNames.forEach(fieldName => set(allBlankedFields, fieldName, ''))
-  return allBlankedFields.submission ?? {}
+  return allBlankedFields
 }
 
 const Submit = ({
