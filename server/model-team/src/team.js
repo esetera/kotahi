@@ -31,7 +31,7 @@ class Team extends BaseModel {
           from: 'teams.id',
           through: {
             // modelClass: require.resolve('./team_member'),
-            modelClass: TeamMember,
+            modelClass: __dirname + '/team_member',
             from: 'team_members.teamId',
             to: 'team_members.userId',
           },
