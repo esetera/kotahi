@@ -124,7 +124,7 @@ lint style:
   - apt-get update --allow-releaseinfo-change
   - apt-get -y install postgresql-client
   - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
-  - cd ${HOME}
+  # - cd ${HOME}
   - wget -q https://dl.min.io/server/minio/release/linux-amd64/minio
   - chmod +x minio
   - ./minio server --console-address :${MINIO_CONSOLE_PORT} /data &
