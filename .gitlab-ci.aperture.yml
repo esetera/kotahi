@@ -120,6 +120,10 @@ lint style:
     - postgres
 
 .test_before_script: &run_test_before_script
+  - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+  - apt-get update --allow-releaseinfo-change
+  - apt-get -y install postgresql-client
+  - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
   - cd ${HOME}
   - wget -q https://dl.min.io/server/minio/release/linux-amd64/minio
   - chmod +x minio
@@ -131,10 +135,10 @@ lint style:
   - ./mc admin user enable cokoServer/ $S3_ACCESS_KEY_ID
   - ./mc mb cokoServer/$S3_BUCKET
   - ./mc admin policy set cokoServer/ readwrite user=$S3_ACCESS_KEY_ID
-  - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-  - apt-get update --allow-releaseinfo-change
-  - apt-get -y install postgresql-client
-  - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
+  # - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+  # - apt-get update --allow-releaseinfo-change
+  # - apt-get -y install postgresql-client
+  # - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
 
 .test_script: &run_test_script
   - cd ${HOME}
