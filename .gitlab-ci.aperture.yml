@@ -69,23 +69,23 @@ lint style:
     - cd ${HOME}
     - yarn lint:style
 
-minio service:
-  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-  stage: test
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - cd ${HOME}
-    - wget -q https://dl.min.io/server/minio/release/linux-amd64/minio
-    - chmod +x minio
-    - ./minio server --console-address :${MINIO_CONSOLE_PORT} /data &
-    - wget -q https://dl.min.io/client/mc/release/linux-amd64/mc
-    - chmod +x mc
-    - ./mc config host add coko Server http://localhost:$S3_PORT $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
-    - ./mc admin user add coko Server/  $S3_ACCESS_KEY_ID $S3_SECRET_ACCESS_KEY
-    - ./mc admin user enable coko Server/ $S3_ACCESS_KEY_ID
-    - ./mc mb coko Server/$S3_BUCKET
-    - ./mc admin policy set coko Server/ readwrite user=$S3_ACCESS_KEY_ID
+# minio service:
+#   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+#   stage: test
+#   variables:
+#     GIT_STRATEGY: none
+#   script:
+#     - cd ${HOME}
+#     - wget -q https://dl.min.io/server/minio/release/linux-amd64/minio
+#     - chmod +x minio
+#     - ./minio server --console-address :${MINIO_CONSOLE_PORT} /data &
+#     - wget -q https://dl.min.io/client/mc/release/linux-amd64/mc
+#     - chmod +x mc
+#     - ./mc config host add cokoServer http://localhost:$S3_PORT $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+#     - ./mc admin user add cokoServer/  $S3_ACCESS_KEY_ID $S3_SECRET_ACCESS_KEY
+#     - ./mc admin user enable cokoServer/ $S3_ACCESS_KEY_ID
+#     - ./mc mb cokoServer/$S3_BUCKET
+#     - ./mc admin policy set cokoServer/ readwrite user=$S3_ACCESS_KEY_ID
 
 # minio service 1:1:
 #   image:
@@ -114,11 +114,21 @@ minio service:
 .test_template: &run_test_template
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
   stage: test
-  needs: ['minio service']
   variables:
     GIT_STRATEGY: none
+  script:
+    - cd ${HOME}
+    - wget -q https://dl.min.io/server/minio/release/linux-amd64/minio
+    - chmod +x minio
+    - ./minio server --console-address :${MINIO_CONSOLE_PORT} /data &
+    - wget -q https://dl.min.io/client/mc/release/linux-amd64/mc
+    - chmod +x mc
+    - ./mc config host add cokoServer http://localhost:$S3_PORT $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+    - ./mc admin user add cokoServer/  $S3_ACCESS_KEY_ID $S3_SECRET_ACCESS_KEY
+    - ./mc admin user enable cokoServer/ $S3_ACCESS_KEY_ID
+    - ./mc mb cokoServer/$S3_BUCKET
+    - ./mc admin policy set cokoServer/ readwrite user=$S3_ACCESS_KEY_ID
   services:
-    - minio service
     - postgres
 
 .test_before_script: &run_test_before_script
