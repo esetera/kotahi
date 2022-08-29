@@ -30,7 +30,8 @@ class Team extends BaseModel {
         join: {
           from: 'teams.id',
           through: {
-            modelClass: require.resolve('./team_member'),
+            // modelClass: require.resolve('./team_member'),
+            modelClass: TeamMember,
             from: 'team_members.teamId',
             to: 'team_members.userId',
           },
