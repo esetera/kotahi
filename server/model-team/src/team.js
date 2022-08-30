@@ -32,7 +32,7 @@ class Team extends BaseModel {
           through: {
             // modelClass: require.resolve('./team_member'),
             /* eslint-disable global-require */
-            modelClass: require('./team_member').default,
+            modelClass: TeamMember,
             /* eslint-disable global-require */
             from: 'team_members.teamId',
             to: 'team_members.userId',
