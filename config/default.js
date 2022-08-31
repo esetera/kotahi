@@ -67,7 +67,7 @@ module.exports = {
     useGraphQLServer: true,
     useJobQueue: false,
     serveClient: true,
-    useFileStorage: true,
+    useFileStorage: false,
     db: {},
     port: 3000,
     pool: {
