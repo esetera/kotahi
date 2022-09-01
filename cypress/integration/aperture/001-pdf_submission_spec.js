@@ -11,19 +11,17 @@ describe('Upload manuscript test', () => {
     // task to restore the database as per the  dumps/initialState.sql
     cy.task('restore', 'initialState')
     cy.task('seedForms')
-    cy.log('Login as author role')
 
     // login as author
-    cy.fixture('role_names').then((name)=> {
+    cy.fixture('role_names').then((name) => {
       cy.login(name.role.author, dashboard)
     })
-    cy.log('Entering email-id')
+    
     // enter email
     cy.contains('Enter Email').click()
     cy.get('#enter-email').type('emily@gmail.com')
 
     // submit the email
-    cy.log('submitting the email-id')
     cy.contains('Next').click()
     Menu.clickDashboard()
     // Click on new submission
