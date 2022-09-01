@@ -13,10 +13,10 @@ describe('Upload manuscript test', () => {
     cy.task('seedForms')
 
     // login as author
-    cy.fixture('role_names').then((name) => {
+    cy.fixture('role_names').then(name => {
       cy.login(name.role.author, dashboard)
     })
-    
+
     // enter email
     cy.contains('Enter Email').click()
     cy.get('#enter-email').type('emily@gmail.com')
