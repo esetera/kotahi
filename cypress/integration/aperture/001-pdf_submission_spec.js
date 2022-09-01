@@ -29,7 +29,6 @@ describe('Upload manuscript test', () => {
 
     // Upload manuscript
     cy.get('input[type=file]').attachFile('test-pdf.pdf')
-
     // complete the submission form
     cy.fixture('submission_form_data').then(data => {
       SubmissionFormPage.fillInTitle(data.title)
