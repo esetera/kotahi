@@ -53,18 +53,17 @@ module.exports = (on, config) => {
       return seed(readFileSync(dumpFile(name), 'utf-8'))
     },
     createToken: async name => {
-      // const { User } = require('@pubsweet/models')
+      const { User } = require('@pubsweet/models')
 
-      // const { createJWT } = require('@coko/server')
+      const { createJWT } = require('@coko/server')
       console.log(`find user with username = ${testUsers[name]}`)
 
-      // const user = await User.query()
-      //   .where({ username: testUsers[name] })
-      //   .first()
+      const user = await User.query()
+        .where({ username: testUsers[name] })
+        .first()
 
-      // console.log('In create token function return')
-      // return createJWT(user)
-      return 'lskajflsakdjf'
+      console.log('In create token function return')
+      return createJWT(user)
     },
     seedForms: async () => {
       // eslint-disable-next-line no-console
