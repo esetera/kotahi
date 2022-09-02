@@ -61,6 +61,7 @@ module.exports = (on, config) => {
       const user = await User.query()
         .where({ username: testUsers[name] })
         .first()
+
       console.log('In create token function return')
       return createJWT(user)
     },

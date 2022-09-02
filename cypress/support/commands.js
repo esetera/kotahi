@@ -35,11 +35,11 @@ Cypress.Commands.add('setToken', token => {
 
 Cypress.Commands.add('login', (name, page) => {
   console.log(`Creating token.... for ${name}`)
-  cy.task('createToken', name).then((token) => {
+  cy.task('createToken', name).then(token => {
     cy.setToken(token)
     cy.visit(page)
-  console.log(`The token created is ....  ${token}`)
-  })
+    console.log(`The token created is ....  ${token}`)
+  }).catch(err => console.log(err))
 })
 
 Cypress.Commands.add('fillInput', { prevSubject: true }, (subject, text) => {
