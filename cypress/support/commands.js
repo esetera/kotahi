@@ -30,6 +30,7 @@ import 'cypress-file-upload'
 
 Cypress.Commands.add('setToken', token => {
   localStorage.setItem('token', token)
+  console.log(`The token set is ....  ${token}`)
 })
 
 Cypress.Commands.add('login', (name, page) => {
@@ -37,6 +38,7 @@ Cypress.Commands.add('login', (name, page) => {
   cy.task('createToken', name).then((token) => {
     cy.setToken(token)
     cy.visit(page)
+  console.log(`The token created is ....  ${token}`)
   })
 })
 
