@@ -56,7 +56,6 @@ module.exports = (on, config) => {
       const { User } = require('@pubsweet/models')
 
       const { createJWT } = require('@coko/server')
-
       console.log(`find user with username = ${testUsers[name]}`)
 
       const user = await User.query()
