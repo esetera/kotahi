@@ -39,7 +39,7 @@ Cypress.Commands.add('login', (name, page) => {
     cy.setToken(token)
     cy.visit(page)
     console.log(`The token created is ....  ${token}`)
-  }).catch(err => console.log(err))
+  })
 })
 
 Cypress.Commands.add('fillInput', { prevSubject: true }, (subject, text) => {
