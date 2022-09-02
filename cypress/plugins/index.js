@@ -47,12 +47,11 @@ module.exports = (on, config) => {
 
       return true
     },
-    // restore: async name => {
-    //   // eslint-disable-next-line no-console
-    //   console.log(name, 'name')
-    //   return seed(readFileSync(dumpFile(name), 'utf-8'))
-    // },
-    restore: async name => seed(readFileSync(dumpFile(name), 'utf-8')),
+    restore: async name => {
+      // eslint-disable-next-line no-console
+      console.log(name, 'name')
+      return seed(readFileSync(dumpFile(name), 'utf-8'))
+    },
     createToken: async name => {
       const { User } = require('@pubsweet/models')
 
