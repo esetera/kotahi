@@ -29,9 +29,9 @@ import 'cypress-file-upload'
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 // eslint-disable-next-line no-unused-vars
 
-Cypress.Commands.add('setToken', token => {
-  localStorage.setItem('token', token)
-  console.log(`The token set is ....  ${token}`)
+Cypress.Commands.add('setToken', userToken => {
+  localStorage.setItem('token', userToken)
+  console.log(`The token set is ....  ${userToken}`)
 })
 
 Cypress.Commands.add('login', (name, page) => {
