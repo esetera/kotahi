@@ -27,6 +27,7 @@ import 'cypress-file-upload'
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+// eslint-disable-next-line no-unused-vars
 
 Cypress.Commands.add('setToken', token => {
   localStorage.setItem('token', token)
@@ -35,10 +36,13 @@ Cypress.Commands.add('setToken', token => {
 
 Cypress.Commands.add('login', (name, page) => {
   console.log(`Creating token.... for ${name}`)
+  // cy.task('createToken', name).then(token => {
+  //   cy.setToken(token)
+  //   cy.visit(page)
   cy.task('createToken', name).then(token => {
-    cy.setToken(token)
+    const userToken = token
+    cy.setToken(userToken)
     cy.visit(page)
-    console.log(`The token created is ....  ${token}`)
   })
 })
 
