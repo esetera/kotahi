@@ -12,10 +12,17 @@ describe('Upload manuscript test', () => {
     cy.task('restore', 'initialState')
     cy.task('seedForms')
 
-    cy.log('Attempting Login')
 
     // login as author
-    cy.login('Emily Clay', '/kotahi/dashboard')
+    // cy.login('Emily Clay', '/kotahi/dashboard')
+
+    cy.task('createToken', 'Emily Clay').then(token => {
+      cy.task('log', `Received Token: ${token}`)
+      cy.setToken(token)
+      cy.task('log', `Token has been set - test`)
+      cy.visit('/kotahi/dashboard')
+      cy.task('log', `Visiting dashboard`)
+    })
 
     cy.log('Logged In')
 
