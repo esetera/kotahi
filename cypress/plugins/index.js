@@ -62,8 +62,13 @@ module.exports = (on, config) => {
         .where({ username: testUsers[name] })
         .first()
 
-      console.log('In create token function return')
-      return createJWT(user)
+      console.log('In create token function user found:', user)
+
+      const jwt = createJWT(user)
+
+      console.log('Generated Token:', jwt)
+      
+      return jwt
     },
     seedForms: async () => {
       // eslint-disable-next-line no-console
