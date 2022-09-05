@@ -40,9 +40,9 @@ Cypress.Commands.add('login', (name, page) => {
   //   cy.setToken(token)
   //   cy.visit(page)
   cy.task('createToken', name).then(token => {
-    // const userToken = token.text()
+    const userToken = token
     // cy.setToken(userToken)
-    localStorage.setItem('token', token)
+    localStorage.setItem('token', userToken)
     cy.visit(page)
   })
 })

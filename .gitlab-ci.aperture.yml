@@ -50,24 +50,24 @@ build:
 #script:
 #  - cd ${HOME}
 #  - yarn eslint .
+# Commenting code from line no 54 to 70 for faster processibg in CI/CD pipleine
+# lint js:
+#   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+#   stage: test
+#   variables:
+#     GIT_STRATEGY: none
+#   script:
+#     - cd ${HOME}
+#     - yarn lint:js
 
-lint js:
-  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-  stage: test
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - cd ${HOME}
-    - yarn lint:js
-
-lint style:
-  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-  stage: test
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - cd ${HOME}
-    - yarn lint:style
+# lint style:
+#   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+#   stage: test
+#   variables:
+#     GIT_STRATEGY: none
+#   script:
+#     - cd ${HOME}
+#     - yarn lint:style
 
 .test_template: &run_test_template
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
