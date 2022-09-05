@@ -35,16 +35,10 @@ Cypress.Commands.add('setToken', token => {
 })
 
 Cypress.Commands.add('login', (name, page) => {
-  cy.log(`Creating token.... for user name: ${name} page: ${page}`)
-  // cy.task('createToken', name).then(token => {
-  //   cy.setToken(token)
-  //   cy.visit(page)
+  cy.task('log', `Creating token.... for user name: ${name} page: ${page}`)
   cy.task('createToken', name).then(token => {
-    cy.log('Received Token:', token)
-    // const userToken = token
+    cy.task('log', `Received Token: ${token}`)
     cy.setToken(token)
-    // cy.wrap(token).as('token')
-    // localStorage.setItem('token', token)
     cy.visit(page)
   })
 })
