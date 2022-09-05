@@ -67,7 +67,7 @@ module.exports = (on, config) => {
       const jwt = createJWT(user)
 
       console.log('Generated Token:', jwt)
-      
+
       return jwt
     },
     seedForms: async () => {

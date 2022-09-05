@@ -12,10 +12,12 @@ describe('Upload manuscript test', () => {
     cy.task('restore', 'initialState')
     cy.task('seedForms')
 
+    cy.log('Attempting Login')
+
     // login as author
-    cy.fixture('role_names').then(name => {
-      cy.login(name.role.author, dashboard)
-    })
+    cy.login('Emily Clay', '/kotahi/dashboard')
+
+    cy.log('Logged In')
 
     // enter email
     cy.contains('Enter Email').click()

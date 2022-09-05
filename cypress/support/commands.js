@@ -29,20 +29,20 @@ import 'cypress-file-upload'
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 // eslint-disable-next-line no-unused-vars
 
-Cypress.Commands.add('setToken', userToken => {
-  localStorage.setItem('token', userToken)
-  cy.log(`The token set is ....  ${userToken}`)
+Cypress.Commands.add('setToken', token => {
+  localStorage.setItem('token', token)
+  cy.log(`The token set is ....  ${token}`)
 })
 
 Cypress.Commands.add('login', (name, page) => {
-  console.log(`Creating token.... for ${name}`)
+  cy.log(`Creating token.... for user name: ${name} page: ${page}`)
   // cy.task('createToken', name).then(token => {
   //   cy.setToken(token)
   //   cy.visit(page)
   cy.task('createToken', name).then(token => {
     cy.log('Received Token:', token)
-    const userToken = token
-    cy.setToken(userToken)
+    // const userToken = token
+    cy.setToken(token)
     // cy.wrap(token).as('token')
     // localStorage.setItem('token', token)
     cy.visit(page)
