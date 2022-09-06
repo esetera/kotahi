@@ -21,8 +21,9 @@ describe('Upload manuscript test', () => {
 
     // enter email
     cy.contains('Enter Email').click()
+    cy.task('log', 'entering email for the user')
     cy.get('#enter-email').type('emily@gmail.com')
-
+    cy.task('log', 'clicking on next')
     // submit the email
     cy.contains('Next').click()
     Menu.clickDashboard()
