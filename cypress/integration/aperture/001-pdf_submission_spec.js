@@ -26,13 +26,17 @@ describe('Upload manuscript test', () => {
     cy.task('log', 'clicking on next')
     // submit the email
     cy.contains('Next').click()
-    Menu.clickDashboard()
+    // Click on dashboard to submit manuscript
+    cy.get('nav').contains('Dashboard').click()
+    cy.visit('http://localhost:4000/kotahi/dashboard')
+    
     // Click on new submission
     cy.get('button').contains('＋ New submission').click()
-
     // Upload manuscript
-    cy.get('input[type=file]').attachFile('test-pdf.pdf')
+   cy.get('input[type=file]').attachFile('test-pdf.pdf')
+    
     // complete the submission form
+
     cy.fixture('submission_form_data').then(data => {
       SubmissionFormPage.fillInTitle(data.title)
       SubmissionFormPage.clickSubmitResearch()
@@ -48,4 +52,4 @@ describe('Upload manuscript test', () => {
       cy.task('dump', 'submission_complete')
     })
   })
-})
+ })
