@@ -409,6 +409,7 @@ CREATE TABLE "public"."users" (
     PRIMARY KEY ("id")
 );
 
+
 INSERT INTO "public"."channels" ("id", "manuscript_id", "created", "updated", "topic", "type") VALUES
 ('79b1d3e6-4991-49f9-a248-aba8d94771bc', '8f05064b-b00d-4aec-a98f-f7ba3656cc2f', '2022-05-13 10:56:32.656+00', '2022-05-13 10:56:32.656+00', 'Manuscript discussion', 'all'),
 ('9fd7774c-11e5-4802-804c-ab64aefd5080', NULL, '2022-05-13 10:52:50.410655+00', NULL, 'System-wide discussion', 'editorial'),
@@ -515,5 +516,15 @@ ALTER TABLE "public"."team_members" ADD FOREIGN KEY ("alias_id") REFERENCES "pub
 ALTER TABLE "public"."team_members" ADD FOREIGN KEY ("team_id") REFERENCES "public"."teams"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "public"."team_members" ADD FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE CASCADE;
 ALTER TABLE "public"."teams" ADD FOREIGN KEY ("manuscript_id") REFERENCES "public"."manuscripts"("id") ON DELETE CASCADE;
+
+CREATE TABLE IF NOT EXISTS public.threaded_discussions (
+  id uuid NOT NULL,
+  created timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  updated timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  manuscript_id uuid NOT NULL,
+  threads JSONB NOT NULL
+);
+
+ALTER TABLE public.threaded_discussions ADD CONSTRAINT threaded_discussions_manuscript_id_fkey FOREIGN KEY (manuscript_id) REFERENCES manuscripts(id) ON DELETE CASCADE;
 
 

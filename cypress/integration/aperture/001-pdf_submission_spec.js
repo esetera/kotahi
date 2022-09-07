@@ -33,15 +33,15 @@ describe('Upload manuscript test', () => {
     // Click on new submission
     cy.get('button').contains('＋ New submission').click()
     // Upload manuscript
-   cy.get('input[type=file]').attachFile('test-pdf.pdf')
-    
-    // complete the submission form
-
+    cy.get('input[type=file]').attachFile('test-pdf.pdf')
+ 
     cy.fixture('submission_form_data').then(data => {
       SubmissionFormPage.fillInTitle(data.title)
+      cy.task('log', 'clicking on submit research')
       SubmissionFormPage.clickSubmitResearch()
 
       // Submit your form
+      cy.task('log', 'submiting manuscript')
       SubmissionFormPage.clickSubmitYourManuscript()
 
       // assert form exists in dashboard
