@@ -4,8 +4,7 @@
 import { Menu } from '../../page-object/page-component/menu'
 import { ManuscriptsPage } from '../../page-object/manuscripts-page'
 import { ControlPage } from '../../page-object/control-page'
-import { dashboard } from '../../support/routes'
-import { manuscripts } from '../../support/routes'
+import { dashboard, manuscripts } from '../../support/routes'
 
 describe('Assigning senior editor', () => {
   it('admin can give decision', () => {
