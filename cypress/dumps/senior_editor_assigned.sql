@@ -295,12 +295,14 @@ CREATE TABLE "public"."identities" (
 
 DROP TABLE IF EXISTS "public"."invitations";
 -- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
+
 DROP TYPE IF EXISTS "public"."invitation_status";
 CREATE TYPE "public"."invitation_status" AS ENUM ('UNANSWERED', 'ACCEPTED', 'REJECTED');
 DROP TYPE IF EXISTS "public"."invitation_type";
 CREATE TYPE "public"."invitation_type" AS ENUM ('AUTHOR', 'REVIEWER');
 DROP TYPE IF EXISTS "public"."invitation_declined_reason_type";
 CREATE TYPE "public"."invitation_declined_reason_type" AS ENUM ('UNAVAILABLE', 'TOPIC', 'CONFLICT_OF_INTEREST', 'OTHER', 'DO_NOT_CONTACT');
+
 -- Table Definition
 CREATE TABLE "public"."invitations" (
     "id" uuid NOT NULL,
@@ -348,6 +350,7 @@ CREATE TABLE "public"."manuscripts" (
     "short_id" int4 NOT NULL DEFAULT nextval('manuscripts_short_id_seq'::regclass),
     "submitted_date" timestamptz,
     "is_hidden" bool,
+    "form_fields_to_publish" jsonb NOT NULL DEFAULT '[]'::jsonb,
     PRIMARY KEY ("id")
 );
 
@@ -410,6 +413,7 @@ CREATE TABLE "public"."reviews" (
     PRIMARY KEY ("id")
 );
 
+
 DROP TABLE IF EXISTS "public"."reviews_old";
 -- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
 -- Table Definition
@@ -427,7 +431,6 @@ CREATE TABLE "public"."reviews_old" (
     "can_be_published_publicly" bool,
     "json_data" jsonb
 );
-
 DROP TABLE IF EXISTS "public"."team_members";
 -- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
 
@@ -462,6 +465,18 @@ CREATE TABLE "public"."teams" (
     PRIMARY KEY ("id")
 );
 
+DROP TABLE IF EXISTS "public"."threaded_discussions";
+-- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
+
+-- Table Definition
+CREATE TABLE "public"."threaded_discussions" (
+    "id" uuid NOT NULL,
+    "created" timestamptz DEFAULT CURRENT_TIMESTAMP,
+    "updated" timestamptz DEFAULT CURRENT_TIMESTAMP,
+    "manuscript_id" uuid NOT NULL,
+    "threads" jsonb NOT NULL
+);
+
 DROP TABLE IF EXISTS "public"."users";
 -- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
 
@@ -482,6 +497,7 @@ CREATE TABLE "public"."users" (
     "online" bool,
     PRIMARY KEY ("id")
 );
+
 
 INSERT INTO "public"."channels" ("id", "manuscript_id", "created", "updated", "topic", "type") VALUES
 ('79b1d3e6-4991-49f9-a248-aba8d94771bc', '8f05064b-b00d-4aec-a98f-f7ba3656cc2f', '2022-05-13 10:56:32.656+00', '2022-05-13 10:56:32.656+00', 'Manuscript discussion', 'all'),
@@ -591,5 +607,5 @@ ALTER TABLE "public"."team_members" ADD FOREIGN KEY ("user_id") REFERENCES "publ
 ALTER TABLE "public"."team_members" ADD FOREIGN KEY ("alias_id") REFERENCES "public"."aliases"("id");
 ALTER TABLE "public"."team_members" ADD FOREIGN KEY ("team_id") REFERENCES "public"."teams"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "public"."teams" ADD FOREIGN KEY ("manuscript_id") REFERENCES "public"."manuscripts"("id") ON DELETE CASCADE;
-
+ALTER TABLE "public"."threaded_discussions" ADD FOREIGN KEY ("manuscript_id") REFERENCES "public"."manuscripts"("id") ON DELETE CASCADE;
 
