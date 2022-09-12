@@ -23,7 +23,7 @@ describe('Upload manuscript test', () => {
 
     // submit the email
     cy.contains('Next').click()
-    //Click
+    // Click
     cy.visit(dashboard)
     // Click on new submission
     cy.get('button').contains('＋ New submission').click()

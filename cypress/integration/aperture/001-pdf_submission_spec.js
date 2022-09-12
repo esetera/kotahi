@@ -29,12 +29,12 @@ describe('Upload manuscript test', () => {
     // Click on dashboard to submit manuscript
     // cy.visit('http://localhost:4000/kotahi/dashboard')
     cy.visit(dashboard)
-    
+
     // Click on new submission
     cy.get('button').contains('＋ New submission').click()
     // Upload manuscript
     cy.get('input[type=file]').attachFile('test-pdf.pdf')
- 
+
     cy.fixture('submission_form_data').then(data => {
       SubmissionFormPage.fillInTitle(data.title)
       cy.task('log', 'clicking on submit research')
@@ -52,4 +52,4 @@ describe('Upload manuscript test', () => {
       cy.task('dump', 'submission_complete')
     })
   })
- })
+})

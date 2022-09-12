@@ -21,7 +21,7 @@ describe('Upload manuscript test', () => {
 
     // enter email
     cy.contains('Enter Email').click()
-    cy.get('#enter-email').type('emily@gmail.com')  
+    cy.get('#enter-email').type('emily@gmail.com')
 
     // submit the email
     cy.contains('Next').click()
@@ -31,7 +31,6 @@ describe('Upload manuscript test', () => {
 
     // Upload manuscript
     cy.get('input[type=file]').attachFile('test-docx.docx')
-   
 
     // complete the submission form
 
