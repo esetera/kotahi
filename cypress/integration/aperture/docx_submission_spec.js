@@ -21,31 +21,35 @@ describe('Upload manuscript test', () => {
 
     // enter email
     cy.contains('Enter Email').click()
-    cy.get('#enter-email').type('emily@gmail.com')
+    cy.get('#enter-email').type('emily@gmail.com')  
 
     // submit the email
     cy.contains('Next').click()
-    Menu.clickDashboard()
+    cy.visit(dashboard)
     // Click on new submission
     cy.get('button').contains('＋ New submission').click()
 
     // Upload manuscript
     cy.get('input[type=file]').attachFile('test-docx.docx')
+   
 
     // complete the submission form
 
     cy.fixture('submission_form_data').then(data => {
-      SubmissionFormPage.fillInTitle(data.title3)
+      SubmissionFormPage.fillInTitle(data.title2)
+      cy.task('log', 'clicking on submit research')
       SubmissionFormPage.clickSubmitResearch()
 
       // Submit your form
-
+      cy.task('log', 'submiting manuscript')
       SubmissionFormPage.clickSubmitYourManuscript()
 
       // assert form exists in dashboard
-
       DashboardPage.getSectionTitleWithText('My Submissions')
-      DashboardPage.getSubmissionTitle().should('contain', data.title3)
+      DashboardPage.getSubmissionTitle().should('contain', data.title2)
+      // task to dump data in dumps/submission_complete.sql
+
+      cy.task('dump', 'submission_complete')
     })
   })
 

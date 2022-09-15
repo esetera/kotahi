@@ -54,7 +54,7 @@ describe('Submission with errors test', () => {
 
         // submit the email
         cy.contains('Next').click()
-        Menu.clickDashboard()
+        cy.visit(dashboard)
         // Click on new submission
         cy.get('button').contains('＋ New submission').click()
 

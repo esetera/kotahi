@@ -11,7 +11,6 @@ describe('Assigning senior editor', () => {
     // task to restore the database as per the  dumps/submission_complete.sql
     cy.task('restore', 'submission_complete')
     cy.task('seedForms')
-
     cy.fixture('submission_form_data').then(data => {
       cy.fixture('role_names').then(name => {
         // login as admin

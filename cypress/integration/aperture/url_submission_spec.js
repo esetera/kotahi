@@ -23,7 +23,8 @@ describe('Upload manuscript test', () => {
 
     // submit the email
     cy.contains('Next').click()
-    Menu.clickDashboard()
+    //Click
+    cy.visit(dashboard)
     // Click on new submission
     cy.get('button').contains('＋ New submission').click()
 
@@ -37,11 +38,9 @@ describe('Upload manuscript test', () => {
       SubmissionFormPage.clickSubmitResearch()
 
       // Submit your form
-
       SubmissionFormPage.clickSubmitYourManuscript()
 
       // assert form exists in dashboard
-
       DashboardPage.getSectionTitleWithText('My Submissions')
       DashboardPage.getSubmissionTitle().should('contain', data.title1)
     })

@@ -5,13 +5,8 @@ import { Menu } from '../../page-object/page-component/menu'
 import { ReviewersPage } from '../../page-object/reviewers-page'
 import { dashboard } from '../../support/routes'
 import { ManuscriptsPage } from '../../page-object/manuscripts-page'
+import { manuscripts } from '../../support/routes'
 
-// const login = name => {
-//   cy.task('createToken', name).then(token => {
-//     cy.setToken(token)
-//     cy.visit('/journal/dashboard')
-//   })
-// }
 
 describe('Editor assigning reviewers', () => {
   it('can assign 3 reviewers', () => {
@@ -27,15 +22,19 @@ describe('Editor assigning reviewers', () => {
 
       // enter email
       cy.contains('Enter Email').click()
-      cy.get('#enter-email').type('admin@gmail.com')
+     // cy.get('#enter-email').type('admin@gmail.com')
+      cy.get('#enter-email').type(
+        `${name.role.seniorEditor.name1.toLowerCase().replace(/\s+/g, '')}@example.com`,
+       )
 
       // submit the email
       cy.contains('Next').click()
-
       // select Control on the Manuscripts page
-      Menu.clickManuscripts()
-      ManuscriptsPage.selectOptionWithText('Control')
-
+      //Menu.clickManuscripts()
+      cy.visit(manuscripts)
+      // click on control button
+      ManuscriptsPage.clickControlButton()
+    
       ControlPage.clickManageReviewers()
 
       ReviewersPage.clickInviteReviewerDropdown()
