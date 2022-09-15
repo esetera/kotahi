@@ -461,7 +461,8 @@ CREATE TABLE "public"."teams" (
     "owners" jsonb,
     "global" bool,
     "type" text NOT NULL,
-    "manuscript_id" uuid,
+    "object_id" uuid,
+    "object_type" text,
     PRIMARY KEY ("id")
 );
 
@@ -577,10 +578,10 @@ INSERT INTO "public"."team_members" ("id", "created", "updated", "status", "team
 ('bc3eefda-143f-4208-b666-cb6f3790d4e2', '2022-05-13 10:58:23.404+00', '2022-05-13 10:58:42.896+00', 'completed', 'a4ee7976-e7f6-42ea-93fe-9798e531f532', 'f9b1ed7f-f288-4c3f-898c-59e84b1c8e69', NULL, NULL),
 ('c0707ae1-a927-4709-9b25-600d7b76404d', '2022-05-13 10:56:32.664+00', '2022-05-13 10:56:32.664+00', NULL, '9816ff49-1641-4ef0-a60d-4d85bd7a044b', 'ba84de0d-d3d5-49e9-ae1b-e8a265789fbe', NULL, NULL);
 
-INSERT INTO "public"."teams" ("id", "created", "updated", "name", "role", "members", "owners", "global", "type", "manuscript_id") VALUES
-('2eb4335a-0037-415c-abab-ec3aa8bf7e79', '2022-05-13 10:57:28.837+00', '2022-05-13 10:57:28.837+00', 'Senior Editor', 'seniorEditor', NULL, NULL, NULL, 'team', '8f05064b-b00d-4aec-a98f-f7ba3656cc2f'),
-('9816ff49-1641-4ef0-a60d-4d85bd7a044b', '2022-05-13 10:56:32.656+00', '2022-05-13 10:56:32.656+00', 'Author', 'author', NULL, NULL, NULL, 'team', '8f05064b-b00d-4aec-a98f-f7ba3656cc2f'),
-('a4ee7976-e7f6-42ea-93fe-9798e531f532', '2022-05-13 10:58:23.403+00', '2022-05-13 10:58:23.403+00', 'Reviewers', 'reviewer', NULL, NULL, NULL, 'team', '8f05064b-b00d-4aec-a98f-f7ba3656cc2f');
+INSERT INTO "public"."teams" ("id", "created", "updated", "name", "role", "members", "owners", "global", "type", "object_id", "object_type") VALUES
+('2eb4335a-0037-415c-abab-ec3aa8bf7e79', '2022-05-13 10:57:28.837+00', '2022-05-13 10:57:28.837+00', 'Senior Editor', 'seniorEditor', NULL, NULL, NULL, 'team', '8f05064b-b00d-4aec-a98f-f7ba3656cc2f', 'manuscript'),
+('9816ff49-1641-4ef0-a60d-4d85bd7a044b', '2022-05-13 10:56:32.656+00', '2022-05-13 10:56:32.656+00', 'Author', 'author', NULL, NULL, NULL, 'team', '8f05064b-b00d-4aec-a98f-f7ba3656cc2f', 'manuscript'),
+('a4ee7976-e7f6-42ea-93fe-9798e531f532', '2022-05-13 10:58:23.403+00', '2022-05-13 10:58:23.403+00', 'Reviewers', 'reviewer', NULL, NULL, NULL, 'team', '8f05064b-b00d-4aec-a98f-f7ba3656cc2f', 'manuscript');
 
 INSERT INTO "public"."users" ("id", "created", "updated", "admin", "email", "username", "password_hash", "teams", "password_reset_token", "password_reset_timestamp", "type", "profile_picture", "online") VALUES
 ('ba84de0d-d3d5-49e9-ae1b-e8a265789fbe', '2022-05-13 10:55:50.523+00', '2022-05-13 10:56:32.666+00', NULL, NULL, '0000000205642016', NULL, NULL, NULL, NULL, 'user', NULL, NULL),
@@ -606,6 +607,5 @@ ALTER TABLE "public"."reviews" ADD FOREIGN KEY ("manuscript_id") REFERENCES "pub
 ALTER TABLE "public"."team_members" ADD FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE CASCADE;
 ALTER TABLE "public"."team_members" ADD FOREIGN KEY ("alias_id") REFERENCES "public"."aliases"("id");
 ALTER TABLE "public"."team_members" ADD FOREIGN KEY ("team_id") REFERENCES "public"."teams"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "public"."teams" ADD FOREIGN KEY ("manuscript_id") REFERENCES "public"."manuscripts"("id") ON DELETE CASCADE;
 ALTER TABLE "public"."threaded_discussions" ADD CONSTRAINT threaded_discussions_manuscript_id_fkey FOREIGN KEY ("manuscript_id") REFERENCES "public"."manuscripts"("id") ON DELETE CASCADE;
 

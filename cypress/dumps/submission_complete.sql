@@ -205,8 +205,6 @@ CREATE TABLE public.channels (
 );
 
 
-ALTER TABLE public.channels OWNER TO kotahidev;
-
 --
 -- Name: entities; Type: TABLE; Schema: public; Owner: kotahidev
 --
@@ -433,7 +431,8 @@ CREATE TABLE public.teams (
     owners jsonb,
     global boolean,
     type text NOT NULL,
-    manuscript_id uuid
+    "object_type" text,
+    "object_id" uuid
 );
 
 
@@ -603,7 +602,7 @@ INSERT INTO public.team_members (id, created, updated, status, team_id, user_id,
 -- Data for Name: teams; Type: TABLE DATA; Schema: public; Owner: kotahidev
 --
 
-INSERT INTO public.teams (id, created, updated, name, role, members, owners, global, type, manuscript_id) VALUES ('dccbd509-505f-4ad6-8ceb-8a42b62c917b', '2021-03-10 12:48:02.828+01', '2021-03-10 12:48:02.828+01', 'Author', 'author', NULL, NULL, NULL, 'team', '06ea851c-619c-453e-a12e-6568da11252c');
+INSERT INTO public.teams (id, created, updated, name, role, members, owners, global, type, object_id, object_type) VALUES ('dccbd509-505f-4ad6-8ceb-8a42b62c917b', '2021-03-10 12:48:02.828+01', '2021-03-10 12:48:02.828+01', 'Author', 'author', NULL, NULL, NULL, 'team', '06ea851c-619c-453e-a12e-6568da11252c', 'manuscript');
 
 
 --
@@ -838,7 +837,7 @@ CREATE INDEX team_members_team_id_user_id_idx ON public.team_members USING btree
 -- Name: teams_manuscript_id_idx; Type: INDEX; Schema: public; Owner: kotahidev
 --
 
-CREATE INDEX teams_manuscript_id_idx ON public.teams USING btree (manuscript_id);
+CREATE INDEX teams_object_id_idx ON public.teams USING btree (object_id);
 
 
 --
@@ -965,8 +964,8 @@ ALTER TABLE ONLY public.team_members
 -- Name: teams teams_manuscript_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: kotahidev
 --
 
-ALTER TABLE ONLY public.teams
-    ADD CONSTRAINT teams_manuscript_id_fkey FOREIGN KEY (manuscript_id) REFERENCES public.manuscripts(id) ON DELETE CASCADE;
+-- ALTER TABLE ONLY public.teams
+--     ADD CONSTRAINT teams_manuscript_id_fkey FOREIGN KEY (manuscript_id) REFERENCES public.manuscripts(id) ON DELETE CASCADE;
 
 ALTER TABLE public.forms 
   ADD category TEXT NULL;

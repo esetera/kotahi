@@ -33,7 +33,7 @@ describe('Completing a review', () => {
       ControlPage.getDecisionFileInput().attachFile(decisionFileName)
       ControlPage.clickRevise()
       ControlPage.clickSubmitDecisionButton() // Submit the decision
-      ControlPage.checkSVGExists() // Check appears in front of button
+      ControlPage.checkSvgExists() // Check appears in front of button
 
       /* View Decision as an Author */
       cy.login('Emily Clay', dashboard) // Login as an Author
@@ -58,7 +58,7 @@ describe('Completing a review', () => {
       ControlPage.getDecisionFileInput().attachFile('test-pdf.pdf')
       ControlPage.clickAccept()
       ControlPage.clickSubmitDecisionButton() // Submit the decision
-      ControlPage.checkSVGExists()
+      ControlPage.checkSvgExists()
       ControlPage.getPublishButton().should('not.be.disabled') // Verify publish button is not disabled */
     })
   })
