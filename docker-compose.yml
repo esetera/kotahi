@@ -228,7 +228,7 @@ services:
   #   volumes:
   #     - ./nginx/conf.d:/etc/nginx/conf.d
   #     - ./certs:/etc/nginx/certs
- # Create the file server and give it a root user
+  # Create the file server and give it a root user
   fileHosting:
     image: minio/minio
     ports:

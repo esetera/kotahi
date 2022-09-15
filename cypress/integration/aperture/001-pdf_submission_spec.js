@@ -12,8 +12,9 @@ describe('Upload manuscript test', () => {
     cy.task('restore', 'initialState')
     cy.task('seedForms')
     cy.log('Login as author role')
+
     // login as author
-    cy.fixture('role_names').then(name => {
+    cy.fixture('role_names').then((name)=> {
       cy.login(name.role.author, dashboard)
     })
     cy.log('Entering email-id')
