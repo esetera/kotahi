@@ -114,7 +114,7 @@ services:
       - NOTIFICATION_EMAIL_AUTOMATED=${NOTIFICATION_EMAIL_AUTOMATED:-false}
       - NOTIFICATION_EMAIL_CC_ENABLED=${NOTIFICATION_EMAIL_CC_ENABLED:-false}
       - S3_PROTOCOL=http
-      - S3_HOST=minio
+      - S3_HOST=fileHosting
       - S3_PORT=${S3_PORT:-9000}
       - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-nonRootUser}
       - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-nonRootPassword}
@@ -228,37 +228,37 @@ services:
   #   volumes:
   #     - ./nginx/conf.d:/etc/nginx/conf.d
   #     - ./certs:/etc/nginx/certs
-#   Create the file server and give it a root user
-#   minio:
-#     image: minio/minio
-#     ports:
-#       - ${S3_PORT:-9000}:9000
-#       - ${MINIO_CONSOLE_PORT:-9001}:9001
-#     volumes:
-#       - minio_storage:/data
-#     environment:
-#       - MINIO_ROOT_USER=${MINIO_ROOT_USER:-admin}
-#       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-superSecretAdminPassword}
-#     command: server --console-address ":${MINIO_CONSOLE_PORT:-9001}" /data
-#     healthcheck:
-#       test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
-#       interval: 30s
-#       timeout: 20s
-#       retries: 3
+ # Create the file server and give it a root user
+  fileHosting:
+    image: minio/minio
+    ports:
+      - ${S3_PORT:-9000}:9000
+      - ${MINIO_CONSOLE_PORT:-9001}:9001
+    volumes:
+      - minio_storage:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-admin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-superSecretAdminPassword}
+    command: server --console-address ":${MINIO_CONSOLE_PORT:-9001}" /data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 30s
+      timeout: 20s
+      retries: 3
 
-#   # Create non-root user and bucket that we'll connect to
-#   createbucket:
-#     image: minio/mc
-#     depends_on:
-#       - minio
-#     entrypoint: >
-#       /bin/sh -c "
-#       /usr/bin/mc config host add cokoServer http://localhost:${S3_PORT:-9000} ${MINIO_ROOT_USER:-admin} ${MINIO_ROOT_PASSWORD:-superSecretAdminPassword};
-#       /usr/bin/mc admin user add cokoServer/  ${S3_ACCESS_KEY_ID:-nonRootUser} ${S3_SECRET_ACCESS_KEY:-nonRootPassword};
-#       /usr/bin/mc admin user enable cokoServer/ ${S3_ACCESS_KEY_ID:-nonRootUser};
-#       /usr/bin/mc mb cokoServer/ ${S3_BUCKET:-uploads};
-#       /usr/bin/mc admin policy set cokoServer/ readwrite user=${S3_ACCESS_KEY_ID:-nonRootUser};
-#       exit 0;
-#       "
-# volumes:
-#   minio_storage:
+  # Create non-root user and bucket that we'll connect to
+  createbucket:
+    image: minio/mc
+    depends_on:
+      - fileHosting
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add cokoServer http://fileHosting:${S3_PORT:-9000} ${MINIO_ROOT_USER:-admin} ${MINIO_ROOT_PASSWORD:-superSecretAdminPassword};
+      /usr/bin/mc admin user add cokoServer/  ${S3_ACCESS_KEY_ID:-nonRootUser} ${S3_SECRET_ACCESS_KEY:-nonRootPassword};
+      /usr/bin/mc admin user enable cokoServer/ ${S3_ACCESS_KEY_ID:-nonRootUser};
+      /usr/bin/mc mb cokoServer/ ${S3_BUCKET:-uploads};
+      /usr/bin/mc admin policy set cokoServer/ readwrite user=${S3_ACCESS_KEY_ID:-nonRootUser};
+      exit 0;
+      "
+volumes:
+  minio_storage:

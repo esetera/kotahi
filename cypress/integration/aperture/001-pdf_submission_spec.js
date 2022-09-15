@@ -24,28 +24,27 @@ describe('Upload manuscript test', () => {
     // submit the email
     cy.log('submitting the email-id')
     cy.contains('Next').click()
-    // comenting code below for testing the database access issue
-    // Menu.clickDashboard()
-    // // Click on new submission
-    // cy.get('button').contains('＋ New submission').click()
+    Menu.clickDashboard()
+    // Click on new submission
+    cy.get('button').contains('＋ New submission').click()
 
-    // // Upload manuscript
-    // cy.get('input[type=file]').attachFile('test-pdf.pdf')
+    // Upload manuscript
+    cy.get('input[type=file]').attachFile('test-pdf.pdf')
 
-    // // complete the submission form
+    // complete the submission form
+    cy.fixture('submission_form_data').then(data => {
+      SubmissionFormPage.fillInTitle(data.title)
+      SubmissionFormPage.clickSubmitResearch()
 
-    // cy.fixture('submission_form_data').then(data => {
-    //   SubmissionFormPage.fillInTitle(data.title)
-    //   SubmissionFormPage.clickSubmitResearch()
+      // Submit your form
+      SubmissionFormPage.clickSubmitYourManuscript()
 
-    //   // Submit your form
-
-    //   SubmissionFormPage.clickSubmitYourManuscript()
-
-    //   // assert form exists in dashboard
-
+      // assert form exists in dashboard
       DashboardPage.getSectionTitleWithText('My Submissions')
       DashboardPage.getSubmissionTitle().should('contain', data.title)
 
+      // task to dump data in dumps/submission_complete.sql
+      cy.task('dump', 'submission_complete')
     })
+  })
 })
