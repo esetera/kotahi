@@ -4,6 +4,9 @@ const axios = require('axios')
 const { map } = require('lodash')
 const config = require('config')
 const { pubsubManager, File } = require('@coko/server')
+const Team = require('../../model-team/src/team')
+const TeamMember = require('../../model-team/src/team_member')
+const { raw } = require('objection')
 const models = require('@pubsweet/models')
 const cheerio = require('cheerio')
 const { importManuscripts } = require('./manuscriptCommsUtils')
@@ -55,7 +58,7 @@ const {
 const SUBMISSION_FIELD_PREFIX = 'submission'
 const META_FIELD_PREFIX = 'meta'
 
-let isImportInProgress = false
+// let isImportInProgress = false
 
 const repackageForGraphql = async ms => {
   const result = { ...fixMissingValuesInFiles(ms) }
