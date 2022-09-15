@@ -12,6 +12,7 @@
 
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
+const { execSync } = require('child_process')
 const path = require('path')
 require('dotenv').config({ path: path.join(__dirname, '../../.env') })
 
@@ -37,11 +38,21 @@ const testUsers = {
 module.exports = (on, config) => {
   on('task', {
     // 'db:seed': () => seed(),
-    restore: async name => {
-      // eslint-disable-next-line no-console
-      console.log(name, 'name')
-      return seed(readFileSync(dumpFile(name), 'utf-8'))
+    dump: name => {
+      if (process.env.NEWDUMPS) {
+        return execSync(
+          `pg_dump --column-inserts -d simplej > ${dumpFile(name)}`,
+        )
+      }
+      
+      return true
     },
+    // restore: async name => {
+    //   // eslint-disable-next-line no-console
+    //   console.log(name, 'name')
+    //   return seed(readFileSync(dumpFile(name), 'utf-8'))
+    // },
+    restore: async name => seed(readFileSync(dumpFile(name), 'utf-8')),
     createToken: async name => {
       const { User } = require('@pubsweet/models')
 
