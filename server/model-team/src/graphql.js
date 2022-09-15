@@ -35,8 +35,7 @@ const resolvers = {
         {
           relate: ['members.user'],
           unrelate: ['members.user'],
-          // eager: 'members.user.teams', // TODO This appears to be ignored, according to Objection documentation?
-          eager: ['members.user.teams'],
+          eager: 'members.user.teams', // TODO This appears to be ignored, according to Objection documentation?
         },
       )
     },
