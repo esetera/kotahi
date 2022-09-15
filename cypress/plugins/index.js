@@ -44,7 +44,7 @@ module.exports = (on, config) => {
           `pg_dump --column-inserts -d simplej > ${dumpFile(name)}`,
         )
       }
-      
+
       return true
     },
     // restore: async name => {
