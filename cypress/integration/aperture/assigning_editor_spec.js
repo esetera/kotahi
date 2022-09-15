@@ -5,6 +5,7 @@ import { Menu } from '../../page-object/page-component/menu'
 import { ManuscriptsPage } from '../../page-object/manuscripts-page'
 import { ControlPage } from '../../page-object/control-page'
 import { dashboard } from '../../support/routes'
+import { manuscripts } from '../../support/routes'
 
 describe('Assigning senior editor', () => {
   it('admin can give decision', () => {
@@ -24,9 +25,9 @@ describe('Assigning senior editor', () => {
         cy.contains('Next').click()
 
         // select Control on the Manuscripts page
-        Menu.clickManuscripts()
-
-        ManuscriptsPage.selectOptionWithText('Control')
+        cy.visit(manuscripts)
+        // click on control button
+        ManuscriptsPage.clickControlButton()
 
         // assign seniorEditor
         ControlPage.clickAssignSeniorEditorDropdown()
