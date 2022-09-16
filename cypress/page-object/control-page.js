@@ -18,7 +18,7 @@ const EMAIL_NOTIFICATION_DROPDOWNS ='[class*=emailNotifications__RowGridStyled] 
 
 const ASSIGN_SENIOR_EDITOR_DROPDOWN = 'Assign seniorEditor'
 const ASSIGN_HANDLING_EDITOR_DROPDOWN = 'Assign handlingEditor'
-const ASSIGN_EDITOR_DROPDOWN = ':nth-child(2) > .General__SectionRow-sc-1chiust-8 > [class]'
+const ASSIGN_EDITOR_DROPDOWN = ':nth-child(2) > .General__SectionRow-sc-1chiust-10 > [class]'
 
 // Reviews
 const MANAGE_REVIEWERS_BUTTON = '[class*=General__SectionRow] > a'
