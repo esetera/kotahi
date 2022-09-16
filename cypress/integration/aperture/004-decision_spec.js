@@ -19,12 +19,12 @@ describe('Completing a review', () => {
       cy.login(name.role.admin, dashboard)
       DashboardPage.clickManuscriptNavButton()
       ManuscriptsPage.clickControlButton()
-      ControlPage.getAssignSeniorEditorDropdown()
+      ControlPage.getAssignEditor(0)
         .click()
-        .type(`${name.role.seniorEditor.uuid2}{enter}`)  // Assign Editor
+        .type(`${name.role.seniorEditor.uuid1}{enter}`)  // Assign Editor
 
       /* Ediot Submits a decision */
-      cy.login(name.role.seniorEditor.name2, dashboard)
+      cy.login(name.role.seniorEditor.name1, dashboard)
       DashboardPage.clickControlPanel()
       ControlPage.getPublishButton().should('be.disabled') // Verify publish button is disabled
       // Fill the decision form
@@ -51,7 +51,7 @@ describe('Completing a review', () => {
         .should('exist') // Verify new submission got created
 
       /* Editor Workflow: Approve the new Manuscript version */
-      cy.login(name.role.seniorEditor.name2, dashboard)
+      cy.login(name.role.seniorEditor.name1, dashboard)
       DashboardPage.clickControlPanel()
       ControlPage.getPublishButton().should('be.disabled') // Verify publish button is disabled
       ControlPage.getDecisionTextInput().type('Great Paper!')
