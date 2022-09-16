@@ -19,7 +19,7 @@ describe('Completing a review', () => {
       cy.login(name.role.admin, dashboard)
       DashboardPage.clickManuscriptNavButton()
       ManuscriptsPage.clickControlButton()
-      ControlPage.getAssignEditor(0)
+      ControlPage.getAssignSeniorEditorDropdown()
         .click()
         .type(`${name.role.seniorEditor.uuid2}{enter}`)  // Assign Editor
 
