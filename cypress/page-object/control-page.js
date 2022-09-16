@@ -46,6 +46,7 @@ const METADATA_TAB = 'HiddenTabs__TabContainer-sc-11z25w4-2'
 const METADATA_CELL = 'VersionSwitcher__Title'
 const ERROR_TEXT = 'style__ErrorText-'
 const FORM_STATUS = 'style__FormStatus-'
+const ASSIGN_EDITORS_DROPDOWN = ':nth-child(2) > .General__SectionRow-sc-1chiust-8 > [class]'
 const SHOW_BUTTON = '[class*=DecisionReview__Controls]>[type*=button]'
 
 // Decision Form
@@ -63,6 +64,9 @@ const CHECK_SVG = 'check-svg'
 export const ControlPage = {
   getManageReviewersButton() {
     return cy.get(MANAGE_REVIEWERS_BUTTON)
+  },
+  getAssignEditor(nth) {
+    return cy.get(ASSIGN_EDITORS_DROPDOWN).eq(nth)
   },
   clickManageReviewers() {
     this.getManageReviewersButton().click()
