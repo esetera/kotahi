@@ -72,7 +72,7 @@ describe('Upload manuscript test', () => {
         // select Control on the Manuscripts page
         Menu.clickManuscripts()
 
-        ManuscriptsPage.selectOptionWithText('Control')
+        ManuscriptsPage.clickControlButton()
 
         // assign seniorEditor
         ControlPage.clickAssignSeniorEditorDropdown()
