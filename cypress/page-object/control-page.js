@@ -18,7 +18,7 @@ const EMAIL_NOTIFICATION_DROPDOWNS ='[class*=emailNotifications__RowGridStyled] 
 
 const ASSIGN_SENIOR_EDITOR_DROPDOWN = 'Assign seniorEditor'
 const ASSIGN_HANDLING_EDITOR_DROPDOWN = 'Assign handlingEditor'
-const ASSIGN_EDITOR_DROPDOWN = ':nth-child(2) > .General__SectionRow-sc-1chiust-10 > [class]'
+// const ASSIGN_EDITOR_DROPDOWN = ':nth-child(2) > .General__SectionRow-sc-1chiust-10 > [class]'
 
 // Reviews
 const MANAGE_REVIEWERS_BUTTON = '[class*=General__SectionRow] > a'
@@ -46,7 +46,7 @@ const METADATA_TAB = 'HiddenTabs__TabContainer-sc-11z25w4-2'
 const METADATA_CELL = 'VersionSwitcher__Title'
 const ERROR_TEXT = 'style__ErrorText-'
 const FORM_STATUS = 'style__FormStatus-'
-const ASSIGN_EDITORS_DROPDOWN = ':nth-child(2) > .General__SectionRow-sc-1chiust-8 > [class]'
+const ASSIGN_EDITORS_DROPDOWN = ':nth-child(2) > .General__SectionRow-sc-1chiust-10 > [class]'
 const SHOW_BUTTON = '[class*=DecisionReview__Controls]>[type*=button]'
 
 // Decision Form
@@ -67,7 +67,7 @@ export const ControlPage = {
   },
   getAssignEditor(nth) {
     return cy.get(ASSIGN_EDITORS_DROPDOWN).eq(nth)
-    cy.wait(3000)
+    cy.wait(2000)
   },
   clickManageReviewers() {
     this.getManageReviewersButton().click()
