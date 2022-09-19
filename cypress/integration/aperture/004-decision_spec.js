@@ -47,7 +47,7 @@ describe('Completing a review', () => {
       SubmissionFormPage.clickSubmitResearch()
       SubmissionFormPage.clickSubmitYourManuscript()
       DashboardPage.getSubmittedManuscript()
-        .contains('sample pdf')
+        .contains('test pdf')
         .should('exist') // Verify new submission got created
 
       /* Editor Workflow: Approve the new Manuscript version */
