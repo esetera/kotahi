@@ -205,6 +205,8 @@ CREATE TABLE public.channels (
 );
 
 
+ALTER TABLE public.channels OWNER TO kotahidev;
+
 --
 -- Name: entities; Type: TABLE; Schema: public; Owner: kotahidev
 --
@@ -237,7 +239,6 @@ CREATE TABLE "public"."files" (
     "url" text,
     "mime_type" text,
     "size" int4,
-    "manuscript_id" uuid,
     "review_comment_id" uuid,
     "stored_objects" jsonb,
     "tags" jsonb DEFAULT '[]'::jsonb,
@@ -296,6 +297,19 @@ ALTER TABLE public.forms OWNER TO kotahidev;
 --
 -- Name: identities; Type: TABLE; Schema: public; Owner: kotahidev
 --
+
+DROP TABLE IF EXISTS "public"."email_blacklist";
+-- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
+
+-- Table Definition
+CREATE TABLE "public"."email_blacklist" (
+    "id" uuid NOT NULL,
+    "created" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated" timestamptz,
+    "email" text NOT NULL,
+    PRIMARY KEY ("id")
+);
+
 
 CREATE TABLE public.identities (
     id uuid NOT NULL,
@@ -431,8 +445,8 @@ CREATE TABLE public.teams (
     owners jsonb,
     global boolean,
     type text NOT NULL,
-    "object_type" text,
-    "object_id" uuid
+    object_id uuid,
+    object_type text
 );
 
 
@@ -465,6 +479,17 @@ ALTER TABLE public.users OWNER TO kotahidev;
 -- Data for Name: archive; Type: TABLE DATA; Schema: pgboss; Owner: kotahidev
 --
 
+DROP TABLE IF EXISTS "public"."threaded_discussions";
+-- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
+
+-- Table Definition
+CREATE TABLE IF NOT EXISTS public.threaded_discussions (
+  id uuid NOT NULL,
+  created timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  updated timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  manuscript_id uuid NOT NULL,
+  threads json NOT NULL
+);
 
 
 --
@@ -523,7 +548,7 @@ INSERT INTO public.channels (id, manuscript_id, created, updated, topic, type) V
 -- Data for Name: files; Type: TABLE DATA; Schema: public; Owner: kotahidev
 --
 
-INSERT INTO public.files (id, created, updated, label, file_type, filename, url, mime_type, size, type, manuscript_id, review_comment_id) VALUES ('81ffbef0-c77e-46dc-a86c-864f7f1f336c', '2021-03-10 12:48:21.069+01', '2021-03-10 12:48:21.069+01', NULL, 'supplementary', 'test-pdf.pdf', '/static/uploads/508239154500088a36827c250d0b83b7.pdf', 'application/pdf', 142400, 'file', '06ea851c-619c-453e-a12e-6568da11252c', NULL);
+INSERT INTO public.files (id, created, updated, label, file_type, filename, url, mime_type, size, type, object_id, review_comment_id) VALUES ('81ffbef0-c77e-46dc-a86c-864f7f1f336c', '2021-03-10 12:48:21.069+01', '2021-03-10 12:48:21.069+01', NULL, 'supplementary', 'test-pdf.pdf', '/static/uploads/508239154500088a36827c250d0b83b7.pdf', 'application/pdf', 142400, 'file', '06ea851c-619c-453e-a12e-6568da11252c', NULL);
 
 
 --
@@ -837,7 +862,7 @@ CREATE INDEX team_members_team_id_user_id_idx ON public.team_members USING btree
 -- Name: teams_manuscript_id_idx; Type: INDEX; Schema: public; Owner: kotahidev
 --
 
-CREATE INDEX teams_object_id_idx ON public.teams USING btree (object_id);
+-- CREATE INDEX teams_manuscript_id_idx ON public.teams USING btree (manuscript_id);
 
 
 --
@@ -868,8 +893,8 @@ ALTER TABLE ONLY public.channels
 -- Name: files files_manuscript_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: kotahidev
 --
 
-ALTER TABLE ONLY public.files
-    ADD CONSTRAINT files_manuscript_id_fkey FOREIGN KEY (manuscript_id) REFERENCES public.manuscripts(id) ON DELETE CASCADE;
+-- ALTER TABLE ONLY public.files
+--     ADD CONSTRAINT files_manuscript_id_fkey FOREIGN KEY (manuscript_id) REFERENCES public.manuscripts(id) ON DELETE CASCADE;
 
 
 --

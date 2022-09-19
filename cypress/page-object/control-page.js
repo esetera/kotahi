@@ -41,7 +41,7 @@ const CHAT_TAB = '[class*=General__Chat] [data-test-id=tab-container]'
 // Multiple Elements
 const SUBMIT_BUTTON = '.ActionButton__BaseButton-sc-1ja3w98-0' // Also Matches Notify Button
 
-const DROPDOWN_OPTION_LIST = ' [class*=MenuList] > [id*=option]'
+const DROPDOWN_OPTION_LIST = '[class*=MenuList] > [id*=option]'
 const METADATA_TAB = 'HiddenTabs__TabContainer-sc-11z25w4-2'
 const METADATA_CELL = 'VersionSwitcher__Title'
 const ERROR_TEXT = 'style__ErrorText-'
