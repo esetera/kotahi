@@ -10,7 +10,6 @@ const cheerio = require('cheerio')
 const TeamMember = require('../../model-team/src/team_member')
 const Team = require('../../model-team/src/team')
 const { importManuscripts } = require('./manuscriptCommsUtils')
-
 const { getPubsub } = pubsubManager
 const Form = require('../../model-form/src/form')
 const Message = require('../../model-message/src/message')
