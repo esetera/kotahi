@@ -67,6 +67,7 @@ export const ControlPage = {
   },
   getAssignEditor(nth) {
     return cy.get(ASSIGN_EDITORS_DROPDOWN).eq(nth)
+    cy.wait(3000)
   },
   clickManageReviewers() {
     this.getManageReviewersButton().click()

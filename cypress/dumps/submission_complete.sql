@@ -205,7 +205,7 @@ CREATE TABLE public.channels (
 );
 
 
-ALTER TABLE public.channels OWNER TO kotahidev;
+-- ALTER TABLE public.channels OWNER TO kotahidev;
 
 --
 -- Name: entities; Type: TABLE; Schema: public; Owner: kotahidev
