@@ -9,21 +9,15 @@ import { dashboard } from '../../support/routes'
 describe('Upload manuscript test', () => {
   it('can upload a manuscript and some metadata', () => {
     // task to restore the database as per the  dumps/initialState.sql
-    cy.task('restore', 'initialState')
+    cy.task('restore', 'commons/bootstrap') // Populate the Database
     cy.task('seedForms')
 
     // login as author
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.author, dashboard)
+      cy.login(name.role.author.name, dashboard) // login as author
     })
 
-    // enter email
-    cy.contains('Enter Email').click()
-    cy.get('#enter-email').type('emily@gmail.com')
-
-    // submit the email
-    cy.contains('Next').click()
-    Menu.clickDashboard()
+    cy.visit(dashboard)
     // Click on new submission
     cy.get('button').contains('＋ New submission').click()
 
@@ -37,13 +31,12 @@ describe('Upload manuscript test', () => {
       SubmissionFormPage.clickSubmitResearch()
 
       // Submit your form
-
       SubmissionFormPage.clickSubmitYourManuscript()
 
       // assert form exists in dashboard
-
       DashboardPage.getSectionTitleWithText('My Submissions')
       DashboardPage.getSubmissionTitle().should('contain', data.title1)
     })
   })
 })
+

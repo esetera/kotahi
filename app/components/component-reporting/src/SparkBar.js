@@ -39,7 +39,9 @@ const SparkBar = ({ label, value, rangeMax, onClick, color }) => {
 
   return (
     <Container>
-      <Value onClick={onClick}>{label ?? value}</Value>
+       <Value data-testId="cell-value" onClick={onClick}>
+        {label ?? value}
+      </Value>
       <Bar barWidthPercent={barWidthPercent} color={color} onClick={onClick}>
         &nbsp;
       </Bar>

@@ -6,6 +6,15 @@ variables:
   POSTGRES_PASSWORD: kotahidev
   PGUSER: kotahidev
   PGPASSWORD: kotahidev
+  S3_PROTOCOL: http
+  S3_HOST: localhost
+  S3_PORT: 9000
+  S3_ACCESS_KEY_ID: nonRootUser
+  S3_SECRET_ACCESS_KEY: nonRootPassword
+  S3_BUCKET: uploads
+  MINIO_ROOT_USER: admin
+  MINIO_ROOT_PASSWORD: superSecretAdminPassword
+  MINIO_CONSOLE_PORT: 9001
 
 stages:
   - build
@@ -32,15 +41,33 @@ build:
       docker push $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
       docker push $IMAGE_ORG/$IMAGE_NAME:latest
 
-lint:
-  # allow_failure: true
-  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-  stage: test
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - cd ${HOME}
-    - yarn lint
+#lint:
+# allow_failure: true
+#image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+#stage: test
+#variables:
+#GIT_STRATEGY: none
+#script:
+#  - cd ${HOME}
+#  - yarn eslint .
+# Commenting code from line no 54 to 70 for faster processibg in CI/CD pipleine
+# lint js:
+#   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+#   stage: test
+#   variables:
+#     GIT_STRATEGY: none
+#   script:
+#     - cd ${HOME}
+#     - yarn lint:js
+
+# lint style:
+#   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+#   stage: test
+#   variables:
+#     GIT_STRATEGY: none
+#   script:
+#     - cd ${HOME}
+#     - yarn lint:style
 
 .test_template: &run_test_template
   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
@@ -51,9 +78,20 @@ lint:
     - postgres
 
 .test_before_script: &run_test_before_script
-  - apt-get update
+  - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+  - apt-get update --allow-releaseinfo-change
   - apt-get -y install postgresql-client
   - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
+  - wget -q https://dl.min.io/server/minio/release/linux-amd64/minio
+  - chmod +x minio
+  - ./minio server --console-address :${MINIO_CONSOLE_PORT} /data &
+  - wget -q https://dl.min.io/client/mc/release/linux-amd64/mc
+  - chmod +x mc
+  - ./mc config host add cokoServer http://localhost:$S3_PORT $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+  - ./mc admin user add cokoServer/  $S3_ACCESS_KEY_ID $S3_SECRET_ACCESS_KEY
+  - ./mc admin user enable cokoServer/ $S3_ACCESS_KEY_ID
+  - ./mc mb cokoServer/$S3_BUCKET
+  - ./mc admin policy set cokoServer/ readwrite user=$S3_ACCESS_KEY_ID
 
 .test_script: &run_test_script
   - cd ${HOME}
@@ -128,3 +166,4 @@ test-firefox:
 #     - cp .env.example .env
 #     # specify host here else it confuses the linked postgres image
 #     - POSTGRES_HOST=postgres yarn test:all:firefox
+
