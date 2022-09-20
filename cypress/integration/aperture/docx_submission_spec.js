@@ -44,7 +44,8 @@ describe('Upload manuscript test', () => {
 
   it('senior editor can view the submission', () => {
     // task to restore the database as per the  dumps/submission_complete.sql
-    cy.task('restore', 'submission_complete')
+    cy.task('restore', 'commons/bootstrap')
+    cy.task('seed', 'submission_complete')
     cy.task('seedForms')
 
     cy.fixture('submission_form_data').then(data => {
