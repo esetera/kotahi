@@ -50,12 +50,12 @@ describe('Upload manuscript test', () => {
         // login as admin
         cy.login(name.role.admin.name, dashboard)
 
-        // enter email
-        cy.contains('Enter Email').click()
-        cy.get('#enter-email').type('admin@gmail.com')
+        // // enter email
+        // cy.contains('Enter Email').click()
+        // cy.get('#enter-email').type('admin@gmail.com')
 
-        // submit the email
-        cy.contains('Next').click()
+        // // submit the email
+        // cy.contains('Next').click()
 
         // select Control on the Manuscripts page
         Menu.clickManuscripts()
