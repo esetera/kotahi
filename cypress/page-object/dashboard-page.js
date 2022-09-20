@@ -53,6 +53,7 @@
    },
    getSubmissionFileUploadInput() {
      return cy.get(SUBMISSION_FILE_UPLOAD_INPUT)
+     cy.wait(3000)
    },
    clickSubmitButton() {
      this.getSubmitButton().click()

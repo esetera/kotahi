@@ -22,8 +22,8 @@ describe('Upload manuscript test', () => {
     DashboardPage.clickSubmissionButton() // Click on new submission
     DashboardPage.getSubmissionFileUploadInput().attachFile('test-docx.docx') // Upload manuscript
 
-    // complete the submission form
 
+    // complete the submission form
     cy.fixture('submission_form_data').then(data => {
       SubmissionFormPage.fillInTitle(data.title3)
       SubmissionFormPage.clickSubmitResearch()
@@ -50,16 +50,8 @@ describe('Upload manuscript test', () => {
         // login as admin
         cy.login(name.role.admin.name, dashboard)
 
-        // // enter email
-        // cy.contains('Enter Email').click()
-        // cy.get('#enter-email').type('admin@gmail.com')
-
-        // // submit the email
-        // cy.contains('Next').click()
-
         // select Control on the Manuscripts page
         Menu.clickManuscripts()
-
         ManuscriptsPage.selectOptionWithText('Control')
 
         // assign seniorEditor
