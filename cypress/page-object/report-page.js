@@ -46,7 +46,7 @@ export const ReportPage = {
     return cy.getByDataTestId(ROW).eq(nth)
   },
   getColumnData(row, col) {
-    return this.getRow(row).find('[data-testId="cell-value"]').eq(col)
+    return this.getRow(row).find('[data-testid="cell-value"]').eq(col)
   },
   /* Review Type */
   getReviewerName(row) {

@@ -56,11 +56,11 @@ describe('Upload manuscript test', () => {
 
         // assign seniorEditor
         ControlPage.clickAssignSeniorEditorDropdown()
-        ControlPage.selectDropdownOptionByName(name.role.seniorEditor.uuid)
+        ControlPage.selectDropdownOptionByName(name.role.seniorEditor.username)
         ControlPage.clickAssignHandlingEditorDropdown()
-        ControlPage.selectDropdownOptionByName(name.role.seniorEditor.uuid)
+        ControlPage.selectDropdownOptionByName(name.role.seniorEditor.username)
         ControlPage.clickAssignEditorDropdown()
-        ControlPage.selectDropdownOptionByName(name.role.seniorEditor.uuid1)
+        ControlPage.selectDropdownOptionByName(name.role.seniorEditor.username)
         // assert the reviews
         ControlPage.fillInDecision(data.decision)
         ControlPage.clickAccept()

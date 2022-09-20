@@ -53,10 +53,10 @@ const Cell = styled.div`
 
 const TableRow = ({ cells, isHeadingRow }) => {
   return (
-    <Row data-testId="row" isHeadingRow={isHeadingRow}>
+    <Row data-testid="row" isHeadingRow={isHeadingRow}>
       {cells.map((cell, index) => (
         <Cell
-          data-testId="cell"
+          data-testid="cell"
           flexGrow={cell.flexGrow ?? 0}
           isHeading={isHeadingRow || cell.isHeading}
           // eslint-disable-next-line react/no-array-index-key
