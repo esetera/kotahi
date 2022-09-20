@@ -70,7 +70,7 @@
      return cy.getByContainsClass(SUBMISSION_TITLE)
    },
    getSubmissionButton() {
-     return cy.get('button').contains('＋ New submission')
+     return cy.get('button').should('have.text','＋ New submission')
    },
    clickSubmissionButton() {
      return this.getSubmitButton().click()
