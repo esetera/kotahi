@@ -11,21 +11,14 @@ import { dashboard } from '../../support/routes'
 describe('Upload manuscript test', () => {
   it('can upload a manuscript and some metadata', () => {
     // task to restore the database as per the  dumps/initialState.sql
-    cy.task('restore', 'initialState')
+    cy.task('restore', 'commons/bootstrap')
     cy.task('seedForms')
 
     // login as author
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.author, dashboard)
+      cy.login(name.role.author.name, dashboard)
     })
 
-    // enter email
-    cy.contains('Enter Email').click()
-    cy.get('#enter-email').type('emily@gmail.com')
-
-    // submit the email
-    cy.contains('Next').click()
-    cy.visit(dashboard)
     // Click on new submission
     cy.get('button').contains('＋ New submission').click()
 
@@ -35,20 +28,17 @@ describe('Upload manuscript test', () => {
     // complete the submission form
 
     cy.fixture('submission_form_data').then(data => {
-      SubmissionFormPage.fillInTitle(data.title2)
-      cy.task('log', 'clicking on submit research')
+      SubmissionFormPage.fillInTitle(data.title3)
       SubmissionFormPage.clickSubmitResearch()
 
       // Submit your form
-      cy.task('log', 'submiting manuscript')
+
       SubmissionFormPage.clickSubmitYourManuscript()
 
       // assert form exists in dashboard
-      DashboardPage.getSectionTitleWithText('My Submissions')
-      DashboardPage.getSubmissionTitle().should('contain', data.title2)
-      // task to dump data in dumps/submission_complete.sql
 
-      cy.task('dump', 'submission_complete')
+      DashboardPage.getSectionTitleWithText('My Submissions')
+      DashboardPage.getSubmissionTitle().should('contain', data.title3)
     })
   })
 
@@ -60,7 +50,7 @@ describe('Upload manuscript test', () => {
     cy.fixture('submission_form_data').then(data => {
       cy.fixture('role_names').then(name => {
         // login as admin
-        cy.login(name.role.admin, dashboard)
+        cy.login(name.role.admin.name, dashboard)
 
         // enter email
         cy.contains('Enter Email').click()
@@ -72,7 +62,7 @@ describe('Upload manuscript test', () => {
         // select Control on the Manuscripts page
         Menu.clickManuscripts()
 
-        ManuscriptsPage.clickControlButton()
+        ManuscriptsPage.selectOptionWithText('Control')
 
         // assign seniorEditor
         ControlPage.clickAssignSeniorEditorDropdown()
@@ -91,3 +81,4 @@ describe('Upload manuscript test', () => {
     cy.contains('Dashboard').click()
   })
 })
+

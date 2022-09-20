@@ -14,22 +14,27 @@ const EMAIL_NOTIFICATION_SECTION = 'emailNotifications__RowGridStyled'
 const NEW_USER_CHECKBOX = '[class*=emailNotifications__RowGridStyled] > label'
 const NEW_USER_EMAIL_FIELD = '[placeholder="Email"]'
 const NEW_USER_NAME_FIELD = '[placeholder="Name"]'
-const EMAIL_NOTIFICATION_DROPDOWNS ='[class*=emailNotifications__RowGridStyled] > div'
+const EMAIL_NOTIFICATION_DROPDOWNS =
+  '[class*=emailNotifications__RowGridStyled] > div'
 
 const ASSIGN_SENIOR_EDITOR_DROPDOWN = 'Assign seniorEditor'
 const ASSIGN_HANDLING_EDITOR_DROPDOWN = 'Assign handlingEditor'
-const ASSIGN_EDITOR_DROPDOWN = ':nth-child(2) > .General__SectionRow-sc-1chiust-10 > [class]'
+const ASSIGN_EDITOR_DROPDOWN = 'Assign editor'
 
 // Reviews
 const MANAGE_REVIEWERS_BUTTON = '[class*=General__SectionRow] > a'
 const DECISION_FIELD = '[contenteditable="true"]'
 
 // Publishing
-const PUBLISH_BUTTON = '[class*=General__SectionAction-sc-1chiust-11] > .sc-bkzZxe'
+const PUBLISH_BUTTON =
+  '[class*=General__SectionAction-sc-1chiust-11] > .sc-bkzZxe'
 const PUBLISH_INFO_MESSAGE = 'General__SectionActionInfo-sc-1chiust-12'
+
 // Review
-const REVIEW_MESSAGE = '[class*=DecisionReview__Root] [class*=SimpleWaxEditor__ReadOnly] > div > [class*=paragraph]'
-const REVIEW_OPTION_CHECKBOX = '[class*=DecisionReview__StyledCheckbox] > [type=checkbox]'
+const REVIEW_MESSAGE =
+  '[class*=DecisionReview__Root] [class*=SimpleWaxEditor__ReadOnly] > div > [class*=paragraph]'
+const REVIEW_OPTION_CHECKBOX =
+  '[class*=DecisionReview__StyledCheckbox] > [type=checkbox]'
 const REVIEWER_NAME = '[class*=DecisionReview__Name]'
 const NO_REVIEWS_MESSAGE = '[class*=General__SectionRow]'
 const ACCEPTED_TO_PUBLISH_REVIEW_ICON = '[class*=DecisionReview__Name] > svg'
@@ -39,23 +44,23 @@ const MESSAGE_CONTAINER = '.General__Chat-sc-1chiust-18'
 const CHAT_TAB = '[class*=General__Chat] [data-test-id=tab-container]'
 
 // Multiple Elements
-const SUBMIT_BUTTON = '.ActionButton__BaseButton-sc-1ja3w98-0' // Also Matches Notify Button
+const SUBMIT_BUTTON = 'decision-action-btn' // Also Matches Notify Button
 
-const DROPDOWN_OPTION_LIST = '[class*=MenuList] > [id*=option]'
+const DROPDOWN_OPTION_LIST = ' [class*=MenuList] > [id*=option]'
 const METADATA_TAB = 'HiddenTabs__TabContainer-sc-11z25w4-2'
 const METADATA_CELL = 'VersionSwitcher__Title'
 const ERROR_TEXT = 'style__ErrorText-'
 const FORM_STATUS = 'style__FormStatus-'
-const ASSIGN_EDITORS_DROPDOWN = ':nth-child(2) > .General__SectionRow-sc-1chiust-8 > [class]'
 const SHOW_BUTTON = '[class*=DecisionReview__Controls]>[type*=button]'
 
 // Decision Form
-const DECISION_TEXT_INPUT = ':nth-child(1) > :nth-child(2) > :nth-child(1) > :nth-child(1) > .EditorStyles__SimpleGrid-k4rcxo-9 > .EditorStyles__SimpleEditorDiv-k4rcxo-11'
+const DECISION_TEXT_INPUT =
+  ':nth-child(1) > :nth-child(2) > :nth-child(1) > :nth-child(1) > .EditorStyles__SimpleGrid-k4rcxo-9 > .EditorStyles__SimpleEditorDiv-k4rcxo-11'
 
 const ACCEPT_RADIO_BUTTON = '.cLexBK > .sc-dmlrTW'
 const REVISE_RADIO_BUTTON = '.cABLOw > .sc-dmlrTW'
 const REJECT_RADIO_BUTTON = '.hgPkBe > .sc-dmlrTW'
-const DECISION_SUBMIT_BUTTON = '[data-cy=decision-action-btn]'
+const DECISION_SUBMIT_BUTTON = 'decision-action-btn'
 const DECISION_FILE_INPUT = 'input[type=file]'
 
 const CHECK_SVG = 'check-svg'
@@ -64,10 +69,6 @@ const CHECK_SVG = 'check-svg'
 export const ControlPage = {
   getManageReviewersButton() {
     return cy.get(MANAGE_REVIEWERS_BUTTON)
-  },
-  getAssignEditor(nth) {
-    return cy.get(ASSIGN_EDITORS_DROPDOWN).eq(nth)
-    cy.wait(2000)
   },
   clickManageReviewers() {
     this.getManageReviewersButton().click()
@@ -139,7 +140,7 @@ export const ControlPage = {
     this.getRejectRadioButton().click()
   },
   getSubmitButton() {
-    return cy.get(SUBMIT_BUTTON)
+    return cy.getByDataTestId(SUBMIT_BUTTON)
   },
   clickSubmit() {
     this.getSubmitButton().click()
@@ -264,7 +265,7 @@ export const ControlPage = {
     return cy.get(DECISION_FILE_INPUT)
   },
   getSubmitDecisionButton() {
-    return cy.get(DECISION_SUBMIT_BUTTON)
+    return cy.getByDataTestId(DECISION_SUBMIT_BUTTON)
   },
   clickSubmitDecisionButton() {
     this.getSubmitDecisionButton().click()
@@ -276,3 +277,4 @@ export const ControlPage = {
     this.getCheckSvg().should('exist')
   },
 }
+
