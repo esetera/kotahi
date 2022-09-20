@@ -19,11 +19,8 @@ describe('Upload manuscript test', () => {
       cy.login(name.role.author.name, dashboard)
     })
 
-    // Click on new submission
-    cy.get('button').contains('＋ New submission').click()
-
-    // Upload manuscript
-    cy.get('input[type=file]').attachFile('test-docx.docx')
+    DashboardPage.clickSubmissionButton() // Click on new submission
+    DashboardPage.getSubmissionFileUploadInput().attachFile('test-docx.docx') // Upload manuscript
 
     // complete the submission form
 
