@@ -87,6 +87,7 @@
    },
    getDecisionField(nth) {
      return cy.get(DECISION_FIELDS).eq(nth)
+     cy.wait(2000)
    },
    getControlPanelButton() {
      return cy.getByDataTestId(CONTROL_PANEL_BUTTON)
