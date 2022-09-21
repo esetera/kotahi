@@ -6,6 +6,9 @@ variables:
   POSTGRES_PASSWORD: kotahidev
   PGUSER: kotahidev
   PGPASSWORD: kotahidev
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: kotahidev
   S3_PROTOCOL: http
   S3_HOST: localhost
   S3_PORT: 9000
@@ -37,7 +40,7 @@ build:
     - |
       if [ -z "$DOCKERHUB_USERNAME" ] || [ -z "$DOCKERHUB_PASSWORD" ]; then echo "Not pushing" && exit 0; fi
       docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-      docker build --build-arg instance_name=aperture --file ./Dockerfile-ci --cache-from $IMAGE_ORG/$IMAGE_NAME:latest --tag $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA --tag $IMAGE_ORG/$IMAGE_NAME:latest --tag pubsweet/job-xsweet:1.5.4 .   
+      docker build --build-arg instance_name=aperture --file ./Dockerfile-ci --cache-from $IMAGE_ORG/$IMAGE_NAME:latest --tag $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA --tag $IMAGE_ORG/$IMAGE_NAME:latest .   
       docker push $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
       docker push $IMAGE_ORG/$IMAGE_NAME:latest
      
@@ -76,7 +79,13 @@ build:
     GIT_STRATEGY: none
   services:
     - postgres
-    -  pubsweet/job-xsweet:1.5.4
+    - pubsweet/job-xsweet:1.5.4
+   environment:
+      - POSTGRES_HOST=$POSTGRES_HOST
+      - POSTGRES_PORT=$POSTGRES_PORT
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
