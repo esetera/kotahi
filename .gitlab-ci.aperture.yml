@@ -40,7 +40,7 @@ build:
       docker build --build-arg instance_name=aperture --file ./Dockerfile-ci --cache-from $IMAGE_ORG/$IMAGE_NAME:latest --tag $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA --tag $IMAGE_ORG/$IMAGE_NAME:latest .   
       docker push $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
       docker push $IMAGE_ORG/$IMAGE_NAME:latest
-      docker build -t pubsweet/job-xsweet:1.5.4 .
+      docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag pubsweet/job-xsweet:1.5.4 .
 
      
 #lint:
