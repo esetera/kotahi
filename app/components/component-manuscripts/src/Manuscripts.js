@@ -368,7 +368,7 @@ const Manuscripts = ({ history, ...props }) => {
                   onClick={openModalBulkDeleteConfirmation}
                   primary={selectedNewManuscripts.length > 0}
                 >
-                  Delete
+                  Archive
                 </ActionButton>
               </SelectAllField>
             </FlexRowWithSmallGapAbove>
