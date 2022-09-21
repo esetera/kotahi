@@ -40,7 +40,7 @@ build:
       docker build --build-arg instance_name=aperture --file ./Dockerfile-ci --cache-from $IMAGE_ORG/$IMAGE_NAME:latest --tag $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA --tag $IMAGE_ORG/$IMAGE_NAME:latest .   
       docker push $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
       docker push $IMAGE_ORG/$IMAGE_NAME:latest
-      docker build -t pubsweet/job-xsweet:$CI_COMMIT_SHA components/server/job-xsweet
+      docker build -t pubsweet/job-xsweet:$CI_COMMIT_SHA 
       docker push pubsweet/job-xsweet:$CI_COMMIT_SHA
 
      
