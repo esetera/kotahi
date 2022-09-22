@@ -2,6 +2,9 @@ variables:
   IMAGE_ORG: simplej
   IMAGE_NAME: simplej
   POSTGRES_HOST_AUTH_METHOD: trust
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: kotahidev
   POSTGRES_USER: kotahidev
   POSTGRES_PASSWORD: kotahidev
   PGUSER: kotahidev
@@ -77,9 +80,6 @@ build:
   stage: test
   variables:
     GIT_STRATEGY: none
-    POSTGRES_HOST: postgres
-    POSTGRES_PORT: 5432
-    POSTGRES_DB: kotahidev
     FF_NETWORK_PER_BUILD: 'true'
   services:
     - name: postgres:10-alpine
@@ -90,7 +90,7 @@ build:
         [
           'bash',
           './scripts/wait-for-it.sh',
-          '0.0.0.0:${SERVER_PORT}',
+          '0.0.0.0:3000',
           --,
           'node',
           'src/xsweet.js',
@@ -114,6 +114,9 @@ build:
 
 .test_script: &run_test_script
   - cd ${HOME}
+  - echo Host and Port
+  - echo ${POSTGRES_HOST}
+  - echo ${POSTGRES_PORT}
   - cp .env.example .env
   - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
 
