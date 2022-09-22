@@ -15,6 +15,7 @@ variables:
   MINIO_ROOT_USER: admin
   MINIO_ROOT_PASSWORD: superSecretAdminPassword
   MINIO_CONSOLE_PORT: 9001
+  SERVER_PORT: 3000
 
 stages:
   - build
@@ -78,9 +79,10 @@ build:
     POSTGRES_PORT: 5432
     POSTGRES_DB: kotahidev
   services:
-    - postgres:10-alpine
-    - pubsweet/job-xsweet:1.5.4
-    
+  - name: postgres:10-alpine
+  - name: pubsweet/job-xsweet:1.5.4
+    command: ["bash", "./scripts/wait-for-it.sh", "localhost:${SERVER_PORT}", "--", "node", "src/xsweet.js"]
+
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
   - apt-get update --allow-releaseinfo-change
