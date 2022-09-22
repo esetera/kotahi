@@ -30,7 +30,6 @@ build:
     DOCKER_BUILDKIT: 1
   services:
     - docker:20.10.5-dind
-    - pubsweet/job-xsweet:1.5.4
   stage: build
   before_script:
     - cp app/brand-instances-configs/aperture.json app/brandConfig.json
