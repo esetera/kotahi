@@ -87,9 +87,9 @@ build:
       alias: job-xsweet
       command:
         [
-          'bash',
+          '/bin/bash',
           './scripts/wait-for-it.sh',
-          '0.0.0.0:3000',
+          'localhost:${SERVER_PORT}',
           --,
           'node',
           'src/xsweet.js',
