@@ -78,7 +78,7 @@ build:
     POSTGRES_PORT: 5432
     POSTGRES_DB: kotahidev
   services:
-    - postgres
+    - postgres:10-alpine
     - pubsweet/job-xsweet:1.5.4
     
 .test_before_script: &run_test_before_script
