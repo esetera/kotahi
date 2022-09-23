@@ -82,40 +82,7 @@ build:
     GIT_STRATEGY: none
   services:
     - name: postgres:10-alpine
-      alias: postgres
-      command:
-        - 'postgres'
-        - '-c'
-        - 'max_connections=1000'
-        - '-c'
-        - 'shared_buffers=3GB'
-        - '-c'
-        - 'sort_mem=4096'
-        - '-c'
-        - 'effective_cache_size=4000'
-        - '-c'
-        - 'wal_buffers=8'
-    - name: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-      alias: server
-      entrypoint:
-        [
-          'node_modules/.bin/wait-for-it',
-          'postgres:5432',
-          '--',
-          'sh',
-          'scripts/setupDevServer.sh',
-        ]
-      command:
-        [
-          'node_modules/.bin/nodemon',
-          'startServer.js',
-          '--',
-          'server',
-          '--',
-          'config',
-          '--ext',
-          'js,graphql',
-        ]
+      alias: db
     - name: pubsweet/job-xsweet:latest
       alias: job-xsweet
       command:
@@ -123,11 +90,16 @@ build:
           '/bin/bash',
           'scripts/wait-for-it.sh',
           '--timeout=1000',
-          'server:3000',
+          '0.0.0.0:3000',
           --,
           'node',
           'src/xsweet.js',
         ]
+  script:
+    - cd ${HOME}
+    - POSTGRES_HOST=postgres cd components/server/job-xsweet && yarn jest --testRegex test/standaloneXsweetTest.js
+  
+     
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
