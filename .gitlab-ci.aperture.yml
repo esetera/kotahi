@@ -88,17 +88,17 @@ build:
     POSTGRES_PASSWORD: kotahidev
   services:
     - name: postgres
-      alias: db-postgres
-      entrypoint: ["/usr/local/bin/db-postgres"]
-      command: ["start"]
+      alias: db
     - name: pubsweet/job-xsweet:latest
       alias: job-xsweet
+  script:
+    - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
   - apt-get update --allow-releaseinfo-change
   - apt-get -y install postgresql-client
-  - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
+  # - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
   - wget -q https://dl.min.io/server/minio/release/linux-amd64/minio
   - chmod +x minio
   - ./minio server --console-address :${MINIO_CONSOLE_PORT} /data &
