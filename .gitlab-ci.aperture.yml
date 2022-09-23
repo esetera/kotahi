@@ -88,19 +88,11 @@ build:
     POSTGRES_PASSWORD: kotahidev
   services:
     - name: postgres
-      alias: db
+      alias: db-postgres
+      entrypoint: ["/usr/local/bin/db-postgres"]
+      command: ["start"]
     - name: pubsweet/job-xsweet:latest
       alias: job-xsweet
-    #   command:
-    #     [
-    #       'bash',
-    #       '/home/node/scripts/wait-for-it.sh',
-    #       '--timeout=1000',
-    #       '0.0.0.0:3000',
-    #       --,
-    #       'node',
-    #       'src/xsweet.js',
-    #     ]
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
