@@ -21,7 +21,6 @@ variables:
   SERVER_PROTOCOL: http
   SERVER_HOST: 0.0.0.0
   SERVER_PORT: 3000
-  FF_NETWORK_PER_BUILD: 'true'
 
 stages:
   - build
@@ -77,57 +76,25 @@ build:
 #     - yarn lint:style
 
 .test_template: &run_test_template
+  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
   stage: test
   variables:
     GIT_STRATEGY: none
   services:
     - name: postgres:10-alpine
-      alias: postgres
-      command:
-        - 'postgres'
-        - '-c'
-        - 'max_connections=1000'
-        - '-c'
-        - 'shared_buffers=3GB'
-        - '-c'
-        - 'sort_mem=4096'
-        - '-c'
-        - 'effective_cache_size=4000'
-        - '-c'
-        - 'wal_buffers=8'
-    - name: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-      alias: server
-      entrypoint:
-        [
-          'node_modules/.bin/wait-for-it',
-          'postgres:5432',
-          '--',
-          'sh',
-          'scripts/setupDevServer.sh',
-        ]
-      command:
-        [
-          'node_modules/.bin/nodemon',
-          'startServer.js',
-          '--',
-          'server',
-          '--',
-          'config',
-          '--ext',
-          'js,graphql',
-        ]
-    - name: pubsweet/job-xsweet:latest
-      alias: job-xsweet
-      command:
-        [
-          '/bin/bash',
-          'scripts/wait-for-it.sh',
-          '--timeout=1000',
-          'server:3000',
-          --,
-          'node',
-          'src/xsweet.js',
-        ]
+      alias: db
+    # - name: pubsweet/job-xsweet:latest
+    #   alias: job-xsweet
+    #   command:
+    #     [
+    #       'bash',
+    #       '/home/node/scripts/wait-for-it.sh',
+    #       '--timeout=1000',
+    #       '0.0.0.0:3000',
+    #       --,
+    #       'node',
+    #       'src/xsweet.js',
+    #     ]
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
@@ -152,6 +119,7 @@ build:
   - echo ${POSTGRES_HOST}
   - echo ${POSTGRES_PORT}
   - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
+  - docker run -e POSTGRES_HOST=${POSTGRES_HOST} -e POSTGRES_PORT=${POSTGRES_PORT} -e POSTGRES_DB=${POSTGRES_DB} -e POSTGRES_USER=${POSTGRES_USER} -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} pubsweet/job-xsweet:latest
 
 test-chrome:
   before_script:
