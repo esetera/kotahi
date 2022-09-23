@@ -87,10 +87,10 @@ build:
       alias: job-xsweet
       command:
         [
-          'bash',
-          './scripts/wait-for-it.sh',
+          '/bin/bash',
+          'scripts/wait-for-it.sh',
+          '--timeout=1000',
           '0.0.0.0:3000',
-          '-t 2000',
           --,
           'node',
           'src/xsweet.js',
