@@ -80,11 +80,12 @@ build:
   stage: test
   variables:
     GIT_STRATEGY: none
+    FF_NETWORK_PER_BUILD: 1
   services:
     - name: postgres:10-alpine
       alias: db
-    # - name: pubsweet/job-xsweet:latest
-    #   alias: job-xsweet
+    - name: pubsweet/job-xsweet:latest
+      alias: job-xsweet
     #   command:
     #     [
     #       'bash',
