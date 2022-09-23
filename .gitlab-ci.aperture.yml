@@ -2,13 +2,8 @@ variables:
   IMAGE_ORG: simplej
   IMAGE_NAME: simplej
   POSTGRES_HOST_AUTH_METHOD: trust
-  POSTGRES_HOST: postgres
-  POSTGRES_PORT: 5432
-  POSTGRES_DB: kotahidev
   POSTGRES_USER: kotahidev
   POSTGRES_PASSWORD: kotahidev
-  PGUSER: kotahidev
-  PGPASSWORD: kotahidev
   S3_PROTOCOL: http
   S3_HOST: localhost
   S3_PORT: 9000
@@ -18,11 +13,7 @@ variables:
   MINIO_ROOT_USER: admin
   MINIO_ROOT_PASSWORD: superSecretAdminPassword
   MINIO_CONSOLE_PORT: 9001
-  SERVER_PROTOCOL: http
-  SERVER_HOST: 0.0.0.0
-  SERVER_PORT: 3000
-  FF_NETWORK_PER_BUILD: 'false'
-
+  
 stages:
   - build
   - test
@@ -82,6 +73,9 @@ build:
   stage: test
   variables:
     GIT_STRATEGY: none
+    POSTGRES_HOST: postgres
+    POSTGRES_PORT: 5432
+    POSTGRES_DB: kotahidev
   services:
     - postgres
     - pubsweet/job-xsweet
@@ -107,9 +101,6 @@ build:
 .test_script: &run_test_script
   - cd ${HOME}
   - cp .env.example .env
-  - echo Host and Port
-  - echo ${POSTGRES_HOST}
-  - echo ${POSTGRES_PORT}
   - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
 
 test-chrome:
