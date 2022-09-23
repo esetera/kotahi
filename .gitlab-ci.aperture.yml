@@ -86,8 +86,6 @@ build:
     - postgres
     - pubsweet/job-xsweet
     script:
-       - cd ${HOME}
-       - POSTGRES_HOST=postgres 
        - cd components/server/job-xsweet && yarn test --testRegex test/standaloneXsweetTest.js
 
 .test_before_script: &run_test_before_script
