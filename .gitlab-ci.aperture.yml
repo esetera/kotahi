@@ -21,7 +21,7 @@ variables:
   SERVER_PROTOCOL: http
   SERVER_HOST: 0.0.0.0
   SERVER_PORT: 3000
-  FF_NETWORK_PER_BUILD: "true"
+  FF_NETWORK_PER_BUILD: 'true'
 
 stages:
   - build
