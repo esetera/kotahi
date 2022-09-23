@@ -95,8 +95,6 @@ build:
           'node',
           'src/xsweet.js',
         ]
-      volumes:
-        - ./scripts/wait-for-it.sh:/home/node/scripts/wait-for-it.sh
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
