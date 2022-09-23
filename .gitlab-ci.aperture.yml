@@ -83,21 +83,21 @@ build:
   services:
     - name: postgres:10-alpine
       alias: db
-    - name: pubsweet/job-xsweet:latest
-      alias: job-xsweet
-      command:
-        [
-          '/usr/bin/bash',
-          'scripts/wait-for-it.sh',
-          '--timeout=1000',
-          '0.0.0.0:3000',
-          --,
-          'node',
-          'src/xsweet.js',
-        ]
-  script:
-    - cd ${HOME}
-    - POSTGRES_HOST=postgres cd components/server/job-xsweet && yarn test --testRegex test/standaloneXsweetTest.js
+  #   - name: pubsweet/job-xsweet:latest
+  #     alias: job-xsweet
+  #     command:
+  #       [
+  #         '/usr/bin/bash',
+  #         'scripts/wait-for-it.sh',
+  #         '--timeout=1000',
+  #         '0.0.0.0:3000',
+  #         --,
+  #         'node',
+  #         'src/xsweet.js',
+  #       ]
+  # script:
+  #   - cd ${HOME}
+  #   - POSTGRES_HOST=postgres cd components/server/job-xsweet && yarn test --testRegex test/standaloneXsweetTest.js
   
      
 
