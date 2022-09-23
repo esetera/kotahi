@@ -35,20 +35,7 @@ build:
   variables:
     DOCKER_BUILDKIT: 1
   services:
-    - name: docker:20.10.5-dind
-    - name: postgres:10-alpine
-      alias: db
-    - name: pubsweet/job-xsweet:latest
-      alias: job-xsweet
-      command:
-        [
-          'bash',
-          './scripts/wait-for-it.sh',
-          '0.0.0.0:3000',
-          --,
-          'node',
-          'src/xsweet.js',
-        ]
+    - docker:20.10.5-dind
   stage: build
   before_script:
     - cp app/brand-instances-configs/aperture.json app/brandConfig.json
@@ -93,6 +80,23 @@ build:
   stage: test
   variables:
     GIT_STRATEGY: none
+    FF_NETWORK_PER_BUILD: 'true'
+  services:
+    - name: postgres:10-alpine
+      alias: db
+    - name: pubsweet/job-xsweet:latest
+      alias: job-xsweet
+      command:
+        [
+          'bash',
+          './scripts/wait-for-it.sh',
+          '0.0.0.0:3000',
+          --,
+          'node',
+          'src/xsweet.js',
+        ]
+      volumes:
+        - ./scripts/wait-for-it.sh:/home/node/scripts/wait-for-it.sh
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
