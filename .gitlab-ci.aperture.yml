@@ -38,7 +38,7 @@ build:
     - name: docker:20.10.5-dind
     - name: postgres:10-alpine
       alias: db
-    - name: pubsweet/job-xsweet:1.5.4
+    - name: pubsweet/job-xsweet:lastest
       alias: job-xsweet
       command:
         [
