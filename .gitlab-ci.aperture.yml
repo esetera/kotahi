@@ -81,6 +81,11 @@ build:
   variables:
     GIT_STRATEGY: none
     FF_NETWORK_PER_BUILD: 1
+    POSTGRES_HOST: postgres
+    POSTGRES_PORT: 5432
+    POSTGRES_DB: kotahidev
+    POSTGRES_USER: kotahidev
+    POSTGRES_PASSWORD: kotahidev
   services:
     - name: postgres:10-alpine
       alias: db
