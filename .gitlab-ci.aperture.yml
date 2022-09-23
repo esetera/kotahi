@@ -37,24 +37,9 @@ build:
     DOCKER_BUILDKIT: 1
   services:
     - name: docker:20.10.5-dind
-    - name: postgres:10-alpine
-      alias: db
-    - name: pubsweet/job-xsweet:latest
-      alias: job-xsweet
-      command:
-        [
-          'bash',
-          './scripts/wait-for-it.sh',
-          '0.0.0.0:3000',
-          --,
-          'node',
-          'src/xsweet.js',
-        ]
   stage: build
   before_script:
     - cp app/brand-instances-configs/aperture.json app/brandConfig.json
-    - cd ${HOME}
-    - POSTGRES_HOST=postgres cd components/server/job-xsweet && yarn test --testRegex test/standaloneXsweetTest.js
   script:
     - |
       if [ -z "$DOCKERHUB_USERNAME" ] || [ -z "$DOCKERHUB_PASSWORD" ]; then echo "Not pushing" && exit 0; fi
@@ -91,10 +76,19 @@ build:
 #     - cd ${HOME}
 #     - yarn lint:style
 
+
 .test_template: &run_test_template
+  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
   stage: test
   variables:
     GIT_STRATEGY: none
+  services:
+    - postgres
+    - pubsweet/job-xsweet
+    script:
+       - cd ${HOME}
+       - POSTGRES_HOST=postgres 
+       - cd components/server/job-xsweet && yarn test --testRegex test/standaloneXsweetTest.js
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
