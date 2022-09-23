@@ -87,7 +87,7 @@ build:
       alias: job-xsweet
       command:
         [
-          '/bin/bash',
+          '/bash',
           'scripts/wait-for-it.sh',
           '--timeout=1000',
           '0.0.0.0:3000',
@@ -97,7 +97,7 @@ build:
         ]
   script:
     - cd ${HOME}
-    - POSTGRES_HOST=postgres cd components/server/job-xsweet && yarn jest --testRegex test/standaloneXsweetTest.js
+    - POSTGRES_HOST=postgres cd components/server/job-xsweet && yarn test --testRegex test/standaloneXsweetTest.js
   
      
 
