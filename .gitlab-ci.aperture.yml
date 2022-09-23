@@ -80,7 +80,6 @@ build:
   stage: test
   variables:
     GIT_STRATEGY: none
-    FF_NETWORK_PER_BUILD: 'true'
   services:
     - name: postgres:10-alpine
       alias: db
@@ -91,6 +90,7 @@ build:
           'bash',
           './scripts/wait-for-it.sh',
           '0.0.0.0:3000',
+          '-t 2000',
           --,
           'node',
           'src/xsweet.js',
