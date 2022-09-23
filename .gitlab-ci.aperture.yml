@@ -37,6 +37,8 @@ build:
     DOCKER_BUILDKIT: 1
   services:
     - name: docker:20.10.5-dind
+    - name: postgres:10-alpine
+      alias: db
     - name: pubsweet/job-xsweet:latest
       alias: job-xsweet
       command:
@@ -93,9 +95,6 @@ build:
   stage: test
   variables:
     GIT_STRATEGY: none
-  services:
-    - name: postgres:10-alpine
-      alias: db
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
