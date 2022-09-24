@@ -82,7 +82,7 @@ build:
     GIT_STRATEGY: none
   services:
     - postgres
-    - pubsweet/job-xsweet
+    # - pubsweet/job-xsweet
   script:
     - cd components/server/job-xsweet && yarn test --testRegex test/standaloneXsweetTest.js
 
