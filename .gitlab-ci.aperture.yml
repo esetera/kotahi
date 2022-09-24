@@ -4,6 +4,9 @@ variables:
   POSTGRES_HOST_AUTH_METHOD: trust
   POSTGRES_USER: kotahidev
   POSTGRES_PASSWORD: kotahidev
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: kotahidev
   S3_PROTOCOL: http
   S3_HOST: localhost
   S3_PORT: 9000
@@ -73,9 +76,6 @@ build:
   stage: test
   variables:
     GIT_STRATEGY: none
-    POSTGRES_HOST: postgres
-    POSTGRES_PORT: 5432
-    POSTGRES_DB: kotahidev
   services:
     - postgres
     - pubsweet/job-xsweet
