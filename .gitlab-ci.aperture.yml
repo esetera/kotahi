@@ -16,6 +16,7 @@ variables:
   MINIO_ROOT_USER: admin
   MINIO_ROOT_PASSWORD: superSecretAdminPassword
   MINIO_CONSOLE_PORT: 9001
+  FF_NETWORK_PER_BUILD: 'true'
   
 stages:
   - build
