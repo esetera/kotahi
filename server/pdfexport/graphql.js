@@ -10,7 +10,6 @@ const models = require('@pubsweet/models')
 const { createFile, File } = require('@coko/server')
 const { applyTemplate, generateCss } = require('./applyTemplate')
 const makeZip = require('./ziputils.js')
-const makeSvgsFromLatex = require('../jatsexport/makeSvgsFromLatex')
 
 const {
   getFilesWithUrl,
