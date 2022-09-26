@@ -7,8 +7,8 @@ variables:
   POSTGRES_DB: kotahidev
   POSTGRES_USER: kotahidev
   POSTGRES_PASSWORD: kotahidev
-  PGUSER: kotahidev
-  PGPASSWORD: kotahidev
+  # PGUSER: kotahidev
+  # PGPASSWORD: kotahidev
   S3_PROTOCOL: http
   S3_HOST: localhost
   S3_PORT: 9000
@@ -18,9 +18,10 @@ variables:
   MINIO_ROOT_USER: admin
   MINIO_ROOT_PASSWORD: superSecretAdminPassword
   MINIO_CONSOLE_PORT: 9001
-  SERVER_PROTOCOL: http
-  SERVER_HOST: 0.0.0.0
-  SERVER_PORT: 3000
+  # SERVER_PROTOCOL: http
+  # SERVER_HOST: 0.0.0.0
+  # SERVER_PORT: 3000
+  FF_NETWORK_PER_BUILD: 'true'
 
 stages:
   - build
@@ -80,25 +81,31 @@ build:
   stage: test
   variables:
     GIT_STRATEGY: none
-    FF_NETWORK_PER_BUILD: 1
-    POSTGRES_HOST: postgres
-    POSTGRES_PORT: 5432
-    POSTGRES_DB: kotahidev
-    POSTGRES_USER: kotahidev
-    POSTGRES_PASSWORD: kotahidev
+    # FF_NETWORK_PER_BUILD: 1
+    # POSTGRES_HOST: postgres
+    # POSTGRES_PORT: 5432
+    # POSTGRES_DB: kotahidev
+    # POSTGRES_USER: kotahidev
+    # POSTGRES_PASSWORD: kotahidev
   services:
-    - name: postgres
-      alias: db
-    - name: pubsweet/job-xsweet:latest
-      alias: job-xsweet
+    # - name: postgres
+    #   alias: db
+    # - name: pubsweet/job-xsweet:latest
+    #   alias: job-xsweet
+    - postgres
+    - pubsweet/job-xsweet
+
   script:
-    - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
+    # - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
+    - cd components/server/job-xsweet  
+    - yarn test --testRegex test/standaloneXsweetTest.js
+
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
   - apt-get update --allow-releaseinfo-change
   - apt-get -y install postgresql-client
-  # - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
+  - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
   - wget -q https://dl.min.io/server/minio/release/linux-amd64/minio
   - chmod +x minio
   - ./minio server --console-address :${MINIO_CONSOLE_PORT} /data &
