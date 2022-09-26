@@ -113,7 +113,7 @@ test-chrome:
     - *run_test_before_script
   <<: *run_test_template
   variables:
-    TEST_ITEM: 'chrome'
+    TEST_ITEM: 'firefox'
   script:
     - *run_test_script
 
@@ -122,7 +122,7 @@ test-firefox:
     - *run_test_before_script
   <<: *run_test_template
   variables:
-    TEST_ITEM: 'firefox'
+    TEST_ITEM: 'chrome'
   script:
     - *run_test_script
 # test-chrome:
