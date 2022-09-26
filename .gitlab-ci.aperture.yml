@@ -90,8 +90,8 @@ build:
     - pubsweet/job-xsweet:1.5.4
 
   script:
-    - cd components/server/job-xsweet  
-    - yarn test --testRegex test/standaloneXsweetTest.js
+    # - cd components/server/job-xsweet  
+    # - yarn test --testRegex test/standaloneXsweetTest.js
 
 
 .test_before_script: &run_test_before_script
@@ -109,6 +109,8 @@ build:
   - ./mc admin user enable cokoServer/ $S3_ACCESS_KEY_ID
   - ./mc mb cokoServer/$S3_BUCKET
   - ./mc admin policy set cokoServer/ readwrite user=$S3_ACCESS_KEY_ID
+  - cd components/server/job-xsweet  
+  - yarn test --testRegex test/standaloneXsweetTest.js
 
 .test_script: &run_test_script
   - cd ${HOME}
