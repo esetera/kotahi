@@ -96,7 +96,6 @@ build:
     - pubsweet/job-xsweet:1.5.4
 
   script:
-    # - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
     - cd components/server/job-xsweet  
     - yarn test --testRegex test/standaloneXsweetTest.js
 
@@ -120,9 +119,6 @@ build:
 .test_script: &run_test_script
   - cd ${HOME}
   - cp .env.example .env
-  # - echo Host and Port
-  # - echo ${POSTGRES_HOST}
-  # - echo ${POSTGRES_PORT}
   - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
 
 test-chrome:
