@@ -7,8 +7,6 @@ variables:
   POSTGRES_DB: kotahidev
   POSTGRES_USER: kotahidev
   POSTGRES_PASSWORD: kotahidev
-  # PGUSER: kotahidev
-  # PGPASSWORD: kotahidev
   S3_PROTOCOL: http
   S3_HOST: localhost
   S3_PORT: 9000
