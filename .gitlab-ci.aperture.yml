@@ -120,9 +120,9 @@ build:
 .test_script: &run_test_script
   - cd ${HOME}
   - cp .env.example .env
-  - echo Host and Port
-  - echo ${POSTGRES_HOST}
-  - echo ${POSTGRES_PORT}
+  # - echo Host and Port
+  # - echo ${POSTGRES_HOST}
+  # - echo ${POSTGRES_PORT}
   - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
 
 test-chrome:
