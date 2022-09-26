@@ -84,7 +84,6 @@ build:
     - cd components/server/job-xsweet  
     - yarn test --testRegex test/standaloneXsweetTest.js
 
-
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
   - apt-get update --allow-releaseinfo-change
