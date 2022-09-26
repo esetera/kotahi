@@ -19,7 +19,7 @@ variables:
   # SERVER_PROTOCOL: http
   # SERVER_HOST: 0.0.0.0
   # SERVER_PORT: 3000
-  # FF_NETWORK_PER_BUILD: 'true'
+  FF_NETWORK_PER_BUILD: 'true'
 
 stages:
   - build
@@ -79,12 +79,6 @@ build:
   stage: test
   variables:
     GIT_STRATEGY: none
-    FF_NETWORK_PER_BUILD: 1
-    # POSTGRES_HOST: postgres
-    # POSTGRES_PORT: 5432
-    # POSTGRES_DB: kotahidev
-    # POSTGRES_USER: kotahidev
-    # POSTGRES_PASSWORD: kotahidev
   services:
     - postgres
     - pubsweet/job-xsweet:1.5.4
