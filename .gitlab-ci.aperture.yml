@@ -88,10 +88,6 @@ build:
     # POSTGRES_USER: kotahidev
     # POSTGRES_PASSWORD: kotahidev
   services:
-    # - name: postgres
-    #   alias: db
-    # - name: pubsweet/job-xsweet:latest
-    #   alias: job-xsweet
     - postgres
     - pubsweet/job-xsweet:1.5.4
 
