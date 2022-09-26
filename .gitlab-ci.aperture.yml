@@ -93,7 +93,7 @@ build:
     # - name: pubsweet/job-xsweet:latest
     #   alias: job-xsweet
     - postgres
-    - pubsweet/job-xsweet
+    - pubsweet/job-xsweet:1.5.4
 
   script:
     # - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
