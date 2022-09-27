@@ -1,37 +1,73 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable jest/valid-expect-in-promise */
 /* eslint-disable jest/expect-expect */
-import { ControlPage } from '../../page-object/control-page'
 import { DashboardPage } from '../../page-object/dashboard-page'
+import { SubmissionFormPage } from '../../page-object/submission-form-page'
 import { Menu } from '../../page-object/page-component/menu'
-import { ReviewersPage } from '../../page-object/reviewers-page'
+import { ManuscriptsPage } from '../../page-object/manuscripts-page'
+import { ControlPage } from '../../page-object/control-page'
 import { dashboard } from '../../support/routes'
 
-describe('Editor assigning reviewers', () => {
-  it('can assign 3 reviewers', () => {
-    // Restore Database (dumps/senior_editor_assigned.sql)
+describe('Upload manuscript test', () => {
+  it('can upload a manuscript and some metadata', () => {
+    // task to restore the database as per the  dumps/initialState.sql
     cy.task('restore', 'commons/bootstrap')
-    cy.task('seed', 'senior_editor_assigned')
     cy.task('seedForms')
 
-    // eslint-disable-next-line jest/valid-expect-in-promise
+    // login as author
     cy.fixture('role_names').then(name => {
-      // login as seniorEditor
-      // eslint-disable-next-line no-undef
-      cy.login(name.role.seniorEditor.name, dashboard)
+      cy.login(name.role.author.name, dashboard)
+    })
 
-      DashboardPage.clickControlPanel() // Navigate to Control Page
-      ControlPage.clickManageReviewers()
+    DashboardPage.clickSubmissionButton() // Click on new submission
+    DashboardPage.getSubmissionFileUploadInput().attachFile('test-docx.docx') // Upload manuscript
 
-      // Invite all the reviewers
-      name.role.reviewers.forEach((reviewer, index) => {
-        ReviewersPage.clickInviteReviewerDropdown()
-        ReviewersPage.inviteReviewer(reviewer.username)
-        ReviewersPage.getNumberOfInvitedReviewers().should('eq', index + 1)
-      })
 
-      // Go to dashboard and verify number of invited reviewer
-      Menu.clickDashboard()
-      DashboardPage.getInvitedReviewersButton().should('have.text', '6 invited')
+    // complete the submission form
+    cy.fixture('submission_form_data').then(data => {
+      SubmissionFormPage.fillInTitle(data.title3)
+      SubmissionFormPage.clickSubmitResearch()
+
+      // Submit your form
+
+      SubmissionFormPage.clickSubmitYourManuscript()
+
+      // assert form exists in dashboard
+
+      DashboardPage.getSectionTitleWithText('My Submissions')
+      DashboardPage.getSubmissionTitle().should('contain', data.title3)
     })
   })
-})
 
+  it('senior editor can view the submission', () => {
+    // task to restore the database as per the  dumps/submission_complete.sql
+    cy.task('restore', 'commons/bootstrap')
+    cy.task('seed', 'submission_complete')
+    cy.task('seedForms')
+
+    cy.fixture('submission_form_data').then(data => {
+      cy.fixture('role_names').then(name => {
+        // login as admin
+        cy.login(name.role.admin.name, dashboard)
+
+        // select Control on the Manuscripts page
+        Menu.clickManuscripts()
+        ManuscriptsPage.selectOptionWithText('Control')
+
+        // assign seniorEditor
+        ControlPage.clickAssignSeniorEditorDropdown()
+        ControlPage.selectDropdownOptionByName(name.role.seniorEditor.username)
+        ControlPage.clickAssignHandlingEditorDropdown()
+        ControlPage.selectDropdownOptionByName(name.role.seniorEditor.username)
+        ControlPage.clickAssignEditorDropdown()
+        ControlPage.selectDropdownOptionByName(name.role.seniorEditor.username)
+        // assert the reviews
+        ControlPage.fillInDecision(data.decision)
+        ControlPage.clickAccept()
+        ControlPage.clickSubmit()
+      })
+    })
+
+    cy.contains('Dashboard').click()
+  })
+})
