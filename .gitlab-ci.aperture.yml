@@ -43,7 +43,6 @@ build:
       docker push $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
       docker push $IMAGE_ORG/$IMAGE_NAME:latest
 
-
 #lint:
 # allow_failure: true
 #image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
