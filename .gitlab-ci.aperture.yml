@@ -81,8 +81,7 @@ build:
     - postgres
    
   script:
-    - cd components/server/job-xsweet  
-    - yarn jest --testRegex test/standaloneXsweetTest.js
+    - cd components/server/job-xsweet && yarn test --testRegex test/standaloneXsweetTest.js
     # - cd components/server/job-xsweet  
     # - yarn test --testRegex test/standaloneXsweetTest.js
 
