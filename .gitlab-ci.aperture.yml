@@ -78,7 +78,7 @@ build:
     GIT_STRATEGY: none
   services:
     - postgres
-    - pubsweet/job-xsweet:1.5.4
+    - pubsweet/job-xsweet
    
   script:
     - cd components/server/job-xsweet  
