@@ -1,36 +1,32 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable jest/valid-expect-in-promise */
 /* eslint-disable jest/expect-expect */
-import { ControlPage } from '../../page-object/control-page'
 import { DashboardPage } from '../../page-object/dashboard-page'
-import { Menu } from '../../page-object/page-component/menu'
-import { ReviewersPage } from '../../page-object/reviewers-page'
+import { SubmissionFormPage } from '../../page-object/submission-form-page'
 import { dashboard } from '../../support/routes'
 
-describe('Editor assigning reviewers', () => {
-  it('can assign 3 reviewers', () => {
-    // Restore Database (dumps/senior_editor_assigned.sql)
-    cy.task('restore', 'commons/bootstrap')
-    cy.task('seed', 'senior_editor_assigned')
+describe('Upload manuscript test', () => {
+  it('can upload a manuscript and some metadata', () => {
+    cy.task('restore', 'commons/bootstrap') // Populate the Database
     cy.task('seedForms')
 
-    // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('role_names').then(name => {
-      // login as seniorEditor
-      // eslint-disable-next-line no-undef
-      cy.login(name.role.seniorEditor.name, dashboard)
+      cy.login(name.role.author.name, dashboard) // login as author
+    })
 
-      DashboardPage.clickControlPanel() // Navigate to Control Page
-      ControlPage.clickManageReviewers()
+    DashboardPage.clickSubmissionButton() // Click on new submission
+    DashboardPage.getSubmissionFileUploadInput().attachFile('test-pdf.pdf') // Upload manuscript
 
-      // Invite all the reviewers
-      name.role.reviewers.forEach((reviewer, index) => {
-        ReviewersPage.clickInviteReviewerDropdown()
-        ReviewersPage.inviteReviewer(reviewer.username)
-        ReviewersPage.getNumberOfInvitedReviewers().should('eq', index + 1)
-      })
+    cy.fixture('submission_form_data').then(data => {
+      // Fill Submission Form
+      SubmissionFormPage.fillInTitle(data.title)
+      SubmissionFormPage.clickSubmitResearch()
+      SubmissionFormPage.clickSubmitYourManuscript() // Submit your form
 
-      // Go to dashboard and verify number of invited reviewer
-      Menu.clickDashboard()
-      DashboardPage.getInvitedReviewersButton().should('have.text', '6 invited')
+      // assert form exists in dashboard
+      DashboardPage.getSectionTitleWithText('My Submissions')
+      DashboardPage.getSubmissionTitle().should('contain', data.title)
     })
   })
 })
+
