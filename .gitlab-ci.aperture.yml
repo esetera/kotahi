@@ -77,7 +77,7 @@ build:
   variables:
     GIT_STRATEGY: none
   services:
-    - postgres:10-alpine
+    - postgres
     - pubsweet/job-xsweet:1.5.4
 
   script:
