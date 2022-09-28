@@ -18,13 +18,12 @@ describe('Upload manuscript test', () => {
     })
 
     // Click on new submission
-    DashboardPage.clickSubmissionButton() 
+    cy.get('button').contains('＋ New submission').click()
 
     // Upload manuscript
     cy.get('button').contains('Submit a URL instead').click()
 
     // complete the submission form
-
     cy.fixture('submission_form_data').then(data => {
       SubmissionFormPage.fillInTitle(data.title1)
       SubmissionFormPage.clickSubmitResearch()
