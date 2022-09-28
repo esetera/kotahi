@@ -926,9 +926,6 @@ const resolvers = {
 
       if (config.crossref.login) {
         const stepLabel = 'Crossref'
-
-        suf
-
         let succeeded = false
         let errorMessage
 
