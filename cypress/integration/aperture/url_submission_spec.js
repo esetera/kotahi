@@ -17,9 +17,8 @@ describe('Upload manuscript test', () => {
       cy.login(name.role.author.name, dashboard) // login as author
     })
 
-    cy.visit(dashboard)
     // Click on new submission
-    cy.get('button').contains('＋ New submission').click()
+    DashboardPage.clickSubmissionButton() 
 
     // Upload manuscript
     cy.get('button').contains('Submit a URL instead').click()
