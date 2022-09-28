@@ -161,6 +161,30 @@ const getCss = async () => {
   return css
 }
 
+//////////**********
+const GoodDOI = async (suffix) => {
+  const DOI = config.crossref.doiPrefix + '/' + suffix
+  try {
+    await axios.get(`https://api.crossref.org/works/${DOI}/agency`)
+    return { isDOIValid: false }
+  } catch (err) {
+    if (err.response.status === 404) {
+      // HTTP 404 "Not found" response. The DOI is not known by Crossref
+      // eslint-disable-next-line no-console
+      console.log(`DOI '${DOI}' not found on Crossref. Can be used as custom suffix.`)
+      return { isDOIValid: true }
+    }
+
+    console.warn(err)
+    // This is an unexpected HTTP response, possibly a 504 gateway timeout or other 5xx.
+    // Crossref API is probably unavailable or failing for some reason,
+    // and we should assume in its absence that the DOI is correct.
+    return { isDOIValid: false }
+  }
+}
+//////////**********
+
+
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
     submission(parent) {
@@ -1375,6 +1399,12 @@ const resolvers = {
         return { isDOIValid: true }
       }
     },
+
+
+    async validateSUFFIX(_, { suffix }, ctx) {
+      isDOIValid = GoodDOI(suffix)
+      return isDOIValid
+    },
   },
   // We want submission info to come out as a stringified JSON, so that we don't have to
   // change our queries if the submission form changes. We still want to store it as JSONB
@@ -1390,6 +1420,7 @@ const typeDefs = `
     paginatedManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
     publishedManuscripts(sort:String, offset: Int, limit: Int): PaginatedManuscripts
     validateDOI(articleURL: String): validateDOIResponse
+    validateSUFFIX(suffix: String): validateDOIResponse
     manuscriptsUserHasCurrentRoleIn: [Manuscript]
 
     """ Get published manuscripts with irrelevant fields stripped out. Optionally, you can specify a startDate and/or limit. """
