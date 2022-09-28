@@ -82,7 +82,7 @@ build:
    
   script:
     - cd components/server/job-xsweet 
-    - POSTGRES_HOST=postgres yarn test --testRegex test/standaloneXsweetTest.js
+    - yarn test --testRegex test/standaloneXsweetTest.js
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
