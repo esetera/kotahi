@@ -1409,7 +1409,6 @@ const resolvers = {
       }
     },
 
-
     async validateSUFFIX(_, { suffix }, ctx) {
       isDOIValid = GoodDOI(suffix)
       return isDOIValid
