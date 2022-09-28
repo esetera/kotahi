@@ -163,13 +163,16 @@ const getCss = async () => {
 
 const customDOIAvail = async suffix => {
   const DOI = config.crossref.doiPrefix + '/' + suffix // DOI in form PRE/SUF
-  try { // Try to find object listed at DOI
+  try {
+    // Try to find object listed at DOI
     await axios.get(`https://api.crossref.org/works/${DOI}/agency`)
     return { isDOIValid: false } // DOI is unavailable with custom suffix
   } catch (err) {
-    if (err.response.status === 404) { 
+    if (err.response.status === 404) {
       // HTTP 404 "Not found" response. The DOI is not known by Crossref
-      console.log(`DOI '${DOI}' not found on Crossref. Custom suffix is available.`)
+      console.log(
+        `DOI '${DOI}' not found on Crossref. Custom suffix is available.`,
+      )
       return { isDOIValid: true }
     }
     console.warn(err)
@@ -945,7 +948,7 @@ const resolvers = {
 
       return repackageForGraphql(updated)
     },
-    async publishManuscript(_, { id, suffix="" }, ctx) {
+    async publishManuscript(_, { id, suffix = '' }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(id)
         .withGraphFetched('reviews')
@@ -953,9 +956,8 @@ const resolvers = {
       // if we've been passed in a custom suffix (length > 0, check customDOIAvail(suffix))
       // throw error if not available
       if (suffix.length() && !(await customDOIAvail(suffix))) {
-        console.error("Custom suffix no longer available.")
+        console.error('Custom suffix no longer available.')
       }
-      
 
       const update = {} // This will collect any properties we may want to update in the DB
       update.published = new Date()
@@ -964,6 +966,7 @@ const resolvers = {
 
       if (config.crossref.login) {
         const stepLabel = 'Crossref'
+
         let succeeded = false
         let errorMessage
 
@@ -1400,7 +1403,7 @@ const resolvers = {
       }
     },
 
-    // To be called in submit manuscript as 
+    // To be called in submit manuscript as
     // first validation step for custom suffix
     async validateSUFFIX(_, { suffix }, ctx) {
       return await customDOIAvail(suffix)
