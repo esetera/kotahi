@@ -78,10 +78,10 @@ build:
     GIT_STRATEGY: none
   services:
     - postgres
-    - pubsweet/job-xsweet
+    - pubsweet/job-xsweet:1.5.4
    
   script:
-    - cd components/server/job-xsweet  
+    - cd components/server/job-xsweet 
     - POSTGRES_HOST=postgres yarn test --testRegex test/standaloneXsweetTest.js
 
 .test_before_script: &run_test_before_script
