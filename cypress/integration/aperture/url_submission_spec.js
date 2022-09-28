@@ -18,7 +18,7 @@ describe('Upload manuscript test', () => {
     })
 
     // Click on new submission
-    DashboardPage.clickSubmissionButton() 
+    cy.get('button').contains('＋ New submission').click()
 
     // Upload manuscript
     cy.get('button').contains('Submit a URL instead').click()
