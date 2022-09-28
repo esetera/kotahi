@@ -161,29 +161,23 @@ const getCss = async () => {
   return css
 }
 
-//////////**********
-const GoodDOI = async (suffix) => {
-  const DOI = config.crossref.doiPrefix + '/' + suffix
-  try {
+const customDOIAvail = async suffix => {
+  const DOI = config.crossref.doiPrefix + '/' + suffix // DOI in form PRE/SUF
+  try { // Try to find object listed at DOI
     await axios.get(`https://api.crossref.org/works/${DOI}/agency`)
-    return { isDOIValid: false }
+    return { isDOIValid: false } // DOI is unavailable with custom suffix
   } catch (err) {
-    if (err.response.status === 404) {
+    if (err.response.status === 404) { 
       // HTTP 404 "Not found" response. The DOI is not known by Crossref
-      // eslint-disable-next-line no-console
-      console.log(`DOI '${DOI}' not found on Crossref. Can be used as custom suffix.`)
+      console.log(`DOI '${DOI}' not found on Crossref. Custom suffix is available.`)
       return { isDOIValid: true }
     }
-
     console.warn(err)
-    // This is an unexpected HTTP response, possibly a 504 gateway timeout or other 5xx.
-    // Crossref API is probably unavailable or failing for some reason,
-    // and we should assume in its absence that the DOI is correct.
+    // Unexpected HTTP response (5xx)
+    // Assume that the custom suffix is unavailable.
     return { isDOIValid: false }
   }
 }
-//////////**********
-
 
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
@@ -951,10 +945,17 @@ const resolvers = {
 
       return repackageForGraphql(updated)
     },
-    async publishManuscript(_, { id }, ctx) {
+    async publishManuscript(_, { id, suffix="" }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(id)
         .withGraphFetched('reviews')
+
+      // if we've been passed in a custom suffix (length > 0, check customDOIAvail(suffix))
+      // throw error if not available
+      if (suffix.length() && !(await customDOIAvail(suffix))) {
+        console.error("Custom suffix no longer available.")
+      }
+      
 
       const update = {} // This will collect any properties we may want to update in the DB
       update.published = new Date()
@@ -963,6 +964,8 @@ const resolvers = {
 
       if (config.crossref.login) {
         const stepLabel = 'Crossref'
+
+        suf
 
         let succeeded = false
         let errorMessage
@@ -1400,10 +1403,10 @@ const resolvers = {
       }
     },
 
-
+    // To be called in submit manuscript as 
+    // first validation step for custom suffix
     async validateSUFFIX(_, { suffix }, ctx) {
-      isDOIValid = GoodDOI(suffix)
-      return isDOIValid
+      return await customDOIAvail(suffix)
     },
   },
   // We want submission info to come out as a stringified JSON, so that we don't have to
