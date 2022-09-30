@@ -1646,4 +1646,5 @@ const typeDefs = `
 module.exports = {
   typeDefs,
   resolvers,
+  customDOIAvail,
 }
