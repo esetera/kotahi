@@ -156,6 +156,7 @@ const getIssueYear = manuscript => {
 const emailRegex = /^[\p{L}\p{N}!/+\-_]+(\.[\p{L}\p{N}!/+\-_]+)*@[\p{L}\p{N}!/+\-_]+(\.[\p{L}_-]+)+$/u
 
 /** Send submission to register an article, with appropriate metadata */
+/** replace manuscript.id with customSuffix so that the user  */
 const publishArticleToCrossref = async manuscript => {
   if (!manuscript.submission)
     throw new Error('Manuscript has no submission object')
@@ -174,7 +175,20 @@ const publishArticleToCrossref = async manuscript => {
   const issueYear = getIssueYear(manuscript)
   const publishDate = new Date()
   const journalDoi = getDoi(0)
-  const doi = getDoi(manuscript.id)
+  let doiSuffix = manuscript.id
+  const decision = manuscript.reviews.find(r => r.isDecision)
+
+  if (decision) {
+    const decisionSuffix = decision.jsonData.doiSuffix
+
+    if (decisionSuffix) {
+      doiSuffix = decisionSuffix
+    }
+  } else if (manuscript.submission.doiSuffix) {
+    doiSuffix = manuscript.submission.doiSuffix
+  }
+
+  const doi = getDoi(doiSuffix)
   const publishedLocation = `${config.crossref.publishedArticleLocationPrefix}${manuscript.shortId}`
   const batchId = uuid()
   const citations = getCitations(manuscript)
@@ -366,7 +380,6 @@ const publishReviewsToCrossref = async manuscript => {
       )
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-result/${reviewNumber}`
       templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
-        // description: [`${manuscript.submission.description}`],
         inter_work_relation: [
           {
             _: manuscript.submission.articleURL.split('.org/')[1],
@@ -377,7 +390,6 @@ const publishReviewsToCrossref = async manuscript => {
           },
         ],
       }
-
       templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] = {
         inter_work_relation: [
           {
@@ -438,7 +450,6 @@ const publishReviewsToCrossref = async manuscript => {
 
     templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-summary`
     templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
-      // description: [`${manuscript.submission.description}`],
       inter_work_relation: [
         {
           _: manuscript.submission.articleURL.split('.org/')[1],
