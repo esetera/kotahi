@@ -6,6 +6,7 @@ const axios = require('axios')
 const path = require('path')
 const config = require('config')
 const { v4: uuid } = require('uuid')
+const { customDOIAvail } = require('../../model-manuscript/src/graphql.js')
 
 const { parseDate } = require('../../utils/dateUtils')
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
@@ -186,6 +187,11 @@ const publishArticleToCrossref = async manuscript => {
     }
   } else if (manuscript.submission.doiSuffix) {
     doiSuffix = manuscript.submission.doiSuffix
+  }
+
+  if (!customDOIAvail(doiSuffix)) {
+    console.error("Custom DOI is not available.")
+    throw Error("Custom DOI is not available.")
   }
 
   const doi = getDoi(doiSuffix)

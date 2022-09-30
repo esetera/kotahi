@@ -175,7 +175,7 @@ const customDOIAvail = async suffix => {
     // Assume that the custom suffix is unavailable.
     return { isDOIValid: false }
   }
-}
+} 
 
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
@@ -907,18 +907,10 @@ const resolvers = {
 
       return repackageForGraphql(updated)
     },
-    async publishManuscript(_, { id, suffix="" }, ctx) {
+    async publishManuscript(_, { id }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(id)
         .withGraphFetched('reviews')
-
-      // if we've been passed in a custom suffix (length > 0, check customDOIAvail(suffix))
-      // throw error if not available
-      if (suffix.length() && !(await customDOIAvail(suffix))) {
-        console.error("Custom suffix no longer available.")
-      }
-      
-
       const update = {} // This will collect any properties we may want to update in the DB
       update.published = new Date()
       const steps = []
@@ -1597,4 +1589,5 @@ const typeDefs = `
 module.exports = {
   typeDefs,
   resolvers,
+  customDOIAvail,
 }
