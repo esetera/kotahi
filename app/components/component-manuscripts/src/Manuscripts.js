@@ -258,6 +258,21 @@ const Manuscripts = ({ history, ...props }) => {
     closeModalBulkArchiveConfirmation()
   }
 
+  const openModalBulkArchiveConfirmation = () => {
+    setIsOpenBulkArchivalModal(true)
+  }
+
+  const closeModalBulkArchiveConfirmation = () => {
+    setIsOpenBulkArchivalModal(false)
+  }
+
+  const confirmsBulkArchive = () => {
+    confirmBulkArchive(selectedNewManuscripts)
+
+    setSelectedNewManuscripts([])
+    closeModalBulkArchiveConfirmation()
+  }
+
   const currentSearchQuery = uriQueryParams.find(
     x => x.field === URI_SEARCH_PARAM,
   )?.value

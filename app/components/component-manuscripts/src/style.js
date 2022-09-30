@@ -67,6 +67,19 @@ export const BulkActionModalButtons = styled.div`
 export const BulkActionModalButton = styled(Button)`
   cursor: pointer;
 `
+export const BulkArchiveModalContainer = styled.div`
+  background-color: white;
+  padding: 10px;
+`
+
+export const BulkArchiveModalButtons = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+
+export const BulkArchiveModalButton = styled(Button)`
+  cursor: pointer;
+`
 
 export const ManuscriptsTable = styled.div`
   font-size: ${th('fontSizeBaseSmall')};
