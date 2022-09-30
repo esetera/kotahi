@@ -259,11 +259,11 @@ const Manuscripts = ({ history, ...props }) => {
   }
 
   const openModalBulkArchiveConfirmation = () => {
-    setIsOpenBulkArchivalModal(true)
+    setIsOpenBulkArchiveModal(true)
   }
 
   const closeModalBulkArchiveConfirmation = () => {
-    setIsOpenBulkArchivalModal(false)
+    setIsOpenBulkArchiveModal(false)
   }
 
   const confirmsBulkArchive = () => {
