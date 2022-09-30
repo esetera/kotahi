@@ -35,9 +35,7 @@ const Actions = ({
       <Action to={`${urlFrag}/versions/${manuscript.id}/manuscript`}>
         View
       </Action>
-      <Action onClick={() => setConfirmArchiveModalIsOpen(true)}>
-        Archive
-      </Action>
+      <Action onClick={() => setConfirmDeleteModalIsOpen(true)}>Archive</Action>
       <Action to={`${urlFrag}/versions/${manuscript.id}/production`}>
         Production
       </Action>
@@ -51,10 +49,10 @@ const Actions = ({
           </Action>
         )}
       <ConfirmationModal
-        closeModal={() => setConfirmArchiveModalIsOpen(false)}
-        confirmationAction={() => archiveManuscript(manuscript.id)}
-        isOpen={confirmArchiveModalIsOpen}
-        message="Please confirm you would like to archive this manuscript"
+        closeModal={() => setConfirmDeleteModalIsOpen(false)}
+        confirmationAction={() => deleteManuscript(manuscript.id)}
+        isOpen={confirmDeleteModalIsOpen}
+        message="Do you want to archive this manuscript?"
       />
     </>
   )
