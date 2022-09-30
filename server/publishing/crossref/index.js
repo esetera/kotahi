@@ -179,8 +179,6 @@ const publishArticleToCrossref = async manuscript => {
   const decision = manuscript.reviews.find(r => r.isDecision)
 
   if (decision) {
-    // if doiSuffix is defined
-
     const decisionSuffix = decision.jsonData.doiSuffix
 
     if (decisionSuffix) {
@@ -382,7 +380,6 @@ const publishReviewsToCrossref = async manuscript => {
       )
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-result/${reviewNumber}`
       templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
-        // description: [`${manuscript.submission.description}`],
         inter_work_relation: [
           {
             _: manuscript.submission.articleURL.split('.org/')[1],
@@ -393,14 +390,6 @@ const publishReviewsToCrossref = async manuscript => {
           },
         ],
       }
-/*
-
-manuscriptId: 5
-doiSuffix: ABC
-
-doi.org/ELIFE/ABC -> ELIFE/ABC
-doi.org/ELIFE/ABC -> ELIFE/5
-*/
       templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] = {
         inter_work_relation: [
           {
@@ -461,7 +450,6 @@ doi.org/ELIFE/ABC -> ELIFE/5
 
     templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-summary`
     templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
-      // description: [`${manuscript.submission.description}`],
       inter_work_relation: [
         {
           _: manuscript.submission.articleURL.split('.org/')[1],
