@@ -366,6 +366,7 @@ const publishReviewsToCrossref = async manuscript => {
 
       const reviewerInformation = {
         reviewType: 'legacy',
+        reviewNumber,
         title: `Review: ${manuscript.submission.description}`,
         dayMonthYear: [day, month, year],
         name: creator ? creator.split(' ') : null,
