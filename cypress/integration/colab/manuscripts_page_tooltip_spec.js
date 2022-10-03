@@ -21,12 +21,6 @@ describe('tooltip tests', () => {
     DashboardPage.clickSubmit()
     NewSubmissionPage.clickSubmitUrlAndWaitPageLoad()
   })
-  it('check empty tooltip', () => {
-    Menu.clickManuscriptsAndAssertPageLoad()
-    ManuscriptsPage.getTooltipText().should('not.exist')
-    ManuscriptsPage.getTooltipIcon().should('be.visible').trigger('mouseover')
-    ManuscriptsPage.getTooltipText().invoke('text').should('eq', '')
-  })
   it('check tooltip text', () => {
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('submission_form_data').then(data => {
