@@ -470,6 +470,7 @@ const resolvers = {
     },
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     async archiveManuscripts(_, { ids }, ctx) {
       // finding the ids of the first versions of all manuscripts:
       const selectedManuscripts = await models.Manuscript.query()
@@ -504,6 +505,11 @@ const resolvers = {
       return archivedManuscript[0].id
     },
 
+=======
+    importManuscriptsFromSemanticScholar(_, props, ctx) {
+      return importManuscriptsFromSemanticScholar(ctx)
+    },
+>>>>>>> cc75ac38 (Feature(semantic-scholar): Import Manuscripts from Semantic Scholar)
 =======
     importManuscriptsFromSemanticScholar(_, props, ctx) {
       return importManuscriptsFromSemanticScholar(ctx)
