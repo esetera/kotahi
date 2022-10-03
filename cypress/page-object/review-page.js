@@ -21,8 +21,8 @@
  const CAN_BE_PUBLISHED_PUBLICLY_CHECKBOX = '[name=canBePublishedPublicly]'
  const PAGE_SECTIONS = 'General__SectionContent'
  const SECTION_HEADER = 'h2[class]'
- const DECISION_TEXT = 'SimpleWaxEditor__ReadOnlyEditorDiv'
- const DECISION_RECOMMENDATION = 'style__RecommendationInputContainer'
+ const DECISION_TEXT = 'sc-kNMOeM gDlahr'
+ const DECISION_RECOMMENDATION = 'style__Legend-sc-1jvxmxn-2 KPAWX'
  
  const DECISION_BUTTON_SELECTED =
    '[class*=component-decision-viewer__RadioGroup] [checked]'
