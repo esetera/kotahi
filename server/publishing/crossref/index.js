@@ -312,8 +312,35 @@ const publishReviewsToCrossref = async manuscript => {
     path.resolve(__dirname, 'crossref_publish_xml_template.xml'),
   )
 
-  // Get array of numbers representing nonempty reviews, e.g. '1', '2' for review1, review2
-  const notEmptyReviews = Object.entries(manuscript.submission)
+  const jsonResult = await parser.parseStringPromise(template)
+
+  jsonResult.doi_batch.head[0].timestamp[0] = +new Date()
+  jsonResult.doi_batch.head[0].doi_batch_id[0] = String(+new Date()).slice(0, 8)
+  jsonResult.doi_batch.body[0].peer_review[0] = {
+    ...jsonResult.doi_batch.body[0].peer_review[0],
+    $: {
+      type: 'referee-report',
+      stage: 'pre-publication',
+      'revision-round': '0',
+    },
+  }
+
+  jsonResult.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
+    inter_work_relation: [
+      {
+        _: manuscript.submission.articleURL.split('.org/')[1],
+        $: {
+          'relationship-type': 'isReviewOf',
+          'identifier-type': 'doi',
+        },
+      },
+    ],
+  }
+
+  // Legacy support: Get review properties formatted on submission as `review<N><prop>`
+  // Format review information
+
+  const legacyReviews = Object.entries(manuscript.submission)
     .filter(
       ([key, value]) =>
         key.length === 7 &&
@@ -321,10 +348,6 @@ const publishReviewsToCrossref = async manuscript => {
         !checkIsAbstractValueEmpty(value),
     )
     .map(([key]) => key.replace('review', ''))
-
-  const jsonResult = await parser.parseStringPromise(template)
-
-  const xmls = notEmptyReviews
     .map(reviewNumber => {
       if (!manuscript.submission[`review${reviewNumber}date`]) {
         return null
@@ -334,62 +357,78 @@ const publishReviewsToCrossref = async manuscript => {
         manuscript.submission[`review${reviewNumber}date`],
       )
 
-      const templateCopy = JSON.parse(JSON.stringify(jsonResult))
-      templateCopy.doi_batch.body[0].peer_review[0].review_date[0].day[0] = day
-      templateCopy.doi_batch.body[0].peer_review[0].review_date[0].month[0] = month
-      templateCopy.doi_batch.body[0].peer_review[0].review_date[0].year[0] = year
-      templateCopy.doi_batch.head[0].depositor[0].depositor_name[0] =
-        config.crossref.depositorName
-      templateCopy.doi_batch.head[0].depositor[0].email_address[0] =
-        config.crossref.depositorEmail
-      templateCopy.doi_batch.head[0].registrant[0] = config.crossref.registrant
-      templateCopy.doi_batch.head[0].timestamp[0] = +new Date()
-      templateCopy.doi_batch.head[0].doi_batch_id[0] = String(
-        +new Date(),
-      ).slice(0, 8)
+      const creator = manuscript.submission[`review${reviewNumber}creator`]
 
-      if (manuscript.submission[`review${reviewNumber}creator`]) {
-        const surname = manuscript.submission[
-          `review${reviewNumber}creator`
-        ].split(' ')[1]
-
-        templateCopy.doi_batch.body[0].peer_review[0].contributors[0].person_name[0] = {
-          $: {
-            contributor_role: 'reviewer',
-            sequence: 'first',
-          },
-          given_name: [
-            manuscript.submission[`review${reviewNumber}creator`].split(' ')[0],
-          ],
-          surname: [surname || ''],
-        }
+      const reviewerInformation = {
+        reviewType: 'legacy',
+        title: `Review: ${manuscript.submission.description}`,
+        dayMonthYear: [day, month, year],
+        name: creator ? creator.split(' ') : null,
+        depositorName: config.crossref.depositorName,
+        depositorEmail: config.crossref.depositorEmail,
+        registrant: config.crossref.registrant,
+        doiResourceUrl: `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-result/${reviewNumber}`,
       }
 
-      templateCopy.doi_batch.body[0].peer_review[0] = {
-        ...templateCopy.doi_batch.body[0].peer_review[0],
-        $: {
-          type: 'referee-report',
-          stage: 'pre-publication',
-          'revision-round': '0',
-        },
-      }
+      return reviewerInformation
+    })
+    .filter(Boolean)
 
-      templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Review: ${manuscript.submission.description}`
-      templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
-        `${manuscript.id}/${reviewNumber}`,
-      )
-      templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-result/${reviewNumber}`
-      templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
-        inter_work_relation: [
-          {
-            _: manuscript.submission.articleURL.split('.org/')[1],
-            $: {
-              'relationship-type': 'isReviewOf',
-              'identifier-type': 'doi',
-            },
-          },
-        ],
-      }
+  // Legacy: Convert Elife-specific fields into new review structure
+  const eLifeReviews = []
+
+  if (manuscript.submission.summary && manuscript.submission.summarydate) {
+    const [year, month, day] = parseDate(manuscript.submission.summarydate)
+    const creator = manuscript.submission.summarycreator
+    eLifeReviews.push({
+      reviewType: 'elife',
+      reviewNumber: null,
+      title: `Summary of: ${manuscript.submission.description}`,
+      dayMonthYear: [day, month, year],
+      name: creator ? creator.split(' ') : null,
+      depositorName: 'eLife Kotahi',
+      depositorEmail: 'elife-kotahi@kotahi.cloud',
+      registrant: 'eLife',
+      doiResourceUrl: `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-summary`,
+    })
+  }
+  // New: Merge in new review structure
+
+  const allReviews = [
+    ...legacyReviews,
+    ...eLifeReviews,
+    ...(manuscript.submission.reviews || []),
+  ]
+
+  const xmls = allReviews.map(({ reviewNumber, reviewType, ...reviewData }) => {
+    const [day, month, year] = reviewData.dayMonthYear
+    const [givenName, surname] = reviewData.name
+
+    const templateCopy = JSON.parse(JSON.stringify(jsonResult))
+
+    templateCopy.doi_batch.body[0].peer_review[0].review_date[0].day[0] = day
+    templateCopy.doi_batch.body[0].peer_review[0].review_date[0].month[0] = month
+    templateCopy.doi_batch.body[0].peer_review[0].review_date[0].year[0] = year
+
+    jsonResult.doi_batch.body[0].peer_review[0].titles[0].title[0] =
+      reviewData.title
+
+    templateCopy.doi_batch.body[0].peer_review[0].contributors[0].person_name[0] = {
+      $: {
+        contributor_role: 'reviewer',
+        sequence: 'first',
+      },
+      given_name: [givenName || ''],
+      surname: [surname || ''],
+    }
+
+    templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
+      `${manuscript.id}/${reviewNumber}`,
+    )
+    templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] =
+      reviewData.doiResourceUrl
+
+    if (reviewType === 'legacy') {
       templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] = {
         inter_work_relation: [
           {
@@ -401,67 +440,13 @@ const publishReviewsToCrossref = async manuscript => {
           },
         ],
       }
-      return { reviewNumber, xml: builder.buildObject(templateCopy) }
-    })
-    .filter(Boolean)
-
-  if (manuscript.submission.summary && manuscript.submission.summarydate) {
-    const templateCopy = JSON.parse(JSON.stringify(jsonResult))
-    const [year, month, day] = parseDate(manuscript.submission.summarydate)
-    templateCopy.doi_batch.body[0].peer_review[0].review_date[0].day[0] = day
-    templateCopy.doi_batch.body[0].peer_review[0].review_date[0].month[0] = month
-    templateCopy.doi_batch.body[0].peer_review[0].review_date[0].year[0] = year
-    templateCopy.doi_batch.head[0].depositor[0].depositor_name[0] =
-      'eLife Kotahi'
-    templateCopy.doi_batch.head[0].depositor[0].email_address[0] =
-      'elife-kotahi@kotahi.cloud'
-    templateCopy.doi_batch.head[0].registrant[0] = 'eLife'
-    templateCopy.doi_batch.head[0].timestamp[0] = +new Date()
-    templateCopy.doi_batch.head[0].doi_batch_id[0] = String(+new Date()).slice(
-      0,
-      8,
-    )
-
-    if (manuscript.submission.summarycreator) {
-      const surname = manuscript.submission.summarycreator.split(' ')[1]
-      templateCopy.doi_batch.body[0].peer_review[0].contributors[0].person_name[0] = {
-        $: {
-          contributor_role: 'reviewer',
-          sequence: 'first',
-        },
-        given_name: [manuscript.submission.summarycreator.split(' ')[0]],
-        surname: [surname || ''],
-      }
     }
 
-    templateCopy.doi_batch.body[0].peer_review[0] = {
-      ...templateCopy.doi_batch.body[0].peer_review[0],
-      $: {
-        type: 'aggregate',
-        stage: 'pre-publication',
-        'revision-round': '0',
-      },
-    }
-    templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Summary of: ${manuscript.submission.description}`
+    const fileName =
+      reviewType === 'legacy' ? `review${reviewNumber}.xml` : 'summary.xml'
 
-    templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
-      `${manuscript.id}/`,
-    )
-
-    templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-summary`
-    templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
-      inter_work_relation: [
-        {
-          _: manuscript.submission.articleURL.split('.org/')[1],
-          $: {
-            'relationship-type': 'isReviewOf',
-            'identifier-type': 'doi',
-          },
-        },
-      ],
-    }
-    xmls.push({ summary: true, xml: builder.buildObject(templateCopy) })
-  }
+    return { fileName, xml: builder.buildObject(templateCopy) }
+  })
 
   const dirName = `${+new Date()}-${manuscript.id}`
   // eslint-disable-next-line
@@ -483,11 +468,7 @@ const publishReviewsToCrossref = async manuscript => {
 
   await fsPromised.mkdir(dirName)
 
-  const fileCreationPromises = xmls.map(async xml => {
-    const fileName = xml.reviewNumber
-      ? `review${xml.reviewNumber}.xml`
-      : 'summary.xml'
-
+  const fileCreationPromises = xmls.map(async ({ fileName, xml }) => {
     await fsPromised.appendFile(`${dirName}/${fileName}`, xml.xml)
     return `${dirName}/${fileName}`
   })
