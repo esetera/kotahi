@@ -244,10 +244,14 @@ const resolvers = {
 
       let invitationId = ''
 
-      if (
-        selectedTemplate === 'authorInvitationEmailTemplate' ||
-        selectedTemplate === 'reviewerInvitationEmailTemplate'
-      ) {
+      const invitationContainingEmailTemplate = [
+        'authorInvitationEmailTemplate',
+        'reviewerInvitationEmailTemplate',
+        'reminderAuthorInvitationTemplate',
+        'reminderReviewerInvitationTemplate',
+      ]
+
+      if (invitationContainingEmailTemplate.includes(selectedTemplate)) {
         let userId = null
         let invitedPersonName = ''
 
@@ -284,6 +288,12 @@ const resolvers = {
         invitationId = newInvitation.id
       }
 
+      if (invitationId === '') {
+        console.error(
+          'Invitation Id is not available to be used for this template.',
+        )
+      }
+
       let instance
 
       if (config['notification-email'].use_colab) {
@@ -302,6 +312,7 @@ const resolvers = {
           instance,
           toEmail,
           invitationId,
+          submissionLink: JSON.parse(manuscript.submission).link,
           purpose,
           status,
           senderId,
@@ -337,11 +348,7 @@ const resolvers = {
 
       const avatarPlaceholder = '/profiles/default_avatar.svg'
 
-      if (
-        user.file &&
-        user.profilePicture &&
-        user.profilePicture !== avatarPlaceholder
-      ) {
+      if (user.file) {
         const params = new Proxy(new URLSearchParams(user.profilePicture), {
           get: (searchParams, prop) => searchParams.get(prop),
         })
@@ -361,7 +368,7 @@ const resolvers = {
           user.profilePicture = await fileStorage.getURL(objectKey)
           await user.save()
         }
-      } else {
+      } else if (user.profilePicture !== avatarPlaceholder) {
         user.profilePicture = avatarPlaceholder
         await user.save()
       }
