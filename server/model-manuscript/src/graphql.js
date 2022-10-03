@@ -8,7 +8,10 @@ const models = require('@pubsweet/models')
 const cheerio = require('cheerio')
 const { raw } = require('objection')
 
-const { importManuscripts } = require('./manuscriptCommsUtils')
+const {
+  importManuscripts,
+  importManuscriptsFromSemanticScholar,
+} = require('./manuscriptCommsUtils')
 
 const Team = require('../../model-team/src/team')
 const TeamMember = require('../../model-team/src/team_member')
@@ -466,6 +469,7 @@ const resolvers = {
       return importManuscripts(ctx)
     },
 
+<<<<<<< HEAD
     async archiveManuscripts(_, { ids }, ctx) {
       // finding the ids of the first versions of all manuscripts:
       const selectedManuscripts = await models.Manuscript.query()
@@ -500,6 +504,11 @@ const resolvers = {
       return archivedManuscript[0].id
     },
 
+=======
+    importManuscriptsFromSemanticScholar(_, props, ctx) {
+      return importManuscriptsFromSemanticScholar(ctx)
+    },
+>>>>>>> cc75ac38 (Feature(semantic-scholar): Import Manuscripts from Semantic Scholar)
     async deleteManuscripts(_, { ids }, ctx) {
       if (ids.length > 0) {
         await Promise.all(
@@ -1431,6 +1440,7 @@ const typeDefs = `
     publishManuscript(id: ID!): PublishingResult!
     createNewVersion(id: ID!): Manuscript
     importManuscripts: Boolean!
+    importManuscriptsFromSemanticScholar: Boolean!
     setShouldPublishField(manuscriptId: ID!, objectId: ID!, fieldName: String!, shouldPublish: Boolean!): Manuscript!
     archiveManuscript(id: ID!): ID!
     archiveManuscripts(ids: [ID]!): [ID!]!
@@ -1461,6 +1471,7 @@ const typeDefs = `
     formFieldsToPublish: [FormFieldsToPublish!]!
     searchRank: Float
     searchSnippet: String
+    importSourceServer: String
   }
 
   input ManuscriptInput {
