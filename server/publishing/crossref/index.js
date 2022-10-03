@@ -308,16 +308,21 @@ const publishReviewsToCrossref = async manuscript => {
       `Field submission.articleURL is not a DOI link: "${manuscript.submission.articleURL}"`,
     )
 
+  // jsonTemplate is a JSON representation of the XML template with additional fields changed
+
   const template = await fsPromised.readFile(
     path.resolve(__dirname, 'crossref_publish_xml_template.xml'),
   )
 
-  const jsonResult = await parser.parseStringPromise(template)
+  const jsonTemplate = await parser.parseStringPromise(template)
 
-  jsonResult.doi_batch.head[0].timestamp[0] = +new Date()
-  jsonResult.doi_batch.head[0].doi_batch_id[0] = String(+new Date()).slice(0, 8)
-  jsonResult.doi_batch.body[0].peer_review[0] = {
-    ...jsonResult.doi_batch.body[0].peer_review[0],
+  jsonTemplate.doi_batch.head[0].timestamp[0] = +new Date()
+  jsonTemplate.doi_batch.head[0].doi_batch_id[0] = String(+new Date()).slice(
+    0,
+    8,
+  )
+  jsonTemplate.doi_batch.body[0].peer_review[0] = {
+    ...jsonTemplate.doi_batch.body[0].peer_review[0],
     $: {
       type: 'referee-report',
       stage: 'pre-publication',
@@ -325,7 +330,7 @@ const publishReviewsToCrossref = async manuscript => {
     },
   }
 
-  jsonResult.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
+  jsonTemplate.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
     inter_work_relation: [
       {
         _: manuscript.submission.articleURL.split('.org/')[1],
@@ -404,13 +409,13 @@ const publishReviewsToCrossref = async manuscript => {
     const [day, month, year] = reviewData.dayMonthYear
     const [givenName, surname] = reviewData.name
 
-    const templateCopy = JSON.parse(JSON.stringify(jsonResult))
+    const templateCopy = JSON.parse(JSON.stringify(jsonTemplate))
 
     templateCopy.doi_batch.body[0].peer_review[0].review_date[0].day[0] = day
     templateCopy.doi_batch.body[0].peer_review[0].review_date[0].month[0] = month
     templateCopy.doi_batch.body[0].peer_review[0].review_date[0].year[0] = year
 
-    jsonResult.doi_batch.body[0].peer_review[0].titles[0].title[0] =
+    jsonTemplate.doi_batch.body[0].peer_review[0].titles[0].title[0] =
       reviewData.title
 
     templateCopy.doi_batch.body[0].peer_review[0].contributors[0].person_name[0] = {
@@ -469,7 +474,7 @@ const publishReviewsToCrossref = async manuscript => {
   await fsPromised.mkdir(dirName)
 
   const fileCreationPromises = xmls.map(async ({ fileName, xml }) => {
-    await fsPromised.appendFile(`${dirName}/${fileName}`, xml.xml)
+    await fsPromised.appendFile(`${dirName}/${fileName}`, xml)
     return `${dirName}/${fileName}`
   })
 
