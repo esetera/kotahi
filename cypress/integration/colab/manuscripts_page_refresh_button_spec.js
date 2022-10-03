@@ -23,7 +23,7 @@ describe('refresh button tests', () => {
 
       // login as admin
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.admin, manuscripts)
+        cy.login(name.role.admin.name, manuscripts)
       })
       cy.awaitDisappearSpinner()
       ManuscriptsPage.getTableHeader().should('be.visible')
@@ -39,7 +39,7 @@ describe('refresh button tests', () => {
       cy.task('seedForms')
       // login as admin
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.admin, manuscripts)
+        cy.login(name.role.admin.name, manuscripts)
       })
       cy.awaitDisappearSpinner()
       ManuscriptsPage.getTableHeader().should('be.visible')
@@ -57,7 +57,7 @@ describe('refresh button tests', () => {
     beforeEach(() => {
       // login as admin
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.admin, manuscripts)
+        cy.login(name.role.admin.name, manuscripts)
       })
       cy.awaitDisappearSpinner()
       ManuscriptsPage.getTableHeader().should('be.visible')
