@@ -6,6 +6,7 @@ import { ManuscriptsPage } from '../../page-object/manuscripts-page'
 
 describe('Email Notification Tests', () => {
   it('can send existing user email notifications', () => {
+    cy.task('restore', 'commons/bootstrap')
     cy.task('restore', 'email_notification')
     cy.task('seedForms')
 
