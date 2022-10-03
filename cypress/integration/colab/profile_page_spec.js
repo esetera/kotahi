@@ -13,12 +13,12 @@ import { DashboardPage } from '../../page-object/dashboard-page'
 describe('profile page tests', () => {
   beforeEach(() => {
     // task to restore the database as per the dumps/initial_state_other.sql
-    cy.task('restore', 'initial_state_other')
+    cy.task('restore', 'commons/bootstrap')
     cy.task('seedForms')
 
     // login and attempt to access the dashboard page
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.tester, profile)
+      cy.login(name.role.admin.name, profile)
     })
     cy.awaitDisappearSpinner()
   })
