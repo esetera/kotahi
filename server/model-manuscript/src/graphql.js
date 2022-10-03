@@ -469,14 +469,6 @@ const resolvers = {
       return importManuscripts(ctx)
     },
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 84310220 (Feature(semantic-scholar): Import Manuscripts from Semantic Scholar)
-=======
->>>>>>> 5ccd5d01 (Feature(semantic-scholar): Import Manuscripts from Semantic Scholar)
     async archiveManuscripts(_, { ids }, ctx) {
       // finding the ids of the first versions of all manuscripts:
       const selectedManuscripts = await models.Manuscript.query()
@@ -511,25 +503,6 @@ const resolvers = {
       return archivedManuscript[0].id
     },
 
-=======
-    importManuscriptsFromSemanticScholar(_, props, ctx) {
-      return importManuscriptsFromSemanticScholar(ctx)
-    },
->>>>>>> cc75ac38 (Feature(semantic-scholar): Import Manuscripts from Semantic Scholar)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 5ccd5d01 (Feature(semantic-scholar): Import Manuscripts from Semantic Scholar)
-=======
-    importManuscriptsFromSemanticScholar(_, props, ctx) {
-      return importManuscriptsFromSemanticScholar(ctx)
-    },
->>>>>>> cc75ac38 (Feature(semantic-scholar): Import Manuscripts from Semantic Scholar)
-<<<<<<< HEAD
-=======
->>>>>>> 84310220 (Feature(semantic-scholar): Import Manuscripts from Semantic Scholar)
-=======
->>>>>>> 5ccd5d01 (Feature(semantic-scholar): Import Manuscripts from Semantic Scholar)
     async deleteManuscripts(_, { ids }, ctx) {
       if (ids.length > 0) {
         await Promise.all(
