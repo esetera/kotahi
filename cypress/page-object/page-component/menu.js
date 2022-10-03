@@ -61,7 +61,6 @@ export const Menu = {
   clickManuscriptsAndAssertPageLoad() {
     this.clickManuscripts()
     cy.awaitDisappearSpinner()
-    ManuscriptsPage.getTableHeader().should('be.visible')
   },
   getReportsButton() {
     return this.getMenuContainer().contains('Reports')
