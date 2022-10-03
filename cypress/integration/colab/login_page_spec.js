@@ -33,13 +33,13 @@ describe('Login page tests', () => {
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('branding_settings').then(settings => {
       // task to restore the database as per the  dumps/initialState.sql
-      cy.task('restore', 'initial_state_other')
+      cy.task('restore', 'commons/bootstrap')
       cy.task('seedForms')
 
       // login as admin
       // eslint-disable-next-line jest/valid-expect-in-promise
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.admin, manuscripts)
+        cy.login(name.role.admin.name, manuscripts)
       })
       cy.awaitDisappearSpinner()
       Menu.getBackground()
@@ -60,26 +60,26 @@ describe('Login page tests', () => {
 
   it('dashboard page should be visible to the logged in user', () => {
     // task to restore the database as per the  dumps/initialState.sql
-    cy.task('restore', 'initial_state_other')
+    cy.task('restore', 'commons/bootstrap')
     cy.task('seedForms')
 
     // login as admin
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin, manuscripts)
+      cy.login(name.role.admin.name, manuscripts)
     })
     cy.awaitDisappearSpinner()
     Menu.getDashboardButton().should('be.visible')
   })
   it('reports option should be visible to the admin user', () => {
     // task to restore the database as per the  dumps/initialState.sql
-    cy.task('restore', 'initial_state_other')
+    cy.task('restore', 'commons/bootstrap')
     cy.task('seedForms')
 
     // login as admin
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin, dashboard)
+      cy.login(name.role.admin.name, dashboard)
     })
     cy.awaitDisappearSpinner()
     Menu.getReportsButton().should('be.visible')
