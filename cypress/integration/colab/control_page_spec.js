@@ -14,10 +14,10 @@ import { SubmissionFormPage } from '../../page-object/submission-form-page'
 describe('control page tests', () => {
   context('shared message', () => {
     beforeEach(() => {
-      cy.task('restore', 'initial_state_other')
+      cy.task('restore', 'commons/bootstrap')
       cy.task('seedForms')
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.admin, dashboard)
+        cy.login(name.role.admin.name, dashboard)
         cy.awaitDisappearSpinner()
         DashboardPage.clickSubmit()
         NewSubmissionPage.clickSubmitUrlAndWaitPageLoad()
@@ -124,7 +124,7 @@ describe('control page tests', () => {
 
   context('hide review and review name from author', () => {
     beforeEach(() => {
-      cy.task('restore', 'initial_state_other')
+      cy.task('restore', 'commons/bootstrap')
       cy.task('seedForms')
       cy.fixture('role_names').then(name => {
         cy.login(name.role.admin, dashboard)
@@ -188,7 +188,7 @@ describe('control page tests', () => {
 
   context('admin user can see the icons', () => {
     beforeEach(() => {
-      cy.task('restore', 'initial_state_other')
+      cy.task('restore', 'commons/bootstrap')
       cy.task('seedForms')
       cy.fixture('role_names').then(name => {
         cy.login(name.role.reviewers.reviewer1, dashboard)
