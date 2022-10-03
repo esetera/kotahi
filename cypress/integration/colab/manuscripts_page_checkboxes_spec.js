@@ -10,12 +10,12 @@ import { DashboardPage } from '../../page-object/dashboard-page'
 describe('manuscripts page checkboxes tests', () => {
   context('unsubmitted manuscripts checkbox tests', () => {
     before(() => {
-      cy.task('restore', 'initial_state_other')
+      cy.task('restore', 'commons/bootstrap')
       cy.task('seedForms')
       // login as admin
       // eslint-disable-next-line jest/valid-expect-in-promise
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.admin, dashboard)
+        cy.login(name.role.admin.name, dashboard)
       })
       cy.awaitDisappearSpinner()
       DashboardPage.clickSubmit()
@@ -35,7 +35,7 @@ describe('manuscripts page checkboxes tests', () => {
       // login as admin
       // eslint-disable-next-line jest/valid-expect-in-promise
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.admin, manuscripts)
+        cy.login(name.role.admin.name, manuscripts)
       })
       cy.awaitDisappearSpinner()
     })
@@ -76,12 +76,12 @@ describe('manuscripts page checkboxes tests', () => {
   })
   context('submitted manuscripts checkbox tests', () => {
     it('checkbox should not be visible for submitted manuscripts', () => {
-      cy.task('restore', 'initial_state_other')
+      cy.task('restore', 'commons/bootstrap')
       cy.task('seedForms')
       // login as admin
       // eslint-disable-next-line jest/valid-expect-in-promise
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.admin, dashboard)
+        cy.login(name.role.admin.name, dashboard)
       })
       cy.awaitDisappearSpinner()
       DashboardPage.clickSubmit()
