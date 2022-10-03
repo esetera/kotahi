@@ -12,13 +12,13 @@ import { DashboardPage } from '../../page-object/dashboard-page'
 describe('manuscripts page tests', () => {
   beforeEach(() => {
     // task to restore the database as per the dumps/initial_state_other.sql
-    cy.task('restore', 'initial_state_other')
+    cy.task('restore', 'commons/bootstrap')
     cy.task('seedForms')
 
     // login as admin
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin, dashboard)
+      cy.login(name.role.admin.name, dashboard)
     })
     cy.awaitDisappearSpinner()
     DashboardPage.getHeader().should('be.visible')
@@ -103,12 +103,12 @@ describe('manuscripts page tests', () => {
   })
   context('select button from Label column', () => {
     beforeEach(() => {
-      cy.task('restore', 'initial_state_other')
+      cy.task('restore', 'commons/bootstrap')
       cy.task('seedForms')
       // login as admin
       // eslint-disable-next-line jest/valid-expect-in-promise
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.admin, dashboard)
+        cy.login(name.role.admin.name, dashboard)
       })
       cy.awaitDisappearSpinner()
       DashboardPage.clickSubmit()
