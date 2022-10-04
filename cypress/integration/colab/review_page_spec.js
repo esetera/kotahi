@@ -56,7 +56,6 @@ describe('review page tests', () => {
     DashboardPage.clickAcceptReviewButton()
     DashboardPage.clickDoReviewAndVerifyPageLoaded()
     ReviewPage.getDecisionText().should('contain', 'ok')
-    ReviewPage.getDecisionSelectedButton().should('exist').and('be.visible')
   })
   it('reviewer should see decision after submitting a positive review', () => {
     cy.fixture('role_names').then(name => {
@@ -68,6 +67,7 @@ describe('review page tests', () => {
     ReviewPage.fillInConfidentialComment('great submission!')
     ReviewPage.clickAcceptRadioButton()
     ReviewPage.clickSubmitButton()
+    ReviewPage.clickConfirmSubmitButton()
     cy.awaitDisappearSpinner()
     cy.fixture('role_names').then(name => {
       cy.login(name.role.admin.name, manuscripts)
@@ -85,10 +85,9 @@ describe('review page tests', () => {
     ReviewPage.getAllSectionHeaders()
       .eq(-1)
       .scrollIntoView()
-      .should('contain', 'Evaluation Summary')
+      .should('contain', 'Evaluation summary')
       .and('be.visible')
     ReviewPage.getDecisionText().should('contain', 'great paper')
-    ReviewPage.getDecisionSelectedButton().should('have.value', 'green')
   })
   it('reviewer should see decision after submitting a neutral review', () => {
     cy.fixture('role_names').then(name => {
@@ -100,9 +99,10 @@ describe('review page tests', () => {
     ReviewPage.fillInConfidentialComment('paper should be revised')
     ReviewPage.clickReviseRadioButton()
     ReviewPage.clickSubmitButton()
+    ReviewPage.clickConfirmSubmitButton()
     cy.awaitDisappearSpinner()
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin, manuscripts)
+      cy.login(name.role.admin.name, manuscripts)
     })
     cy.awaitDisappearSpinner()
     ManuscriptsPage.clickControl()
@@ -117,10 +117,9 @@ describe('review page tests', () => {
     ReviewPage.getAllSectionHeaders()
       .eq(-1)
       .scrollIntoView()
-      .should('contain', 'Evaluation Summary')
+      .should('contain', 'Evaluation summary')
       .and('be.visible')
     ReviewPage.getDecisionText().should('contain', 'please revise')
-    ReviewPage.getDecisionSelectedButton().should('have.value', 'orange')
   })
   it('reviewer should see decision after submitting a negative review', () => {
     cy.fixture('role_names').then(name => {
@@ -132,9 +131,10 @@ describe('review page tests', () => {
     ReviewPage.fillInConfidentialComment('not good enough')
     ReviewPage.clickRejectRadioButton()
     ReviewPage.clickSubmitButton()
+    ReviewPage.clickConfirmSubmitButton()
     cy.awaitDisappearSpinner()
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin, manuscripts)
+      cy.login(name.role.admin.name, manuscripts)
     })
     cy.awaitDisappearSpinner()
     ManuscriptsPage.clickControl()
@@ -149,12 +149,11 @@ describe('review page tests', () => {
     ReviewPage.getAllSectionHeaders()
       .eq(-1)
       .scrollIntoView()
-      .should('contain', 'Evaluation Summary')
+      .should('contain', 'Evaluation summary')
       .and('be.visible')
     ReviewPage.getDecisionText().should(
       'contain',
       'it does not fit our standards',
     )
-    ReviewPage.getDecisionSelectedButton().should('have.value', 'red')
   })
 })
