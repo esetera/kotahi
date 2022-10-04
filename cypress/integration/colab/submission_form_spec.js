@@ -18,7 +18,6 @@ describe('manuscripts page tests', () => {
     DashboardPage.clickSubmit()
     NewSubmissionPage.clickSubmitUrlAndWaitPageLoad()
   })
-
   it('word count button should be visible & display info', () => {
     SubmissionFormPage.getWordCountInfo().its('length').should('eq', 6)
 
@@ -35,9 +34,5 @@ describe('manuscripts page tests', () => {
       .eq(0)
       .should('contain', '3')
       .and('contain', 'words')
-  })
-
-  it("edit date should reflect today's date", () => {
-    SubmissionFormPage.checkEditDateIsUpdated()
   })
 })
