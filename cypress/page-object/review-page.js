@@ -5,7 +5,7 @@
  */
  const REVIEW_METADATA_CELL = 'ReviewMetadata__Cell'
 
- const ABSTRACT_EDITOR_FIELD = '.ProseMirror > .paragraph'
+ //const ABSTRACT_EDITOR_FIELD = '.ProseMirror > .paragraph'
  
  // const REVIEW_COMMENT_FIELD = 'reviewComment'
  // const CONFIDENTIAL_COMMENT_FIELD = 'confidentialComment'
@@ -24,8 +24,7 @@
  const DECISION_TEXT = 'sc-kNMOeM gDlahr'
  const DECISION_RECOMMENDATION = 'style__Legend-sc-1jvxmxn-2 KPAWX'
  
- const DECISION_BUTTON_SELECTED =
-   '[class*=component-decision-viewer__RadioGroup] [checked]'
+ const DECISION_BUTTON_SELECTED = '[class*=component-decision-viewer__RadioGroup] [checked]'
  
  // eslint-disable-next-line import/prefer-default-export
  export const ReviewPage = {
@@ -41,7 +40,7 @@
      this.getReviewCommentField().fillInput(reviewComment)
    },
    getConfidentialCommentField() {
-     return cy.get(ABSTRACT_EDITOR_FIELD).eq(1)
+     return cy.get(':nth-child(3) > :nth-child(2) > :nth-child(1) > :nth-child(1) > .EditorStyles__SimpleGrid-k4rcxo-9 > .EditorStyles__SimpleEditorDiv-k4rcxo-11')
    },
    fillInConfidentialComment(confidentialComment) {
      this.getConfidentialCommentField().fillInput(confidentialComment)
