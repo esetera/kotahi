@@ -190,7 +190,7 @@ describe('control page tests', () => {
       cy.task('restore', 'commons/bootstrap')
       cy.task('seedForms')
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.reviewers[1].name, dashboard)
+        cy.login(name.role.reviewers[2].name, dashboard)
         cy.awaitDisappearSpinner()
         DashboardPage.clickSubmit()
         NewSubmissionPage.clickSubmitUrlAndWaitPageLoad()
