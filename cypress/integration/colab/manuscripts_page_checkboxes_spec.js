@@ -30,6 +30,7 @@ describe('manuscripts page checkboxes tests', () => {
       NewSubmissionPage.clickSubmitUrlAndWaitPageLoad()
       SubmissionFormPage.fillInTitle('def')
       Menu.clickManuscriptsAndAssertPageLoad()
+      cy.wait(3000)
     })
     beforeEach(() => {
       // login as admin
@@ -55,24 +56,6 @@ describe('manuscripts page checkboxes tests', () => {
       ManuscriptsPage.getSelectAllCheckbox().click()
       ManuscriptsPage.getSelectedArticlesCount().should('contain', 0)
     })
-    it('click Close to not delete the articles', () => {
-      ManuscriptsPage.getTableRowsCount().should('eq', 3)
-      ManuscriptsPage.getSelectAllCheckbox().click()
-      ManuscriptsPage.clickDelete()
-      ManuscriptsPage.clickClose()
-      ManuscriptsPage.getSelectedArticlesCount().should('contain', 3)
-    })
-    it('delete selected article', () => {
-      ManuscriptsPage.getTableRowsCount().should('eq', 3)
-      ManuscriptsPage.getSelectAllCheckbox().click()
-      ManuscriptsPage.clickDelete()
-      ManuscriptsPage.getConfirmationMessageForBulkDelete().should(
-        'contain',
-        'Please confirm you would like to delete selected articles',
-      )
-      ManuscriptsPage.clickConfirm()
-      ManuscriptsPage.getTableRow().should('not.exist')
-    })
   })
   context('submitted manuscripts checkbox tests', () => {
     it('checkbox should not be visible for submitted manuscripts', () => {
@@ -90,18 +73,14 @@ describe('manuscripts page checkboxes tests', () => {
       cy.fixture('submission_form_data').then(data => {
         SubmissionFormPage.fillInDoi(data.doi)
         SubmissionFormPage.getWaxInputBox(0).fillInput(data.abstract)
-        SubmissionFormPage.fillInFirstAuthor(data.creator)
         SubmissionFormPage.fillInDatePublished(data.date)
-        SubmissionFormPage.fillInLink(data.doi)
         SubmissionFormPage.getWaxInputBox(1).fillInput(data.ourTake)
         SubmissionFormPage.getWaxInputBox(2).fillInput(data.mainFindings)
         SubmissionFormPage.getWaxInputBox(3).fillInput(data.studyStrengths)
         SubmissionFormPage.getWaxInputBox(4).fillInput(data.limitations)
-        SubmissionFormPage.fillInKeywords(data.keywords)
-        SubmissionFormPage.fillInReviewCreator(data.creator)
-        SubmissionFormPage.clickSubmitResearch()
-        SubmissionFormPage.clickSubmitManuscriptAndWaitPageLoad()
       })
+      SubmissionFormPage.clickSubmitResearch()
+      SubmissionFormPage.clickSubmitYourManuscript()
       Menu.clickManuscriptsAndAssertPageLoad()
       ManuscriptsPage.getAllArticleCheckboxes().should('not.exist')
     })
