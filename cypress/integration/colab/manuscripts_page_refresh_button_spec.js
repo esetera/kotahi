@@ -18,7 +18,7 @@ describe('refresh button tests', () => {
   context('visibility check', () => {
     it('check button exists and is visible', () => {
       // task to restore the database as per the dumps/initial_state_other.sql
-      cy.task('restore', 'initial_state_other')
+      cy.task('restore', 'commons/bootstrap')
       cy.task('seedForms')
 
       // login as admin
@@ -27,7 +27,6 @@ describe('refresh button tests', () => {
       })
       cy.awaitDisappearSpinner()
       ManuscriptsPage.getTableHeader().should('be.visible')
-
       ManuscriptsPage.getRefreshButton().should('exist').and('be.visible')
     })
   })
@@ -35,7 +34,7 @@ describe('refresh button tests', () => {
   context('functionality check', () => {
     before(() => {
       // task to restore the database as per the dumps/initial_state_other.sql
-      cy.task('restore', 'initial_state_other')
+      cy.task('restore', 'commons/bootstrap')
       cy.task('seedForms')
       // login as admin
       cy.fixture('role_names').then(name => {
