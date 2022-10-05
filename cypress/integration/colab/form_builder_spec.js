@@ -14,7 +14,7 @@ describe('form builder tests', () => {
       // login as admin
       // eslint-disable-next-line jest/valid-expect-in-promise
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.admin.name, formBuilder)
+        cy.login(name.role.admin.name, dashboard)
       })
       FormsPage.verifyPageLoaded()
     })
