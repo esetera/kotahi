@@ -181,10 +181,6 @@ const AdminPage = () => {
       : null
   }
 
-  if (currentUser) {
-    links.push({ link: profileLink, name: 'My profile', icon: 'user' })
-  }
-
   if (
     currentUser &&
     ['aperture', 'colab', 'ncrc'].includes(process.env.INSTANCE_NAME)
