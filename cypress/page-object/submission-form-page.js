@@ -61,8 +61,8 @@ const TOPICS_CHECKBOX_LIST = 'submission.topics'
 const ASSIGN_EDITORS_DROPDOWN = '[class*=General__SectionRow] > [class]'
 
 // specific to colab
-const DOI_FIELD = 'submission.doi'
-const LINK_FIELD = 'submission.link'
+const DOI_FIELD = 'submission.DOI'
+const LINK_FIELD = 'submission.LINK'
 
 export const SubmissionFormPage = {
   getPageTitle() {
