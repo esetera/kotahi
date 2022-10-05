@@ -375,8 +375,22 @@ const publishReviewsToCrossref = async manuscript => {
       }
 
       templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Review: ${manuscript.submission.description}`
+  
+      let customDoiSuffix = null
+      const decision = manuscript.reviews.find(r => r.isDecision)
+
+      if (decision) {
+        const decisionSuffix = decision.jsonData[`review${reviewNumber}suffix`]
+    
+        if (decisionSuffix) {
+          customDoiSuffix = decisionSuffix
+        }
+      } else if (manuscript.submission[`review${reviewNumber}suffix`]) {
+        customDoiSuffix = manuscript.submission[`review${reviewNumber}suffix`]
+      }
+
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
-        `${manuscript.id}/${reviewNumber}`,
+        customDoiSuffix || `${manuscript.id}/${reviewNumber}`,
       )
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-result/${reviewNumber}`
       templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
@@ -393,7 +407,7 @@ const publishReviewsToCrossref = async manuscript => {
       templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] = {
         inter_work_relation: [
           {
-            _: getDoi(`${manuscript.id}/`),
+            _: getDoi(customDoiSuffix || `${manuscript.id}/`),
             $: {
               'relationship-type': 'isSupplementTo',
               'identifier-type': 'doi',
@@ -444,8 +458,21 @@ const publishReviewsToCrossref = async manuscript => {
     }
     templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Summary of: ${manuscript.submission.description}`
 
+    let customDoiSuffix = null
+    const decision = manuscript.reviews.find(r => r.isDecision)
+
+    if (decision) {
+      const decisionSuffix = decision.jsonData.summarysuffix
+  
+      if (decisionSuffix) {
+        customDoiSuffix = decisionSuffix
+      }
+    } else if (manuscript.submission.summarysuffix) {
+      customDoiSuffix = manuscript.submission.summarysuffix
+    }
+
     templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
-      `${manuscript.id}/`,
+      customDoiSuffix || `${manuscript.id}/`,
     )
 
     templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-summary`
