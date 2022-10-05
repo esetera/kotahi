@@ -84,4 +84,21 @@
     <volume>112:</volume>
     <pages>15731–15736.</pages>
   </sequence>
+	<sequence>
+		<author>Derrida, J.</author>
+		<date>(1967).</date>
+		<title>L’écriture et la différence</title>
+		<edition>(1 éd.).</edition>
+		<location>Paris:</location>
+		<publisher>Éditions du Seuil.</publisher>
+	</sequence>
+	<sequence>
+		<author>Vassy, J.L.; Christensen, K.D.; Schonman, E.F.; Blout, C.L.; Robinson, J.O.; Krier, J.B.; Diamond, P.M.; Lebo, M.; Machini, K.; Azzariti, D.R.; et al.</author>
+		<title>The Impact of Whole-Genome Sequencing on the Primary Care and Outcomes of Healthy Adult Patients.</title>
+		<journal>Ann. Intern. Med.</journal>
+		<date>2017,</date>
+		<volume>167,</volume>
+		<pages>159–169,</pages>
+		<url>https://doi.org/10.7326/M17-018.</url>
+	</sequence>
 </dataset>

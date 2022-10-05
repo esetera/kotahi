@@ -12,6 +12,47 @@ const anyStyleToHtml = require('./anystyleToHtml')
 //   'utf8',
 // )
 
+const convertHtmlToText = text => {
+  let returnText = text
+
+  // -- remove BR tags and replace them with line break
+  returnText = returnText.replace(/<br>/gi, '\n')
+  returnText = returnText.replace(/<br\s\/>/gi, '\n')
+  returnText = returnText.replace(/<br\/>/gi, '\n')
+
+  // -- remove P and A tags but preserve what's inside of them
+  returnText = returnText.replace(/<p.*>/gi, '\n')
+  returnText = returnText.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, ' $2 ($1)')
+
+  // -- remove all inside SCRIPT and STYLE tags
+  returnText = returnText.replace(
+    /<script.*>[\w\W]{1,}(.*?)[\w\W]{1,}<\/script>/gi,
+    '',
+  )
+  returnText = returnText.replace(
+    /<style.*>[\w\W]{1,}(.*?)[\w\W]{1,}<\/style>/gi,
+    '',
+  )
+  // -- remove all else
+  returnText = returnText.replace(/<(?:.|\s)*?>/g, '')
+
+  // -- get rid of more than 2 multiple line breaks:
+  returnText = returnText.replace(/(?:(?:\r\n|\r|\n)\s*){2,}/gim, '\n\n')
+
+  // -- get rid of more than 2 spaces:
+  returnText = returnText.replace(/ +(?= )/g, '')
+
+  // -- get rid of html-encoded characters:
+  returnText = returnText.replace(/&nbsp;/gi, ' ')
+  returnText = returnText.replace(/&amp;/gi, '&')
+  returnText = returnText.replace(/&quot;/gi, '"')
+  returnText = returnText.replace(/&lt;/gi, '<')
+  returnText = returnText.replace(/&gt;/gi, '>')
+
+  // -- return
+  return returnText
+}
+
 const serverUrl = 'http://localhost:4567'
 
 // 	curl --location --request POST 'http://localhost:4567' \
@@ -21,7 +62,8 @@ const serverUrl = 'http://localhost:4567'
 const parseCitations = async references => {
   // 1 pass references to anystyle
   const form = new FormData()
-  form.append('references', references)
+  // clean any HTML out of what's coming in to Anystyle so it isn't confused
+  form.append('references', convertHtmlToText(references))
 
   return new Promise((resolve, reject) => {
     axios
@@ -31,7 +73,8 @@ const parseCitations = async references => {
       .then(async res => {
         // 2 pass citations to HTML wrapper
         // res.data is Anystyle JSON
-        const htmledResult = await anyStyleToHtml(references, res.data)
+        // TODO: take an initial index for the reference IDs so we don't make duplicate IDs
+        const htmledResult = anyStyleToHtml(res.data, 0)
         resolve(htmledResult)
       })
       .catch(async err => {
@@ -45,7 +88,7 @@ const resolvers = {
   Query: {
     buildCitations: async (_, { textReferences }, ctx) => {
       const outReferences = await parseCitations(textReferences)
-      console.log('returned THML: ', outReferences)
+      // console.log('returned THML: ', outReferences)
       return { html: outReferences || '' }
     },
   },

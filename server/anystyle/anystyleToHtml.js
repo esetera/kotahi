@@ -17,26 +17,25 @@ const rawData = fs.readFileSync(
 // If using a different filename, change the filenames in this file for sampleReferenceArray and rawData.
 // The XML created this way is interesting but not as detailed as the JSON--look at the author names for example.
 
-// # JATS tags and JATS-flavored HTML equivalents:
+// # Anystyle XML tags and JATS-flavored HTML equivalents:
 //
-// <ref-list> —> <section class="reflist">
-// <ref id="ref-###"><mixed-citation> --> <p class="mixedcitation" id="ref=###">
+// <dataset> —> <section class="reflist"> [not actually being used in this implementation]
+// <sequence> --> <span class="mixed-citation" id="ref=###">
+// <citation-number> --> if this exists, this is used for the ID in <span class="mixed-citation" id="ref=###">
 //
 // AUTHORS
 //
-// <person-group person-group-type="author"> --> <span class="author-group">
-// <name> --> <span class="author-name">
+// <author> --> <span class="author-group"> --> can we do better than this?
 //
 // TITLES
 //
-// <source> ––> <span class="journal-title">
-// <article-title> --< <span class="article-title">
+// <journal> ––> <span class="journal-title">
+// <title> --< <span class="article-title">
 // <volume> --> <span class="volume">
 // <issue> --> <span class="issue">
 // <year> --> <span class="year">
-// <fpage> --> <span class="first-page">
-// <lpage> --> <span class="last-page">
-// <doi> ==> <a class="doi" href="https://doi.org/###">###</a>
+// <pages> --> <span class="first-page">, possibly also <span class="last-page">
+// <url> ==> <a class="doi" href="https://doi.org/###">###</a> if it includes a DOI, otherwise just an <a href=">"
 //
 // NOT BEING HANDLED:
 //
@@ -44,29 +43,191 @@ const rawData = fs.readFileSync(
 // <given-names> --> <span class="givennames">
 // <suffix> --> <span class="suffix">
 // <etal> --> <span class="etal" />
-// <string-name> --> <span class="stringname"> (it would be nice if we didn't have to use this!)
+// <string-name> --> <span class="author-name">
 
-// const makeStringSafeId = str =>
-//   encodeURIComponent(str)
-//     .toLowerCase()
-//     .replace(/\.|%[0-9a-z]{2}/gi, '')
+/*
 
-const anystyleXmlToHtml = anystyleXml => {
+// The list of all the tags:
+
+<dataset>
+  <sequence>
+    <citation-number>
+		<author>
+    <date>
+    <title>
+    <container-title>
+    <url>https://stacks.cdc.gov/view/cdc/85451</url>
+    <journal>
+    <volume>
+    <pages>
+
+    <note>
+		<edition>
+		<location>
+		<publisher> 
+
+*/
+
+const makeStringSafeId = str =>
+  encodeURIComponent(str)
+    .toLowerCase()
+    .replace(/\.|%[0-9a-z]{2}/gi, '')
+
+const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
   // this takes the XML input from Anystyle and converts it to our HTML
   // maybe we could inject content from the JSON into the HTML if this can be done.
   const dom = htmlparser2.parseDocument(anystyleXml)
   const $ = cheerio.load(dom, { xmlMode: true })
+  let outText = ''
 
-  // 1. replace <dataset> with  <section class="reflist">
-  // 2. replace <section> with <p class="mixedcitation" id="ref=###">
-  // 2.5. id is coming from <citation-number>, delete <citation-number>
-  // 3. replace <author> with <span class="authorgroup">
-  // 4. replace <title> with <title>
+  const sequences = $('sequence')
 
-  // n. strip out all unknown tags, log them
+  for (let i = 0; i < sequences.length; i += 1) {
+    const thisCitation = sequences[i]
+    let citationNumber = i + startCount
 
-  const outHtml = $.html()
-  return outHtml
+    // First, we get a normalized version of just the text in the citation (which can be wrapped with tags as needed)
+
+    let theText = $(thisCitation).text().trim().replace(/\s\s+/g, ' ')
+
+    // check if there's a citation-number tag, if so, use that as the reference ID
+
+    if ($(thisCitation).find('citation-number').length) {
+      citationNumber = makeStringSafeId(
+        $(thisCitation).find('citation-number').text(),
+        10,
+      )
+
+      console.error(`\n\n\nInternal citation number found: `, citationNumber)
+    } else {
+      console.error(
+        '\n\n\nNo internal citation number, reference ID: ',
+        citationNumber,
+      )
+    }
+
+    console.error('Raw text: ', theText)
+    console.error('XML from Anystyle: ', $(thisCitation).html())
+
+    // check for author name
+
+    if ($(thisCitation).find('author').length) {
+      const authorName = $(thisCitation).find('author').text()
+      console.error('Author name found: ', authorName)
+      // TODO: can we split this?
+      theText = theText.replace(
+        authorName,
+        `<span class="author-group">${authorName}</span>`,
+      )
+    }
+
+    // check for journals
+
+    if ($(thisCitation).find('journal').length) {
+      const journalName = $(thisCitation).find('journal').text()
+      console.error('Journal found: ', journalName)
+      theText = theText.replace(
+        journalName,
+        `<span class="journal-title">${journalName}</span>`,
+      )
+    }
+
+    // check for article titles
+
+    if ($(thisCitation).find('title').length) {
+      const articleName = $(thisCitation).find('title').text()
+      console.error('Article title found: ', articleName)
+      theText = theText.replace(
+        articleName,
+        `<span class="article-title">${articleName}</span>`,
+      )
+    }
+
+    // check for date
+
+    if ($(thisCitation).find('date').length) {
+      const thisDate = $(thisCitation).find('date').text()
+      console.error('Date found: ', thisDate)
+      theText = theText.replace(
+        thisDate,
+        `<span class="year">${thisDate}</span>`,
+      )
+    }
+
+    // check for volume
+
+    if ($(thisCitation).find('volume').length) {
+      const thisVolume = $(thisCitation).find('volume').text()
+      console.error('Volume found: ', thisVolume)
+      theText = theText.replace(
+        thisVolume,
+        `<span class="volume">${thisVolume}</span>`,
+      )
+    }
+
+    // check for issue
+
+    if ($(thisCitation).find('issue').length) {
+      const thisIssue = $(thisCitation).find('issue').text()
+      console.error('Issue found: ', thisIssue)
+      theText = theText.replace(
+        thisIssue,
+        `<span class="issue">${thisIssue}</span>`,
+      )
+    }
+
+    // check for pages – split into first-page, last-name if possible
+
+    if ($(thisCitation).find('pages').length) {
+      const thisPages = $(thisCitation).find('pages').text()
+      console.error('Pages found: ', thisPages)
+
+      if (thisPages.includes('-') || thisPages.includes('–')) {
+        console.error('--> Page range found, splitting!')
+        const pageSplit = thisPages.split(/-|–/)
+        theText = theText.replace(
+          thisPages,
+          `<span class="first-page">${pageSplit[0]}</span>-<span class="last-page">${pageSplit[1]}</span>`,
+        )
+      } else {
+        theText = theText.replace(
+          thisPages,
+          `<span class="first-page">${thisPages}</span>`,
+        )
+      }
+    }
+
+    // check for URLs–-if it's a DOI, call it a DOI
+
+    if ($(thisCitation).find('url').length) {
+      const theUrl = $(thisCitation).find('url').text()
+      console.error('URL found: ', theUrl)
+      const isDOI = theUrl.includes('doi.org')
+
+      if (isDOI) {
+        console.error('--> DOI found, calling it a DOI')
+      }
+
+      theText = theText.replace(
+        theUrl,
+        `<a ${isDOI ? 'class="doi"' : ''}>${theUrl}</a>`,
+      )
+    }
+
+    outText += `<span class="mixed-citation" id="ref=${citationNumber}">`
+    outText += theText
+    outText += `</span>`
+  }
+
+  // 1. replace <sequence> with <span class="mixed-citation" id="ref=###">
+  // 1.5. id is coming from <citation-number> if that exists, delete <citation-number>
+
+  // 2. replace <author> with <span class="authorgroup">
+  // 3. replace <title> with <title>
+
+  // 4. strip out all unknown tags, log them
+
+  return outText
 }
 
 // This is designed for testing anystyle's conversion. To run:
@@ -75,6 +236,6 @@ const anystyleXmlToHtml = anystyleXml => {
 
 // anyStyleToHtml(rawData, sampleReferenceArray)
 
-console.log(anystyleXmlToHtml(rawData))
+console.error('\n\n\nOutput: ', anystyleXmlToHtml(rawData))
 
 module.exports = anystyleXmlToHtml
