@@ -8,32 +8,32 @@ import { dashboard } from '../../support/routes'
 const decisionTextContent = 'Please fix Foo in the Paper!'
 const decisionFileName = 'test-pdf.pdf'
 
-describe('Completing a review', () => {
-  it('accept and do a review', () => {
+describe('checking manuscript version', () => {
+  it('author checks for new manuscript version', () => {
     cy.task('restore', 'commons/bootstrap')
+    cy.task('seed', 'three_reviews_completed') 
     cy.task('seedForms')
-
-    // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('role_names').then(name => {
-      /* Admin Assigns Editor to Manuscript */
+      // login as admin
       cy.login(name.role.admin.name, dashboard)
       DashboardPage.clickManuscriptNavButton()
       ManuscriptsPage.clickControlButton()
       ControlPage.getAssignSeniorEditorDropdown()
         .click({ force: true })
         .type(`${name.role.seniorEditor.username}{enter}`) // Assign Editor
+      
 
-      /* Ediot Submits a decision */
-      cy.login(name.role.seniorEditor.name, dashboard)
-      DashboardPage.clickControlPanel()
-      ControlPage.getPublishButton().should('be.disabled') // Verify publish button is disabled
-      // Fill the decision form
-      ControlPage.clickDecisionTextInput()
-      ControlPage.getDecisionTextInput().type(decisionTextContent)
-      ControlPage.getDecisionFileInput().attachFile(decisionFileName)
-      ControlPage.clickRevise()
-      ControlPage.clickSubmitDecisionButton() // Submit the decision
-      ControlPage.checkSvgExists() // Check appears in front of button
+       /* Edditor  Submits a decision */
+       cy.login(name.role.seniorEditor.name, dashboard)
+       DashboardPage.clickControlPanel()
+       ControlPage.getPublishButton().should('be.disabled') // Verify publish button is disabled
+       // Fill the decision form
+       ControlPage.clickDecisionTextInput()
+       ControlPage.getDecisionTextInput().type(decisionTextContent)
+       ControlPage.getDecisionFileInput().attachFile(decisionFileName)
+       ControlPage.clickRevise()
+       ControlPage.clickSubmitDecisionButton() // Submit the decision
+       ControlPage.checkSvgExists() // Check appears in front of button
 
       /* View Decision as an Author */
       cy.login(name.role.author.name, dashboard) // Login as an Author
@@ -52,16 +52,19 @@ describe('Completing a review', () => {
         .contains('test pdf')
         .should('exist') // Verify new submission got created
 
-    //   /* Editor Workflow: Approve the new Manuscript version */
-    //   cy.login(name.role.seniorEditor.name, dashboard)
-    //   DashboardPage.clickControlPanel()
-    //   ControlPage.getPublishButton().should('be.disabled') // Verify publish button is disabled
-    //   ControlPage.getDecisionTextInput().type('Great Paper!')
-    //   ControlPage.getDecisionFileInput().attachFile(decisionFileName)
-    //   ControlPage.clickAccept()
-    //   ControlPage.clickSubmitDecisionButton() // Submit the decision
-    //   ControlPage.checkSvgExists()
-    //   ControlPage.getPublishButton().should('not.be.disabled') // Verify publish button is not disabled */
+
+      cy.login(name.role.seniorEditor.name, dashboard)
+      DashboardPage.clickControlPanel()
+      ControlPage.getPublishButton().should('be.disabled') // Verify publish button is disabled
+ 
+
+
+
+    
+
+
+
     })
+ 
   })
 })
