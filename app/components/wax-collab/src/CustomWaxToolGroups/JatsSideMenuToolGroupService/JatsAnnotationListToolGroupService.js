@@ -5,6 +5,7 @@ import FundingGroup from './menugroups/FundingGroup'
 import CitationGroup from './menugroups/CitationGroup'
 import AcknowledgementsGroup from './menugroups/AcknowledgementsGroup'
 import KeywordGroup from './menugroups/KeywordGroup'
+import GlossaryGroup from './menugroups/GlossaryGroup'
 
 class JatsAnnotationListToolGroupService extends Service {
   register() {

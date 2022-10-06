@@ -34,7 +34,7 @@ class JatsSideMenu extends ToolGroup {
     this.toolGroups = [
       {
         name: 'FrontMatterTab',
-        groups: [frontmattergroup, fundinggroup, keywordgroup],
+        groups: [frontmattergroup, fundinggroup, keywordgroup, glossarygroup],
       },
       {
         name: 'BackMatterTab',

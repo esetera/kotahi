@@ -578,6 +578,18 @@ class JatsTagsService extends Service {
         },
       },
     })
+    createMark({
+      glossaryTerm: {
+        attrs: {
+          class: { default: 'glossary-term' },
+        },
+        excludes: 'keyword',
+        parseDOM: [{ tag: 'span.glossary-term' }],
+        toDOM() {
+          return ['span', { class: 'glossary-term', title: 'Glossary term' }, 0]
+        },
+      },
+    })
   }
 }
 
