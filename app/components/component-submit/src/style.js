@@ -9,7 +9,7 @@ export const Heading1 = styled.h1`
   margin: 0 0 calc(${th('gridUnit')} * 3);
 `
 
-export const Section = styled.div`
+export const Section = styled.section`
   display: flex;
   flex-direction: ${({ cssOverrides }) =>
     cssOverrides && cssOverrides['flex-direction']
