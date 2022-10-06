@@ -102,18 +102,21 @@ const getCitations = manuscript => {
     .join('')
 }
 
-/** Gets the custom suffix or null 
+/** Used to get a review or submission field
  * checking submission.decisionForm[fieldName] or submission[fieldName] */
-const getCustomSuffix = (manuscript, fieldName) => {
-   const decision = manuscript.reviews.find(r => r.isDecision)
-   const decisionSuffix = decision ? decision.jsonData[fieldName] : null
-  
-   if (decision && decisionSuffix) {
-     return decisionSuffix
-   } else if (manuscript.submission[fieldName]) {
-     return manuscript.submission[fieldName]
-   }
-   return null
+const getReviewOrSubmissionField = (manuscript, fieldName) => {
+  const decision = manuscript.reviews.find(r => r.isDecision)
+  const decisionField = decision ? decision.jsonData[fieldName] : null
+
+  if (decision && decisionField) {
+    return decisionField
+  }
+
+  if (manuscript.submission[fieldName]) {
+    return manuscript.submission[fieldName]
+  }
+
+  return null
 }
 
 /** Get DOI in form 10.12345/<suffix>
@@ -189,7 +192,9 @@ const publishArticleToCrossref = async manuscript => {
   const issueYear = getIssueYear(manuscript)
   const publishDate = new Date()
   const journalDoi = getDoi(0)
-  let doiSuffix = getCustomSuffix(manuscript, 'doiSuffix') || manuscript.id
+
+  const doiSuffix =
+    getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id
 
   const doi = getDoi(doiSuffix)
   const publishedLocation = `${config.crossref.publishedArticleLocationPrefix}${manuscript.shortId}`
@@ -378,12 +383,17 @@ const publishReviewsToCrossref = async manuscript => {
       }
 
       templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Review: ${manuscript.submission.description}`
-  
-      const doiSuffix = getCustomSuffix(manuscript, `review${reviewNumber}suffix`) || `${manuscript.id}/${reviewNumber}`
-      const doiSummarySuffix = getCustomSuffix(manuscript, 'summarysuffix') || `${manuscript.id}/`
+
+      const doiSuffix =
+        getReviewOrSubmissionField(manuscript, `review${reviewNumber}suffix`) ||
+        `${manuscript.id}/${reviewNumber}`
+
+      const doiSummarySuffix =
+        getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+        `${manuscript.id}/`
 
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
-        doiSuffix
+        doiSuffix,
       )
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-result/${reviewNumber}`
       templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
@@ -400,7 +410,7 @@ const publishReviewsToCrossref = async manuscript => {
       templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] = {
         inter_work_relation: [
           {
-            _: getDoi(doiSummarySuffix), // manuscript.submission.summarysuffix
+            _: getDoi(doiSummarySuffix),
             $: {
               'relationship-type': 'isSupplementTo',
               'identifier-type': 'doi',
@@ -451,10 +461,12 @@ const publishReviewsToCrossref = async manuscript => {
     }
     templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Summary of: ${manuscript.submission.description}`
 
-    const doiSummarySuffix = getCustomSuffix(manuscript, 'summarysuffix') || `${manuscript.id}/`
+    const doiSummarySuffix =
+      getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+      `${manuscript.id}/`
 
     templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
-      doiSummarySuffix
+      doiSummarySuffix,
     )
 
     templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-summary`
