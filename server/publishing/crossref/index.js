@@ -101,6 +101,23 @@ const getCitations = manuscript => {
     .join('')
 }
 
+/** Used to get a review or submission field
+ * checking submission.decisionForm[fieldName] or submission[fieldName] */
+const getReviewOrSubmissionField = (manuscript, fieldName) => {
+  const decision = manuscript.reviews.find(r => r.isDecision)
+  const decisionField = decision ? decision.jsonData[fieldName] : null
+
+  if (decision && decisionField) {
+    return decisionField
+  }
+
+  if (manuscript.submission[fieldName]) {
+    return manuscript.submission[fieldName]
+  }
+
+  return null
+}
+
 /** Get DOI in form 10.12345/<suffix>
  * If the configured prefix includes 'https://doi.org/' and/or a trailing slash, these are dealt with gracefully. */
 const getDoi = suffix => {
@@ -156,7 +173,9 @@ const isDOIInUse = async checkDOI => {
   try {
     // Try to find object listed at DOI
     await axios.get(`https://api.crossref.org/works/${checkDOI}/agency`)
-    console.log(`DOI '${checkDOI}' is already taken. Custom suffix is unavailable.`)
+    console.log(
+      `DOI '${checkDOI}' is already taken. Custom suffix is unavailable.`,
+    )
     return { isDOIValid: true } // DOI is already in use
   } catch (err) {
     if (err.response.status === 404) {
@@ -193,19 +212,9 @@ const publishArticleToCrossref = async manuscript => {
   const issueYear = getIssueYear(manuscript)
   const publishDate = new Date()
   const journalDoi = getDoi(0)
-  let doiSuffix = manuscript.id
 
-  const decision = manuscript.reviews.find(r => r.isDecision)
-
-  if (decision) {
-    const decisionSuffix = decision.jsonData.doiSuffix
-
-    if (decisionSuffix) {
-      doiSuffix = decisionSuffix
-    }
-  } else if (manuscript.submission.doiSuffix) {
-    doiSuffix = manuscript.submission.doiSuffix
-  }
+  const doiSuffix =
+    getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id
 
   const DOI = `${config.crossref.doiPrefix}/${doiSuffix}`
   const { isDOIValid } = await isDOIInUse(DOI) // True if DOI already in use
@@ -401,8 +410,17 @@ const publishReviewsToCrossref = async manuscript => {
       }
 
       templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Review: ${manuscript.submission.description}`
+
+      const doiSuffix =
+        getReviewOrSubmissionField(manuscript, `review${reviewNumber}suffix`) ||
+        `${manuscript.id}/${reviewNumber}`
+
+      const doiSummarySuffix =
+        getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+        `${manuscript.id}/`
+
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
-        `${manuscript.id}/${reviewNumber}`,
+        doiSuffix,
       )
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-result/${reviewNumber}`
       templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
@@ -419,7 +437,7 @@ const publishReviewsToCrossref = async manuscript => {
       templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] = {
         inter_work_relation: [
           {
-            _: getDoi(`${manuscript.id}/`),
+            _: getDoi(doiSummarySuffix),
             $: {
               'relationship-type': 'isSupplementTo',
               'identifier-type': 'doi',
@@ -470,8 +488,12 @@ const publishReviewsToCrossref = async manuscript => {
     }
     templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Summary of: ${manuscript.submission.description}`
 
+    const doiSummarySuffix =
+      getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+      `${manuscript.id}/`
+
     templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
-      `${manuscript.id}/`,
+      doiSummarySuffix,
     )
 
     templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-summary`
