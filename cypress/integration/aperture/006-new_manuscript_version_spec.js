@@ -4,12 +4,11 @@ import { ControlPage } from '../../page-object/control-page'
 import { ManuscriptsPage } from '../../page-object/manuscripts-page'
 import { SubmissionFormPage } from '../../page-object/submission-form-page'
 import { dashboard } from '../../support/routes'
-
 const decisionTextContent = 'Please fix Foo in the Paper!'
 const decisionFileName = 'test-pdf.pdf'
 
 describe('checking manuscript version', () => {
-  it('author checks for new manuscript version', () => {
+  it('editor checks for new manuscript version', () => {
     cy.task('restore', 'commons/bootstrap')
     cy.task('seed', 'three_reviews_completed') 
     cy.task('seedForms')
@@ -21,9 +20,8 @@ describe('checking manuscript version', () => {
       ControlPage.getAssignSeniorEditorDropdown()
         .click({ force: true })
         .type(`${name.role.seniorEditor.username}{enter}`) // Assign Editor
-      
 
-       /* Edditor  Submits a decision */
+       // Edditor  Submits a decision 
        cy.login(name.role.seniorEditor.name, dashboard)
        DashboardPage.clickControlPanel()
        ControlPage.getPublishButton().should('be.disabled') // Verify publish button is disabled
@@ -35,7 +33,7 @@ describe('checking manuscript version', () => {
        ControlPage.clickSubmitDecisionButton() // Submit the decision
        ControlPage.checkSvgExists() // Check appears in front of button
 
-      /* View Decision as an Author */
+      // View Decision as an Author 
       cy.login(name.role.author.name, dashboard) // Login as an Author
       DashboardPage.getSubmittedManuscript().click() // Click on first MySubmission
       // Verify Decision Content
@@ -52,19 +50,10 @@ describe('checking manuscript version', () => {
         .contains('test pdf')
         .should('exist') // Verify new submission got created
 
-
+      // Login as editor and check the new version submission form
       cy.login(name.role.seniorEditor.name, dashboard)
       DashboardPage.clickControlPanel()
       ControlPage.getPublishButton().should('be.disabled') // Verify publish button is disabled
- 
-
-
-
-    
-
-
-
     })
- 
   })
 })
