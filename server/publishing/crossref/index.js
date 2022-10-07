@@ -6,8 +6,6 @@ const axios = require('axios')
 const path = require('path')
 const config = require('config')
 const { v4: uuid } = require('uuid')
-const { customDOIAvail } = require('../../model-manuscript/src/graphql.js')
-
 const { parseDate } = require('../../utils/dateUtils')
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 
@@ -154,6 +152,27 @@ const getIssueYear = manuscript => {
   return yearString
 }
 
+const isDOISuffixAvailable = async suffix => {
+  const DOI = config.crossref.doiPrefix + '/' + suffix // DOI in form PRE/SUF
+
+  try {
+    // Try to find object listed at DOI
+    await axios.get(`https://api.crossref.org/works/${DOI}/agency`)
+    return { isDOIValid: false } // DOI is unavailable with custom suffix
+  } catch (err) {
+    if (err.response.status === 404) {
+      // HTTP 404 "Not found" response. The DOI is not known by Crossref
+      console.log(`DOI '${DOI}' is available.`)
+      return { isDOIValid: true }
+    }
+    // Unexpected HTTP response (5xx)
+    // Assume that the custom suffix is unavailable.
+    console.log(`DOI '${DOI}' is already taken. Custom suffix is unavailable.`)
+
+    return { isDOIValid: false }
+  }
+}
+
 const emailRegex = /^[\p{L}\p{N}!/+\-_]+(\.[\p{L}\p{N}!/+\-_]+)*@[\p{L}\p{N}!/+\-_]+(\.[\p{L}_-]+)+$/u
 
 /** Send submission to register an article, with appropriate metadata */
@@ -189,9 +208,10 @@ const publishArticleToCrossref = async manuscript => {
     doiSuffix = manuscript.submission.doiSuffix
   }
 
-  if (!customDOIAvail(doiSuffix)) {
-    console.error("Custom DOI is not available.")
-    throw Error("Custom DOI is not available.")
+  const { isDOIValid } = await isDOISuffixAvailable(doiSuffix)
+
+  if (!isDOIValid) {
+    throw Error('Custom DOI is not available.')
   }
 
   const doi = getDoi(doiSuffix)
@@ -505,4 +525,7 @@ const publishReviewsToCrossref = async manuscript => {
   })
 }
 
-module.exports = publishToCrossref
+module.exports = {
+  publishToCrossref,
+  isDOISuffixAvailable,
+}

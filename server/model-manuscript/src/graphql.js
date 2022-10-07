@@ -16,7 +16,8 @@ const TeamMember = require('../../model-team/src/team_member')
 const { getPubsub } = pubsubManager
 const Form = require('../../model-form/src/form')
 const Message = require('../../model-message/src/message')
-const publishToCrossref = require('../../publishing/crossref')
+const { publishToCrossref } = require('../../publishing/crossref')
+const { isDOISuffixAvailable } = require('../../publishing/crossref')
 
 const {
   fixMissingValuesInFiles,
@@ -160,24 +161,6 @@ const getCss = async () => {
   const css = await generateCss()
   return css
 }
-
-const customDOIAvail = async suffix => {
-  const DOI = config.crossref.doiPrefix + '/' + suffix // DOI in form PRE/SUF
-  try { // Try to find object listed at DOI
-    await axios.get(`https://api.crossref.org/works/${DOI}/agency`)
-    return { isDOIValid: false } // DOI is unavailable with custom suffix
-  } catch (err) {
-    if (err.response.status === 404) { 
-      // HTTP 404 "Not found" response. The DOI is not known by Crossref
-      console.log(`DOI '${DOI}' not found on Crossref. Custom suffix is available.`)
-      return { isDOIValid: true }
-    }
-    console.warn(err)
-    // Unexpected HTTP response (5xx)
-    // Assume that the custom suffix is unavailable.
-    return { isDOIValid: false }
-  }
-} 
 
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
@@ -1352,10 +1335,11 @@ const resolvers = {
       }
     },
 
-    // To be called in submit manuscript as 
+    // To be called in submit manuscript as
     // first validation step for custom suffix
-    async validateSUFFIX(_, { suffix }, ctx) {
-      return await customDOIAvail(suffix)
+    async validateSuffix(_, { suffix }, ctx) {
+      const { isDOIValid } = isDOISuffixAvailable(suffix)
+      return isDOIValid
     },
   },
   // We want submission info to come out as a stringified JSON, so that we don't have to
@@ -1372,7 +1356,7 @@ const typeDefs = `
     paginatedManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!): PaginatedManuscripts
     publishedManuscripts(sort:String, offset: Int, limit: Int): PaginatedManuscripts
     validateDOI(articleURL: String): validateDOIResponse
-    validateSUFFIX(suffix: String): validateDOIResponse
+    validateSuffix(suffix: String): validateDOIResponse
     manuscriptsUserHasCurrentRoleIn: [Manuscript]
 
     """ Get published manuscripts with irrelevant fields stripped out. Optionally, you can specify a startDate and/or limit. """
@@ -1592,5 +1576,4 @@ const typeDefs = `
 module.exports = {
   typeDefs,
   resolvers,
-  customDOIAvail,
 }
