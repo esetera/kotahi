@@ -185,7 +185,7 @@ const Menu = ({
           profileLink={profileLink}
           user={user}
         />
-        {hasChildren &&
+        {navLinkComponents &&
           navLinkComponents.map(navInfo =>
             navInfo.menu ? (
               <SubMenu key={navInfo.name} location={location} {...navInfo} />
