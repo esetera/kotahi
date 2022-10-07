@@ -16,7 +16,8 @@ const TeamMember = require('../../model-team/src/team_member')
 const { getPubsub } = pubsubManager
 const Form = require('../../model-form/src/form')
 const Message = require('../../model-message/src/message')
-const publishToCrossref = require('../../publishing/crossref')
+const { publishToCrossref } = require('../../publishing/crossref')
+const { isDOISuffixAvailable } = require('../../publishing/crossref')
 
 const {
   fixMissingValuesInFiles,
@@ -1405,8 +1406,9 @@ const resolvers = {
 
     // To be called in submit manuscript as
     // first validation step for custom suffix
-    async validateSUFFIX(_, { suffix }, ctx) {
-      return await customDOIAvail(suffix)
+    async validateSuffix(_, { suffix }, ctx) {
+      const { isDOIValid } = isDOISuffixAvailable(suffix)
+      return isDOIValid
     },
   },
   // We want submission info to come out as a stringified JSON, so that we don't have to
@@ -1423,7 +1425,7 @@ const typeDefs = `
     paginatedManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
     publishedManuscripts(sort:String, offset: Int, limit: Int): PaginatedManuscripts
     validateDOI(articleURL: String): validateDOIResponse
-    validateSUFFIX(suffix: String): validateDOIResponse
+    validateSuffix(suffix: String): validateDOIResponse
     manuscriptsUserHasCurrentRoleIn: [Manuscript]
 
     """ Get published manuscripts with irrelevant fields stripped out. Optionally, you can specify a startDate and/or limit. """
@@ -1646,5 +1648,4 @@ const typeDefs = `
 module.exports = {
   typeDefs,
   resolvers,
-  customDOIAvail,
 }
