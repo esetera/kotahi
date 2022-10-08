@@ -3,14 +3,15 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
 import { unescape, get, set, debounce } from 'lodash'
-import { TextField, RadioGroup, CheckboxGroup } from '@pubsweet/ui'
-import { th, grid } from '@pubsweet/ui-toolkit'
+import { RadioGroup, CheckboxGroup } from '@pubsweet/ui'
+import { th } from '@pubsweet/ui-toolkit'
 import {
   Section as Container,
   Select,
   FilesUpload,
   Attachment,
   FieldPublishingSelector,
+  TextInput,
 } from '../../../shared'
 import { Heading1, Section, Legend, SubNote } from '../style'
 import AuthorsInput from './AuthorsInput'
@@ -72,7 +73,7 @@ const ModalWrapper = styled.div`
 `
 
 const LowerPadded = styled.div`
-  padding-bottom: ${grid(3)};
+  padding-bottom: 0;
 `
 
 const SafeRadioGroup = styled(RadioGroup)`
@@ -133,7 +134,7 @@ const filterFileManuscript = files =>
 
 /** Definitions for available field types */
 const elements = {
-  TextField,
+  TextField: TextInput,
   RadioGroup: PaddedRadioGroup,
   CheckboxGroup: PaddedCheckboxGroup,
   AuthorsInput: PaddedAuthorsInput,

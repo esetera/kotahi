@@ -23,7 +23,7 @@ export const Section = styled.section`
 
 export const Legend = styled.div`
   font-size: ${th('fontSizeBase')};
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: ${({ space, theme }) => space && theme.gridUnit};
 `
 
