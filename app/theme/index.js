@@ -15,6 +15,8 @@ import {
 } from './elements'
 import brandConfig from '../brandConfig.json'
 import lightenBy from '../shared/lightenBy'
+import colors from './colors'
+import spacing from './spacing'
 
 const defaultInstanceColor = '#2fac66'
 
@@ -31,6 +33,9 @@ const colorPrimary = validateInstanceConfigColors(brandConfig.primaryColor)
 const colorSecondary = validateInstanceConfigColors(brandConfig.secondaryColor)
 
 const cokoTheme = {
+  colors,
+  spacing,
+
   /* Colors */
   colorBackground: 'white',
   colorSecondaryBackground: '#f9fafb', // custom
@@ -56,13 +61,13 @@ const cokoTheme = {
 
   // fonts
   fontInterface:
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
+    "-apple-system, Roboto, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
   fontHeading:
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
+    "-apple-system, Roboto, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
   fontReading:
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
+    "-apple-system, Roboto, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
   fontWriting:
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
+    "-apple-system, Roboto, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
 
   // font sizes
   fontSizeBase: '16px',
