@@ -27,8 +27,6 @@ const waxTheme = {
   colorYear: '#D29435',
   colorFirstPage: 'lime',
   colorLastPage: '#7599F8',
-<<<<<<< HEAD
-<<<<<<< HEAD
   colorFunding: '#cccccccc',
   colorFundingSource: '#b48ee8',
   colorFundingStatement: '#dc7be5',
@@ -39,13 +37,6 @@ const waxTheme = {
   colorAppendix: 'teal',
   colorAcknowledgements: 'palegreen',
   colorAbstract: 'red',
-=======
-  colorKeyword: '#ccc',
->>>>>>> 7e1eb1db (feat(ui): styling for keywords)
-=======
-  colorKeyword: 'rgb(239, 239, 249)',
-  colorGlossary: 'rgb(184, 184, 210)',
->>>>>>> 294b266a (fix(ui): added styling for glossaries per henrik's design)
 }
 
 export default waxTheme
