@@ -790,7 +790,6 @@ const EditorStyles = css`
     //   outline-color: var(--keywordColorValues);
     // }
   }
-<<<<<<< HEAD
 
   /* glossary */
 
@@ -836,8 +835,6 @@ const EditorStyles = css`
   .glossary-term {
     font-weight: bold;
   }
-=======
->>>>>>> 7e1eb1db (feat(ui): styling for keywords)
 `
 
 export default EditorStyles
