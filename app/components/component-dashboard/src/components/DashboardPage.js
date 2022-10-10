@@ -50,6 +50,9 @@ const DashboardPage = ({ history, ...props }) => {
 
   const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
 
+  const [setReviewInProgress] = useMutation(
+    mutations.setReviewInProgressMutation,
+  )
   // const [deleteManuscript] = useMutation(mutations.deleteManuscriptMutation, {
   //   update: (cache, { data: { deleteManuscript } }) => {
   //     const data = cache.readQuery({ query: queries.dashboard })
@@ -111,6 +114,7 @@ const DashboardPage = ({ history, ...props }) => {
       prettyRoleText={prettyRoleText}
       reviewerLatestVersions={reviewerLatestVersions}
       reviewerRespond={reviewerRespond}
+      setReviewInProgress={setReviewInProgress}
       shouldShowShortId={shouldShowShortId}
       urlFrag={urlFrag}
     />

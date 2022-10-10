@@ -240,9 +240,9 @@ const query = gql`
   }
 `
 
-const completeReviewMutation = gql`
-  mutation($id: ID!) {
-    completeReview(id: $id) {
+const setReviewCompletedMutation = gql`
+  mutation($manuscriptId: ID!) {
+    updateTeamMemberStatus(manuscriptId: $manuscriptId, status: "completed") {
       id
       status
     }
@@ -261,8 +261,10 @@ const urlFrag = config.journal.metadata.toplevel_urlfragment
 
 const ReviewPage = ({ match, ...props }) => {
   const currentUser = useCurrentUser()
+  // TODO: fix bug with currentUser getting wiped
+  // console.log('ReviewPage currentUser', currentUser)
   const [updateReviewMutation] = useMutation(updateReviewMutationQuery)
-  const [completeReview] = useMutation(completeReviewMutation)
+  const [setReviewCompleted] = useMutation(setReviewCompletedMutation)
   const [createFile] = useMutation(createFileMutation)
   const [updatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
   const [completeComments] = useMutation(COMPLETE_COMMENTS)
@@ -456,10 +458,10 @@ const ReviewPage = ({ match, ...props }) => {
     })
   }
 
-  const handleSubmit = async ({ reviewId, history }) => {
-    await completeReview({
+  const handleSubmit = async ({ manuscriptId, history }) => {
+    await setReviewCompleted({
       variables: {
-        id: reviewId,
+        manuscriptId,
       },
     })
 
@@ -485,7 +487,7 @@ const ReviewPage = ({ match, ...props }) => {
       deleteFile={deleteFile}
       onSubmit={values =>
         handleSubmit({
-          reviewId: existingReview.id,
+          manuscriptId: existingReview.manuscriptId,
           history: props.history,
         })
       }

@@ -34,6 +34,9 @@ const ReviewLayout = ({
   decisionForm,
   threadedDiscussionProps,
 }) => {
+  // TODO: fix bug with currentUser getting wiped
+  // console.log('currentUser:', currentUser)
+
   const reviewSections = []
   const latestVersion = versions[0]
   const priorVersions = versions.slice(1)

@@ -25,6 +25,7 @@ const Dashboard = ({
   reviewerLatestVersions,
   currentUser,
   reviewerRespond,
+  setReviewInProgress,
   editorLatestVersions,
   urlFrag,
   shouldShowShortId,
@@ -78,6 +79,7 @@ const Dashboard = ({
                 currentUser={currentUser}
                 key={version.id}
                 reviewerRespond={reviewerRespond}
+                setReviewInProgress={setReviewInProgress}
                 urlFrag={urlFrag}
                 version={version}
               />
