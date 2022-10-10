@@ -1,3 +1,4 @@
+import { rgb } from 'color'
 import theme from '../../../../theme'
 
 // NOTE: this overrides the Kotahi default theme!
