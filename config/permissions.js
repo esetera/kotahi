@@ -186,12 +186,19 @@ const userIsReviewAuthorAndReviewIsNotCompleted = rule({
   if (!ctx.user) return false
   let manuscriptId
 
-  if (args.id) {
+  // updateTeamMemberStatus
+  if (args.manuscriptId) manuscriptId = args.manuscriptId
+
+  // updateReview
+  if (!manuscriptId && args.id) {
     const review = await ctx.connectors.Review.model.query().findById(args.id)
     if (review) manuscriptId = review.manuscriptId
   }
 
-  if (!manuscriptId) manuscriptId = args.input.manuscriptId
+  // updateReview DecisionForm fallback
+  if (!manuscriptId && args.input && args.input.manuscriptId) {
+    manuscriptId = args.input.manuscriptId
+  }
 
   const manuscript = await ctx.connectors.Manuscript.model
     .query()
@@ -217,12 +224,20 @@ const userIsEditorOfTheManuscriptOfTheReview = rule({
 })(async (parent, args, ctx, info) => {
   let manuscriptId
 
-  if (args.id) {
+  // updateTeamMemberStatus
+  if (args.manuscriptId) manuscriptId = args.manuscriptId
+
+  // updateReview
+  if (!manuscriptId && args.id) {
     const review = await ctx.connectors.Review.model.query().findById(args.id)
     if (review) manuscriptId = review.manuscriptId
   }
 
-  if (!manuscriptId) manuscriptId = args.input.manuscriptId
+  // updateReview DecisionForm fallback
+  if (!manuscriptId && args.input && args.input.manuscriptId) {
+    manuscriptId = args.input.manuscriptId
+  }
+
   return userIsEditorQuery(ctx, manuscriptId)
 })
 
@@ -410,7 +425,7 @@ const permissions = {
       userIsEditorOfTheManuscriptOfTheReview,
     ),
     reviewerResponse: or(userIsInvitedReviewer, userHasAcceptedInvitation),
-    completeReview: or(
+    updateTeamMemberStatus: or(
       userIsReviewAuthorAndReviewIsNotCompleted,
       userIsEditorOfTheManuscriptOfTheReview,
     ),
