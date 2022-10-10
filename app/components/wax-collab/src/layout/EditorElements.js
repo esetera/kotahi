@@ -438,24 +438,10 @@ const EditorStyles = css`
   .reflist h3,
   .reflist h4,
   .reflist h5,
-<<<<<<< HEAD
   .reflist h6 {
     margin: 0 0 8px 0;
     font-size: 18px;
     font-weight: bold;
-=======
-  .reflist h6,
-  h1.referenceheader {
-    margin: 0 0 8px 0;
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-  p.reference {
-    &:before {
-      content: '§ ';
-    }
->>>>>>> 1f50d28d (fix(ui): fixes styling for wax sections)
   }
 
   section.acknowledgementsSection {
@@ -513,12 +499,7 @@ const EditorStyles = css`
   .appendix h3,
   .appendix h4,
   .appendix h5,
-<<<<<<< HEAD
   .appendix h6 {
-=======
-  .appendix h6,
-  h1.appendixheader {
->>>>>>> 1f50d28d (fix(ui): fixes styling for wax sections)
     margin: 0 0 8px 0;
     font-size: 18px;
     font-weight: bold;
@@ -807,7 +788,6 @@ const EditorStyles = css`
     //   outline-color: var(--keywordColorValues);
     // }
   }
-<<<<<<< HEAD
 
   /* glossary */
 
@@ -853,8 +833,6 @@ const EditorStyles = css`
   .glossary-term {
     font-weight: bold;
   }
-=======
->>>>>>> 7e1eb1db (feat(ui): styling for keywords)
 `
 
 export default EditorStyles
