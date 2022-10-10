@@ -15,7 +15,8 @@ describe('Form builder', () => {
       cy.login(name.role.admin.name, dashboard)
     })
 
-    // enter the from page and assert the fileds
+    // enter the from page and assert the fileds()
+    Menu.getSettingsButton().click()
     Menu.clickForms()
     cy.contains('Submission').click()
 
