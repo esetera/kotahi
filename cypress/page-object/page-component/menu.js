@@ -14,6 +14,7 @@ const MENU_CONTAINER = 'menu-container'
 const USER_BUTTON = 'Menu__UserItem'
 const BACKGROUND = 'Menu__Root'
 const MESSAGE_NOT_AUTHORISED = 'AdminPage__Root'
+const SETTINGS_BUTTON = '.Menu__NonLink-sc-7we5h-2.jValRd > :nth-child(1)'
 
 export const Menu = {
   getMenuContainer() {
@@ -29,6 +30,9 @@ export const Menu = {
     this.getDashboardButton().click()
     cy.awaitDisappearSpinner()
     DashboardPage.getHeader().should('contain', 'Dashboard')
+  },
+  getSettingsButton() {
+    return cy.get(SETTINGS_BUTTON).contains('Settings')
   },
   getFormsButton() {
     return this.getMenuContainer().contains('Forms')
