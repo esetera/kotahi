@@ -266,7 +266,7 @@ const Manuscripts = ({ history, ...props }) => {
     setIsOpenBulkArchiveModal(false)
   }
 
-  const confirmsBulkArchive = () => {
+  const doConfirmBulkArchive = () => {
     confirmBulkArchive(selectedNewManuscripts)
 
     setSelectedNewManuscripts([])
