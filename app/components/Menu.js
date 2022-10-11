@@ -116,7 +116,7 @@ const SubMenu = ({ location, ...navInfo }) => {
     <>
       <Item
         {...navInfo}
-        active={menuItemIsActive(location, navInfo)}
+        active={location.pathname === navInfo.link}
         onClick={() => setOpen(!open)}
         open={open}
       />
@@ -128,6 +128,7 @@ const SubMenu = ({ location, ...navInfo }) => {
                 key={subNavInfo.link}
                 location={location}
                 {...subNavInfo}
+                active={location.pathname === subNavInfo.link}
                 subLink
               />
             )
@@ -145,10 +146,6 @@ const SubMenu = ({ location, ...navInfo }) => {
     </>
   )
 }
-
-const menuItemIsActive = (location, item) =>
-  item.link === location.pathname ||
-  item.links?.some(subItem => menuItemIsActive(location, subItem))
 
 const Menu = ({
   className,
