@@ -7,7 +7,7 @@ import { dashboard } from '../../support/routes'
 const invalid_doi_link="https://80000hours.com"
 describe('validating doi field in submission form', () => {
   it('check doi link is available in submission form', () => {
-    cy.task('restore', 'commons/bootstrap')
+    cy.task('restore', 'elife_bootstrap')
     cy.task('seed', 'submission_complete') // task to restore the database as per the  dumps/submission_complete.sql
     cy.task('seedForms')
     cy.fixture('submission_form_data').then(data => {
@@ -18,7 +18,11 @@ describe('validating doi field in submission form', () => {
         // select Control on the Manuscripts page
         Menu.clickManuscripts()
         ManuscriptsPage.selectOptionWithText('Evaluation')
+        SubmissionFormPage.fillInArticleld(data.articleId)
         SubmissionFormPage.fillInDoi(data.doi)
+        SubmissionFormPage.fillInArticleUrl(data.doi)
+        SubmissionFormPage.fillInBioRxivArticleUrl(data.articleId)
+        SubmissionFormPage.fillInDescription(data.description)
         SubmissionFormPage.clickSubmitResearch()
 
         //check for the submission form contains doi
@@ -29,7 +33,7 @@ describe('validating doi field in submission form', () => {
   })
 
   it('error message is available for incorrect doi link', () => {
-    cy.task('restore', 'commons/bootstrap')
+    cy.task('restore', 'elife_bootstrap')
     cy.task('seed', 'submission_complete') // task to restore the database as per the  dumps/submission_complete.sql
     cy.task('seedForms')
     cy.fixture('role_names').then(name => {
