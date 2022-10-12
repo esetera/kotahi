@@ -1,12 +1,18 @@
 /* eslint-disable jest/expect-expect */
 import { FormsPage } from '../../page-object/forms-page'
 import { Menu } from '../../page-object/page-component/menu'
+import { DashboardPage } from '../../page-object/dashboard-page'
+import { ManuscriptsPage } from '../../page-object/manuscripts-page'
+import { SubmissionFormPage } from '../../page-object/submission-form-page'
 import { dashboard } from '../../support/routes'
 
-describe('Form builder', () => {
-  it('views a form field', () => {
+const bioRxivArticleUrl = 'https://www.biorxiv.org/content/10.1101/2022.05.28.493855v1'
+const hypothesisUrl = 'https://hypothes.is/login'
+
+describe('Update the submission form field', () => {
+  it('update submission form field to publish to hypothesis group', () => {
     // task to restore the database as per the  dumps/commons/bootstrap.sql
-    cy.task('restore', 'commons/bootstrap')
+    cy.task('restore', 'elife_bootstrap')
     cy.task('seedForms')
 
     // login as admin
@@ -23,23 +29,41 @@ describe('Form builder', () => {
     // For Submission field
     FormsPage.getFormTitleTab(0).should(
       'contain',
-      'Research Object Submission Form',
+      'eLife Submission Form',
     )
     FormsPage.clickFormOption(3)
     FormsPage.getFieldValidate()
-    // cy.get(':nth-child(8) > .style__Legend-sc-1npdrat-1')
-    // cy.get(
-    //   ':nth-child(8) > :nth-child(2) > .css-3x5r4n-container > .react-select__control > .react-select__value-container',
-    // ).click()
-    // cy.get('.react-select__option').eq(0).click()
-    // cy.contains('Update Field').click()
-    // // adding a field in submission form
-    // cy.contains('Add Field').click({ force: true })
-    // cy.contains('Choose in the list').click()
-    // cy.get('button')
-    // cy.contains('VisualAbstract').click()
-    // cy.contains('Name (internal field name)').click()
-    // cy.get('[name=name]').type('submission.visualAbstract')
-    // cy.contains('Update Field').click()
+
+    cy.get(':nth-child(3) > .sc-dmlrTW').contains('Always').click()
+    cy.get(':nth-child(15) > :nth-child(2)').type('test_tag')
+    cy.contains('Update Field').click({ force: true })
+    Menu.clickManuscripts()
+    DashboardPage.clickSubmissionButton() 
+    // Upload manuscript
+    cy.get('button').contains('Submit a URL instead').click()
+    
+    cy.fixture('submission_form_data').then(data => {
+      SubmissionFormPage.fillInArticleld(data.articleId)
+      SubmissionFormPage.fillInDoi(data.doi)
+      SubmissionFormPage.fillInArticleUrl(data.doi)
+      SubmissionFormPage.fillInBioRxivArticleUrl(bioRxivArticleUrl)
+      SubmissionFormPage.fillInDescription(data.description)
+      cy.wait(2000)
+      SubmissionFormPage.clickSubmitResearch()
+      ManuscriptsPage.selectOptionWithText('Evaluation')
+      SubmissionFormPage.clickSubmitResearch()
+      ManuscriptsPage.selectOptionWithText('Publish')
     })
-})
+
+  })
+  it('update submission form field to publish to hypothesis group', () => {
+    cy.visit(hypothesisUrl)
+    cy.get('#deformField2').type('testing_profile')
+
+    cy.get('#deformField3').type('complex@123')
+    cy.wait(2000)
+    cy.get('#deformLog_in').click()
+  })
+
+ })
+   
