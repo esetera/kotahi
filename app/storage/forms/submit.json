@@ -16,6 +16,22 @@
       "component": "TextField"
     },
     {
+      "id": "1c2e9325-3fa8-41f3-8607-180eb8a25bb3",
+      "name": "submission.DOI",
+      "title": "DOI",
+      "options": [],
+      "validate": [
+        {
+          "id": "48109c76-55b3-41b8-b330-6115dcbd9b4a",
+          "label": "Required",
+          "value": "required"
+        }
+      ],
+      "component": "TextField",
+      "placeholder": "Enter the manuscript's DOI", 
+      "doiValidation": "true"
+    },
+    {
       "id": "5a22ec26-3885-432c-8c80-b207a62a7b04",
       "name": "submission.articleURL",
       "title": "Article URL",
