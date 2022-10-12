@@ -563,7 +563,6 @@ class JatsTagsService extends Service {
         parseDOM: [{ tag: 'span.keyword' }],
         toDOM() {
           return ['span', { class: 'keyword', title: 'Keyword' }, 0]
-<<<<<<< HEAD
         },
       },
     })
@@ -576,8 +575,6 @@ class JatsTagsService extends Service {
         parseDOM: [{ tag: 'span.glossary-term' }],
         toDOM() {
           return ['span', { class: 'glossary-term', title: 'Glossary term' }, 0]
-=======
->>>>>>> 04bb24d4 (merge request changes)
         },
       },
     })
