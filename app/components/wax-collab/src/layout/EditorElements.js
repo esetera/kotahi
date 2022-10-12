@@ -424,8 +424,8 @@ const EditorStyles = css`
 
     & > :last-child {
       margin-bottom: 0;
-      }
     }
+  }
 
   .reflist h1,
   .reflist h2,
