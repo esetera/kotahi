@@ -152,24 +152,22 @@ const getIssueYear = manuscript => {
   return yearString
 }
 
-const isDOISuffixAvailable = async suffix => {
-  const DOI = config.crossref.doiPrefix + '/' + suffix // DOI in form PRE/SUF
-
+const isDOIInUse = async checkDOI => {
   try {
     // Try to find object listed at DOI
-    await axios.get(`https://api.crossref.org/works/${DOI}/agency`)
-    return { isDOIValid: false } // DOI is unavailable with custom suffix
+    await axios.get(`https://api.crossref.org/works/${checkDOI}/agency`)
+    console.log(`DOI '${checkDOI}' is already taken. Custom suffix is unavailable.`)
+    return { isDOIValid: true } // DOI is already in use
   } catch (err) {
     if (err.response.status === 404) {
       // HTTP 404 "Not found" response. The DOI is not known by Crossref
-      console.log(`DOI '${DOI}' is available.`)
-      return { isDOIValid: true }
+      console.log(`DOI '${checkDOI}' is available.`)
+      return { isDOIValid: false }
     }
     // Unexpected HTTP response (5xx)
     // Assume that the custom suffix is unavailable.
-    console.log(`DOI '${DOI}' is already taken. Custom suffix is unavailable.`)
 
-    return { isDOIValid: false }
+    return { isDOIValid: true }
   }
 }
 
@@ -196,6 +194,7 @@ const publishArticleToCrossref = async manuscript => {
   const publishDate = new Date()
   const journalDoi = getDoi(0)
   let doiSuffix = manuscript.id
+
   const decision = manuscript.reviews.find(r => r.isDecision)
 
   if (decision) {
@@ -208,9 +207,10 @@ const publishArticleToCrossref = async manuscript => {
     doiSuffix = manuscript.submission.doiSuffix
   }
 
-  const { isDOIValid } = await isDOISuffixAvailable(doiSuffix)
+  const DOI = `${config.crossref.doiPrefix}/${doiSuffix}`
+  const { isDOIValid } = await isDOIInUse(DOI) // True if DOI already in use
 
-  if (!isDOIValid) {
+  if (isDOIValid) {
     throw Error('Custom DOI is not available.')
   }
 
@@ -527,5 +527,5 @@ const publishReviewsToCrossref = async manuscript => {
 
 module.exports = {
   publishToCrossref,
-  isDOISuffixAvailable,
+  isDOIInUse,
 }
