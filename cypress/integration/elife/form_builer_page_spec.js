@@ -6,7 +6,7 @@ import { dashboard } from '../../support/routes'
 describe('Form builder', () => {
   it('views a form field', () => {
     // task to restore the database as per the  dumps/commons/bootstrap.sql
-    cy.task('restore', 'commons/bootstrap')
+    cy.task('restore', 'elife_bootstrap')
     cy.task('seedForms')
 
     // login as admin
@@ -23,7 +23,7 @@ describe('Form builder', () => {
     // For Submission field
     FormsPage.getFormTitleTab(0).should(
       'contain',
-      'Research Object Submission Form',
+      'eLife Submission Form',
     )
     FormsPage.clickFormOption(1)
     FormsPage.getFieldValidate()
