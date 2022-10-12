@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
 import { unescape, get, set, debounce } from 'lodash'
-import { RadioGroup, CheckboxGroup } from '@pubsweet/ui'
+import { RadioGroup } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import {
   Section as Container,
@@ -12,6 +12,7 @@ import {
   Attachment,
   FieldPublishingSelector,
   TextInput,
+  CheckboxGroup as CheckboxGroupNew,
 } from '../../../shared'
 import { Heading1, Section, Legend, SubNote } from '../style'
 import AuthorsInput from './AuthorsInput'
@@ -88,7 +89,7 @@ const PaddedRadioGroup = props => (
 
 const PaddedCheckboxGroup = props => (
   <LowerPadded>
-    <CheckboxGroup {...props} />
+    <CheckboxGroupNew {...props} />
   </LowerPadded>
 )
 

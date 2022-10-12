@@ -14,23 +14,26 @@ const styles = th => ({
 
   control: (provided, state) => ({
     ...provided,
+    background: th.colors.neutral.grey[50],
     border: !state.selectProps.standalone
       ? state.isFocused
-        ? `1px solid ${th.colorPrimary}`
-        : `1px solid ${th.colorBorder}`
+        ? `1px solid ${th.colors.neutral.grey[900]}`
+        : `1px solid ${th.colors.neutral.grey[700]}`
       : 'none',
     boxShadow: !state.selectProps.standalone
       ? state.isFocused
         ? `0 0 0 1px ${th.colorPrimary}`
-        : 'none'
+        : 'inset 0px 0px 4px rgba(0, 0, 0, 0.07)'
       : state.isFocused
       ? `0 0 0 1px ${th.colorPrimary}`
       : th.boxShadow,
 
     borderRadius: th.borderRadius,
     '&:hover': {
-      boxShadow: `0 0 0 1px ${th.colorPrimary}`,
+      /* boxShadow: `0 0 0 1px ${th.colorPrimary}`, */
+      boxShadow: `1px solid ${th.colors.neutral.grey[900]}`,
     },
+    fontSize: 14,
     minHeight: `calc(${th.gridUnit} * 5)`,
   }),
 

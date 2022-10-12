@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
 import waxDefaultStyles from './waxDefaultStyles'
 import EditorElements from './EditorElements'
+import theme from '../../../../theme'
 
 // this grid goes around the menu and the editor area beneath it.
 export const Grid = styled.div`
@@ -180,12 +181,11 @@ export const SimpleGrid = styled.div`
 export const SimpleMenu = styled.div`
   align-items: center;
   background: #fff;
-  border-bottom: 1px solid ${th('colorFurniture')};
   display: flex;
   flex-wrap: wrap;
   grid-area: menu;
   height: fit-content;
-  margin: 0 ${th('borderRadius')};
+  margin: 0 -6px;
   max-width: 100%; /* this is to avoid spillover */
   /* overflow-x: scroll; this is not great! */
   position: sticky;
@@ -203,15 +203,17 @@ export const SimpleMenu = styled.div`
 `
 
 export const SimpleEditorDiv = styled.div`
-  border: 1px solid ${th('colorBorder')};
+  background-color: #f8f8f9;
+  border: 1px solid ${theme.colors.neutral.grey[700]};
   border-radius: ${th('borderRadius')};
+  box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.07);
   grid-area: editor;
   overflow: auto;
   padding: 16px;
   position: relative;
 
   &:focus-within {
-    border: 1px solid ${th('colorSuccess')};
+    border: 1px solid ${theme.colors.neutral.grey[900]};
   }
 
   .error & {
@@ -235,7 +237,25 @@ export const SimpleInfoContainer = styled.div`
   display: flex;
   flex-flow: row wrap;
   justify-content: flex-end;
+  position: absolute;
+  right: 46px;
   width: 100%;
+
+  div div:before {
+    display: none;
+  }
+
+  div {
+    padding: 0;
+
+    div {
+      margin: 0;
+
+      button {
+        margin: 0;
+      }
+    }
+  }
 
   div:focus-within > & {
     z-index: 1000;
