@@ -261,8 +261,6 @@ const urlFrag = config.journal.metadata.toplevel_urlfragment
 
 const ReviewPage = ({ match, ...props }) => {
   const currentUser = useCurrentUser()
-  // TODO: fix bug with currentUser getting wiped
-  // console.log('ReviewPage currentUser', currentUser)
   const [updateReviewMutation] = useMutation(updateReviewMutationQuery)
   const [setReviewCompleted] = useMutation(setReviewCompletedMutation)
   const [createFile] = useMutation(createFileMutation)
@@ -289,7 +287,7 @@ const ReviewPage = ({ match, ...props }) => {
     partialRefetch: true,
   })
 
-  if (loading) return <Spinner />
+  if (loading || currentUser === null) return <Spinner />
 
   if (error) {
     console.warn(error.message)
