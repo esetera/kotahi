@@ -33,7 +33,7 @@ describe('Login page tests', () => {
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('branding_settings').then(settings => {
       // task to restore the database as per the  dumps/initialState.sql
-      cy.task('restore', 'commons/bootstrap')
+      cy.task('restore', 'elife_bootstrap')
       cy.task('seedForms')
 
       // login as admin
@@ -53,7 +53,7 @@ describe('Login page tests', () => {
 
   it('dashboard page should not be visible to the logged in user', () => {
     // task to restore the database as per the  dumps/initialState.sql
-    cy.task('restore', 'commons/bootstrap')
+    cy.task('restore', 'elife_bootstrap')
     cy.task('seedForms')
 
     // login as admin
@@ -67,7 +67,7 @@ describe('Login page tests', () => {
 
   it('reports option should be visible to the admin user', () => {
     // task to restore the database as per the  dumps/initialState.sql
-    cy.task('restore', 'commons/bootstrap')
+    cy.task('restore', 'elife_bootstrap')
     cy.task('seedForms')
 
     // login as admin
