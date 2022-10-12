@@ -191,6 +191,18 @@ export const SEARCH_USERS = gql`
   }
 `
 
+export const ARCHIVE_MANUSCRIPT = gql`
+  mutation($id: ID!) {
+    archiveManuscript(id: $id)
+  }
+`
+
+export const ARCHIVE_MANUSCRIPTS = gql`
+  mutation($ids: [ID!]!) {
+    archiveManuscripts(ids: $ids)
+  }
+`
+
 export const DELETE_MANUSCRIPT = gql`
   mutation($id: ID!) {
     deleteManuscript(id: $id)
@@ -253,6 +265,7 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
             }
           }
         }
+        importSourceServer
         manuscriptVersions {
           id
           shortId
@@ -290,6 +303,7 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
             id
             profilePicture
           }
+          importSourceServer
         }
         submitter {
           username
@@ -340,6 +354,11 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
 export const IMPORT_MANUSCRIPTS = gql`
   mutation {
     importManuscripts
+  }
+`
+export const IMPORT_SEMANTIC_SCHOLAR_MANUSCRIPTS = gql`
+  mutation {
+    importManuscriptsFromSemanticScholar
   }
 `
 export const IMPORTED_MANUSCRIPTS_SUBSCRIPTION = gql`
