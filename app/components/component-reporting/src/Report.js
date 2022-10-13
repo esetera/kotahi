@@ -106,7 +106,7 @@ const RejectedIcon = () => (
 )
 
 const InProgressIcon = () => (
-  <span data-testid="in-progress-svg">
+  <span data-testid="inProgress-svg">
     <Icon color="cornflowerblue" key="edit" size={2} title="In Progress">
       edit
     </Icon>
@@ -157,7 +157,7 @@ const ReviewerNamesWithStatuses = ({ reviewers }) => {
           {r.status === 'invited' && <InvitedIcon />}
           {r.status === 'accepted' && <AcceptedIcon />}
           {r.status === 'rejected' && <RejectedIcon />}
-          {r.status === 'in-progress' && <InProgressIcon />}
+          {r.status === 'inProgress' && <InProgressIcon />}
           {r.status === 'completed' && <CompletedIcon />}
         </span>
       ))}

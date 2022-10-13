@@ -38,7 +38,7 @@ const ReviewerItem = ({
   const reviewLinkText = {
     completed: 'Completed',
     accepted: 'Do Review',
-    'in-progress': 'Continue Review',
+    inProgress: 'Continue Review',
   }
 
   return (
@@ -54,7 +54,7 @@ const ReviewerItem = ({
 
           {(status === 'accepted' ||
             status === 'completed' ||
-            status === 'in-progress') && (
+            status === 'inProgress') && (
             <ActionGroup>
               <Action
                 onClick={async e => {

@@ -38,7 +38,7 @@ export default {
     mutation($manuscriptId: ID!) {
       updateTeamMemberStatus(
         manuscriptId: $manuscriptId
-        status: "in-progress"
+        status: "inProgress"
       ) {
         id
         status
