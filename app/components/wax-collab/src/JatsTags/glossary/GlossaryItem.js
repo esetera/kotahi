@@ -5,15 +5,17 @@ import { LeftSideButton } from 'wax-prosemirror-components'
 import { Commands } from 'wax-prosemirror-utilities'
 import { Tools } from 'wax-prosemirror-services'
 
-class Reference extends Tools {
-  title = 'Change to reference'
-  label = 'Reference'
-  name = 'Reference'
+class GlossaryItem extends Tools {
+  title = 'Change to glossary item'
+  label = 'Glossary item'
+  name = 'GlossaryItem'
+  // color = 'colorGlossaryItem'
+  // className = 'glossaryitem'
 
   // eslint-disable-next-line class-methods-use-this
   get run() {
     return (state, dispatch) => {
-      Commands.setBlockType(state.config.schema.nodes.reference)(
+      Commands.setBlockType(state.config.schema.nodes.glossaryItem)(
         state,
         dispatch,
       )
@@ -28,7 +30,7 @@ class Reference extends Tools {
 
       const { from, to } = state.selection
       state.doc.nodesBetween(from, to, (node, pos) => {
-        if (node.type.name === 'reference') {
+        if (node.type.name === 'glossaryItem') {
           isActive = true
         }
       })
@@ -44,7 +46,9 @@ class Reference extends Tools {
   // eslint-disable-next-line class-methods-use-this
   get enable() {
     return state => {
-      return Commands.setBlockType(state.config.schema.nodes.reference)(state)
+      return Commands.setBlockType(state.config.schema.nodes.glossaryItem)(
+        state,
+      )
     }
   }
 
@@ -52,11 +56,11 @@ class Reference extends Tools {
     if (isEmpty(view)) return null
     // eslint-disable-next-line no-underscore-dangle
     return this._isDisplayed ? (
-      <LeftSideButton item={this.toJSON()} key="Reference" view={view} />
+      <LeftSideButton item={this.toJSON()} key="GlossaryItem" view={view} />
     ) : null
   }
 }
 
-decorate(injectable(), Reference)
+decorate(injectable(), GlossaryItem)
 
-export default Reference
+export default GlossaryItem

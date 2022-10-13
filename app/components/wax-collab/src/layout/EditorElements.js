@@ -355,56 +355,77 @@ const EditorStyles = css`
   /* JATS */
 
   section.frontmatter {
-    background-color: rgba(255, 0, 0, 0.25);
-    border: 1px solid red;
-    margin-bottom: 8px;
-    padding: 8px 16px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    margin: 16px 0;
+    border-radius: 0 4px 4px 0;
+    padding: 4px 8px;
     position: relative;
 
     &:before {
-      color: white;
-      content: 'FRONT MATTER';
-      font-weight: bold;
-      left: 2px;
-      letter-spacing: 1px;
+      background-color: ${th('colorFrontMatter')};
+      border: 1px solid #ccc;
+      content: '';
+      left: -4px;
+      width: 8px;
       position: absolute;
-      top: -4px;
+      top: -1px;
+      height: calc(100% + 2px);
+      border-radius: 4px;
+    }
+
+    & > :last-child {
+      margin-bottom: 0;
     }
   }
 
   section.abstractSection {
-    background-color: rgba(255, 0, 0, 0.25);
-    border: 1px solid red;
-    margin-bottom: 8px;
-    padding: 8px 16px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    margin: 16px 0;
+    border-radius: 0 4px 4px 0;
+    padding: 4px 8px;
     position: relative;
 
     &:before {
-      color: white;
-      content: 'ABSTRACT';
-      font-weight: bold;
-      left: 2px;
-      letter-spacing: 1px;
+      background-color: ${th('colorAbstract')};
+      border: 1px solid #ccc;
+      content: '';
+      left: -4px;
+      width: 8px;
       position: absolute;
-      top: -4px;
+      top: -1px;
+      height: calc(100% + 2px);
+      border-radius: 4px;
+    }
+
+    & > :last-child {
+      margin-bottom: 0;
     }
   }
 
   section.reflist {
-    background-color: rgba(25, 25, 112, 0.125);
-    border: 1px solid midnightblue;
-    margin-bottom: 8px;
-    padding: 24px 8px 8px 8px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    margin: 16px 0;
+    border-radius: 0 4px 4px 0;
+    padding: 4px 8px;
     position: relative;
 
     &:before {
-      color: rgba(25, 25, 112, 1);
-      content: 'REFERENCE LIST';
-      font-weight: bold;
-      left: 2px;
-      letter-spacing: 1px;
+      background-color: ${th('colorCitation')};
+      border: 1px solid #ccc;
+      content: '';
+      left: -4px;
+      width: 8px;
       position: absolute;
-      top: -4px;
+      top: -1px;
+      height: calc(100% + 2px);
+      border-radius: 4px;
+    }
+
+    & > :last-child {
+      margin-bottom: 0;
     }
 
     & p {
@@ -414,60 +435,76 @@ const EditorStyles = css`
     }
   }
 
-  h1.referenceheader {
-    background-color: midnightblue;
-    border-radius: 8px;
-    color: white;
-    padding: 4px 8px;
-  }
-
-  p.reference {
-    &:before {
-      content: '§ ';
-    }
+  .reflist h1,
+  .reflist h2,
+  .reflist h3,
+  .reflist h4,
+  .reflist h5,
+  .reflist h6 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: bold;
   }
 
   section.acknowledgementsSection {
-    background-color: rgba(255, 255, 0, 0.25);
-    border: 1px solid red;
-    margin-bottom: 8px;
-    padding: 8px 16px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    margin: 16px 0;
+    border-radius: 0 4px 4px 0;
+    padding: 4px 8px;
     position: relative;
 
     &:before {
-      color: black;
-      content: 'ACKNOWLEDGEMENTS';
-      font-weight: bold;
-      left: 2px;
-      letter-spacing: 1px;
+      background-color: ${th('colorAcknowledgements')};
+      border: 1px solid #ccc;
+      content: '';
+      left: -4px;
+      width: 8px;
       position: absolute;
-      top: -4px;
+      top: -1px;
+      height: calc(100% + 2px);
+      border-radius: 4px;
+    }
+
+    & > :last-child {
+      margin-bottom: 0;
     }
   }
 
   section.appendix {
-    background-color: rgba(0, 128, 128, 0.25);
-    border: 1px solid teal;
-    margin-bottom: 8px;
-    padding: 8px 16px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    margin: 16px 0;
+    border-radius: 0 4px 4px 0;
+    padding: 4px 8px;
     position: relative;
 
     &:before {
-      color: white;
-      content: 'APPENDIX';
-      font-weight: bold;
-      left: 2px;
-      letter-spacing: 1px;
+      background-color: ${th('colorAppendix')};
+      border: 1px solid #ccc;
+      content: '';
+      left: -4px;
+      width: 8px;
       position: absolute;
-      top: -4px;
+      top: -1px;
+      height: calc(100% + 2px);
+      border-radius: 4px;
+    }
+
+    & > :last-child {
+      margin-bottom: 0;
     }
   }
 
-  h1.appendixheader {
-    background-color: teal;
-    border-radius: 8px;
-    color: white;
-    padding: 4px 8px;
+  .appendix h1,
+  .appendix h2,
+  .appendix h3,
+  .appendix h4,
+  .appendix h5,
+  .appendix h6 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: bold;
   }
 
   /* added for figure weirdness */
@@ -514,28 +551,47 @@ const EditorStyles = css`
 
   /* FUNDING SOURCE */
 
+  .fundingsource,
+  .fundingstatement,
+  .awardid {
+    --fundingColorValues: ${th('colorFunding')};
+    --fundingOffset: 2px;
+    outline: ${th('colorFunding')} 1px solid;
+    outline-offset: var(--fundingOffset);
+    border-radius: 2px;
+    transition: 0.25;
+  }
+
   .fundingsource {
-    &:before {
-      content: 'Funding source: ';
-      font-weight: bold;
-      margin-left: 2em;
+    --fundingColorValues: ${th('colorFundingSource')};
+    &:hover {
+      outline-color: var(--fundingColorValues);
     }
   }
 
   .fundingstatement {
-    &:before {
-      content: 'Funding statement: ';
-      font-weight: bold;
-      margin-left: 2em;
+    --fundingColorValues: ${th('colorFundingStatement')};
+    &:hover {
+      outline-color: var(--fundingColorValues);
+    }
+  }
+  .awardid {
+    --fundingColorValues: ${th('colorAwardId')};
+    &:hover {
+      outline-color: var(--fundingColorValues);
     }
   }
 
-  .awardid {
-    &:before {
-      content: 'Award ID: ';
-      font-weight: bold;
-      margin-left: 2em;
-    }
+  .show-fundingsource .fundingsource {
+    outline: var(--fundingColorValues) 2px solid;
+  }
+
+  .show-fundingstatement .fundingstatement {
+    outline: var(--fundingColorValues) 2px solid;
+  }
+
+  .show-awardid .awardid {
+    outline: var(--fundingColorValues) 2px solid;
   }
 
   /* CITATIONS */
@@ -697,6 +753,87 @@ const EditorStyles = css`
 
   .show-doi a.doi {
     outline: var(--citationColorValues) 2px solid;
+  }
+
+  /* keywords */
+
+  .keyword-list {
+    --keywordColorValues: transparent;
+    --keywordOffset: 2px;
+    outline: ${th('colorKeyword')} 1px solid;
+    outline-offset: var(--fundingOffset);
+    border-radius: 2px;
+    transition: 0.25;
+  }
+
+  span.keyword {
+    --keywordColorValues: transparent;
+    --keywordTextColor: black;
+    --keywordOffset: 2px;
+    outline: ${th('colorKeyword')} 1px solid;
+    outline-offset: var(--keywordOffset);
+    position: relative;
+    border-radius: 2px;
+    font-weight: bold;
+    &:before {
+      position: absolute;
+      left: -2px;
+      top: -2px;
+      content: '';
+      width: 4px;
+      height: 4px;
+      background-color: var(--keywordColorValues);
+      border-radius: 100%;
+      display: none;
+    }
+    // &:hover {
+    //   outline-color: var(--keywordColorValues);
+    // }
+  }
+
+  /* glossary */
+
+  section.glossary {
+    background-color: #eee;
+    border: 1px solid #ccc;
+    margin: 16px 0;
+    border-radius: 0 4px 4px 0;
+    padding: 4px 8px;
+    position: relative;
+
+    &:before {
+      background-color: ${th('colorGlossary')};
+      border: 1px solid #ccc;
+      content: '';
+      left: -4px;
+      width: 8px;
+      position: absolute;
+      top: -1px;
+      height: calc(100% + 2px);
+      border-radius: 4px;
+    }
+
+    & > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .glossary h1,
+  .glossary h2,
+  .glossary h3,
+  .glossary h4,
+  .glossary h5,
+  .glossary h6 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .glossary-item {
+  }
+
+  .glossary-term {
+    font-weight: bold;
   }
 `
 

@@ -8,10 +8,7 @@ const models = require('@pubsweet/models')
 const cheerio = require('cheerio')
 const { raw } = require('objection')
 
-const {
-  importManuscripts,
-  importManuscriptsFromSemanticScholar,
-} = require('./manuscriptCommsUtils')
+const { importManuscripts } = require('./manuscriptCommsUtils')
 
 const Team = require('../../model-team/src/team')
 const TeamMember = require('../../model-team/src/team_member')
@@ -465,7 +462,7 @@ const resolvers = {
       return updatedManuscript
     },
 
-    importManuscripts(_, props, ctx) {
+    async importManuscripts(_, props, ctx) {
       return importManuscripts(ctx)
     },
 
@@ -1223,7 +1220,11 @@ const resolvers = {
         manuscripts,
       }
     },
-    async paginatedManuscripts(_, { sort, offset, limit, filters }, ctx) {
+    async paginatedManuscripts(
+      _,
+      { sort, offset, limit, filters, timezoneOffsetMinutes },
+      ctx,
+    ) {
       const submissionForm = await Form.findOneByField('purpose', 'submit')
 
       const [rawQuery, rawParams] = buildQueryForManuscriptSearchFilterAndOrder(
@@ -1232,6 +1233,7 @@ const resolvers = {
         limit,
         filters,
         submissionForm,
+        timezoneOffsetMinutes || 0,
       )
 
       const knex = models.Manuscript.knex()
@@ -1385,7 +1387,7 @@ const typeDefs = `
     globalTeams: [Team]
     manuscript(id: ID!): Manuscript!
     manuscripts: [Manuscript]!
-    paginatedManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!): PaginatedManuscripts
+    paginatedManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
     publishedManuscripts(sort:String, offset: Int, limit: Int): PaginatedManuscripts
     validateDOI(articleURL: String): validateDOIResponse
     manuscriptsUserHasCurrentRoleIn: [Manuscript]
@@ -1434,7 +1436,6 @@ const typeDefs = `
     publishManuscript(id: ID!): PublishingResult!
     createNewVersion(id: ID!): Manuscript
     importManuscripts: Boolean!
-    importManuscriptsFromSemanticScholar: Boolean!
     setShouldPublishField(manuscriptId: ID!, objectId: ID!, fieldName: String!, shouldPublish: Boolean!): Manuscript!
     archiveManuscript(id: ID!): ID!
     archiveManuscripts(ids: [ID]!): [ID!]!

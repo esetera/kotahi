@@ -4,6 +4,9 @@ const makeCitations = require('../jatsexport/makeCitations')
 const htmlToJats = require('../jatsexport/htmlToJats')
 const getCrossrefCitationsFromList = require('./crossrefUtils')
 const processFunding = require('../jatsexport/processFunding')
+const processKeywords = require('../jatsexport/processKeywords')
+const processGlossary = require('../jatsexport/processGlossary')
+const processAppendices = require('../jatsexport/processAppendices')
 
 // const { lte } = require('semver')
 
@@ -87,7 +90,13 @@ const makeJournalMeta = journalMeta => {
   return thisJournalMeta && `<journal-meta>${thisJournalMeta}</journal-meta>`
 }
 
-const makeArticleMeta = (metadata, abstract, title, fundingList) => {
+const makeArticleMeta = (
+  metadata,
+  abstract,
+  title,
+  fundingList,
+  keywordList,
+) => {
   // metadata:
   // --pubDate: date
   // --id: id
@@ -170,7 +179,12 @@ const makeArticleMeta = (metadata, abstract, title, fundingList) => {
     )}</abstract>`
   }
 
-  if (formData.content && formData.content.length) {
+  if (keywordList && keywordList.length) {
+    // If we have keywords in Wax, we use them. Otherwise, we might have them in the form, use them if they exist.
+    thisArticleMeta += `<kwd-group kwd-group-type="author">${keywordList
+      .map(x => `<kwd>${x}</kwd>`)
+      .join('')}</kwd-group>`
+  } else if (formData.content && formData.content.length) {
     // this is for keywords
     let contentList = ''
 
@@ -275,62 +289,6 @@ const fixTableCells = html => {
   return { deTabledHtml }
 }
 
-const makeAppendices = html => {
-  let deAppendixedHtml = html
-  let appCount = 0 // this is to give appendices IDs
-  const appendices = []
-
-  while (deAppendixedHtml.indexOf('<section class="appendix">') > -1) {
-    let thisAppendix = deAppendixedHtml
-      .split('<section class="appendix">')[1]
-      .split('</section>')[0]
-
-    deAppendixedHtml = deAppendixedHtml.replace(
-      `<section class="appendix">${thisAppendix}</section>`,
-      '',
-    )
-
-    // 1.1 deal with appendix title
-
-    let headerFound = false // If there is more than header, it's turned into a regular H1, which will get wrapped in sections.
-
-    while (thisAppendix.indexOf('<h1 class="appendixheader">') > -1) {
-      const thisHeader = thisAppendix
-        .split(`<h1 class="appendixheader">`)[1]
-        .split('</h1')[0]
-
-      thisAppendix = thisAppendix.replace(
-        `<h1 class="appendixheader">${thisHeader}</h1>`,
-        !headerFound // if this is the first header, don't add a secti
-          ? `<title>${thisHeader}</title>`
-          : `<h1>${thisHeader}</h1>`,
-      )
-      headerFound = true
-    }
-
-    // 1.2. jats the internal contents
-    appendices.push(
-      `<app id="app-${appCount}">${htmlToJats(thisAppendix)}</app>`,
-    )
-    appCount += 1
-
-    // 1.3 clean out any <h1 class="appendixheader" in deAppendixedHtml—these just become regular H1s
-    while (deAppendixedHtml.indexOf('<h1 class="appendixheader">') > -1) {
-      deAppendixedHtml = deAppendixedHtml.replace(
-        `<h1 class="appendixheader">`,
-        '<h1>',
-      )
-    }
-  }
-
-  return {
-    deAppendixedHtml,
-    appendices: appendices.length
-      ? `<app-group>${appendices.join('')}</app-group>`
-      : '',
-  }
-}
-
 const makeFrontMatter = html => {
   let deFrontedHtml = html
   let abstract = ''
@@ -427,9 +385,15 @@ const makeJats = (html, articleMeta, journalMeta) => {
 
   const { defundedHtml, fundingList } = processFunding(unTrackChangedHtml)
 
+  // 1.5 deal with keywords
+
+  const { deKeywordedHtml, keywordList } = processKeywords(defundedHtml)
+
   // 2. deal with citations
 
-  const { processedHtml, refList } = makeCitations(defundedHtml)
+  const { deglossariedHtml, glossary } = processGlossary(deKeywordedHtml)
+
+  const { processedHtml, refList } = makeCitations(deglossariedHtml)
 
   const { deFootnotedHtml, fnSection } = makeFootnotesSection(processedHtml)
 
@@ -445,7 +409,7 @@ const makeJats = (html, articleMeta, journalMeta) => {
 
   // 1. deal with appendices
 
-  const { deAppendixedHtml, appendices } = makeAppendices(deTabledHtml)
+  const { deAppendixedHtml, appendices } = processAppendices(deTabledHtml)
 
   // 3 deal with faux frontmatter – these just get thrown away
 
@@ -460,6 +424,7 @@ const makeJats = (html, articleMeta, journalMeta) => {
     abstract,
     title,
     fundingList || '',
+    keywordList || '',
   )
 
   const front = `<front>${journalMetaSection}${articleMetaSection}</front>`
@@ -479,7 +444,7 @@ const makeJats = (html, articleMeta, journalMeta) => {
   body = replaceAll(body, '</@sec>', '</sec>')
   body = `<body>${body}</body>`
 
-  const back = `<back>${ack}${appendices}${refList}${fnSection}</back>`
+  const back = `<back>${ack}${appendices}${refList}${fnSection}${glossary}</back>`
 
   // check if body or back are empty, don't pass if not there.
   const jats = `<article xml:lang="en" xmlns:mml="http://www.w3.org/1998/Math/MathML"	xmlns:xlink="http://www.w3.org/1999/xlink" dtd-version="1.3">${front}${
