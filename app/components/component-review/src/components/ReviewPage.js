@@ -485,7 +485,7 @@ const ReviewPage = ({ match, ...props }) => {
       deleteFile={deleteFile}
       onSubmit={values =>
         handleSubmit({
-          manuscriptId: existingReview.manuscriptId,
+          manuscriptId: latestVersion.id,
           history: props.history,
         })
       }
