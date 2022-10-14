@@ -36,7 +36,7 @@
     "test:all:chrome:elife:iPhone": "start-test test:server-and-client 4000 test:chrome:elife:iPhone",
     "test:all:chrome:elife:iPhone:tablet": "start-test test:server-and-client 4000 test:chrome:elife:iPhone:tablet",
     "test:all:chrome:elife:hd:laptop": "start-test test:server-and-client 4000 test:chrome:elife:hd:laptop",
-    "test:chrome:elife": "cypress run --browser chrome --headless --spec 'cypress/integration/elife/**.js'",
+    "test:chrome:elife": "yarn cypress run --browser chrome --spec 'cypress/integration/elife/**.js'",
     "test:chrome:elife:samsung": "cypress run --env userAgent=phoneSamsung --browser chrome --headless --spec 'cypress/integration/elife/**.js'",
     "test:chrome:elife:samsung:tablet": "cypress run --env userAgent=tabletSamsung --browser chrome --headless --spec 'cypress/integration/elife/**.js'",
     "test:chrome:elife:iPhone": "cypress run --env userAgent=phoneSafari --browser chrome --spec 'cypress/integration/elife/**.js'",
