@@ -173,12 +173,12 @@ const isDOIInUse = async checkDOI => {
   try {
     // Try to find object listed at DOI
     await axios.get(`https://api.crossref.org/works/${checkDOI}/agency`)
-    console.log(`DOI '${checkDOI}' is already taken. Custom suffix is unavailable.`)
+    // console.log(`DOI '${checkDOI}' is already taken. Custom suffix is unavailable.`)
     return { isDOIValid: true } // DOI is already in use
   } catch (err) {
     if (err.response.status === 404) {
       // HTTP 404 "Not found" response. The DOI is not known by Crossref
-      console.log(`DOI '${checkDOI}' is available.`)
+      // console.log(`DOI '${checkDOI}' is available.`)
       return { isDOIValid: false }
     }
     // Unexpected HTTP response (5xx)
@@ -416,6 +416,8 @@ const publishReviewsToCrossref = async manuscript => {
       // revalidate review DOI
       isDOIInUse(doiSuffix).then(ret => {
         if (ret.isDOIValid) throw Error("Review's custom DOI suffix is not available")
+      }).catch(e => {
+        throw e
       })
 
       const doiSummarySuffix =
@@ -425,6 +427,8 @@ const publishReviewsToCrossref = async manuscript => {
       // revalidate summary DOI
       isDOIInUse(doiSummarySuffix).then(ret => {
         if (ret.isDOIValid) throw Error("Custom DOI is not available.")
+      }).catch(e => {
+        throw e
       })
 
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
