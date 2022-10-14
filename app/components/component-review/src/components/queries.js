@@ -296,3 +296,9 @@ export const setShouldPublishFieldMutation = gql`
     }
   }
 `
+
+export const getFullDois = gql`
+  getFullDois(id: $id) {
+    listOfDois
+  }
+`

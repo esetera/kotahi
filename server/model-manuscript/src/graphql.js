@@ -19,11 +19,14 @@ const TeamMember = require('../../model-team/src/team_member')
 const { getPubsub } = pubsubManager
 const Form = require('../../model-form/src/form')
 const Message = require('../../model-message/src/message')
+
 const {
   publishToCrossref,
   getReviewOrSubmissionField,
   getDoi,
 } = require('../../publishing/crossref')
+
+const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 
 const {
   fixMissingValuesInFiles,
@@ -934,31 +937,39 @@ const resolvers = {
 
       return repackageForGraphql(updated)
     },
-    async getFullDoi(_, { id }, ctx) {
+    async getFullDois(_, { id }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(id)
         .withGraphFetched('reviews')
 
+      const doiSuffix = []
+
       if (config.crossref.publicationType === 'article') {
-        const doiSuffix =
-          getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id
-        return [getDoi(doiSuffix)]
+        doiSuffix.concat(
+          getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id,
+        )
+      } else {
+        const notEmptyReviews = Object.entries(manuscript.submission)
+          .filter(
+            ([key, value]) =>
+              key.length === 7 &&
+              key.includes('review') &&
+              !checkIsAbstractValueEmpty(value),
+          )
+          .map(([key]) => key.replace('review', ''))
+
+        doiSuffix.concat(
+          notEmptyReviews.map(
+            reviewNumber =>
+              getReviewOrSubmissionField(
+                manuscript,
+                `review${reviewNumber}suffix`,
+              ) || `${manuscript.id}/${reviewNumber}`,
+          ),
+        )
       }
 
-      // Get array of numbers representing nonempty reviews, e.g. '1', '2' for review1, review2
-      const notEmptyReviews = Object.entries(manuscript.submission)
-        .filter(
-          ([key, value]) =>
-            key.length === 7 &&
-            key.includes('review') &&
-            !checkIsAbstractValueEmpty(value),
-        )
-        .map(([key]) => key.replace('review', ''))
-
-      const doiSuffix =
-        getReviewOrSubmissionField(manuscript, `review${reviewNumber}suffix`) ||
-        `${manuscript.id}/${reviewNumber}`
-      return getDoi(doiSuffix)
+      return doiSuffix.map(suffix => getDoi(suffix))
     },
 
     async publishManuscript(_, { id }, ctx) {
@@ -1426,6 +1437,7 @@ const typeDefs = `
     """ Get a published manuscript by ID, or null if this manuscript is not published or not found """
     publishedManuscript(id: ID!): PublishedManuscript
     unreviewedPreprints(token: String!): [Preprint]
+    getFullDois(id: ID!): ListOfDois
   }
 
   input ManuscriptsFilter {
@@ -1445,6 +1457,10 @@ const typeDefs = `
   type PaginatedManuscripts {
     totalCount: Int
     manuscripts: [Manuscript]
+  }
+
+  type ListOfDois {
+    listOfDois: [String]
   }
 
   extend type Subscription {
