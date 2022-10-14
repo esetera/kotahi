@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Button } from '@pubsweet/ui'
 
+import { gql, useQuery } from '@apollo/client'
+import { getFullDois } from './queries'
 import {
   Title,
   SectionHeader,
@@ -20,7 +22,7 @@ const Publish = ({ manuscript, publishManuscript }) => {
 
   const notAccepted = !['accepted', 'published'].includes(manuscript.status)
 
-  const listOfDOIs = ['123', '456', '789']
+  const listOfDOIs = useQuery(getFullDois(manuscript.id))
 
   return (
     <SectionContent>
@@ -38,10 +40,15 @@ const Publish = ({ manuscript, publishManuscript }) => {
               <p>DOIs to be published: {listOfDOIs.join(', ')}</p>
             </div>
           )}
-          {!manuscript.published &&
-            !notAccepted &&
-            `Publishing will add a new entry on the public website and can not be undone. \n
-            DOIs to be published: ${listOfDOIs.join(', ')}`}
+          {!manuscript.published && !notAccepted && (
+            <div>
+              <p>
+                Publishing will add a new entry on the public website and can
+                not be undone.
+              </p>
+              <p>DOIs to be published: {listOfDOIs.join(', ')}</p>
+            </div>
+          )}
           {publishResponse &&
             publishResponse.steps.map(step => {
               if (step.succeeded) {
