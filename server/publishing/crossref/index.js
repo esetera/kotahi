@@ -520,4 +520,8 @@ const publishReviewsToCrossref = async manuscript => {
   })
 }
 
-module.exports = publishToCrossref
+module.exports = {
+  publishToCrossref,
+  getReviewOrSubmissionField,
+  getDoi,
+}

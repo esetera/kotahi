@@ -19,7 +19,11 @@ const TeamMember = require('../../model-team/src/team_member')
 const { getPubsub } = pubsubManager
 const Form = require('../../model-form/src/form')
 const Message = require('../../model-message/src/message')
-const publishToCrossref = require('../../publishing/crossref')
+const {
+  publishToCrossref,
+  getReviewOrSubmissionField,
+  getDoi,
+} = require('../../publishing/crossref')
 
 const {
   fixMissingValuesInFiles,
@@ -930,6 +934,33 @@ const resolvers = {
 
       return repackageForGraphql(updated)
     },
+    async getFullDoi(_, { id }, ctx) {
+      const manuscript = await models.Manuscript.query()
+        .findById(id)
+        .withGraphFetched('reviews')
+
+      if (config.crossref.publicationType === 'article') {
+        const doiSuffix =
+          getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id
+        return [getDoi(doiSuffix)]
+      }
+
+      // Get array of numbers representing nonempty reviews, e.g. '1', '2' for review1, review2
+      const notEmptyReviews = Object.entries(manuscript.submission)
+        .filter(
+          ([key, value]) =>
+            key.length === 7 &&
+            key.includes('review') &&
+            !checkIsAbstractValueEmpty(value),
+        )
+        .map(([key]) => key.replace('review', ''))
+
+      const doiSuffix =
+        getReviewOrSubmissionField(manuscript, `review${reviewNumber}suffix`) ||
+        `${manuscript.id}/${reviewNumber}`
+      return getDoi(doiSuffix)
+    },
+
     async publishManuscript(_, { id }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(id)
