@@ -6,7 +6,6 @@ const axios = require('axios')
 const path = require('path')
 const config = require('config')
 const { v4: uuid } = require('uuid')
-
 const { parseDate } = require('../../utils/dateUtils')
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 
@@ -170,6 +169,25 @@ const getIssueYear = manuscript => {
   return yearString
 }
 
+const isDOIInUse = async checkDOI => {
+  try {
+    // Try to find object listed at DOI
+    await axios.get(`https://api.crossref.org/works/${checkDOI}/agency`)
+    console.log(`DOI '${checkDOI}' is already taken. Custom suffix is unavailable.`)
+    return { isDOIValid: true } // DOI is already in use
+  } catch (err) {
+    if (err.response.status === 404) {
+      // HTTP 404 "Not found" response. The DOI is not known by Crossref
+      console.log(`DOI '${checkDOI}' is available.`)
+      return { isDOIValid: false }
+    }
+    // Unexpected HTTP response (5xx)
+    // Assume that the custom suffix is unavailable.
+
+    return { isDOIValid: true }
+  }
+}
+
 const emailRegex = /^[\p{L}\p{N}!/+\-_]+(\.[\p{L}\p{N}!/+\-_]+)*@[\p{L}\p{N}!/+\-_]+(\.[\p{L}_-]+)+$/u
 
 /** Send submission to register an article, with appropriate metadata */
@@ -195,6 +213,13 @@ const publishArticleToCrossref = async manuscript => {
 
   const doiSuffix =
     getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id
+
+  const DOI = `${config.crossref.doiPrefix}/${doiSuffix}`
+  const { isDOIValid } = await isDOIInUse(DOI) // True if DOI already in use
+
+  if (isDOIValid) {
+    throw Error('Custom DOI is not available.')
+  }
 
   const doi = getDoi(doiSuffix)
   const publishedLocation = `${config.crossref.publishedArticleLocationPrefix}${manuscript.shortId}`
@@ -520,4 +545,7 @@ const publishReviewsToCrossref = async manuscript => {
   })
 }
 
-module.exports = publishToCrossref
+module.exports = {
+  publishToCrossref,
+  isDOIInUse,
+}

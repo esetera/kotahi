@@ -16,7 +16,7 @@ const TeamMember = require('../../model-team/src/team_member')
 const { getPubsub } = pubsubManager
 const Form = require('../../model-form/src/form')
 const Message = require('../../model-message/src/message')
-const publishToCrossref = require('../../publishing/crossref')
+const { isDOIInUse, publishToCrossref } = require('../../publishing/crossref')
 
 const {
   fixMissingValuesInFiles,
@@ -896,7 +896,6 @@ const resolvers = {
       const manuscript = await models.Manuscript.query()
         .findById(id)
         .withGraphFetched('reviews')
-
       const update = {} // This will collect any properties we may want to update in the DB
       update.published = new Date()
       const steps = []
@@ -904,7 +903,6 @@ const resolvers = {
 
       if (config.crossref.login) {
         const stepLabel = 'Crossref'
-
         let succeeded = false
         let errorMessage
 
@@ -1316,24 +1314,16 @@ const resolvers = {
 
     async validateDOI(_, { articleURL }, ctx) {
       const DOI = encodeURI(articleURL.split('.org/')[1])
+      const { isDOIValid } = await isDOIInUse(DOI)
+      return { isDOIValid }
+    },
 
-      try {
-        await axios.get(`https://api.crossref.org/works/${DOI}/agency`)
-        return { isDOIValid: true }
-      } catch (err) {
-        if (err.response.status === 404) {
-          // HTTP 404 "Not found" response. The DOI is not known by Crossref
-          // eslint-disable-next-line no-console
-          console.log(`DOI '${DOI}' not found on Crossref.`)
-          return { isDOIValid: false }
-        }
-
-        console.warn(err)
-        // This is an unexpected HTTP response, possibly a 504 gateway timeout or other 5xx.
-        // Crossref API is probably unavailable or failing for some reason,
-        // and we should assume in its absence that the DOI is correct.
-        return { isDOIValid: true }
-      }
+    // To be called in submit manuscript as
+    // first validation step for custom suffix
+    async validateSuffix(_, { suffix }, ctx) {
+      const DOI = `${config.crossref.doiPrefix}/${suffix}`
+      const { isDOIValid } = isDOIInUse(DOI) // True = suffix is already taken. False = suffix is not taken.
+      return { isDOIValid: !isDOIValid }
     },
   },
   // We want submission info to come out as a stringified JSON, so that we don't have to
@@ -1350,6 +1340,7 @@ const typeDefs = `
     paginatedManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!): PaginatedManuscripts
     publishedManuscripts(sort:String, offset: Int, limit: Int): PaginatedManuscripts
     validateDOI(articleURL: String): validateDOIResponse
+    validateSuffix(suffix: String): validateDOIResponse
     manuscriptsUserHasCurrentRoleIn: [Manuscript]
 
     """ Get published manuscripts with irrelevant fields stripped out. Optionally, you can specify a startDate and/or limit. """
