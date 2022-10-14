@@ -17,6 +17,7 @@ import brandConfig from '../brandConfig.json'
 import lightenBy from '../shared/lightenBy'
 import colors from './colors'
 import spacing from './spacing'
+import typography from './typography'
 
 const defaultInstanceColor = '#2fac66'
 
@@ -35,6 +36,7 @@ const colorSecondary = validateInstanceConfigColors(brandConfig.secondaryColor)
 const cokoTheme = {
   colors,
   spacing,
+  typography,
 
   /* Colors */
   colorBackground: 'white',
