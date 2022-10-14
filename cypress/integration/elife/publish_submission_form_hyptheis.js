@@ -7,10 +7,9 @@ import { SubmissionFormPage } from '../../page-object/submission-form-page'
 import { dashboard } from '../../support/routes'
 
 const bioRxivArticleUrl = 'https://www.biorxiv.org/content/10.1101/2022.05.28.493855v1'
-const hypothesisUrl = 'https://hypothes.is/login'
 
 describe('Update the submission form field', () => {
-  it('update submission form field to publish to hypothesis group', () => {
+  it('update submission form field for publishing to hypothesis group', () => {
     // task to restore the database as per the  dumps/commons/bootstrap.sql
     cy.task('restore', 'elife_bootstrap')
     cy.task('seedForms')
@@ -22,7 +21,7 @@ describe('Update the submission form field', () => {
     })
 
     // enter the from page and assert the fileds()
-    Menu.getSettingsButton().click()
+    cy.contains('Settings').click()
     Menu.clickForms()
     cy.contains('Submission').click()
 
@@ -40,30 +39,30 @@ describe('Update the submission form field', () => {
     Menu.clickManuscripts()
     DashboardPage.clickSubmissionButton() 
     // Upload manuscript
-    cy.get('button').contains('Submit a URL instead').click()
-    
+    cy.get('button').contains('Submit a URL instead').click()   
     cy.fixture('submission_form_data').then(data => {
       SubmissionFormPage.fillInArticleld(data.articleId)
       SubmissionFormPage.fillInDoi(data.doi)
       SubmissionFormPage.fillInArticleUrl(data.doi)
       SubmissionFormPage.fillInBioRxivArticleUrl(bioRxivArticleUrl)
       SubmissionFormPage.fillInDescription(data.description)
-      cy.wait(2000)
+      SubmissionFormPage.waitThreeSec()
       SubmissionFormPage.clickSubmitResearch()
+      cy.awaitDisappearSpinner()
       ManuscriptsPage.selectOptionWithText('Evaluation')
       SubmissionFormPage.clickSubmitResearch()
-      ManuscriptsPage.selectOptionWithText('Publish')
+      cy.awaitDisappearSpinner()
+      cy.intercept('/graphql').as('getResponse')
+      ManuscriptsPage.getOptionWithText('Publish').click()
+      cy.wait('@getResponse')
+        .its('response')
+        .should('deep.include',{
+          statusCode: 200,
+          statusMessage: "OK"
+        })
+      SubmissionFormPage.waitThreeSec()
+      ManuscriptsPage.getStatusField(0).contains('Published')
     })
-
   })
-  it('update submission form field to publish to hypothesis group', () => {
-    cy.visit(hypothesisUrl)
-    cy.get('#deformField2').type('testing_profile')
-
-    cy.get('#deformField3').type('complex@123')
-    cy.wait(2000)
-    cy.get('#deformLog_in').click()
-  })
-
- })
+})
    
