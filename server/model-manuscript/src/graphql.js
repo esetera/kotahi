@@ -1315,7 +1315,7 @@ const resolvers = {
     async validateDOI(_, { articleURL }, ctx) {
       const DOI = encodeURI(articleURL.split('.org/')[1])
       const { isDOIValid } = await isDOIInUse(DOI)
-      return isDOIValid
+      return { isDOIValid }
     },
 
     // To be called in submit manuscript as
