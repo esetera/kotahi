@@ -14,9 +14,7 @@ import {
   COMPLETE_COMMENT,
   DELETE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
-import {
-  UPDATE_MEMBER_STATUS_MUTATION
-} from '../../../../queries/team'
+import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../queries/team'
 
 const createFileMutation = gql`
   mutation($file: Upload!, $meta: FileMetaInput!) {
@@ -453,7 +451,7 @@ const ReviewPage = ({ match, ...props }) => {
   const handleSubmit = async ({ manuscriptId, history }) => {
     await updateMemberStatus({
       variables: {
-        status: "completed",
+        status: 'completed',
         manuscriptId,
       },
     })

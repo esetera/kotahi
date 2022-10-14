@@ -16,12 +16,13 @@ import {
   setShouldPublishFieldMutation,
 } from './queries'
 
+import { CREATE_MESSAGE, GET_BLACKLIST_INFORMATION } from '../../../../queries'
+import { GET_INVITATIONS_FOR_MANUSCRIPT } from '../../../../queries/invitation'
 import {
-  CREATE_MESSAGE,
-  GET_BLACKLIST_INFORMATION,
-} from '../../../../queries'
-import { GET_INVITATIONS_FOR_MANUSCRIPT } from "../../../../queries/invitation"
-import { CREATE_TEAM_MUTATION, UPDATE_TEAM_MUTATION, UPDATE_MEMBER_STATUS_MUTATION } from '../../../../queries/team'
+  CREATE_TEAM_MUTATION,
+  UPDATE_TEAM_MUTATION,
+  UPDATE_MEMBER_STATUS_MUTATION,
+} from '../../../../queries/team'
 import { validateDoi } from '../../../../shared/commsUtils'
 import {
   UPDATE_PENDING_COMMENT,

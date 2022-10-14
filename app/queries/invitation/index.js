@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from 'graphql-tag'
 
 export const UPDATE_INVITATION_RESPONSE = gql`
   mutation($id: ID!, $responseComment: String, $declinedReason: String!) {
@@ -12,7 +12,7 @@ export const UPDATE_INVITATION_RESPONSE = gql`
       toEmail
     }
   }
-`;
+`
 export const GET_INVITATION_MANUSCRIPT_ID = gql`
   query invitationManuscriptId($id: ID) {
     invitationManuscriptId(id: $id) {
@@ -20,7 +20,7 @@ export const GET_INVITATION_MANUSCRIPT_ID = gql`
       invitedPersonType
     }
   }
-`;
+`
 
 export const GET_INVITATION_STATUS = gql`
   query invitationStatus($id: ID) {
@@ -28,7 +28,7 @@ export const GET_INVITATION_STATUS = gql`
       status
     }
   }
-`;
+`
 
 export const GET_INVITATIONS_FOR_MANUSCRIPT = gql`
   query getInvitationsForManuscript($id: ID) {
@@ -49,7 +49,7 @@ export const GET_INVITATIONS_FOR_MANUSCRIPT = gql`
       }
     }
   }
-`;
+`
 
 export const UPDATE_INVITATION_STATUS = gql`
   mutation($id: ID!, $status: String, $userId: ID, $responseDate: DateTime) {

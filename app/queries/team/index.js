@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from 'graphql-tag'
 
 /*
 Queries and mutations related to modifying properties relating to teams 

@@ -113,8 +113,8 @@ const DashboardPage = ({ history, ...props }) => {
       prettyRoleText={prettyRoleText}
       reviewerLatestVersions={reviewerLatestVersions}
       reviewerRespond={reviewerRespond}
-      updateMemberStatus={updateMemberStatus}
       shouldShowShortId={shouldShowShortId}
+      updateMemberStatus={updateMemberStatus}
       urlFrag={urlFrag}
     />
   )

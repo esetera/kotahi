@@ -4,9 +4,12 @@ import { useQuery, useMutation } from '@apollo/client'
 import { Spinner } from '@pubsweet/ui/dist/atoms'
 import {
   ASSIGN_USER_AS_AUTHOR,
-  ASSIGN_USER_AS_REVIEWER
+  ASSIGN_USER_AS_REVIEWER,
 } from '../../../../queries/team'
-import { GET_INVITATION_MANUSCRIPT_ID, UPDATE_INVITATION_STATUS } from "../../../../queries/invitation"
+import {
+  GET_INVITATION_MANUSCRIPT_ID,
+  UPDATE_INVITATION_STATUS,
+} from '../../../../queries/invitation'
 import mutations from '../graphql/mutations'
 import useCurrentUser from '../../../../hooks/useCurrentUser'
 

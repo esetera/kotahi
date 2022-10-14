@@ -65,7 +65,7 @@ const ReviewerItem = ({
                     await updateMemberStatus({
                       variables: {
                         manuscriptId: version.id,
-                        status: 'inProgress'
+                        status: 'inProgress',
                       },
                     })
                   }

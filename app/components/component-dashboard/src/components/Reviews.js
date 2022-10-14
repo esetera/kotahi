@@ -44,7 +44,7 @@ const Reviews = ({ version, journal }) => (
       {journal =>
         journal.reviewStatus.map(status => (
           <CountLabel data-testid={status.value} key={status.value}>
-            {countStatus(version, status.value) + " " + status.label}
+            {`${countStatus(version, status.value)} ${status.label}`}
           </CountLabel>
         ))
       }
