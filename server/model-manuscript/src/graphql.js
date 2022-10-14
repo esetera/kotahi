@@ -1392,7 +1392,7 @@ const resolvers = {
     async validateSuffix(_, { suffix }, ctx) {
       const DOI = `${config.crossref.doiPrefix}/${suffix}`
       const { isDOIValid } = isDOIInUse(DOI) // True = suffix is already taken. False = suffix is not taken.
-      return !isDOIValid
+      return { isDOIValid: !isDOIValid }
     },
   },
   // We want submission info to come out as a stringified JSON, so that we don't have to
