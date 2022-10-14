@@ -16,8 +16,7 @@ const TeamMember = require('../../model-team/src/team_member')
 const { getPubsub } = pubsubManager
 const Form = require('../../model-form/src/form')
 const Message = require('../../model-message/src/message')
-const { publishToCrossref } = require('../../publishing/crossref')
-const { isDOIInUse } = require('../../publishing/crossref')
+const { isDOIInUse, publishToCrossref } = require('../../publishing/crossref')
 
 const {
   fixMissingValuesInFiles,
