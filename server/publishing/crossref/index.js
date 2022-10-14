@@ -420,9 +420,19 @@ const publishReviewsToCrossref = async manuscript => {
         getReviewOrSubmissionField(manuscript, `review${reviewNumber}suffix`) ||
         `${manuscript.id}/${reviewNumber}`
 
+      // revalidate review DOI
+      isDOIInUse(doiSuffix).then(ret => {
+        if (ret.isDOIValid) throw Error("Review's custom DOI suffix is not available")
+      })
+
       const doiSummarySuffix =
         getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
         `${manuscript.id}/`
+
+      // revalidate summary DOI
+      isDOIInUse(doiSummarySuffix).then(ret => {
+        if (ret.isDOIValid) throw Error("Custom DOI is not available.")
+      })
 
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
         doiSuffix,
