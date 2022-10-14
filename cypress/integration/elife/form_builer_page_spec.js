@@ -16,7 +16,7 @@ describe('Form builder', () => {
     })
 
     // enter the from page and assert the fileds()
-    Menu.getSettingsButton().click()
+    cy.contains('Settings').click()
     Menu.clickForms()
     cy.contains('Submission').click()
 
