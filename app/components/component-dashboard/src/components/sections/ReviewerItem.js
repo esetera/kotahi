@@ -16,7 +16,7 @@ const ReviewerItem = ({
   version,
   currentUser,
   reviewerRespond,
-  setReviewInProgress,
+  updateMemberStatus,
   urlFrag,
 }) => {
   const team =
@@ -62,9 +62,10 @@ const ReviewerItem = ({
                   // on click, update review status before forwarding to link
 
                   if (status === 'accepted') {
-                    await setReviewInProgress({
+                    await updateMemberStatus({
                       variables: {
                         manuscriptId: version.id,
+                        status: 'inProgress'
                       },
                     })
                   }
@@ -139,7 +140,7 @@ ReviewerItem.propTypes = {
   }).isRequired,
   currentUser: PropTypes.oneOfType([PropTypes.object]).isRequired,
   reviewerRespond: PropTypes.func.isRequired,
-  setReviewInProgress: PropTypes.func.isRequired,
+  updateMemberStatus: PropTypes.func.isRequired,
 }
 
 export default ReviewerItem

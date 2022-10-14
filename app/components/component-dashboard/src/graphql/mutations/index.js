@@ -34,17 +34,6 @@ export default {
       }
     }
   `,
-  setReviewInProgressMutation: gql`
-    mutation($manuscriptId: ID!) {
-      updateTeamMemberStatus(
-        manuscriptId: $manuscriptId
-        status: "inProgress"
-      ) {
-        id
-        status
-      }
-    }
-  `,
   uploadManuscriptMutation: gql`
     mutation($file: Upload!) {
       upload(file: $file) {
