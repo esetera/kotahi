@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { grid, th } from '@pubsweet/ui-toolkit'
 import { TabsContainer } from './Tabs'
+import theme from '../../theme'
 
 export const Section = styled.section`
   padding: ${grid(2)} ${grid(3)};
@@ -36,6 +37,7 @@ export const SectionContent = styled(Section)`
     margin-top: 0;
   }
 
+  /* stylelint-disable-next-line */
   ${TabsContainer} ~ div > & {
     border-top-left-radius: 0;
     margin-bottom: calc(${th('gridUnit')} * 3);
@@ -50,7 +52,7 @@ export const PaddedContent = styled(Content)`
 `
 
 export const Container = styled.div`
-  background: ${th('colorBackgroundHue')};
+  background: ${theme.colors.neutral.grey[500]};
   overflow-y: auto;
   padding: ${grid(2)};
 `
@@ -107,9 +109,10 @@ const Page = styled.div`
 `
 
 const Heading = styled.div`
-  color: ${th('colorPrimary')};
+  color: ${theme.colors.primary.green[100]};
   font-family: ${th('fontReading')};
   font-size: ${th('fontSizeHeading3')};
+  font-weight: ${theme.typography.fonts.weight.bold};
   line-height: ${th('lineHeightHeading3')};
 `
 
