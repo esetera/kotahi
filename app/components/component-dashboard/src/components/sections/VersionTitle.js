@@ -5,9 +5,13 @@ import styled from 'styled-components'
 import { th } from '@pubsweet/ui-toolkit'
 import { get } from 'lodash'
 import lightenBy from '../../../../../shared/lightenBy'
+import theme from '../../../../../theme'
 
 const Root = styled.div`
+  font-size: ${theme.typography.fonts.size[100]};
+  font-weight: ${theme.typography.fonts.weight.semibold};
   line-height: ${th('lineHeightHeading4')};
+  text-decoration: underline;
 `
 
 const ShortId = styled.div`

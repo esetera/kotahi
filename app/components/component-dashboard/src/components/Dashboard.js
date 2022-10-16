@@ -1,5 +1,4 @@
 import React from 'react'
-import { Button } from '@pubsweet/ui'
 import { Container, Placeholder } from '../style'
 import EditorItem from './sections/EditorItem'
 import OwnerItem from './sections/OwnerItem'
@@ -11,6 +10,7 @@ import {
   SectionContent,
   Heading,
   HeadingWithAction,
+  Button,
 } from '../../../shared'
 
 const getRoles = (m, userId) =>

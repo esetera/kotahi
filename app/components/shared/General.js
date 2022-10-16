@@ -58,8 +58,8 @@ export const Container = styled.div`
 `
 
 export const Title = styled.h2`
-  font-size: ${th('fontSizeHeading5')};
-  font-weight: 500;
+  font-size: ${theme.typography.fonts.size[200]};
+  font-weight: ${theme.typography.fonts.weight.semibold};
 `
 
 export const SectionHeader = styled.div`

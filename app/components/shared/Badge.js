@@ -1,11 +1,13 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 import { grid, th } from '@pubsweet/ui-toolkit'
+import theme from '../../theme'
 
 const Status = styled.span`
   border-radius: 8px;
-  font-size: ${th('fontSizeBaseSmall')};
+  font-size: ${theme.typography.fonts.size[50]};
   font-variant: all-small-caps;
+  font-weight: ${theme.typography.fonts.weight.semibold};
   ${props =>
     !props.minimal &&
     css`
@@ -18,6 +20,7 @@ const Status = styled.span`
     `}
 `
 
+// TODO: Fix the text color after design is updated
 export const SuccessStatus = styled(Status)`
   ${props =>
     props.minimal
