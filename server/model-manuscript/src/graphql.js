@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable prefer-destructuring */
 const { ref } = require('objection')
 const axios = require('axios')
@@ -937,41 +938,6 @@ const resolvers = {
 
       return repackageForGraphql(updated)
     },
-    async getFullDois(_, { id }, ctx) {
-      const manuscript = await models.Manuscript.query()
-        .findById(id)
-        .withGraphFetched('reviews')
-
-      const doiSuffix = []
-
-      if (config.crossref.publicationType === 'article') {
-        doiSuffix.concat(
-          getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id,
-        )
-      } else {
-        const notEmptyReviews = Object.entries(manuscript.submission)
-          .filter(
-            ([key, value]) =>
-              key.length === 7 &&
-              key.includes('review') &&
-              !checkIsAbstractValueEmpty(value),
-          )
-          .map(([key]) => key.replace('review', ''))
-
-        doiSuffix.concat(
-          notEmptyReviews.map(
-            reviewNumber =>
-              getReviewOrSubmissionField(
-                manuscript,
-                `review${reviewNumber}suffix`,
-              ) || `${manuscript.id}/${reviewNumber}`,
-          ),
-        )
-      }
-
-      return doiSuffix.map(suffix => getDoi(suffix))
-    },
-
     async publishManuscript(_, { id }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(id)
@@ -1392,6 +1358,43 @@ const resolvers = {
           m.submission.url ||
           m.submission.uri,
       }))
+    },
+    async getFullDois(_, { id }, ctx) {
+      // eslint-disable-next-line no-console
+
+      const manuscript = await models.Manuscript.query()
+        .findById(id)
+        .withGraphFetched('reviews')
+
+      const doiSuffix = []
+
+      if (config.crossref.publicationType === 'article') {
+        doiSuffix.push(
+          getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id,
+        )
+      } else {
+        const notEmptyReviews = Object.entries(manuscript.submission)
+          .filter(
+            ([key, value]) =>
+              key.length === 7 &&
+              key.includes('review') &&
+              !checkIsAbstractValueEmpty(value),
+          )
+          .map(([key]) => key.replace('review', ''))
+
+        doiSuffix.push(
+          ...notEmptyReviews.map(
+            reviewNumber =>
+              getReviewOrSubmissionField(
+                manuscript,
+                `review${reviewNumber}suffix`,
+              ) || `${manuscript.id}/${reviewNumber}`,
+          ),
+        )
+        console.log(doiSuffix)
+      }
+
+      return doiSuffix.forEach(suffix => getDoi(suffix))
     },
 
     async validateDOI(_, { articleURL }, ctx) {

@@ -298,7 +298,9 @@ export const setShouldPublishFieldMutation = gql`
 `
 
 export const getFullDois = gql`
-  getFullDois(id: $id) {
-    listOfDois
+  query getFullDois($id: ID!) {
+    getFullDois(id: $id) {
+      listOfDois
+    }
   }
 `

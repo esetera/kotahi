@@ -1,7 +1,8 @@
+/* eslint-disable no-console */
 import React, { useState } from 'react'
 import { Button } from '@pubsweet/ui'
 
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { getFullDois } from './queries'
 import {
   Title,
@@ -21,8 +22,14 @@ const Publish = ({ manuscript, publishManuscript }) => {
   const [publishingError, setPublishingError] = useState(null)
 
   const notAccepted = !['accepted', 'published'].includes(manuscript.status)
+  console.log(`manuscript id: ${manuscript.id}`)
 
-  const listOfDOIs = useQuery(getFullDois(manuscript.id))
+  const { loading, error, data } = useQuery(getFullDois, {
+    variables: { id: manuscript.id },
+  })
+
+  // eslint-disable-next-line no-console
+  console.log(data)
 
   return (
     <SectionContent>
@@ -37,7 +44,9 @@ const Publish = ({ manuscript, publishManuscript }) => {
           {!manuscript.published && notAccepted && (
             <div>
               <p>You can only publish accepted submissions.</p>
-              <p>DOIs to be published: {listOfDOIs.join(', ')}</p>
+              {!loading && data.getFullDois && (
+                <p>DOIs to be published: {data.getFullDois.join(', ')}</p>
+              )}
             </div>
           )}
           {!manuscript.published && !notAccepted && (
@@ -46,7 +55,9 @@ const Publish = ({ manuscript, publishManuscript }) => {
                 Publishing will add a new entry on the public website and can
                 not be undone.
               </p>
-              <p>DOIs to be published: {listOfDOIs.join(', ')}</p>
+              {!loading && data.getFullDois && (
+                <p>DOIs to be published: {data.getFullDois.join(', ')}</p>
+              )}
             </div>
           )}
           {publishResponse &&
