@@ -42,30 +42,29 @@ const OwnerTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
   )
 
   if (authorLatestVersions.length === 0) {
-    return (<Placeholder>
-    You have not submitted any manuscripts yet
-  </Placeholder>)
+    return <Placeholder>You have not submitted any manuscripts yet</Placeholder>
   }
 
-  return <>{
-    authorLatestVersions.map(version => (
-      // Links are based on the original/parent manuscript version
-      <OwnerItem
-        instanceName={instanceName}
-        // deleteManuscript={() =>
-        //   // eslint-disable-next-line no-alert
-        //   window.confirm(
-        //     'Are you sure you want to delete this submission?',
-        //   ) && deleteManuscript({ variables: { id: submission.id } })
-        // }
-        key={version.id}
-        shouldShowShortId={shouldShowShortId}
-        urlFrag={urlFrag}
-        version={version}
-      />
-    ))
-  }</>
-
+  return (
+    <>
+      {authorLatestVersions.map(version => (
+        // Links are based on the original/parent manuscript version
+        <OwnerItem
+          instanceName={instanceName}
+          // deleteManuscript={() =>
+          //   // eslint-disable-next-line no-alert
+          //   window.confirm(
+          //     'Are you sure you want to delete this submission?',
+          //   ) && deleteManuscript({ variables: { id: submission.id } })
+          // }
+          key={version.id}
+          shouldShowShortId={shouldShowShortId}
+          urlFrag={urlFrag}
+          version={version}
+        />
+      ))}
+    </>
+  )
 }
 
 export default OwnerTable
