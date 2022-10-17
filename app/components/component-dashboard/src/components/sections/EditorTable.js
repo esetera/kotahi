@@ -4,7 +4,11 @@ import prettyRoleText from '../../../../../shared/prettyRoleText'
 import { CommsErrorBanner, SectionRow, Spinner } from '../../../../shared'
 import queries from '../../graphql/queries'
 import { Placeholder } from '../../style'
-import { getLatestVersion, getManuscriptsUserHasRoleIn, getRoles } from '../../utils'
+import {
+  getLatestVersion,
+  getManuscriptsUserHasRoleIn,
+  getRoles,
+} from '../../utils'
 import EditorItem from './EditorItem'
 
 const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
@@ -29,26 +33,25 @@ const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
   )
 
   if (editorLatestVersions.length === 0) {
-    return (<Placeholder>
-    You have not submitted any manuscripts yet
-  </Placeholder>)
+    return <Placeholder>You have not submitted any manuscripts yet</Placeholder>
   }
 
-  return <>{
-    editorLatestVersions.map(manuscript => (
-      <SectionRow key={`manuscript-${manuscript.id}`}>
-        <EditorItem
-          currentRoles={getRoles(manuscript, currentUser.id)}
-          instanceName={instanceName}
-          prettyRoleText={prettyRoleText}
-          shouldShowShortId={shouldShowShortId}
-          urlFrag={urlFrag}
-          version={manuscript}
-        />
-      </SectionRow>
-    ))
-  }</>
-
+  return (
+    <>
+      {editorLatestVersions.map(manuscript => (
+        <SectionRow key={`manuscript-${manuscript.id}`}>
+          <EditorItem
+            currentRoles={getRoles(manuscript, currentUser.id)}
+            instanceName={instanceName}
+            prettyRoleText={prettyRoleText}
+            shouldShowShortId={shouldShowShortId}
+            urlFrag={urlFrag}
+            version={manuscript}
+          />
+        </SectionRow>
+      ))}
+    </>
+  )
 }
 
 export default EditorTable

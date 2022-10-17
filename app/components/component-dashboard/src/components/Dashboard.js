@@ -37,8 +37,8 @@ const Dashboard = ({
             <Title>My Submissions</Title>
           </SectionHeader>
           <OwnerTable
-            shouldShowShortId={shouldShowShortId}
             instanceName={instanceName}
+            shouldShowShortId={shouldShowShortId}
             urlFrag={urlFrag}
           />
         </SectionContent>
@@ -57,8 +57,8 @@ const Dashboard = ({
           <Title>Manuscripts I&apos;m editor of</Title>
         </SectionHeader>
         <EditorTable
-          shouldShowShortId={shouldShowShortId}
           instanceName={instanceName}
+          shouldShowShortId={shouldShowShortId}
           urlFrag={urlFrag}
         />
       </SectionContent>
