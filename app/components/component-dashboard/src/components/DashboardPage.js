@@ -3,44 +3,11 @@ import React, { useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 
 import config from 'config'
-import ReactRouterPropTypes from 'react-router-prop-types'
 import { Redirect } from 'react-router-dom'
-import queries from '../graphql/queries'
-import mutations from '../graphql/mutations'
+import ReactRouterPropTypes from 'react-router-prop-types'
 import Dashboard from './Dashboard'
-import { Spinner, CommsErrorBanner } from '../../../shared'
-import prettyRoleText from '../../../../shared/prettyRoleText'
-import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../queries/team'
-
-const getLatestVersion = manuscript => {
-  if (
-    !manuscript ||
-    !manuscript.manuscriptVersions ||
-    manuscript.manuscriptVersions.length <= 0
-  )
-    return manuscript
-
-  return manuscript.manuscriptVersions[0]
-}
-
-/** Filter to return those manuscripts with the given user in one of the given roles.
- * Roles is an array of role-name strings.
- */
-
-const getManuscriptsUserHasRoleIn = (manuscripts, userId, roles) =>
-  manuscripts.filter(m =>
-    m.teams.some(
-      t =>
-        roles.includes(t.role) &&
-        t.members.some(member => member.user.id === userId),
-    ),
-  )
 
 const DashboardPage = ({ history, ...props }) => {
-  const { loading, data, error } = useQuery(queries.dashboard, {
-    fetchPolicy: 'cache-and-network',
-  })
-
   const invitationId = window.localStorage.getItem('invitationId')
     ? window.localStorage.getItem('invitationId')
     : ''
@@ -126,13 +93,10 @@ const DashboardPage = ({ history, ...props }) => {
       currentUser={currentUser}
       editorLatestVersions={editorLatestVersions}
       instanceName={instanceName}
-      newSubmission={() => history.push(`${urlFrag}/newSubmission`)}
-      prettyRoleText={prettyRoleText}
-      reviewerLatestVersions={reviewerLatestVersions}
-      reviewerRespond={reviewerRespond}
       shouldShowShortId={shouldShowShortId}
       updateMemberStatus={updateMemberStatus}
       urlFrag={urlFrag}
+      newSubmission={() => history.push(`${urlFrag}/newSubmission`)}
     />
   )
 }
