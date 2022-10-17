@@ -1,35 +1,22 @@
-import React from 'react'
 import { Button } from '@pubsweet/ui'
-import { Container, Placeholder } from '../style'
-import EditorItem from './sections/EditorItem'
-import OwnerItem from './sections/OwnerItem'
-import ReviewerItem from './sections/ReviewerItem'
+import React from 'react'
 import {
-  SectionHeader,
-  Title,
-  SectionRow,
-  SectionContent,
   Heading,
   HeadingWithAction,
+  SectionContent,
+  SectionHeader,
+  Title,
 } from '../../../shared'
-
-const getRoles = (m, userId) =>
-  m.teams
-    .filter(t => t.members.some(member => member.user.id === userId))
-    .map(t => t.role)
+import { Container } from '../style'
+import EditorTable from './sections/EditorTable'
+import OwnerTable from './sections/OwnerTable'
+import ReviewerTable from './sections/ReviewerTable'
 
 const Dashboard = ({
   newSubmission,
   instanceName,
-  authorLatestVersions,
-  reviewerLatestVersions,
-  currentUser,
-  reviewerRespond,
-  updateMemberStatus,
-  editorLatestVersions,
-  urlFrag,
   shouldShowShortId,
-  prettyRoleText,
+  urlFrag,
 }) => {
   return (
     <Container>
@@ -44,28 +31,11 @@ const Dashboard = ({
           <SectionHeader>
             <Title>My Submissions</Title>
           </SectionHeader>
-          {authorLatestVersions.length > 0 ? (
-            authorLatestVersions.map(version => (
-              // Links are based on the original/parent manuscript version
-              <OwnerItem
-                instanceName={instanceName}
-                // deleteManuscript={() =>
-                //   // eslint-disable-next-line no-alert
-                //   window.confirm(
-                //     'Are you sure you want to delete this submission?',
-                //   ) && deleteManuscript({ variables: { id: submission.id } })
-                // }
-                key={version.id}
-                shouldShowShortId={shouldShowShortId}
-                urlFrag={urlFrag}
-                version={version}
-              />
-            ))
-          ) : (
-            <Placeholder>
-              You have not submitted any manuscripts yet
-            </Placeholder>
-          )}
+          <OwnerTable
+            shouldShowShortId={shouldShowShortId}
+            instanceName={instanceName}
+            urlFrag={urlFrag}
+          />
         </SectionContent>
       )}
       {!['ncrc'].includes(instanceName) && (
@@ -73,22 +43,7 @@ const Dashboard = ({
           <SectionHeader>
             <Title>To Review</Title>
           </SectionHeader>
-          {reviewerLatestVersions.length > 0 ? (
-            reviewerLatestVersions.map(version => (
-              <ReviewerItem
-                currentUser={currentUser}
-                key={version.id}
-                reviewerRespond={reviewerRespond}
-                updateMemberStatus={updateMemberStatus}
-                urlFrag={urlFrag}
-                version={version}
-              />
-            ))
-          ) : (
-            <Placeholder>
-              You have not been assigned any reviews yet
-            </Placeholder>
-          )}
+          <ReviewerTable urlFrag={urlFrag} />
         </SectionContent>
       )}
 
@@ -96,26 +51,11 @@ const Dashboard = ({
         <SectionHeader>
           <Title>Manuscripts I&apos;m editor of</Title>
         </SectionHeader>
-        {editorLatestVersions.length > 0 ? (
-          editorLatestVersions.map(manuscript => (
-            <SectionRow key={`manuscript-${manuscript.id}`}>
-              <EditorItem
-                currentRoles={getRoles(manuscript, currentUser.id)}
-                instanceName={instanceName}
-                prettyRoleText={prettyRoleText}
-                shouldShowShortId={shouldShowShortId}
-                urlFrag={urlFrag}
-                version={manuscript}
-              />
-            </SectionRow>
-          ))
-        ) : (
-          <SectionRow>
-            <Placeholder>
-              You are not an editor of any manuscript yet
-            </Placeholder>
-          </SectionRow>
-        )}
+        <EditorTable
+          shouldShowShortId={shouldShowShortId}
+          instanceName={instanceName}
+          urlFrag={urlFrag}
+        />
       </SectionContent>
     </Container>
   )
