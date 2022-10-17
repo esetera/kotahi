@@ -44,8 +44,10 @@ const Publish = ({ manuscript, publishManuscript }) => {
           {!manuscript.published && notAccepted && (
             <div>
               <p>You can only publish accepted submissions.</p>
-              {!loading && data.getFullDois && (
-                <p>DOIs to be published: {data.getFullDois.join(', ')}</p>
+              {!loading && data.getFullDois.listOfDois && (
+                <p>
+                  DOIs to be published: {data.getFullDois.listOfDois.join(', ')}
+                </p>
               )}
             </div>
           )}
@@ -55,8 +57,10 @@ const Publish = ({ manuscript, publishManuscript }) => {
                 Publishing will add a new entry on the public website and can
                 not be undone.
               </p>
-              {!loading && data.getFullDois && (
-                <p>DOIs to be published: {data.getFullDois.join(', ')}</p>
+              {!loading && data.getFullDois.listOfDois && (
+                <p>
+                  DOIs to be published: {data.getFullDois.listOfDois.join(', ')}
+                </p>
               )}
             </div>
           )}

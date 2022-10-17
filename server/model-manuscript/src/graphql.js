@@ -1366,13 +1366,23 @@ const resolvers = {
         .findById(id)
         .withGraphFetched('reviews')
 
-      const doiSuffix = []
+      console.log(manuscript)
+      console.log(config.crossref.publicationType)
+
+      const DOIs = []
 
       if (config.crossref.publicationType === 'article') {
-        doiSuffix.push(
-          getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id,
+        console.log('here')
+        DOIs.push(
+          getReviewOrSubmissionField(manuscript, 'DOI') ||
+            getReviewOrSubmissionField(manuscript, 'doiSuffix'),
         )
+        console.log(getReviewOrSubmissionField(manuscript, 'DOI'))
+        console.log(DOIs)
       } else {
+        // @TODO: change this to directly push DOIs
+        console.log('there')
+
         const notEmptyReviews = Object.entries(manuscript.submission)
           .filter(
             ([key, value]) =>
@@ -1382,7 +1392,9 @@ const resolvers = {
           )
           .map(([key]) => key.replace('review', ''))
 
-        doiSuffix.push(
+        console.log(notEmptyReviews)
+
+        DOIs.push(
           ...notEmptyReviews.map(
             reviewNumber =>
               getReviewOrSubmissionField(
@@ -1391,10 +1403,10 @@ const resolvers = {
               ) || `${manuscript.id}/${reviewNumber}`,
           ),
         )
-        console.log(doiSuffix)
+        console.log(DOIs)
       }
-
-      return doiSuffix.forEach(suffix => getDoi(suffix))
+      console.log(DOIs)
+      return { listOfDois: DOIs }
     },
 
     async validateDOI(_, { articleURL }, ctx) {
