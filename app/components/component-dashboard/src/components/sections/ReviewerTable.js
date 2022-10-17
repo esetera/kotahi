@@ -29,25 +29,23 @@ const ReviewerTable = ({ urlFrag }) => {
     ['reviewer', 'invited:reviewer', 'accepted:reviewer', 'completed:reviewer'],
   )
 
-
   if (reviewerLatestVersions.length === 0) {
-    return (<Placeholder>
-    You have not been assigned any reviews yet
-  </Placeholder>)
+    return <Placeholder>You have not been assigned any reviews yet</Placeholder>
   }
 
-  return (<>
-  {reviewerLatestVersions.map(version => (
-      <ReviewerItem
-        currentUser={currentUser}
-        key={version.id}
-        reviewerRespond={reviewerRespond}
-        urlFrag={urlFrag}
-        version={version}
-      />
-    ))}
-  </>)
-
+  return (
+    <>
+      {reviewerLatestVersions.map(version => (
+        <ReviewerItem
+          currentUser={currentUser}
+          key={version.id}
+          reviewerRespond={reviewerRespond}
+          urlFrag={urlFrag}
+          version={version}
+        />
+      ))}
+    </>
+  )
 }
 
 export default ReviewerTable

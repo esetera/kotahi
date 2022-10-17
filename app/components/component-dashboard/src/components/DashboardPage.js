@@ -25,10 +25,10 @@ const DashboardPage = ({ history, ...props }) => {
   return (
     <Dashboard
       instanceName={instanceName}
+      newSubmission={() => history.push(`${urlFrag}/newSubmission`)}
       shouldShowShortId={shouldShowShortId}
       updateMemberStatus={updateMemberStatus}
       urlFrag={urlFrag}
-      newSubmission={() => history.push(`${urlFrag}/newSubmission`)}
     />
   )
 }
