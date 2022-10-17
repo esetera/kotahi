@@ -20,10 +20,7 @@ describe('Form builder', () => {
     cy.contains('Submission').click()
 
     // For Submission field
-    FormsPage.getFormTitleTab(0).should(
-      'contain',
-      'eLife Submission Form',
-    )
+    FormsPage.getFormTitleTab(0).should('contain', 'eLife Submission Form')
     FormsPage.clickFormOption(1)
     FormsPage.getFieldValidate()
     cy.get(':nth-child(8) > .style__Legend-sc-1npdrat-1')
@@ -76,4 +73,3 @@ describe('Form builder', () => {
     cy.contains('Update Field').click()
   })
 })
-
