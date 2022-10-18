@@ -16,13 +16,13 @@ import {
   setShouldPublishFieldMutation,
 } from './queries'
 
+import { CREATE_MESSAGE, GET_BLACKLIST_INFORMATION } from '../../../../queries'
+import { GET_INVITATIONS_FOR_MANUSCRIPT } from '../../../../queries/invitation'
 import {
-  CREATE_MESSAGE,
   CREATE_TEAM_MUTATION,
   UPDATE_TEAM_MUTATION,
-  GET_INVITATIONS_FOR_MANUSCRIPT,
-  GET_BLACKLIST_INFORMATION,
-} from '../../../../queries'
+  UPDATE_MEMBER_STATUS_MUTATION,
+} from '../../../../queries/team'
 import { validateDoi } from '../../../../shared/commsUtils'
 import {
   UPDATE_PENDING_COMMENT,
@@ -111,7 +111,7 @@ const DecisionPage = ({ match }) => {
     },
   })
 
-  const [update] = useMutation(updateManuscriptMutation)
+  const [update] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
   const [sendEmailMutation] = useMutation(sendEmail)
   const [sendChannelMessage] = useMutation(CREATE_MESSAGE)
   const [makeDecision] = useMutation(makeDecisionMutation)

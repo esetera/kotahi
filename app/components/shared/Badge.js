@@ -66,6 +66,7 @@ const label = (status, published) => {
     revise: 'Revise',
     revising: 'Revising',
     invited: 'Invited', // reviewer status
+    inProgress: 'In Progress', // reviewer status
     completed: 'Completed', // reviewer status
     evaluated: 'evaluated',
     published: 'published',

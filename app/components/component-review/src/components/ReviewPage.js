@@ -14,6 +14,7 @@ import {
   COMPLETE_COMMENT,
   DELETE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
+import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../queries/team'
 
 const createFileMutation = gql`
   mutation($file: Upload!, $meta: FileMetaInput!) {
@@ -240,15 +241,6 @@ const query = gql`
   }
 `
 
-const completeReviewMutation = gql`
-  mutation($id: ID!) {
-    completeReview(id: $id) {
-      id
-      status
-    }
-  }
-`
-
 const updateReviewMutationQuery = gql`
   mutation($id: ID, $input: ReviewInput) {
     updateReview(id: $id, input: $input) {
@@ -262,7 +254,7 @@ const urlFrag = config.journal.metadata.toplevel_urlfragment
 const ReviewPage = ({ match, ...props }) => {
   const currentUser = useCurrentUser()
   const [updateReviewMutation] = useMutation(updateReviewMutationQuery)
-  const [completeReview] = useMutation(completeReviewMutation)
+  const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
   const [createFile] = useMutation(createFileMutation)
   const [updatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
   const [completeComments] = useMutation(COMPLETE_COMMENTS)
@@ -287,7 +279,7 @@ const ReviewPage = ({ match, ...props }) => {
     partialRefetch: true,
   })
 
-  if (loading) return <Spinner />
+  if (loading || currentUser === null) return <Spinner />
 
   if (error) {
     console.warn(error.message)
@@ -456,10 +448,11 @@ const ReviewPage = ({ match, ...props }) => {
     })
   }
 
-  const handleSubmit = async ({ reviewId, history }) => {
-    await completeReview({
+  const handleSubmit = async ({ manuscriptId, history }) => {
+    await updateMemberStatus({
       variables: {
-        id: reviewId,
+        status: 'completed',
+        manuscriptId,
       },
     })
 
@@ -485,7 +478,7 @@ const ReviewPage = ({ match, ...props }) => {
       deleteFile={deleteFile}
       onSubmit={values =>
         handleSubmit({
-          reviewId: existingReview.id,
+          manuscriptId: latestVersion.id,
           history: props.history,
         })
       }

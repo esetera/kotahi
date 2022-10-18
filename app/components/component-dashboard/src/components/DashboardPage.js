@@ -10,6 +10,7 @@ import mutations from '../graphql/mutations'
 import Dashboard from './Dashboard'
 import { Spinner, CommsErrorBanner } from '../../../shared'
 import prettyRoleText from '../../../../shared/prettyRoleText'
+import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../queries/team'
 
 const getLatestVersion = manuscript => {
   if (
@@ -50,6 +51,7 @@ const DashboardPage = ({ history, ...props }) => {
 
   const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
 
+  const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
   // const [deleteManuscript] = useMutation(mutations.deleteManuscriptMutation, {
   //   update: (cache, { data: { deleteManuscript } }) => {
   //     const data = cache.readQuery({ query: queries.dashboard })
@@ -112,6 +114,7 @@ const DashboardPage = ({ history, ...props }) => {
       reviewerLatestVersions={reviewerLatestVersions}
       reviewerRespond={reviewerRespond}
       shouldShowShortId={shouldShowShortId}
+      updateMemberStatus={updateMemberStatus}
       urlFrag={urlFrag}
     />
   )
