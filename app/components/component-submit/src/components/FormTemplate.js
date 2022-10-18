@@ -5,6 +5,7 @@ import { Formik } from 'formik'
 import { unescape, get, set, debounce } from 'lodash'
 import { TextField, RadioGroup, CheckboxGroup } from '@pubsweet/ui'
 import { th, grid } from '@pubsweet/ui-toolkit'
+import { useApolloClient } from '@apollo/client'
 import {
   Section as Container,
   Select,
@@ -23,6 +24,7 @@ import ThreadedDiscussion from '../../../component-formbuilder/src/components/bu
 import ActionButton from '../../../shared/ActionButton'
 import { hasValue } from '../../../../shared/htmlUtils'
 import FormWaxEditor from '../../../component-formbuilder/src/components/FormWaxEditor'
+import { validateSuffix } from '../../../../shared/commsUtils'
 
 const Intro = styled.div`
   font-style: italic;
@@ -259,7 +261,6 @@ const InnerFormTemplate = ({
       </div>
     )
   }
-
   // this is whether the form includes a popup
   const hasPopup = form.haspopup ? JSON.parse(form.haspopup) : false
 
@@ -279,6 +280,8 @@ const InnerFormTemplate = ({
 
   const submittedManuscriptFile =
     isSubmission && manuscriptFiles.length ? manuscriptFiles[0] : null
+
+  const client = useApolloClient()
 
   return (
     <Container>
@@ -381,6 +384,7 @@ const InnerFormTemplate = ({
                 {!['SupplementaryFiles', 'VisualAbstract'].includes(
                   element.component,
                 ) && (
+                  
                   <ValidatedFieldFormik
                     {...rejectProps(element, [
                       'component',
@@ -425,7 +429,13 @@ const InnerFormTemplate = ({
                       JSON.parse(
                         element.doiValidation ? element.doiValidation : false,
                       ),
+                      JSON.parse(
+                        element.suffixValidation
+                          ? element.suffixValidation
+                          : false,
+                      ),
                       validateDoi,
+                      validateSuffix(client),
                       element.component,
                       threadedDiscussionProps,
                     )}

@@ -73,6 +73,7 @@ const query = gql`
           name
           description
           doiValidation
+          suffixValidation
           placeholder
           includeInReviewerPreview
           inline

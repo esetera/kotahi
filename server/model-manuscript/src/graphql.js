@@ -1362,7 +1362,7 @@ const resolvers = {
     // first validation step for custom suffix
     async validateSuffix(_, { suffix }, ctx) {
       const DOI = `${config.crossref.doiPrefix}/${suffix}`
-      const { isDOIValid } = isDOIInUse(DOI) // True = suffix is already taken. False = suffix is not taken.
+      const { isDOIValid } = await isDOIInUse(DOI) // True = suffix is already taken. False = suffix is not taken.
       return { isDOIValid: !isDOIValid }
     },
   },

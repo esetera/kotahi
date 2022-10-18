@@ -33,6 +33,7 @@ const typeDefs = `
     name: String
     description: String
     doiValidation: String
+    suffixValidation: String
     placeholder: String
     includeInReviewerPreview: String
     parse: String
@@ -86,6 +87,7 @@ const typeDefs = `
     name: String
     description: String
     doiValidation: String
+    suffixValidation: String
     placeholder: String
     includeInReviewerPreview: String
     parse: String

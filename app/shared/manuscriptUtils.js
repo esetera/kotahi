@@ -5,6 +5,7 @@ import { convertTimestampToDateString } from './dateUtils'
 import { StatusBadge } from '../components/shared'
 
 /** Validate just manuscript.submission, based on the supplied array of field definitions */
+// @TODO: add suffix validation functionality 
 export const validateManuscriptSubmission = async (
   submission,
   submissionForm,

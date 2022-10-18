@@ -342,6 +342,7 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
             minSize
           }
           doiValidation
+          suffixValidation
           options {
             id
             label
