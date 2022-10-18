@@ -7,7 +7,7 @@ import { Select } from '../../../../shared'
 import {
   CREATE_TEAM_MUTATION,
   UPDATE_TEAM_MUTATION,
-} from '../../../../../queries'
+} from '../../../../../queries/team'
 
 const editorOption = user => ({
   label: user.defaultIdentity?.name || user.email || user.username,

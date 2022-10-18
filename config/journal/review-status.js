@@ -1,1 +1,1 @@
-module.exports = ['invited', 'accepted', 'rejected', 'completed']
+module.exports = ['invited', 'accepted', 'rejected', 'completed', 'inProgress']

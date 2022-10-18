@@ -75,11 +75,9 @@ const resolvers = {
       }
     },
 
-    async completeReview(_, { id }, ctx) {
-      const review = await models.Review.query().findById(id)
-
+    async updateTeamMemberStatus(_, { manuscriptId, status }, ctx) {
       const manuscript = await models.Manuscript.query()
-        .findById(review.manuscriptId)
+        .findById(manuscriptId)
         .withGraphFetched('[submitter.[defaultIdentity], channels.members]')
 
       const team = await manuscript
@@ -92,7 +90,7 @@ const resolvers = {
         .where('userId', ctx.user)
         .first()
 
-      member.status = 'completed'
+      member.status = status
       return member.save()
     },
   },
@@ -101,7 +99,7 @@ const resolvers = {
 const typeDefs = `
   extend type Mutation {
     updateReview(id: ID, input: ReviewInput): Review!
-    completeReview(id: ID!): TeamMember
+    updateTeamMemberStatus(manuscriptId: ID!, status: String): TeamMember
   }
 
   type Review {

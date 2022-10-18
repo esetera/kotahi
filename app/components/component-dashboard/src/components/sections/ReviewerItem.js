@@ -12,7 +12,13 @@ import VersionTitle from './VersionTitle'
 // TODO: only return actions if not accepted or rejected
 // TODO: review id in link
 
-const ReviewerItem = ({ version, currentUser, reviewerRespond, urlFrag }) => {
+const ReviewerItem = ({
+  version,
+  currentUser,
+  reviewerRespond,
+  updateMemberStatus,
+  urlFrag,
+}) => {
   const team =
     (version.teams || []).find(team_ => team_.role === 'reviewer') || {}
 
@@ -29,6 +35,12 @@ const ReviewerItem = ({ version, currentUser, reviewerRespond, urlFrag }) => {
       ? `${urlFrag}/versions/${version.id}/reviewPreview`
       : `${urlFrag}/versions/${version.parentId || version.id}/review`
 
+  const reviewLinkText = {
+    completed: 'Completed',
+    accepted: 'Do Review',
+    inProgress: 'Continue Review',
+  }
+
   return (
     <div
       onClick={() => history.push(mainActionLink)}
@@ -40,15 +52,28 @@ const ReviewerItem = ({ version, currentUser, reviewerRespond, urlFrag }) => {
         <Item>
           <VersionTitle urlFrag={urlFrag} version={version} />
 
-          {(status === 'accepted' || status === 'completed') && (
+          {(status === 'accepted' ||
+            status === 'completed' ||
+            status === 'inProgress') && (
             <ActionGroup>
               <Action
-                onClick={e => e.stopPropagation()}
-                to={`${urlFrag}/versions/${
-                  version.parentId || version.id
-                }/review`}
+                onClick={async e => {
+                  e.stopPropagation()
+                  // on click, update review status before forwarding to link
+
+                  if (status === 'accepted') {
+                    await updateMemberStatus({
+                      variables: {
+                        manuscriptId: version.id,
+                        status: 'inProgress',
+                      },
+                    })
+                  }
+
+                  history.push(mainActionLink)
+                }}
               >
-                {status === 'completed' ? 'Completed' : 'Do Review'}
+                {reviewLinkText[status]}
               </Action>
             </ActionGroup>
           )}
@@ -115,6 +140,7 @@ ReviewerItem.propTypes = {
   }).isRequired,
   currentUser: PropTypes.oneOfType([PropTypes.object]).isRequired,
   reviewerRespond: PropTypes.func.isRequired,
+  updateMemberStatus: PropTypes.func.isRequired,
 }
 
 export default ReviewerItem
