@@ -191,6 +191,18 @@ export const SEARCH_USERS = gql`
   }
 `
 
+export const ARCHIVE_MANUSCRIPT = gql`
+  mutation($id: ID!) {
+    archiveManuscript(id: $id)
+  }
+`
+
+export const ARCHIVE_MANUSCRIPTS = gql`
+  mutation($ids: [ID!]!) {
+    archiveManuscripts(ids: $ids)
+  }
+`
+
 export const DELETE_MANUSCRIPT = gql`
   mutation($id: ID!) {
     deleteManuscript(id: $id)
@@ -222,12 +234,14 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
     $filters: [ManuscriptsFilter!]!
     $offset: Int
     $limit: Int
+    $timezoneOffsetMinutes: Int
   ) {
     paginatedManuscripts(
       sort: $sort
       filters: $filters
       offset: $offset
       limit: $limit
+      timezoneOffsetMinutes: $timezoneOffsetMinutes
     ) {
       totalCount
       manuscripts {
@@ -253,6 +267,7 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
             }
           }
         }
+        importSourceServer
         manuscriptVersions {
           id
           shortId
@@ -290,6 +305,7 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
             id
             profilePicture
           }
+          importSourceServer
         }
         submitter {
           username

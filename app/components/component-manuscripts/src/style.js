@@ -54,17 +54,17 @@ export const StyledAuthor = styled.p`
   white-space: nowrap;
 `
 
-export const BulkDeleteModalContainer = styled.div`
+export const BulkActionModalContainer = styled.div`
   background-color: white;
   padding: 10px;
 `
 
-export const BulkDeleteModalButtons = styled.div`
+export const BulkActionModalButtons = styled.div`
   display: flex;
   justify-content: space-between;
 `
 
-export const BulkDeleteModalButton = styled(Button)`
+export const BulkActionModalButton = styled(Button)`
   cursor: pointer;
 `
 
@@ -117,6 +117,11 @@ export const Cell = styled.div`
 
   overflow: hidden;
   overflow-wrap: anywhere;
+`
+
+export const HeadingCell = styled(Cell)`
+  align-items: center;
+  display: flex;
 `
 
 /** Displays the label as a badge colored according to props.color */

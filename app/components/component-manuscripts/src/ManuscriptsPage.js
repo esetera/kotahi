@@ -18,6 +18,8 @@ import {
   IMPORT_MANUSCRIPTS,
   IMPORTED_MANUSCRIPTS_SUBSCRIPTION,
   GET_SYSTEM_WIDE_DISCUSSION_CHANNEL,
+  ARCHIVE_MANUSCRIPT,
+  ARCHIVE_MANUSCRIPTS,
 } from '../../../queries'
 import configuredColumnNames from './configuredColumnNames'
 import { updateMutation } from '../../component-submit/src/components/SubmitPage'
@@ -46,6 +48,7 @@ const ManuscriptsPage = ({ history }) => {
       offset: (page - 1) * limit,
       limit,
       filters: uriQueryParams,
+      timezoneOffsetMinutes: new Date().getTimezoneOffset(),
     },
     fetchPolicy: 'network-only',
   })
@@ -85,6 +88,32 @@ const ManuscriptsPage = ({ history }) => {
     setIsImporting(true)
     importManuscripts()
   }
+
+  const [archiveManuscriptMutation] = useMutation(ARCHIVE_MANUSCRIPT, {
+    update(cache, { data: { id } }) {
+      const cacheId = cache.identify({
+        __typename: 'Manuscript',
+        id,
+      })
+
+      cache.evict({ cacheId })
+    },
+  })
+
+  const archiveManuscriptMutations = id => {
+    archiveManuscriptMutation({ variables: { id } })
+  }
+
+  const [archiveManuscripts] = useMutation(ARCHIVE_MANUSCRIPTS, {
+    update(cache, { data: { ids } }) {
+      const cacheIds = cache.identify({
+        __typename: 'Manuscript',
+        id: ids,
+      })
+
+      cache.evict({ cacheIds })
+    },
+  })
 
   const [deleteManuscriptMutation] = useMutation(DELETE_MANUSCRIPT, {
     update(cache, { data: { id } }) {
@@ -132,6 +161,12 @@ const ManuscriptsPage = ({ history }) => {
     })
   }
 
+  const confirmBulkArchive = selectedNewManuscript => {
+    archiveManuscripts({
+      variables: { ids: selectedNewManuscript },
+    })
+  }
+
   const [update] = useMutation(updateMutation)
   const [publishManuscript] = useMutation(publishManuscriptMutation)
   const client = useApolloClient()
@@ -148,8 +183,10 @@ const ManuscriptsPage = ({ history }) => {
 
   return (
     <Manuscripts
+      archiveManuscriptMutations={archiveManuscriptMutations}
       chatRoomId={chatRoomId}
       configuredColumnNames={configuredColumnNames}
+      confirmBulkArchive={confirmBulkArchive}
       confrimBulkDelete={confrimBulkDelete}
       deleteManuscriptMutations={deleteManuscriptMutations}
       history={history}
