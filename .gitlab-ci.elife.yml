@@ -1,7 +1,6 @@
 variables:
   IMAGE_ORG: kotahi
   IMAGE_NAME: kotahi-elife
-  REGION: us-east-1
   POSTGRES_HOST_AUTH_METHOD: trust
   POSTGRES_HOST: postgres
   POSTGRES_PORT: 5432
