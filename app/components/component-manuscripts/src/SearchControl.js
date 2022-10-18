@@ -31,7 +31,7 @@ const InlineTextField = styled.input`
 
   &:focus {
     border-color: ${th('colorPrimary')};
-    box-shadow: ${th('boxShadow')};
+    box-shadow: ${th('boxShadow.shades[100]')};
   }
 `
 

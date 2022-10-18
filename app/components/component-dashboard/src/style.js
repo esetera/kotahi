@@ -93,7 +93,7 @@ export const Centered = styled.div`
 export const InvitationContent = styled.div`
   background: ${th('colorBackground')};
   border-radius: ${th('borderRadius')};
-  box-shadow: ${th('boxShadow')};
+  box-shadow: ${th('boxShadow.shades[100]')};
   margin-bottom: 1rem;
   max-width: 50em;
   padding: ${grid(4)};

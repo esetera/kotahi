@@ -95,7 +95,7 @@ const cokoTheme = {
   gridUnit: '8px',
 
   /* Border */
-  borderRadius: '8px',
+  borderRadius: '6px',
   borderWidth: '1px', // julien: not 0
   borderStyle: 'solid',
 
@@ -103,9 +103,14 @@ const cokoTheme = {
   // $borderColor: var($colorFurniture);
 
   /* Shadow (for tooltip) */
-  /* boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 4px 0 rgba(0, 0, 0, 0.06)', */
-  // boxShadow: '4px 4px 16px #cdcdcd',
-  boxShadow: 'inset 0px 0px 4px rgba(0, 0, 0, 0.07)',
+  boxShadow: {
+    inset: 'inset 0px 0px 4px rgba(0, 0, 0, 0.07)',
+    shades: {
+      100: '0px 3px 5px 3px rgba(0, 0, 0, 0.07)',
+      300: '0px 3px 5px 3px rgba(0, 0, 0, 0.2)',
+    },
+  },
+
   /* Transition */
   transitionDuration: '0.2s', // TODO -- julien: not 0.05s
   transitionTimingFunction: 'ease',

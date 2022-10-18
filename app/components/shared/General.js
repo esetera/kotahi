@@ -10,7 +10,7 @@ export const Section = styled.section`
 export const Content = styled.div`
   background-color: ${th('colorBackground')};
   border-radius: ${th('borderRadius')};
-  box-shadow: ${th('boxShadow')};
+  box-shadow: ${th('boxShadow.shades[100]')};
   clear: both;
 `
 
@@ -25,7 +25,7 @@ export const SectionContent = styled(Section)`
   background-color: ${th('colorBackground')};
   border-radius: ${th('borderRadius')};
   border-top-left-radius: ${th('borderRadius')};
-  box-shadow: ${th('boxShadow')};
+  box-shadow: 0px 3px 5px 3px rgba(0, 0, 0, 0.2);
   margin-bottom: ${grid(2)};
   margin-top: ${grid(2)};
   padding: 0;
