@@ -358,7 +358,7 @@ const publishReviewsToCrossref = async manuscript => {
   const jsonResult = await parser.parseStringPromise(template)
 
   const xmls = notEmptyReviews
-    .map(reviewNumber => {
+    .map(async reviewNumber => {
       if (!manuscript.submission[`review${reviewNumber}date`]) {
         return null
       }
@@ -414,22 +414,23 @@ const publishReviewsToCrossref = async manuscript => {
         `${manuscript.id}/${reviewNumber}`
 
       // revalidate review DOI
-      isDOIInUse(doiSuffix).then(ret => {
-        if (ret.isDOIValid) throw Error("Review's custom DOI suffix is not available")
-      }).catch(e => {
-        throw e
-      })
+      let isDOIValid
+      ;({ isDOIValid } = await isDOIInUse(doiSuffix))
+
+      if (isDOIValid) {
+        throw Error('Review suffix is not available.')
+      }
 
       const doiSummarySuffix =
         getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
         `${manuscript.id}/`
 
       // revalidate summary DOI
-      isDOIInUse(doiSummarySuffix).then(ret => {
-        if (ret.isDOIValid) throw Error("Custom DOI is not available.")
-      }).catch(e => {
-        throw e
-      })
+      ;({ isDOIValid } = await isDOIInUse(doiSuffix))
+
+      if (isDOIValid) {
+        throw Error('Summary suffix is not available.')
+      }
 
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
         doiSuffix,
