@@ -173,11 +173,15 @@ const isDOIInUse = async checkDOI => {
   try {
     // Try to find object listed at DOI
     await axios.get(`https://api.crossref.org/works/${checkDOI}/agency`)
-    console.log(`DOI '${checkDOI}' is already taken. Custom suffix is unavailable.`)
+    // eslint-disable-next-line no-console
+    console.log(
+      `DOI '${checkDOI}' is already taken. Custom suffix is unavailable.`,
+    )
     return { isDOIValid: true } // DOI is already in use
   } catch (err) {
     if (err.response.status === 404) {
       // HTTP 404 "Not found" response. The DOI is not known by Crossref
+      // eslint-disable-next-line no-console
       console.log(`DOI '${checkDOI}' is available.`)
       return { isDOIValid: false }
     }
@@ -210,6 +214,9 @@ const publishArticleToCrossref = async manuscript => {
   const issueYear = getIssueYear(manuscript)
   const publishDate = new Date()
   const journalDoi = getDoi(0)
+  // let doiSuffix = manuscript.id
+
+  const decision = manuscript.reviews.find(r => r.isDecision)
 
   const doiSuffix =
     getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id

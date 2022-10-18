@@ -148,6 +148,7 @@ const formStructure = `
       name
       description
       doiValidation
+      suffixValidation
       placeholder
       parse
       format

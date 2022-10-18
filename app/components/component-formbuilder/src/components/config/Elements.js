@@ -331,6 +331,24 @@ const submissionElements = {
       },
       defaultValue: 'false',
     },
+    suffixValidation: {
+      component: 'RadioBox',
+      props: {
+        inline: true,
+        options: [
+          {
+            value: 'true',
+            label: 'Yes',
+          },
+          {
+            value: 'false',
+            label: 'No',
+          },
+        ],
+        label: 'Validate suffix uniqueness?',
+      },
+      defaultValue: 'false',
+    },
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
@@ -500,6 +518,24 @@ const elements = {
           },
         ],
         label: 'Validate as a DOI?',
+      },
+      defaultValue: 'false',
+    },
+    suffixValidation: {
+      component: 'RadioBox',
+      props: {
+        inline: true,
+        options: [
+          {
+            value: 'true',
+            label: 'Yes',
+          },
+          {
+            value: 'false',
+            label: 'No',
+          },
+        ],
+        label: 'Validate suffix uniqueness?',
       },
       defaultValue: 'false',
     },

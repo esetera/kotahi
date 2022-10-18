@@ -9,6 +9,7 @@ const NAME_FIELD = 'name'
 const COMPONENT_TYPE = '[role=listbox]'
 const FIELD_VALIDATE = '[class*=react-select__value-container]'
 const DOI_VALIDATION = '[class*=RadioBox__RadioGroup]'
+const SUFFIX_VALIDATION = '[class*=RadioBox__RadioGroup]'
 const UPDATE_FORM_BUTTON = '[type=submit]'
 
 export const FormsPage = {
@@ -48,6 +49,12 @@ export const FormsPage = {
   },
   clickOptionsDoiVaildation(nth) {
     this.getDoiValidation(nth).click()
+  },
+  getSuffixValidation(nth) {
+    return cy.get(SUFFIX_VALIDATION).eq(nth).scrollIntoView()
+  },
+  clickOptionsSuffixVaildation(nth) {
+    this.getSuffixValidation(nth).click()
   },
   clickUpdateForm() {
     return cy.get(UPDATE_FORM_BUTTON).click()
