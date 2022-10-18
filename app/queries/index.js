@@ -253,6 +253,7 @@ export const IMPORT_MANUSCRIPTS = gql`
     importManuscripts
   }
 `
+
 export const IMPORTED_MANUSCRIPTS_SUBSCRIPTION = gql`
   subscription manuscriptsImportStatus {
     manuscriptsImportStatus
