@@ -1412,6 +1412,14 @@ const resolvers = {
             ),
           ),
         )
+
+        DOIs.push(
+          getDoi(
+            getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+              `${manuscript.id}/`,
+          ),
+        )
+
         console.log(DOIs)
       }
 
