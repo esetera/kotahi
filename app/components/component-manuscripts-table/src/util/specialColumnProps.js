@@ -7,6 +7,7 @@ import {
   Submitter,
   Editors,
   Actions,
+  SubmitChevron,
 } from '../cell-components'
 
 /**
@@ -87,6 +88,13 @@ const buildSpecialColumnProps = specialComponentValues => {
         deleteManuscript,
         isManuscriptBlockedFromPublishing,
         tryPublishManuscript,
+        urlFrag,
+      },
+    },
+    submitChevron: {
+      flex: '0 1 6em',
+      component: SubmitChevron,
+      extraProps: {
         urlFrag,
       },
     },
