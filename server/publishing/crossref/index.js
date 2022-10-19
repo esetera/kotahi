@@ -414,8 +414,7 @@ const publishReviewsToCrossref = async manuscript => {
         `${manuscript.id}/${reviewNumber}`
 
       // revalidate review DOI
-      let isDOIValid
-      ;({ isDOIValid } = await isDOIInUse(doiSuffix))
+      let isDOIValid = (await isDOIInUse(doiSuffix)).isDOIValid
 
       if (isDOIValid) {
         throw Error('Review suffix is not available.')
@@ -426,7 +425,7 @@ const publishReviewsToCrossref = async manuscript => {
         `${manuscript.id}/`
 
       // revalidate summary DOI
-      ;({ isDOIValid } = await isDOIInUse(doiSuffix))
+      isDOIValid = (await isDOIInUse(doiSuffix)).isDOIValid
 
       if (isDOIValid) {
         throw Error('Summary suffix is not available.')
