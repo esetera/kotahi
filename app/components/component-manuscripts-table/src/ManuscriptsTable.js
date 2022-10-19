@@ -1,13 +1,17 @@
 import React from 'react'
-import {
-  ManuscriptsHeaderRow,
-  ManuscriptsTableStyled
-} from './style'
+import { ManuscriptsHeaderRow, ManuscriptsTableStyled } from './style'
 import FilterSortHeader from './FilterSortHeader'
 import ManuscriptRow from './ManuscriptRow'
 
-const ManuscriptsTable = ({ manuscripts, columnsProps, setFilter, setSortName, setSortDirection, sortDirection, sortName }) => {
-
+const ManuscriptsTable = ({
+  manuscripts,
+  columnsProps,
+  setFilter,
+  setSortName,
+  setSortDirection,
+  sortDirection,
+  sortName,
+}) => {
   return (
     <ManuscriptsTableStyled>
       <ManuscriptsHeaderRow>
@@ -24,8 +28,7 @@ const ManuscriptsTable = ({ manuscripts, columnsProps, setFilter, setSortName, s
         ))}
       </ManuscriptsHeaderRow>
       {manuscripts.map((manuscript, key) => {
-        const latestVersion =
-          manuscript.manuscriptVersions?.[0] || manuscript
+        const latestVersion = manuscript.manuscriptVersions?.[0] || manuscript
 
         return (
           <ManuscriptRow
