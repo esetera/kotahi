@@ -363,7 +363,7 @@ const publishReviewsToCrossref = async manuscript => {
     )
     .map(([key]) => key.replace('review', ''))
 
-    console.log(`hello ${notEmptyReviews}`)
+  console.log(`hello ${notEmptyReviews}`)
   const jsonResult = await parser.parseStringPromise(template)
   console.log('here')
 
@@ -425,8 +425,7 @@ const publishReviewsToCrossref = async manuscript => {
       templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Review: ${manuscript.submission.description}`
 
       const doiPrefix = config.crossref.doiPrefix 
-      const doiSuffix =
-        getReviewOrSubmissionField(
+      const doiSuffix =getReviewOrSubmissionField(
           manuscript, 
           `review${reviewNumber}suffix`,
           ) || `${manuscript.id}/${reviewNumber}`
@@ -442,45 +441,45 @@ const publishReviewsToCrossref = async manuscript => {
         getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
         `${manuscript.id}/`
 
-      // revalidate summary DOI
-      if (manuscript.submission.summarycreator) {
-        isDOIValid = (await isDOIInUse(doiPrefix + '/' + doiSummarySuffix)).isDOIValid
-      
+        // revalidate summary DOI
+        if (manuscript.submission.summarycreator) {
+          isDOIValid = (await isDOIInUse(doiPrefix + '/' + doiSummarySuffix)).isDOIValid
 
-        if (isDOIValid) {
-          throw Error('Summary suffix is not available: ' + doiSummarySuffix)
+
+          if (isDOIValid) {
+            throw Error('Summary suffix is not available: ' + doiSummarySuffix)
+          }
         }
-      }
-      templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
-        doiSuffix,
-      )
-      templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-result/${reviewNumber}`
-      templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
-        inter_work_relation: [
-          {
-            _: manuscript.submission.articleURL.split('.org/')[1],
-            $: {
-              'relationship-type': 'isReviewOf',
-              'identifier-type': 'doi',
+        templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
+          doiSuffix,
+        )
+        templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/article-evaluation-result/${reviewNumber}`
+        templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
+          inter_work_relation: [
+            {
+              _: manuscript.submission.articleURL.split('.org/')[1],
+              $: {
+                'relationship-type': 'isReviewOf',
+                'identifier-type': 'doi',
+              },
             },
-          },
-        ],
-      }
-      templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] = {
-        inter_work_relation: [
-          {
-            _: getDoi(doiSummarySuffix),
-            $: {
-              'relationship-type': 'isSupplementTo',
-              'identifier-type': 'doi',
+          ],
+        }
+        templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] = {
+          inter_work_relation: [
+            {
+              _: getDoi(doiSummarySuffix),
+              $: {
+                'relationship-type': 'isSupplementTo',
+                'identifier-type': 'doi',
+              },
             },
-          },
-        ],
-      }
-      return { reviewNumber, xml: builder.buildObject(templateCopy) }
-    }),
+          ],
+        }
+        return { reviewNumber, xml: builder.buildObject(templateCopy) }
+      }),
     )
-    ).filter(Boolean)
+  ).filter(Boolean)
 
   if (manuscript.submission.summary && manuscript.submission.summarydate) {
     const templateCopy = JSON.parse(JSON.stringify(jsonResult))
