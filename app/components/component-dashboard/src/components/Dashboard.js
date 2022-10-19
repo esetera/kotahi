@@ -9,7 +9,7 @@ import {
 } from '../../../shared'
 import { Container } from '../style'
 import EditorTable from './sections/EditorTable'
-import OwnerTable from './sections/OwnerTableDraft'
+import OwnerTable from './sections/OwnerTable'
 import ReviewerTable from './sections/ReviewerTable'
 
 const Dashboard = ({
@@ -25,7 +25,7 @@ const Dashboard = ({
       <HeadingWithAction>
         <Heading>Dashboard</Heading>
         <Button onClick={newSubmission} primary>
-          ＋ New submission
+          + New submission
         </Button>
         {createNewTaskAlerts && (
           <Button onClick={createNewTaskAlerts}>New Alerts</Button>
