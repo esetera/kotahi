@@ -22,7 +22,7 @@ const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
   const currentUser = data && data.currentUser
 
   // Editors are always linked to the parent/original manuscript, not to versions
-  const latestVersions = data.manuscriptsUserHasCurrentRoleIn.map(
+  const latestVersions = data?.manuscriptsUserHasCurrentRoleIn.map(
     getLatestVersion,
   )
 

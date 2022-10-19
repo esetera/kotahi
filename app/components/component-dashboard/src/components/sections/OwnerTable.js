@@ -1,26 +1,18 @@
 import { useQuery } from '@apollo/client'
-import React from 'react'
+import React, { useState } from 'react'
+import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
+import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
 import { CommsErrorBanner, Spinner } from '../../../../shared'
 import queries from '../../graphql/queries'
 import { Placeholder } from '../../style'
 import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
-import OwnerItem from './OwnerItem'
+import { getUriQueryParams } from '../../../../../shared/urlUtils'
+
+const URI_SEARCH_PARAM = 'search'
 
 const OwnerTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
-  // const [deleteManuscript] = useMutation(mutations.deleteManuscriptMutation, {
-  //   update: (cache, { data: { deleteManuscript } }) => {
-  //     const data = cache.readQuery({ query: queries.dashboard })
-  //     const manuscripts = data.manuscripts.filter(
-  //       manuscript => manuscript.id !== deleteManuscript,
-  //     )
-  //     cache.writeQuery({
-  //       query: queries.dashboard,
-  //       data: {
-  //         manuscripts,
-  //       },
-  //     })
-  //   },
-  // })
+  const [sortName, setSortName] = useState('created')
+  const [sortDirection, setSortDirection] = useState('DESC')
 
   const { loading, data, error } = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
@@ -45,25 +37,62 @@ const OwnerTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
     return <Placeholder>You have not submitted any manuscripts yet</Placeholder>
   }
 
+  const specialComponentValues = {
+    urlFrag,
+  }
+
+  const uriQueryParams = getUriQueryParams(window.location)
+
+  const currentSearchQuery = uriQueryParams.find(
+    x => x.field === URI_SEARCH_PARAM,
+  )?.value
+
+  const displayProps = {
+    uriQueryParams,
+    sortName,
+    sortDirection,
+    currentSearchQuery,
+  }
+
+  const columnNames = [
+    'shortId',
+    'meta.title',
+    'status',
+    'created',
+    'updated',
+    'submitChevron',
+  ]
+
+  const setFilter = (fieldName, filterValue) => {
+    // TODO
+  }
+
+  const fieldDefinitions = {}
+  const fields = data.formForPurposeAndCategory?.structure?.children ?? []
+  fields.forEach(field => {
+    if (field.name) fieldDefinitions[field.name] = field // Incomplete fields in the formbuilder may not have a name specified. Ignore these
+  })
+
+  const columnsProps = buildColumnDefinitions(
+    columnNames,
+    fieldDefinitions,
+    specialComponentValues,
+    displayProps,
+  )
+
   return (
-    <>
-      {authorLatestVersions.map(version => (
-        // Links are based on the original/parent manuscript version
-        <OwnerItem
-          instanceName={instanceName}
-          // deleteManuscript={() =>
-          //   // eslint-disable-next-line no-alert
-          //   window.confirm(
-          //     'Are you sure you want to delete this submission?',
-          //   ) && deleteManuscript({ variables: { id: submission.id } })
-          // }
-          key={version.id}
-          shouldShowShortId={shouldShowShortId}
-          urlFrag={urlFrag}
-          version={version}
-        />
-      ))}
-    </>
+    <ManuscriptsTable
+      columnsProps={columnsProps}
+      getLink={manuscript =>
+        `${urlFrag}/versions/${manuscript.parentId || manuscript.id}/submit`
+      }
+      manuscripts={authorLatestVersions}
+      setFilter={setFilter}
+      setSortDirection={setSortDirection}
+      setSortName={setSortName}
+      sortDirection={sortDirection}
+      sortName={sortName}
+    />
   )
 }
 
