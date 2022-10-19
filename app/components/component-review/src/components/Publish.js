@@ -44,7 +44,7 @@ const Publish = ({ manuscript, publishManuscript }) => {
           {!manuscript.published && notAccepted && (
             <div>
               <p>You can only publish accepted submissions.</p>
-              {!loading && data.getFullDois.listOfDois && (
+              {!loading && data.getFullDois.listOfDois.length > 0 && (
                 <p>
                   DOIs to be published: {data.getFullDois.listOfDois.join(', ')}
                 </p>
@@ -80,7 +80,7 @@ const Publish = ({ manuscript, publishManuscript }) => {
                   key={step.stepLabel}
                   type="error"
                 >
-                  Error posting to {step.stepLabel} : {step.errorMessage}
+                  Error posting to {step.stepLabel}
                 </Alert>
               )
             })}

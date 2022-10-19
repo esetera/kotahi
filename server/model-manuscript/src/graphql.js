@@ -1391,6 +1391,8 @@ const resolvers = {
         // @TODO: change this to directly push DOIs
         console.log('there')
 
+        console.log(Object.entries(manuscript.submission))
+
         const notEmptyReviews = Object.entries(manuscript.submission)
           .filter(
             ([key, value]) =>
@@ -1413,12 +1415,21 @@ const resolvers = {
           ),
         )
 
-        DOIs.push(
-          getDoi(
-            getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
-              `${manuscript.id}/`,
-          ),
-        )
+        console.log(DOIs)
+
+        if (
+          Object.entries(manuscript.submission).some(
+            ([key, value]) =>
+              key === 'summary' && !checkIsAbstractValueEmpty(value),
+          )
+        ) {
+          DOIs.push(
+            getDoi(
+              getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+                `${manuscript.id}/`,
+            ),
+          )
+        }
 
         console.log(DOIs)
       }
