@@ -9,7 +9,7 @@ import {
 } from '../../../shared'
 import { Container } from '../style'
 import EditorTable from './sections/EditorTable'
-import OwnerTable from './sections/OwnerTable'
+import OwnerTable from './sections/OwnerTableDraft'
 import ReviewerTable from './sections/ReviewerTable'
 
 const Dashboard = ({

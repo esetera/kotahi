@@ -1,9 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import { Item, StatusBadge } from '../../style'
+import { Item } from '../../style'
 import VersionTitle from './VersionTitle'
-import { Icon, ClickableSectionRow } from '../../../../shared'
+import { Icon, ClickableSectionRow, StatusBadge } from '../../../../shared'
 import theme from '../../../../../theme'
 
 const OwnerItem = ({ version, urlFrag, instanceName, shouldShowShortId }) => {
