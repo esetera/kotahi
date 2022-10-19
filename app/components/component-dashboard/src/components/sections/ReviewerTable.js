@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import React from 'react'
+import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../../queries/team'
 import { CommsErrorBanner, Spinner } from '../../../../shared'
 import mutations from '../../graphql/mutations'
 import queries from '../../graphql/queries'
@@ -9,6 +10,7 @@ import ReviewerItem from './ReviewerItem'
 
 const ReviewerTable = ({ urlFrag }) => {
   const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
+  const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
 
   const { loading, data, error } = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
@@ -40,6 +42,7 @@ const ReviewerTable = ({ urlFrag }) => {
           currentUser={currentUser}
           key={version.id}
           reviewerRespond={reviewerRespond}
+          updateMemberStatus={updateMemberStatus}
           urlFrag={urlFrag}
           version={version}
         />
