@@ -11,6 +11,7 @@ const ManuscriptsTable = ({
   setSortDirection,
   sortDirection,
   sortName,
+  getLink,
 }) => {
   return (
     <ManuscriptsTableStyled>
@@ -33,6 +34,7 @@ const ManuscriptsTable = ({
         return (
           <ManuscriptRow
             columnDefinitions={columnsProps}
+            getLink={getLink}
             key={latestVersion.id}
             manuscript={latestVersion}
             setFilter={setFilter}
