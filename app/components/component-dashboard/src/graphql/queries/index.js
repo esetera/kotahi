@@ -28,7 +28,40 @@ meta {
   }
 }
 submission
+created
+updated
 published
+`
+
+const formForPurposeAndCategoryFragment = `formForPurposeAndCategory(purpose: "submit", category: "submission") {
+  structure {
+    children {
+      id
+      component
+      name
+      title
+      shortDescription
+      validate {
+        id
+        label
+        value
+        labelColor
+      }
+      validateValue {
+        minChars
+        maxChars
+        minSize
+      }
+      doiValidation
+      options {
+        id
+        label
+        labelColor
+        value
+      }
+    }
+  }
+}
 `
 
 export default {
@@ -46,6 +79,7 @@ export default {
         }
         ${manuscriptFragment}
       }
+      ${formForPurposeAndCategoryFragment}
     }
   `,
   getUser: gql`

@@ -41,6 +41,7 @@ const ManuscriptRow = ({
     />
   )
 
+  // Whole Row is clickable
   if (getLink) {
     return (
       <Link to={getLink(manuscript)}>

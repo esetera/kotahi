@@ -68,6 +68,8 @@ export const ManuscriptsRow = styled.div`
 `
 
 export const ClickableManuscriptsRow = styled(ManuscriptsRow)`
+  color: ${th('colorText')};
+
   &:hover {
     background-color: ${th('colorBackgroundHue')};
     cursor: pointer;
