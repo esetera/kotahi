@@ -368,7 +368,7 @@ const publishReviewsToCrossref = async manuscript => {
 
   // only validate if a summary exists, ie there is a summary author/creator
   if (manuscript.submission.summarycreator) {
-    isDOIValid = (await isDOIInUse(doiPrefix + doiSummarySuffix)).isDOIValid
+    const isDOIValid = (await isDOIInUse(doiPrefix + doiSummarySuffix)).isDOIValid
 
     if (isDOIValid) {
       throw Error('Summary suffix is not available: ' + doiSummarySuffix)
