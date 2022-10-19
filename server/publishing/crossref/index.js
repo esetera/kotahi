@@ -417,6 +417,7 @@ const publishReviewsToCrossref = async manuscript => {
 
       templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Review: ${manuscript.submission.description}`
 
+      const doiPrefix = config.crossref.doiPrefix 
       const doiSuffix =
         getReviewOrSubmissionField(
           manuscript, 
@@ -424,10 +425,10 @@ const publishReviewsToCrossref = async manuscript => {
           ) || `${manuscript.id}/${reviewNumber}`
       console.log("ring")
       // revalidate review DOI
-      let isDOIValid = (await isDOIInUse(doiSuffix)).isDOIValid
+      let isDOIValid = (await isDOIInUse(doiPrefix + '/' + doiSuffix)).isDOIValid
       console.log("sing")
       if (isDOIValid) {
-        throw Error('Review suffix is not available.')
+        throw Error('Review suffix is not available:' + doiSuffix)
       }
       console.log("ping")
       const doiSummarySuffix =
@@ -436,13 +437,13 @@ const publishReviewsToCrossref = async manuscript => {
 
       // revalidate summary DOI
       if (manuscript.submission.summarycreator) {
-        isDOIValid = (await isDOIInUse(doiSummarySuffix)).isDOIValid
-      }
+        isDOIValid = (await isDOIInUse(doiPrefix + '/' + doiSummarySuffix)).isDOIValid
+      
 
         if (isDOIValid) {
-          throw Error('Summary suffix is not available.')
+          throw Error('Summary suffix is not available: ' + doiSummarySuffix)
         }
-
+      }
       templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
         doiSuffix,
       )
