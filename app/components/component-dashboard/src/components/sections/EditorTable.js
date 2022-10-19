@@ -9,8 +9,6 @@ import {
   getManuscriptsUserHasRoleIn,
   getRoles,
 } from '../../utils'
-import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
-import ManuscriptsTable from '../../../../component-manuscript-table/ManuscriptTable'
 import EditorItem from './EditorItem'
 
 const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
@@ -38,45 +36,6 @@ const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
     return <Placeholder>You have not submitted any manuscripts yet</Placeholder>
   }
 
-  /*
-  submission.articleDescription,submission.journal,created,updated,submission.topics,status,submission.labels,editor
-  */
-  const specialComponentValues = {
-    deleteManuscript,
-    isManuscriptBlockedFromPublishing,
-    tryPublishManuscript,
-    selectedNewManuscripts,
-    toggleNewManuscriptCheck,
-    setReadyToEvaluateLabel,
-    urlFrag,
-  }
-  const displayProps = {
-    uriQueryParams,
-    sortName,
-    sortDirection,
-    currentSearchQuery,
-  }
-
-  const columnNames = [
-    ''
-  ]
-  /*
-  Manuscript Number
-  Title
-  Status -> FilterableStatusBadge
-  Version
-  Reviewer Statuses
-  Actions
-  */
-
-  const columnProps = buildColumnDefinitions(columnNames, fieldDefinitions, specialComponentValues, displayProps)
-  return <ManuscriptsTable manuscripts={editorLatestVersions}
-  columnsProps={}
-  setFilter={}
-  setSortName={}
-  setSortDirection={}
-  sortDirection={}
-  sortName={} />
   return (
     <>
       {editorLatestVersions.map(manuscript => (
