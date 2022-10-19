@@ -8,6 +8,7 @@ import {
   Editors,
   Actions,
   SubmitChevron,
+  ReviewLink,
 } from '../cell-components'
 
 /**
@@ -37,6 +38,9 @@ const buildSpecialColumnProps = specialComponentValues => {
     toggleNewManuscriptCheck,
     setReadyToEvaluateLabel,
     archiveManuscript,
+    reviewerRespond,
+    currentUser,
+    updateMemberStatus,
   } = specialComponentValues
 
   const specialColumnProps = {
@@ -100,6 +104,16 @@ const buildSpecialColumnProps = specialComponentValues => {
       component: SubmitChevron,
       extraProps: {
         urlFrag,
+      },
+    },
+    reviewLink: {
+      flex: '0 1 10em',
+      component: ReviewLink,
+      extraProps: {
+        urlFrag,
+        reviewerRespond,
+        currentUser,
+        updateMemberStatus,
       },
     },
     newItemCheckbox: {
