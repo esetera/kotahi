@@ -118,6 +118,7 @@ const formFields = `
       name
       description
       doiValidation
+      suffixValidation
       placeholder
       includeInReviewerPreview
       permitPublishing

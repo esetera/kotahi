@@ -1,10 +1,11 @@
 import React from 'react'
 import { get } from 'lodash'
 import { validateFormField } from './formValidation'
-import { convertTimestampToDate } from './time-formatting'
+import { convertTimestampToDateString } from './dateUtils'
 import { StatusBadge } from '../components/shared'
 
 /** Validate just manuscript.submission, based on the supplied array of field definitions */
+// @TODO: add suffix validation functionality 
 export const validateManuscriptSubmission = async (
   submission,
   submissionForm,
@@ -43,14 +44,14 @@ export const getFieldValueAndDisplayValue = (column, manuscript) => {
     return [
       {
         value: manuscript.created,
-        displayValue: convertTimestampToDate(manuscript.created),
+        displayValue: convertTimestampToDateString(manuscript.created),
       },
     ]
   if (column.name === 'updated')
     return [
       {
         value: manuscript.updated,
-        displayValue: convertTimestampToDate(manuscript.updated),
+        displayValue: convertTimestampToDateString(manuscript.updated),
       },
     ]
   if (column.name === 'status')

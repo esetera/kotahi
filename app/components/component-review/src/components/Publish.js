@@ -80,7 +80,7 @@ const Publish = ({ manuscript, publishManuscript }) => {
                   key={step.stepLabel}
                   type="error"
                 >
-                  Error posting to {step.stepLabel}
+                  Error posting to {step.stepLabel} : {step.errorMessage}
                 </Alert>
               )
             })}

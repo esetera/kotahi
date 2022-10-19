@@ -35,6 +35,7 @@ const formFields = `
       name
       description
       doiValidation
+      suffixValidation
       placeholder
       parse
       format

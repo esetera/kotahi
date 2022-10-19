@@ -4,19 +4,16 @@ import { isEmpty } from 'lodash'
 import { LeftSideButton } from 'wax-prosemirror-components'
 import { Commands } from 'wax-prosemirror-utilities'
 import { Tools } from 'wax-prosemirror-services'
+import { wrapIn } from 'prosemirror-commands'
 
-class AppendixHeader extends Tools {
-  title = 'Change to appendix header'
-  label = 'Appendix head'
-  name = 'AppendixHeader'
+class GlossarySection extends Tools {
+  title = 'Change to glossary section'
+  label = 'Glossary section'
+  name = 'GlossarySection'
 
-  // eslint-disable-next-line class-methods-use-this
   get run() {
     return (state, dispatch) => {
-      Commands.setBlockType(state.config.schema.nodes.appendixHeader)(
-        state,
-        dispatch,
-      )
+      wrapIn(state.config.schema.nodes.glossarySection)(state, dispatch)
     }
   }
 
@@ -28,7 +25,7 @@ class AppendixHeader extends Tools {
 
       const { from, to } = state.selection
       state.doc.nodesBetween(from, to, (node, pos) => {
-        if (node.type.name === 'appendixHeader') {
+        if (node.type.name === 'glossarySection') {
           isActive = true
         }
       })
@@ -44,7 +41,7 @@ class AppendixHeader extends Tools {
   // eslint-disable-next-line class-methods-use-this
   get enable() {
     return state => {
-      return Commands.setBlockType(state.config.schema.nodes.appendixHeader)(
+      return Commands.setBlockType(state.config.schema.nodes.glossarySection)(
         state,
       )
     }
@@ -54,11 +51,11 @@ class AppendixHeader extends Tools {
     if (isEmpty(view)) return null
     // eslint-disable-next-line no-underscore-dangle
     return this._isDisplayed ? (
-      <LeftSideButton item={this.toJSON()} key="AppendixHeader" view={view} />
+      <LeftSideButton item={this.toJSON()} key="GlossarySection" view={view} />
     ) : null
   }
 }
 
-decorate(injectable(), AppendixHeader)
+decorate(injectable(), GlossarySection)
 
-export default AppendixHeader
+export default GlossarySection
