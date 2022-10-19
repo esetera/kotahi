@@ -127,4 +127,3 @@ export const SortArrow = styled.span`
     content: '${({ direction }) => (direction === 'ASC' ? '▼' : '▲')}';
   }
 `
-

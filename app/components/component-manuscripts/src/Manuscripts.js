@@ -395,11 +395,11 @@ const Manuscripts = ({ history, ...props }) => {
           <div>
             <ScrollableContent>
               <ManuscriptsTable
-                manuscripts={manuscripts}
                 columnsProps={columnsProps}
+                manuscripts={manuscripts}
                 setFilter={setFilter}
-                setSortName={setSortName}
                 setSortDirection={setSortDirection}
+                setSortName={setSortName}
                 sortDirection={sortDirection}
                 sortName={sortName}
               />
