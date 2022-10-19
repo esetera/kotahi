@@ -8,7 +8,7 @@ variables:
   POSTGRES_USER: kotahidev
   POSTGRES_PASSWORD: kotahidev
   PGUSER: kotahidev
-  PGPASSWORD: kotahidev 
+  PGPASSWORD: kotahidev
   S3_PROTOCOL: http
   S3_HOST: localhost
   S3_PORT: 9000
@@ -125,18 +125,17 @@ lint style:
     - cd ${HOME}
     - yarn lint:style
 
-
 .test_template: &run_test_template
-  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+  image: $IMAGE_ORG/$IMAGE_NAME-dev:latest
   stage: test
   variables:
     GIT_STRATEGY: none
   services:
     - postgres
     - pubsweet/job-xsweet
-   
+
   script:
-    - cd components/server/job-xsweet 
+    - cd components/server/job-xsweet
     - $POSTGRES_HOST yarn test --testRegex test/standaloneXsweetTest.js
 
 .test_before_script: &run_test_before_script
