@@ -26,12 +26,12 @@ const styles = th => ({
         : 'inset 0px 0px 4px rgba(0, 0, 0, 0.07)'
       : state.isFocused
       ? `0 0 0 1px ${th.colorPrimary}`
-      : th.boxShadow,
+      : th.boxShadow.shades[100],
 
     borderRadius: th.borderRadius,
     '&:hover': {
       /* boxShadow: `0 0 0 1px ${th.colorPrimary}`, */
-      boxShadow: `1px solid ${th.colors.neutral.grey[900]}`,
+      boxShadow: th.boxShadow.shades[100],
     },
     fontSize: 14,
     minHeight: `calc(${th.gridUnit} * 5)`,

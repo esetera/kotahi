@@ -25,7 +25,7 @@ export const SectionContent = styled(Section)`
   background-color: ${th('colorBackground')};
   border-radius: ${th('borderRadius')};
   border-top-left-radius: ${th('borderRadius')};
-  box-shadow: 0px 3px 5px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: ${th('boxShadow.shades[100]')};
   margin-bottom: ${grid(2)};
   margin-top: ${grid(2)};
   padding: 0;
@@ -59,7 +59,7 @@ export const Container = styled.div`
 
 export const Title = styled.h2`
   font-size: ${theme.typography.fonts.size[200]};
-  font-weight: ${theme.typography.fonts.weight.semibold};
+  font-weight: ${theme.typography.fonts.weight.medium};
 `
 
 export const SectionHeader = styled.div`

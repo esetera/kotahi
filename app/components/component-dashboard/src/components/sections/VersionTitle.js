@@ -9,7 +9,7 @@ import theme from '../../../../../theme'
 
 const Root = styled.div`
   font-size: ${theme.typography.fonts.size[100]};
-  font-weight: ${theme.typography.fonts.weight.semibold};
+  font-weight: ${theme.typography.fonts.weight.medium};
   line-height: ${th('lineHeightHeading4')};
   text-decoration: underline;
 `

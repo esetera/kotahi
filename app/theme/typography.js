@@ -10,9 +10,8 @@ const typography = {
     weight: {
       normal: 400,
       medium: 500,
-      semibold: 600,
-      bold: 700,
-      extrabold: 900,
+      semibold: 700,
+      bold: 900,
     },
   },
 }

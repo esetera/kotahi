@@ -19,6 +19,12 @@ import colors from './colors'
 import spacing from './spacing'
 import typography from './typography'
 
+// Fonts
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/500.css'
+import '@fontsource/roboto/700.css'
+import '@fontsource/roboto/900.css'
+
 const defaultInstanceColor = '#2fac66'
 
 const validateInstanceConfigColors = colorCode => {
