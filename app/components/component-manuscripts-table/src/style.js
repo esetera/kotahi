@@ -1,51 +1,50 @@
-import styled from 'styled-components'
-import { grid } from '@pubsweet/ui-toolkit'
-import { Button } from '@pubsweet/ui'
+import styled, { css } from 'styled-components'
+import { Button, Action } from '@pubsweet/ui'
+import { th, grid } from '@pubsweet/ui-toolkit'
+import Color from 'color'
 
-export const SelectAllField = styled.div`
+export const StyledButton = styled(Button)`
+  cursor: pointer;
+  max-width: 130px;
+  min-width: unset;
+  overflow-wrap: normal;
+  padding: 4px;
+  width: 100%;
+`
+
+export const UserAction = styled(Action)`
+  cursor: pointer;
+  display: block;
+  font-size: inherit;
+  opacity: ${({ isDisabled }) => (isDisabled ? '0.5' : '1')};
+  width: fit-content;
+`
+
+export const InfoIcon = styled.div`
   align-items: center;
+  background-color: #7cbff9;
+  border-radius: 50%;
+  color: white;
   display: flex;
-`
-export const SelectedManuscriptsNumber = styled.p`
+  font-size: 110%;
   font-weight: bold;
-  margin-left: 10px;
-  margin-right: 15px;
-`
-export const ControlsContainer = styled.div`
-  display: flex;
-  flex: 1 1;
-  gap: ${grid(2)};
-  justify-content: flex-end;
+  height: 25px;
+  justify-content: center;
+  line-height: 1.4ex;
+  margin-left: 11px;
+  min-height: 25px;
+  min-width: 25px;
+
+  &::before {
+    content: 'i';
+  }
 `
 
-export const BulkActionModalContainer = styled.div`
-  background-color: white;
-  padding: 10px;
+export const StyledAuthor = styled.p`
+  white-space: nowrap;
 `
 
-export const BulkActionModalButtons = styled.div`
-  display: flex;
-  justify-content: space-between;
-`
-
-export const BulkActionModalButton = styled(Button)`
-  cursor: pointer;
-`
-export const BulkArchiveModalContainer = styled.div`
-  background-color: white;
-  padding: 10px;
-`
-
-export const BulkArchiveModalButtons = styled.div`
-  display: flex;
-  justify-content: space-between;
-`
-
-export const BulkArchiveModalButton = styled(Button)`
-  cursor: pointer;
-`
-
-export const ManuscriptsTable = styled.div`
+export const ManuscriptsTableStyled = styled.div`
   font-size: ${th('fontSizeBaseSmall')};
   margin-top: ${grid(1)};
   width: 100%;
@@ -96,11 +95,6 @@ export const Cell = styled.div`
   overflow-wrap: anywhere;
 `
 
-export const HeadingCell = styled(Cell)`
-  align-items: center;
-  display: flex;
-`
-
 /** Displays the label as a badge colored according to props.color */
 export const LabelBadge = styled.div`
   border-radius: 8px;
@@ -134,9 +128,3 @@ export const SortArrow = styled.span`
   }
 `
 
-export const ControlsContainer = styled.div`
-  display: flex;
-  flex: 1 1;
-  gap: ${grid(2)};
-  justify-content: flex-end;
-`

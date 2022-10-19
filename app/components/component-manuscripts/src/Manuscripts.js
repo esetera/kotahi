@@ -5,10 +5,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Checkbox } from '@pubsweet/ui'
 import { grid } from '@pubsweet/ui-toolkit'
-import ManuscriptRow from './ManuscriptRow'
 import {
-  ManuscriptsTable,
-  ManuscriptsHeaderRow,
   SelectAllField,
   SelectedManuscriptsNumber,
   ControlsContainer,
@@ -28,12 +25,12 @@ import {
 import { articleStatuses } from '../../../globals'
 import MessageContainer from '../../component-chat/src/MessageContainer'
 import Modal from '../../component-modal/src'
-import BulkArchiveModal from './BulkArchiveModal'
-import getColumnsProps from './getColumnsProps'
+import BulkDeleteModal from './BulkDeleteModal'
 import getUriQueryParams from './getUriQueryParams'
-import FilterSortHeader from './FilterSortHeader'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
+import ManuscriptsTable from '../../component-manuscripts-table/src/ManuscriptsTable'
+import buildColumnDefinitions from '../../component-manuscripts-table/src/util/buildColumnDefinitions'
 
 const URI_SEARCH_PARAM = 'search'
 
@@ -72,6 +69,7 @@ const Manuscripts = ({ history, ...props }) => {
     sortDirection,
     sortName,
     systemWideDiscussionChannel,
+    confirmBulkDelete,
     page,
     urlFrag,
     chatRoomId,
@@ -251,8 +249,8 @@ const Manuscripts = ({ history, ...props }) => {
     setIsOpenBulkArchiveModal(false)
   }
 
-  const doConfirmBulkArchive = () => {
-    confirmBulkArchive(selectedNewManuscripts)
+  const confirmBulkDeleteAction = () => {
+    confirmBulkDelete(selectedNewManuscripts)
 
     setSelectedNewManuscripts([])
     closeModalBulkArchiveConfirmation()
@@ -277,12 +275,8 @@ const Manuscripts = ({ history, ...props }) => {
     x => x.field === URI_SEARCH_PARAM,
   )?.value
 
-  const columnsProps = getColumnsProps(
-    configuredColumnNames,
-    fieldDefinitions,
-    uriQueryParams,
-    sortName,
-    sortDirection,
+  // Props for instantiating special components
+  const specialComponentValues = {
     deleteManuscript,
     isManuscriptBlockedFromPublishing,
     tryPublishManuscript,
@@ -290,8 +284,28 @@ const Manuscripts = ({ history, ...props }) => {
     toggleNewManuscriptCheck,
     setReadyToEvaluateLabel,
     urlFrag,
+  }
+
+  // Props for filtering / sorting
+  const displayProps = {
+    uriQueryParams,
+    sortName,
+    sortDirection,
     currentSearchQuery,
-    archiveManuscript,
+  }
+
+  // TODO: refactor to .env config
+  const adjustedColumnNames = [...configuredColumnNames]
+  adjustedColumnNames.push('actions')
+  if (['ncrc', 'colab'].includes(process.env.INSTANCE_NAME))
+    adjustedColumnNames.splice(0, 0, 'newItemCheckbox')
+
+  // Source of truth for columns
+  const columnsProps = buildColumnDefinitions(
+    adjustedColumnNames,
+    fieldDefinitions,
+    specialComponentValues,
+    displayProps,
   )
 
   const channels = [
@@ -395,34 +409,15 @@ const Manuscripts = ({ history, ...props }) => {
 
           <div>
             <ScrollableContent>
-              <ManuscriptsTable>
-                <ManuscriptsHeaderRow>
-                  {columnsProps.map(info => (
-                    <FilterSortHeader
-                      columnInfo={info}
-                      key={info.name}
-                      setFilter={setFilter}
-                      setSortDirection={setSortDirection}
-                      setSortName={setSortName}
-                      sortDirection={sortDirection}
-                      sortName={sortName}
-                    />
-                  ))}
-                </ManuscriptsHeaderRow>
-                {manuscripts.map((manuscript, key) => {
-                  const latestVersion =
-                    manuscript.manuscriptVersions?.[0] || manuscript
-
-                  return (
-                    <ManuscriptRow
-                      columnDefinitions={columnsProps}
-                      key={latestVersion.id}
-                      manuscript={latestVersion}
-                      setFilter={setFilter}
-                    />
-                  )
-                })}
-              </ManuscriptsTable>
+              <ManuscriptsTable
+                manuscripts={manuscripts}
+                columnsProps={columnsProps}
+                setFilter={setFilter}
+                setSortName={setSortName}
+                setSortDirection={setSortDirection}
+                sortDirection={sortDirection}
+                sortName={sortName}
+              />
             </ScrollableContent>
             <Pagination
               limit={limit}
@@ -451,9 +446,9 @@ const Manuscripts = ({ history, ...props }) => {
           isOpen={isOpenBulkArchiveModal}
           onRequestClose={closeModalBulkArchiveConfirmation}
         >
-          <BulkArchiveModal
-            closeModal={closeModalBulkArchiveConfirmation}
-            confirmBulkArchive={doConfirmBulkArchive}
+          <BulkDeleteModal
+            closeModal={closeModalBulkDeleteConfirmation}
+            confirmBulkDelete={confirmBulkDeleteAction}
           />
         </Modal>
       )}
