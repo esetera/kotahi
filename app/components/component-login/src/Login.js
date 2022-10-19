@@ -6,7 +6,7 @@ import { Button } from '@pubsweet/ui'
 import styled from 'styled-components'
 import lightenBy from '../../../shared/lightenBy'
 
-import getQueryStringByName from '../../../shared/getQueryStringByName'
+import { getParameterByName } from '../../../shared/urlUtils'
 import brandConfig from '../../../brandConfig.json'
 
 const getNextUrl = () => {
@@ -111,13 +111,13 @@ const StyledORCIDIcon = styled(ORCIDIcon)`
 `
 
 const Login = ({ logo = null, ...props }) => {
-  const token = getQueryStringByName('token')
+  const token = getParameterByName('token')
   // If a JWT token is supplied as a query param (e.g. from OAuth)
   // go ahead and fetch the redirect URL
   let redirectLink = token ? getNextUrl() : null
   redirectLink =
-    redirectLink && getQueryStringByName('redirectUrl')
-      ? getQueryStringByName('redirectUrl')
+    redirectLink && getParameterByName('redirectUrl')
+      ? getParameterByName('redirectUrl')
       : redirectLink
 
   if (token) {
