@@ -22,12 +22,21 @@ import {
 
 /**
  * buildSpecialColumnProps: Build the special components for specific form fields
- * @param {ComponentValues} specialComponentValues values needed for specific components 
+ * @param {ComponentValues} specialComponentValues values needed for specific components
  * @returns {object} The built special components
  */
 
-const buildSpecialColumnProps = (specialComponentValues) => {
-  const { deleteManuscript, isManuscriptBlockedFromPublishing, tryPublishManuscript, urlFrag, selectedNewManuscripts, toggleNewManuscriptCheck, setReadyToEvaluateLabel } = specialComponentValues
+const buildSpecialColumnProps = specialComponentValues => {
+  const {
+    deleteManuscript,
+    isManuscriptBlockedFromPublishing,
+    tryPublishManuscript,
+    urlFrag,
+    selectedNewManuscripts,
+    toggleNewManuscriptCheck,
+    setReadyToEvaluateLabel,
+  } = specialComponentValues
+
   const specialColumnProps = {
     shortId: {
       title: 'Manuscript number',
@@ -52,20 +61,20 @@ const buildSpecialColumnProps = (specialComponentValues) => {
       filterOptions:
         process.env.INSTANCE_NAME === 'aperture'
           ? [
-            { label: 'Unsubmitted', value: 'new' },
-            { label: 'Submitted', value: 'submitted' },
-            { label: 'Accepted', value: 'accepted' },
-            { label: 'Rejected', value: 'rejected' },
-            { label: 'Revise', value: 'revise' },
-            { label: 'Revising', value: 'revising' },
-            { label: 'Published', value: 'published' },
-          ]
+              { label: 'Unsubmitted', value: 'new' },
+              { label: 'Submitted', value: 'submitted' },
+              { label: 'Accepted', value: 'accepted' },
+              { label: 'Rejected', value: 'rejected' },
+              { label: 'Revise', value: 'revise' },
+              { label: 'Revising', value: 'revising' },
+              { label: 'Published', value: 'published' },
+            ]
           : [
-            { label: 'Unsubmitted', value: 'new' },
-            { label: 'Submitted', value: 'submitted' },
-            { label: 'Evaluated', value: 'evaluated' },
-            { label: 'Published', value: 'published' },
-          ],
+              { label: 'Unsubmitted', value: 'new' },
+              { label: 'Submitted', value: 'submitted' },
+              { label: 'Evaluated', value: 'evaluated' },
+              { label: 'Published', value: 'published' },
+            ],
       flex: '0 1 10em',
       component: FilterableStatusBadge,
     },
@@ -109,6 +118,7 @@ const buildSpecialColumnProps = (specialComponentValues) => {
           : DefaultField,
     },
   }
+
   return specialColumnProps
 }
 

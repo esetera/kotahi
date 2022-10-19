@@ -21,8 +21,19 @@ const fieldCanBeSorted = field => {
   return ['AbstractEditor', 'TextField'].includes(field?.component)
 }
 
-const buildColumnDefinition = (columnName, fieldDefinitions, specialColumnProperties, customDisplayProps) => {
-  const { currentSearchQuery, columnToSortOn, sortDirection, uriQueryParams } = customDisplayProps
+const buildColumnDefinition = (
+  columnName,
+  fieldDefinitions,
+  specialColumnProperties,
+  customDisplayProps,
+) => {
+  const {
+    currentSearchQuery,
+    columnToSortOn,
+    sortDirection,
+    uriQueryParams,
+  } = customDisplayProps
+
   const field = fieldDefinitions[columnName]
   const presetProps = specialColumnProperties[columnName] || {}
 
@@ -59,15 +70,28 @@ const buildColumnDefinition = (columnName, fieldDefinitions, specialColumnProper
  * buildColumnDefinitions: Master function to build the Manuscripts table definition
  * @param {Array[String]} columnNames The columns we want to display as a part of the table
  * @param {object} fieldDefinitions The graphQL structure of the fields returned from GET_MANUSCRIPTS_AND_FORM
- * @param {ComponentValues} specialComponentValues values needed for specific components 
+ * @param {ComponentValues} specialComponentValues values needed for specific components
  * @param {DisplayProps} customDisplayProps Props for display
  * @returns {object} the list of standardized column information
  */
 
-const buildColumnDefinitions = (columnNames, fieldDefinitions, specialComponentValues, displayProps) => {
-  const specialColumnProperties = buildSpecialColumnProps(specialComponentValues)
+const buildColumnDefinitions = (
+  columnNames,
+  fieldDefinitions,
+  specialComponentValues,
+  displayProps,
+) => {
+  const specialColumnProperties = buildSpecialColumnProps(
+    specialComponentValues,
+  )
+
   return columnNames.map(columnName => {
-    return buildColumnDefinition(columnName, fieldDefinitions, specialColumnProperties, displayProps)
+    return buildColumnDefinition(
+      columnName,
+      fieldDefinitions,
+      specialColumnProperties,
+      displayProps,
+    )
   })
 }
 
