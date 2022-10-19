@@ -67,6 +67,16 @@ export const ManuscriptsRow = styled.div`
   }
 `
 
+export const ClickableManuscriptsRow = styled(ManuscriptsRow)`
+  &:hover {
+    background-color: ${th('colorBackgroundHue')};
+    cursor: pointer;
+
+    svg {
+      stroke: ${th('colorPrimary')};
+    }
+  }
+`
 export const SnippetRow = styled.div`
   background-color: ${th('colorSecondaryBackground')};
   color: ${th('colorIconPrimary')};
