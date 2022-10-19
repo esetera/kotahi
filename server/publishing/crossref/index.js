@@ -169,9 +169,10 @@ const getIssueYear = manuscript => {
   return yearString
 }
 
+// input: a DOI in the form prefix/suffix
+// output: isDOIValid is true if DOI is not available, false otherwise
 const isDOIInUse = async checkDOI => {
   try {
-    console.log('checking DOIIII')
     // Try to find object listed at DOI
     await axios.get(`https://api.crossref.org/works/${checkDOI}/agency`)
     // eslint-disable-next-line no-console
@@ -363,18 +364,30 @@ const publishReviewsToCrossref = async manuscript => {
     )
     .map(([key]) => key.replace('review', ''))
 
-  console.log(`hello ${notEmptyReviews}`)
   const jsonResult = await parser.parseStringPromise(template)
-  console.log('here')
+
+  const doiPrefix = config.crossref.doiPrefix + '/'
+
+  
+  const doiSummarySuffix =
+        getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+        `${manuscript.id}/`
+
+  // only validate if a summary exists, ie there is a summary author/creator
+  if (manuscript.submission.summarycreator) {
+    isDOIValid = (await isDOIInUse(doiPrefix + doiSummarySuffix)).isDOIValid
+
+    if (isDOIValid) {
+      throw Error('Summary suffix is not available: ' + doiSummarySuffix)
+    }
+  }
 
   const xmls = ( 
     await Promise.all(
       notEmptyReviews.map(async reviewNumber => {
-        console.log("lollipop")
         if (!manuscript.submission[`review${reviewNumber}date`]) {
         return null
       }
-      console.log("hut")
       const [year, month, day] = parseDate(
         manuscript.submission[`review${reviewNumber}date`],
       )
@@ -424,32 +437,17 @@ const publishReviewsToCrossref = async manuscript => {
 
       templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Review: ${manuscript.submission.description}`
 
-      const doiPrefix = config.crossref.doiPrefix 
       const doiSuffix =getReviewOrSubmissionField(
           manuscript, 
           `review${reviewNumber}suffix`,
           ) || `${manuscript.id}/${reviewNumber}`
-      console.log("ring")
+
       // revalidate review DOI
-      let isDOIValid = (await isDOIInUse(doiPrefix + '/' + doiSuffix)).isDOIValid
-      console.log("sing")
+      let isDOIValid = (await isDOIInUse(doiPrefix + doiSuffix)).isDOIValid
+
       if (isDOIValid) {
-        throw Error('Review suffix is not available:' + doiSuffix)
+        throw Error('Review suffix is not available: ' + doiSuffix)
       }
-      console.log("ping")
-      const doiSummarySuffix =
-        getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
-        `${manuscript.id}/`
-
-        // revalidate summary DOI
-        if (manuscript.submission.summarycreator) {
-          isDOIValid = (await isDOIInUse(doiPrefix + '/' + doiSummarySuffix)).isDOIValid
-
-
-          if (isDOIValid) {
-            throw Error('Summary suffix is not available: ' + doiSummarySuffix)
-          }
-        }
         templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
           doiSuffix,
         )
