@@ -27,7 +27,6 @@ import { publishManuscriptMutation } from '../../component-review/src/components
 import getUriQueryParams from './getUriQueryParams'
 import Manuscripts from './Manuscripts'
 import { validateDoi } from '../../../shared/commsUtils'
-
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 const chatRoomId = fnv.hash(config['pubsweet-client'].baseUrl).hex()
 
@@ -155,7 +154,7 @@ const ManuscriptsPage = ({ history }) => {
     })
   }
 
-  const confrimBulkDelete = selectedNewManuscript => {
+  const confirmBulkDelete = selectedNewManuscript => {
     deleteManuscripts({
       variables: { ids: selectedNewManuscript }, // TODO These may not be parent IDs. Will this cause issues?
     })
@@ -186,8 +185,7 @@ const ManuscriptsPage = ({ history }) => {
       archiveManuscriptMutations={archiveManuscriptMutations}
       chatRoomId={chatRoomId}
       configuredColumnNames={configuredColumnNames}
-      confirmBulkArchive={confirmBulkArchive}
-      confrimBulkDelete={confrimBulkDelete}
+      confirmBulkDelete={confirmBulkDelete}
       deleteManuscriptMutations={deleteManuscriptMutations}
       history={history}
       importManuscripts={importManuscriptsAndRefetch}
