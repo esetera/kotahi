@@ -36,6 +36,7 @@ const buildSpecialColumnProps = specialComponentValues => {
     selectedNewManuscripts,
     toggleNewManuscriptCheck,
     setReadyToEvaluateLabel,
+    archiveManuscript,
   } = specialComponentValues
 
   const specialColumnProps = {
@@ -48,12 +49,14 @@ const buildSpecialColumnProps = specialComponentValues => {
     created: {
       title: 'Created',
       canSort: true,
+      canFilterByDateRange: true,
       defaultSortDirection: 'DESC',
       flex: '0 1 7em',
     },
     updated: {
       title: 'Updated',
       canSort: true,
+      canFilterByDateRange: true,
       defaultSortDirection: 'DESC',
       flex: '0 1 7em',
     },
@@ -89,6 +92,7 @@ const buildSpecialColumnProps = specialComponentValues => {
         isManuscriptBlockedFromPublishing,
         tryPublishManuscript,
         urlFrag,
+        archiveManuscript,
       },
     },
     submitChevron: {

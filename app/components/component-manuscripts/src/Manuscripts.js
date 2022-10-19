@@ -25,7 +25,7 @@ import {
 import { articleStatuses } from '../../../globals'
 import MessageContainer from '../../component-chat/src/MessageContainer'
 import Modal from '../../component-modal/src'
-import BulkDeleteModal from './BulkDeleteModal'
+import BulkArchiveModal from './BulkArchiveModal'
 import { getUriQueryParams } from '../../../shared/urlUtils'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
@@ -69,7 +69,6 @@ const Manuscripts = ({ history, ...props }) => {
     sortDirection,
     sortName,
     systemWideDiscussionChannel,
-    confirmBulkDelete,
     page,
     urlFrag,
     chatRoomId,
@@ -249,8 +248,8 @@ const Manuscripts = ({ history, ...props }) => {
     setIsOpenBulkArchiveModal(false)
   }
 
-  const confirmBulkDeleteAction = () => {
-    confirmBulkDelete(selectedNewManuscripts)
+  const doConfirmBulkArchive = () => {
+    confirmBulkArchive(selectedNewManuscripts)
 
     setSelectedNewManuscripts([])
     closeModalBulkArchiveConfirmation()
@@ -278,6 +277,7 @@ const Manuscripts = ({ history, ...props }) => {
   // Props for instantiating special components
   const specialComponentValues = {
     deleteManuscript,
+    archiveManuscript,
     isManuscriptBlockedFromPublishing,
     tryPublishManuscript,
     selectedNewManuscripts,
@@ -446,9 +446,9 @@ const Manuscripts = ({ history, ...props }) => {
           isOpen={isOpenBulkArchiveModal}
           onRequestClose={closeModalBulkArchiveConfirmation}
         >
-          <BulkDeleteModal
-            closeModal={closeModalBulkDeleteConfirmation}
-            confirmBulkDelete={confirmBulkDeleteAction}
+          <BulkArchiveModal
+            closeModal={closeModalBulkArchiveConfirmation}
+            confirmBulkArchive={doConfirmBulkArchive}
           />
         </Modal>
       )}
