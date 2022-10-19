@@ -1377,7 +1377,7 @@ const resolvers = {
         console.log('here')
         DOIs.push(
           getReviewOrSubmissionField(manuscript, 'DOI') ||
-            getReviewOrSubmissionField(manuscript, 'doiSuffix'),
+            getDoi(getReviewOrSubmissionField(manuscript, 'doiSuffix')),
         )
         console.log(getReviewOrSubmissionField(manuscript, 'DOI'))
         console.log(DOIs)
