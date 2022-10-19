@@ -170,6 +170,11 @@ const getCss = async () => {
   return css
 }
 
+const getDoiFromLink = doiLink => {
+  const parts = doiLink.split(config.crossref.doiPrefix)
+  return config.crossref.doiPrefix + parts[1]
+}
+
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
     submission(parent) {
@@ -1376,8 +1381,9 @@ const resolvers = {
       if (config.crossref.publicationType === 'article') {
         console.log('here')
         DOIs.push(
-          getReviewOrSubmissionField(manuscript, 'DOI') ||
-            getDoi(getReviewOrSubmissionField(manuscript, 'doiSuffix')),
+          getReviewOrSubmissionField(manuscript, 'DOI') != null
+            ? getDoiFromLink(getReviewOrSubmissionField(manuscript, 'DOI'))
+            : getDoi(getReviewOrSubmissionField(manuscript, 'doiSuffix')),
         )
         console.log(getReviewOrSubmissionField(manuscript, 'DOI'))
         console.log(DOIs)
@@ -1397,12 +1403,13 @@ const resolvers = {
         console.log(notEmptyReviews)
 
         DOIs.push(
-          ...notEmptyReviews.map(
-            reviewNumber =>
+          ...notEmptyReviews.map(reviewNumber =>
+            getDoi(
               getReviewOrSubmissionField(
                 manuscript,
                 `review${reviewNumber}suffix`,
               ) || `${manuscript.id}/${reviewNumber}`,
+            ),
           ),
         )
         console.log(DOIs)
