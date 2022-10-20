@@ -3,6 +3,7 @@
 
 import { dashboard } from '../../support/routes'
 import { ManuscriptsPage } from '../../page-object/manuscripts-page'
+// eslint-disable-next-line import/named
 import { NewSubmissionPage } from '../../page-object/new-submission-page'
 import { Menu } from '../../page-object/page-component/menu'
 import { DashboardPage } from '../../page-object/dashboard-page'
@@ -11,12 +12,12 @@ import { ReviewersPage } from '../../page-object/reviewers-page'
 
 describe('reviewers', () => {
   beforeEach(() => {
-    cy.task('restore', 'initial_state_other')
+    cy.task('restore', 'commons/colab_bootstrap')
     cy.task('seedForms')
     // login as admin
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin, dashboard)
+      cy.login(name.role.admin.name, dashboard)
     })
     cy.awaitDisappearSpinner()
     DashboardPage.clickSubmit()
@@ -26,7 +27,7 @@ describe('reviewers', () => {
     ControlPage.clickManageReviewers()
     ReviewersPage.clickInviteReviewerDropdown()
     cy.fixture('role_names').then(name => {
-      ReviewersPage.inviteReviewer(name.role.reviewers.reviewer1)
+      ReviewersPage.inviteReviewer(name.role.reviewers[0].username)
     })
   })
   it('shared checkbox is visible', () => {
