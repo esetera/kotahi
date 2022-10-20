@@ -1,6 +1,6 @@
 /// <reference types="Cypress" />
 import { DashboardPage } from '../dashboard-page'
-import { ManuscriptsPage } from '../manuscripts-page'
+// import { ManuscriptsPage } from '../manuscripts-page'
 import { FormsPage } from '../forms-page'
 import { UsersPage } from '../users-page'
 
@@ -61,7 +61,7 @@ export const Menu = {
   clickManuscriptsAndAssertPageLoad() {
     this.clickManuscripts()
     cy.awaitDisappearSpinner()
-    ManuscriptsPage.getTableHeader().should('be.visible')
+    // ManuscriptsPage.getTableHeader().should('be.visible')
   },
   getReportsButton() {
     return this.getMenuContainer().contains('Reports')
