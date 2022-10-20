@@ -7,7 +7,7 @@ import { SubmissionFormPage } from './submission-form-page'
  * submission through uploading a manuscript or through using an URL.
  */
 const UPLOAD_MANUSCRIPT_BUTTON = 'UploadManuscript__Info'
-const SUBMIT_URL_BUTTON = '.sc-bkzZxe.sc-clsHhM.wTJCz.idqger'
+const SUBMIT_URL_BUTTON = '.sc-bkzZxe'
 const SUBMISSION_MESSAGE = 'body'
 
 // eslint-disable-next-line import/prefer-default-export
