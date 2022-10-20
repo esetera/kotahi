@@ -7,12 +7,12 @@ import { DashboardPage } from '../../page-object/dashboard-page'
 describe('manuscripts page tests', () => {
   beforeEach(() => {
     // task to restore the database as per the dumps/initial_state_other.sql
-    cy.task('restore', 'initial_state_other')
+    cy.task('restore', 'commons/colab_bootstrap')
     cy.task('seedForms')
 
     // login as admin
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin, dashboard)
+      cy.login(name.role.admin.name, dashboard)
     })
     cy.awaitDisappearSpinner()
     DashboardPage.clickSubmit()
@@ -20,10 +20,10 @@ describe('manuscripts page tests', () => {
   })
 
   it('word count button should be visible & display info', () => {
-    SubmissionFormPage.getWordCountInfo().its('length').should('eq', 5)
+    SubmissionFormPage.getWordCountInfo().its('length').should('eq', 6)
 
     // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       SubmissionFormPage.getWordCountInfo()
         .eq(i)
         .scrollIntoView()
@@ -35,9 +35,5 @@ describe('manuscripts page tests', () => {
       .eq(0)
       .should('contain', '3')
       .and('contain', 'words')
-  })
-
-  it("edit date should reflect today's date", () => {
-    SubmissionFormPage.checkEditDateIsUpdated()
   })
 })
