@@ -66,7 +66,6 @@ const repackageForGraphql = async ms => {
       ...review,
       jsonData: JSON.stringify(review.jsonData),
     }))
-
   return result
 }
 
