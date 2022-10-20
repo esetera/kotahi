@@ -20,10 +20,10 @@ describe('manuscripts page tests', () => {
   })
 
   it('word count button should be visible & display info', () => {
-    SubmissionFormPage.getWordCountInfo().its('length').should('eq', 6)
+    SubmissionFormPage.getWordCountInfo().its('length').should('eq', 5)
 
     // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {
       SubmissionFormPage.getWordCountInfo()
         .eq(i)
         .scrollIntoView()
