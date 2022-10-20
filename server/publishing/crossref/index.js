@@ -183,8 +183,7 @@ const isDOIInUse = async checkDOI => {
   } catch (err) {
     if (err.response.status === 404) {
       // HTTP 404 "Not found" response. The DOI is not known by Crossref
-      // eslint-disable-next-line no-console
-      console.log(`DOI '${checkDOI}' is available.`)
+      // console.log(`DOI '${checkDOI}' is available.`)
       return { isDOIValid: false }
     }
     // Unexpected HTTP response (5xx)
@@ -368,14 +367,14 @@ const publishReviewsToCrossref = async manuscript => {
 
   const doiPrefix = config.crossref.doiPrefix + '/'
 
+  
   const doiSummarySuffix =
-    getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
-    `${manuscript.id}/`
+        getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+        `${manuscript.id}/`
 
   // only validate if a summary exists, ie there is a summary author/creator
   if (manuscript.submission.summarycreator) {
-    const isDOIValid = (await isDOIInUse(doiPrefix + doiSummarySuffix))
-      .isDOIValid
+    const isDOIValid = (await isDOIInUse(doiPrefix + doiSummarySuffix)).isDOIValid
 
     if (isDOIValid) {
       throw Error('Summary suffix is not available: ' + doiSummarySuffix)
@@ -401,8 +400,8 @@ const publishReviewsToCrossref = async manuscript => {
           config.crossref.depositorName
         templateCopy.doi_batch.head[0].depositor[0].email_address[0] =
           config.crossref.depositorEmail
-        templateCopy.doi_batch.head[0].registrant[0] =
-          config.crossref.registrant
+        templateCopy.doi_batch.head[0].registrant[0] = 
+        config.crossref.registrant
         templateCopy.doi_batch.head[0].timestamp[0] = +new Date()
         templateCopy.doi_batch.head[0].doi_batch_id[0] = String(
           +new Date(),
