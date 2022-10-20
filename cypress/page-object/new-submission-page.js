@@ -7,10 +7,11 @@ import { SubmissionFormPage } from './submission-form-page'
  * submission through uploading a manuscript or through using an URL.
  */
 const UPLOAD_MANUSCRIPT_BUTTON = 'UploadManuscript__Info'
-const SUBMIT_URL_BUTTON = 'button'
+const SUBMIT_URL_BUTTON = '.sc-bkzZxe.sc-clsHhM.wTJCz.idqger'
 const SUBMISSION_MESSAGE = 'body'
 
-const NewSubmissionPage = {
+// eslint-disable-next-line import/prefer-default-export
+export const NewSubmissionPage = {
   getUploadManuscriptButton() {
     return cy.getByContainsClass(UPLOAD_MANUSCRIPT_BUTTON)
   },
