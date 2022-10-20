@@ -35,7 +35,7 @@ const Dashboard = ({
       <HeadingWithAction>
         <Heading>Dashboard</Heading>
         <Button onClick={newSubmission} primary>
-          ＋ New submission
+          ＋ New Submission
         </Button>
       </HeadingWithAction>
       {!['ncrc'].includes(instanceName) && (

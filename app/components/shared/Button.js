@@ -9,7 +9,7 @@ const StyledButton = styled.button`
   box-shadow: none;
   color: ${theme.colors.neutral.white};
   cursor: pointer;
-  padding: ${theme.spacing[0]}px ${theme.spacing[1]}px;
+  padding: ${theme.spacing[1]}px ${theme.spacing[1]}px;
 
   &:hover {
     background-color: ${theme.colors.primary.green[110]};

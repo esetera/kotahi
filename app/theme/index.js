@@ -112,7 +112,7 @@ const cokoTheme = {
   boxShadow: {
     inset: 'inset 0px 0px 4px rgba(0, 0, 0, 0.07)',
     shades: {
-      100: '0px 3px 5px 3px rgba(0, 0, 0, 0.07)',
+      100: '0px 3px 5px 3px rgba(0, 0, 0, 0.05)',
       300: '0px 3px 5px 3px rgba(0, 0, 0, 0.2)',
     },
   },

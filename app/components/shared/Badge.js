@@ -5,7 +5,7 @@ import theme from '../../theme'
 
 const Status = styled.span`
   border-radius: 8px;
-  font-size: ${theme.typography.fonts.size[50]};
+  font-size: ${theme.typography.fonts.size[75]};
   font-variant: all-small-caps;
   font-weight: ${theme.typography.fonts.weight.medium};
   ${props =>

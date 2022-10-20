@@ -112,7 +112,7 @@ const Heading = styled.div`
   color: ${theme.colors.primary.green[100]};
   font-family: ${th('fontReading')};
   font-size: ${th('fontSizeHeading3')};
-  font-weight: ${theme.typography.fonts.weight.bold};
+  font-weight: ${theme.typography.fonts.weight.semibold};
   line-height: ${th('lineHeightHeading3')};
 `
 

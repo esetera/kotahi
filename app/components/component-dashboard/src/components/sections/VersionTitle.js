@@ -12,6 +12,9 @@ const Root = styled.div`
   font-weight: ${theme.typography.fonts.weight.medium};
   line-height: ${th('lineHeightHeading4')};
   text-decoration: underline;
+  text-decoration-color: ${theme.colors.neutral.grey[900]};
+  text-decoration-thickness: 1.2px;
+  text-underline-offset: 3.4px;
 `
 
 const ShortId = styled.div`
