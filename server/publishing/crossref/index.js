@@ -368,86 +368,89 @@ const publishReviewsToCrossref = async manuscript => {
 
   const doiPrefix = config.crossref.doiPrefix + '/'
 
-  
   const doiSummarySuffix =
-        getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
-        `${manuscript.id}/`
+    getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+    `${manuscript.id}/`
 
   // only validate if a summary exists, ie there is a summary author/creator
   if (manuscript.submission.summarycreator) {
-    const isDOIValid = (await isDOIInUse(doiPrefix + doiSummarySuffix)).isDOIValid
+    const isDOIValid = (await isDOIInUse(doiPrefix + doiSummarySuffix))
+      .isDOIValid
 
     if (isDOIValid) {
       throw Error('Summary suffix is not available: ' + doiSummarySuffix)
     }
   }
 
-  const xmls = ( 
+  const xmls = (
     await Promise.all(
       notEmptyReviews.map(async reviewNumber => {
         if (!manuscript.submission[`review${reviewNumber}date`]) {
-        return null
-      }
-      const [year, month, day] = parseDate(
-        manuscript.submission[`review${reviewNumber}date`],
-      )
-
-      const templateCopy = JSON.parse(JSON.stringify(jsonResult))
-      templateCopy.doi_batch.body[0].peer_review[0].review_date[0].day[0] = day
-      templateCopy.doi_batch.body[0].peer_review[0].review_date[0].month[0] = month
-      templateCopy.doi_batch.body[0].peer_review[0].review_date[0].year[0] = year
-      templateCopy.doi_batch.head[0].depositor[0].depositor_name[0] =
-        config.crossref.depositorName
-      templateCopy.doi_batch.head[0].depositor[0].email_address[0] =
-        config.crossref.depositorEmail
-      templateCopy.doi_batch.head[0].registrant[0] = 
-      config.crossref.registrant
-      templateCopy.doi_batch.head[0].timestamp[0] = +new Date()
-      templateCopy.doi_batch.head[0].doi_batch_id[0] = String(
-        +new Date(),
-      ).slice(0, 8)
-
-      if (manuscript.submission[`review${reviewNumber}creator`]) {
-        const surname = manuscript.submission[
-          `review${reviewNumber}creator`
-        ].split(' ')[1]
-
-        templateCopy.doi_batch.body[0].peer_review[0].contributors[0].person_name[0] = {
-          $: {
-            contributor_role: 'reviewer',
-            sequence: 'first',
-          },
-          given_name: [
-            manuscript.submission[`review${reviewNumber}creator`].split(
-              ' ',
-              )[0],
-          ],
-          surname: [surname || ''],
+          return null
         }
-      }
 
-      templateCopy.doi_batch.body[0].peer_review[0] = {
-        ...templateCopy.doi_batch.body[0].peer_review[0],
-        $: {
-          type: 'referee-report',
-          stage: 'pre-publication',
-          'revision-round': '0',
-        },
-      }
+        const [year, month, day] = parseDate(
+          manuscript.submission[`review${reviewNumber}date`],
+        )
 
-      templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Review: ${manuscript.submission.description}`
+        const templateCopy = JSON.parse(JSON.stringify(jsonResult))
+        templateCopy.doi_batch.body[0].peer_review[0].review_date[0].day[0] = day
+        templateCopy.doi_batch.body[0].peer_review[0].review_date[0].month[0] = month
+        templateCopy.doi_batch.body[0].peer_review[0].review_date[0].year[0] = year
+        templateCopy.doi_batch.head[0].depositor[0].depositor_name[0] =
+          config.crossref.depositorName
+        templateCopy.doi_batch.head[0].depositor[0].email_address[0] =
+          config.crossref.depositorEmail
+        templateCopy.doi_batch.head[0].registrant[0] =
+          config.crossref.registrant
+        templateCopy.doi_batch.head[0].timestamp[0] = +new Date()
+        templateCopy.doi_batch.head[0].doi_batch_id[0] = String(
+          +new Date(),
+        ).slice(0, 8)
 
-      const doiSuffix =getReviewOrSubmissionField(
-          manuscript, 
-          `review${reviewNumber}suffix`,
+        if (manuscript.submission[`review${reviewNumber}creator`]) {
+          const surname = manuscript.submission[
+            `review${reviewNumber}creator`
+          ].split(' ')[1]
+
+          templateCopy.doi_batch.body[0].peer_review[0].contributors[0].person_name[0] = {
+            $: {
+              contributor_role: 'reviewer',
+              sequence: 'first',
+            },
+            given_name: [
+              manuscript.submission[`review${reviewNumber}creator`].split(
+                ' ',
+              )[0],
+            ],
+            surname: [surname || ''],
+          }
+        }
+
+        templateCopy.doi_batch.body[0].peer_review[0] = {
+          ...templateCopy.doi_batch.body[0].peer_review[0],
+          $: {
+            type: 'referee-report',
+            stage: 'pre-publication',
+            'revision-round': '0',
+          },
+        }
+
+        templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Review: ${manuscript.submission.description}`
+
+        const doiSuffix =
+          getReviewOrSubmissionField(
+            manuscript,
+            `review${reviewNumber}suffix`,
           ) || `${manuscript.id}/${reviewNumber}`
 
-      // revalidate review DOI
-      let isDOIValid = (await isDOIInUse(doiPrefix + doiSuffix)).isDOIValid
+        // revalidate review DOI
+        let isDOIValid = (await isDOIInUse(doiPrefix + doiSuffix)).isDOIValid
 
-      if (isDOIValid) {
-        throw Error('Review suffix is not available: ' + doiSuffix)
-      }
+        if (isDOIValid) {
+          throw Error('Review suffix is not available: ' + doiSuffix)
+        }
+
         templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
           doiSuffix,
         )
@@ -517,10 +520,6 @@ const publishReviewsToCrossref = async manuscript => {
       },
     }
     templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Summary of: ${manuscript.submission.description}`
-
-    const doiSummarySuffix =
-      getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
-      `${manuscript.id}/`
 
     templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(
       doiSummarySuffix,
