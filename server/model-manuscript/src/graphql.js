@@ -1402,8 +1402,6 @@ const resolvers = {
           )
           .map(([key]) => key.replace('review', ''))
 
-        console.log(notEmptyReviews)
-
         DOIs.push(
           ...notEmptyReviews.map(reviewNumber =>
             getDoi(
