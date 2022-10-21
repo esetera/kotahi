@@ -1366,11 +1366,13 @@ const resolvers = {
       }))
     },
     async getFullDois(_, { id }, ctx) {
+      if (!config.crossref.login) {
+        return { listOfDois: null }
+      }
 
       const manuscript = await models.Manuscript.query()
         .findById(id)
         .withGraphFetched('reviews')
-
 
       const DOIs = []
 
@@ -1415,7 +1417,6 @@ const resolvers = {
             ),
           )
         }
-
       }
 
       return { listOfDois: DOIs }

@@ -46,7 +46,7 @@ const Publish = ({ manuscript, publishManuscript, isDisplayed }) => {
           {!manuscript.published && notAccepted && (
             <div>
               <p>You can only publish accepted submissions.</p>
-              {!loading && data.getFullDois.listOfDois.length > 0 && (
+              {!loading && data.getFullDois.listOfDois && (
                 <p>
                   DOIs to be published: {data.getFullDois.listOfDois.join(', ')}
                 </p>
