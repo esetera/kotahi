@@ -1379,7 +1379,6 @@ const resolvers = {
       const DOIs = []
 
       if (config.crossref.publicationType === 'article') {
-        console.log('here')
         DOIs.push(
           getReviewOrSubmissionField(manuscript, 'DOI') != null
             ? getDoiFromLink(getReviewOrSubmissionField(manuscript, 'DOI'))
