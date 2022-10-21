@@ -10,7 +10,7 @@ import { Action, ActionGroup } from '@pubsweet/ui'
  * @param {object} currentUser current user
  * @param {function} setMainActionLink callback to set main action link
  */
-const ReviewLink = ({
+const ReviewerItemLinks = ({
   manuscript,
   urlFrag,
   reviewerRespond,
@@ -112,4 +112,4 @@ const ReviewLink = ({
   )
 }
 
-export default ReviewLink
+export default ReviewerItemLinks
