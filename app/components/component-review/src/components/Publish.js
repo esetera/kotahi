@@ -21,7 +21,6 @@ const Publish = ({ manuscript, publishManuscript }) => {
   const [publishingError, setPublishingError] = useState(null)
 
   const notAccepted = !['accepted', 'published'].includes(manuscript.status)
-  console.log(`manuscript id: ${manuscript.id}`)
 
   const { loading, error, data } = useQuery(getFullDois, {
     variables: { id: manuscript.id },
