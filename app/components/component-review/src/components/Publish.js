@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@pubsweet/ui'
 
 import { useQuery } from '@apollo/client'
@@ -14,7 +14,7 @@ import {
 import { SectionContent } from '../../../shared'
 import Alert from './publishing/Alert'
 
-const Publish = ({ manuscript, publishManuscript }) => {
+const Publish = ({ manuscript, publishManuscript, isDisplayed }) => {
   // Hooks from the old world
   const [isPublishing, setIsPublishing] = useState(false)
   const [publishResponse, setPublishResponse] = useState(null)
@@ -22,10 +22,16 @@ const Publish = ({ manuscript, publishManuscript }) => {
 
   const notAccepted = !['accepted', 'published'].includes(manuscript.status)
 
-  const { loading, error, data } = useQuery(getFullDois, {
+  const { loading, data, refetch } = useQuery(getFullDois, {
     variables: { id: manuscript.id },
+    fetchPolicy: 'cache-and-network',
   })
 
+  useEffect(() => {
+    if (isDisplayed) {
+      refetch()
+    }
+  }, [isDisplayed])
 
   return (
     <SectionContent>
