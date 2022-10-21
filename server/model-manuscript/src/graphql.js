@@ -16,7 +16,15 @@ const TeamMember = require('../../model-team/src/team_member')
 const { getPubsub } = pubsubManager
 const Form = require('../../model-form/src/form')
 const Message = require('../../model-message/src/message')
-const { isDOIInUse, publishToCrossref } = require('../../publishing/crossref')
+
+const {
+  publishToCrossref,
+  getReviewOrSubmissionField,
+  getDoi,
+  isDOIInUse,
+} = require('../../publishing/crossref')
+
+const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 
 const {
   fixMissingValuesInFiles,
@@ -158,6 +166,11 @@ const isEditorOfManuscript = async (userId, manuscriptWithTeams) => {
 const getCss = async () => {
   const css = await generateCss()
   return css
+}
+
+const getDoiFromLink = doiLink => {
+  const parts = doiLink.split(config.crossref.doiPrefix)
+  return config.crossref.doiPrefix + parts[1]
 }
 
 const ManuscriptResolvers = ({ isVersion }) => {
@@ -930,6 +943,7 @@ const resolvers = {
       const manuscript = await models.Manuscript.query()
         .findById(id)
         .withGraphFetched('reviews')
+
       const update = {} // This will collect any properties we may want to update in the DB
       update.published = new Date()
       const steps = []
@@ -1350,6 +1364,62 @@ const resolvers = {
           m.submission.uri,
       }))
     },
+    async getFullDois(_, { id }, ctx) {
+      if (!config.crossref.login) {
+        return { listOfDois: null }
+      }
+
+      const manuscript = await models.Manuscript.query()
+        .findById(id)
+        .withGraphFetched('reviews')
+
+      const DOIs = []
+
+      if (config.crossref.publicationType === 'article') {
+        DOIs.push(
+          getReviewOrSubmissionField(manuscript, 'DOI') != null
+            ? getDoiFromLink(getReviewOrSubmissionField(manuscript, 'DOI'))
+            : getDoi(getReviewOrSubmissionField(manuscript, 'doiSuffix')),
+        )
+      } else {
+        // @TODO: change this to directly push DOIs
+        const notEmptyReviews = Object.entries(manuscript.submission)
+          .filter(
+            ([key, value]) =>
+              key.length === 7 &&
+              key.includes('review') &&
+              !checkIsAbstractValueEmpty(value),
+          )
+          .map(([key]) => key.replace('review', ''))
+
+        DOIs.push(
+          ...notEmptyReviews.map(reviewNumber =>
+            getDoi(
+              getReviewOrSubmissionField(
+                manuscript,
+                `review${reviewNumber}suffix`,
+              ) || `${manuscript.id}/${reviewNumber}`,
+            ),
+          ),
+        )
+
+        if (
+          Object.entries(manuscript.submission).some(
+            ([key, value]) =>
+              key === 'summary' && !checkIsAbstractValueEmpty(value),
+          )
+        ) {
+          DOIs.push(
+            getDoi(
+              getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+                `${manuscript.id}/`,
+            ),
+          )
+        }
+      }
+
+      return { listOfDois: DOIs }
+    },
 
     async validateDOI(_, { articleURL }, ctx) {
       const DOI = encodeURI(articleURL.split('.org/')[1])
@@ -1387,6 +1457,7 @@ const typeDefs = `
     """ Get a published manuscript by ID, or null if this manuscript is not published or not found """
     publishedManuscript(id: ID!): PublishedManuscript
     unreviewedPreprints(token: String!): [Preprint]
+    getFullDois(id: ID!): ListOfDois
   }
 
   input ManuscriptsFilter {
@@ -1406,6 +1477,10 @@ const typeDefs = `
   type PaginatedManuscripts {
     totalCount: Int
     manuscripts: [Manuscript]
+  }
+
+  type ListOfDois {
+    listOfDois: [String]
   }
 
   extend type Subscription {
