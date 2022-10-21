@@ -28,8 +28,6 @@ const Publish = ({ manuscript, publishManuscript }) => {
     variables: { id: manuscript.id },
   })
 
-  // eslint-disable-next-line no-console
-  console.log(data)
 
   return (
     <SectionContent>
