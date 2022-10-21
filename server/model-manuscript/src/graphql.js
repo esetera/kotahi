@@ -1367,7 +1367,6 @@ const resolvers = {
       }))
     },
     async getFullDois(_, { id }, ctx) {
-      // eslint-disable-next-line no-console
 
       const manuscript = await models.Manuscript.query()
         .findById(id)
