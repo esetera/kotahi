@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, { useState } from 'react'
 import { Button } from '@pubsweet/ui'
 
