@@ -1434,7 +1434,6 @@ const resolvers = {
         console.log(DOIs)
       }
 
-      console.log(DOIs)
       return { listOfDois: DOIs }
     },
 
