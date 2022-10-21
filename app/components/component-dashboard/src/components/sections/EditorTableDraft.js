@@ -1,10 +1,8 @@
-import { useMutation, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import React, { useState } from 'react'
-import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../../queries/team'
-import { CommsErrorBanner, Spinner } from '../../../../shared'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
-import mutations from '../../graphql/mutations'
+import { CommsErrorBanner, Spinner } from '../../../../shared'
 import queries from '../../graphql/queries'
 import { Placeholder } from '../../style'
 import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
@@ -12,12 +10,9 @@ import { getUriQueryParams } from '../../../../../shared/urlUtils'
 
 const URI_SEARCH_PARAM = 'search'
 
-const ReviewerTable = ({ urlFrag }) => {
+const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
   const [sortName, setSortName] = useState('created')
   const [sortDirection, setSortDirection] = useState('DESC')
-  const [mainActionLink, setActionLink] = useState(null)
-  const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
-  const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
 
   const { loading, data, error } = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
@@ -28,28 +23,27 @@ const ReviewerTable = ({ urlFrag }) => {
 
   const currentUser = data && data.currentUser
 
-  const latestVersions = data?.manuscriptsUserHasCurrentRoleIn.map(
+  const latestVersions = data.manuscriptsUserHasCurrentRoleIn.map(
     getLatestVersion,
   )
 
-  const reviewerLatestVersions = getManuscriptsUserHasRoleIn(
+  const editorLatestVersions = getManuscriptsUserHasRoleIn(
     latestVersions,
     currentUser.id,
-    ['reviewer', 'invited:reviewer', 'accepted:reviewer', 'completed:reviewer'],
+    ['seniorEditor', 'handlingEditor', 'editor'],
   )
 
-  if (reviewerLatestVersions.length === 0) {
-    return <Placeholder>You have not been assigned any reviews yet</Placeholder>
+  if (editorLatestVersions.length === 0) {
+    return (
+      <Placeholder>
+        You have not been assigned as editor to any manuscripts yet
+      </Placeholder>
+    )
   }
-
-  const setMainActionLink = link => setActionLink(link)
 
   const specialComponentValues = {
     urlFrag,
     currentUser,
-    reviewerRespond,
-    updateMemberStatus,
-    setMainActionLink,
   }
 
   const uriQueryParams = getUriQueryParams(window.location)
@@ -69,9 +63,9 @@ const ReviewerTable = ({ urlFrag }) => {
     'shortId',
     'meta.title',
     'status',
-    'created',
-    'updated',
-    'reviewerLinks',
+    'statusCounts',
+    'roles',
+    'editorLinks',
   ]
 
   const setFilter = (fieldName, filterValue) => {
@@ -94,8 +88,7 @@ const ReviewerTable = ({ urlFrag }) => {
   return (
     <ManuscriptsTable
       columnsProps={columnsProps}
-      getLink={_ => mainActionLink}
-      manuscripts={reviewerLatestVersions}
+      manuscripts={editorLatestVersions}
       setFilter={setFilter}
       setSortDirection={setSortDirection}
       setSortName={setSortName}
@@ -105,4 +98,4 @@ const ReviewerTable = ({ urlFrag }) => {
   )
 }
 
-export default ReviewerTable
+export default EditorTable
