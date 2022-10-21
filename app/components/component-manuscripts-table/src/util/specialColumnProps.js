@@ -39,6 +39,7 @@ const buildSpecialColumnProps = specialComponentValues => {
     setReadyToEvaluateLabel,
     archiveManuscript,
     reviewerRespond,
+    setMainActionLink,
     currentUser,
     updateMemberStatus,
   } = specialComponentValues
@@ -114,6 +115,7 @@ const buildSpecialColumnProps = specialComponentValues => {
         reviewerRespond,
         currentUser,
         updateMemberStatus,
+        setMainActionLink,
       },
     },
     newItemCheckbox: {

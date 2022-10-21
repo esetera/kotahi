@@ -15,7 +15,7 @@ const URI_SEARCH_PARAM = 'search'
 const ReviewerTable = ({ urlFrag }) => {
   const [sortName, setSortName] = useState('created')
   const [sortDirection, setSortDirection] = useState('DESC')
-
+  const [mainActionLink, setMainActionLink] = useState(null)
   const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
   const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
 
@@ -47,6 +47,7 @@ const ReviewerTable = ({ urlFrag }) => {
     currentUser,
     reviewerRespond,
     updateMemberStatus,
+    setMainActionLink,
   }
 
   const uriQueryParams = getUriQueryParams(window.location)
@@ -91,6 +92,7 @@ const ReviewerTable = ({ urlFrag }) => {
   return (
     <ManuscriptsTable
       columnsProps={columnsProps}
+      getLink={_ => mainActionLink}
       manuscripts={reviewerLatestVersions}
       setFilter={setFilter}
       setSortDirection={setSortDirection}

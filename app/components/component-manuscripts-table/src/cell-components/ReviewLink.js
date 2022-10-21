@@ -8,6 +8,7 @@ import { Action, ActionGroup } from '@pubsweet/ui'
  * @param {function} reviewerRespond graphQL query callback
  * @param {function} updateMemberStatus graphQL query callback
  * @param {object} currentUser current user
+ * @param {function} setMainActionLink callback to set main action link
  */
 const ReviewLink = ({
   manuscript,
@@ -15,6 +16,7 @@ const ReviewLink = ({
   reviewerRespond,
   currentUser,
   updateMemberStatus,
+  setMainActionLink,
 }) => {
   const team =
     (manuscript.teams || []).find(team_ => team_.role === 'reviewer') || {}
@@ -31,6 +33,8 @@ const ReviewLink = ({
     status === 'invited' || status === 'rejected'
       ? `${urlFrag}/versions/${manuscript.id}/reviewPreview`
       : `${urlFrag}/versions/${manuscript.parentId || manuscript.id}/review`
+
+  setMainActionLink(mainActionLink)
 
   const reviewLinkText = {
     completed: 'Completed',
