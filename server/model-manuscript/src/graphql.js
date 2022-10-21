@@ -1389,10 +1389,6 @@ const resolvers = {
         console.log(DOIs)
       } else {
         // @TODO: change this to directly push DOIs
-        console.log('there')
-
-        console.log(Object.entries(manuscript.submission))
-
         const notEmptyReviews = Object.entries(manuscript.submission)
           .filter(
             ([key, value]) =>
