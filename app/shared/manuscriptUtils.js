@@ -86,3 +86,25 @@ export const getFieldValueAndDisplayValue = (column, manuscript) => {
       }
     })
 }
+
+export const getMembersOfTeam = (version, role) => {
+  if (!version.teams) return []
+
+  const teams = version.teams.filter(team => team.teamType === role)
+  return teams.length ? teams[0].members : []
+}
+
+const getMetadataObject = (version, value) => {
+  const metadata = version.meta || {}
+  return metadata[value] || []
+}
+
+export const getSubmitedDate = version =>
+  getMetadataObject(version, 'history').find(
+    history => history.type === 'submitted',
+  ) || []
+
+export const getRoles = (m, userId) =>
+  m.teams
+    .filter(t => t.members.some(member => member.user.id === userId))
+    .map(t => t.role)

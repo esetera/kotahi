@@ -8,7 +8,8 @@ import { th } from '@pubsweet/ui-toolkit'
 import { JournalContext } from '../../../xpub-journal/src'
 
 const Root = styled.div`
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   font-family: ${th('fontReviewer')};
   font-size: 0.9em;
   margin-bottom: 0.6em;
@@ -38,18 +39,20 @@ const countStatus = (version, status) => {
   return 0
 }
 
-const Reviews = ({ version, journal }) => (
+const ReviewStatusCounts = ({ manuscript }) => (
   <Root>
     <JournalContext.Consumer>
       {journal =>
-        journal.reviewStatus.map(status => (
-          <CountLabel data-testid={status.value} key={status.value}>
-            {`${countStatus(version, status.value)} ${status.label}`}
-          </CountLabel>
-        ))
+        journal.reviewStatus.map(status => {
+          return (
+            <CountLabel data-testid={status} key={status}>
+              {`${countStatus(manuscript, status)} ${status}`}
+            </CountLabel>
+          )
+        })
       }
     </JournalContext.Consumer>
   </Root>
 )
 
-export default Reviews
+export default ReviewStatusCounts

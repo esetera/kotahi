@@ -8,9 +8,11 @@ import {
   Editors,
   Actions,
   SubmitChevron,
-  ReviewLink,
+  ReviewerItemLinks,
+  EditorItemLinks,
+  ReviewStatusCounts,
+  RoleText,
 } from '../cell-components'
-
 /**
  * @typedef {Object} ComponentValues
  * @param {string} urlFrag Action Button: The top level urlFrag, e.g. 'kotahi'
@@ -107,9 +109,29 @@ const buildSpecialColumnProps = specialComponentValues => {
         urlFrag,
       },
     },
-    reviewLink: {
+    roles: {
+      title: 'Your roles',
+      flex: '0 1 6em',
+      component: RoleText,
+      extraProps: {
+        currentUser,
+      },
+    },
+    statusCounts: {
+      title: 'Reviewer Status',
+      flex: '0 1 6em',
+      component: ReviewStatusCounts,
+    },
+    editorLinks: {
       flex: '0 1 10em',
-      component: ReviewLink,
+      component: EditorItemLinks,
+      extraProps: {
+        urlFrag,
+      },
+    },
+    reviewerLinks: {
+      flex: '0 1 10em',
+      component: ReviewerItemLinks,
       extraProps: {
         urlFrag,
         reviewerRespond,
