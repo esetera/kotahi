@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable prefer-destructuring */
 const { ref } = require('objection')
 const axios = require('axios')
