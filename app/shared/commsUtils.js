@@ -50,7 +50,4 @@ export const validateSuffix = client => async value => {
   }
 
   return 'Suffix is invalid or not available'
-  // testing
-  // const res = await Promise.resolve('suffix is invalid')
-  // return res
 }
