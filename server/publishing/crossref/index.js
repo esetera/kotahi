@@ -577,5 +577,7 @@ const publishReviewsToCrossref = async manuscript => {
 
 module.exports = {
   publishToCrossref,
+  getReviewOrSubmissionField,
+  getDoi,
   isDOIInUse,
 }

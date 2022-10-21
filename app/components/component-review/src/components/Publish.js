@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@pubsweet/ui'
 
+import { useQuery } from '@apollo/client'
+import { getFullDois } from './queries'
 import {
   Title,
   SectionHeader,
@@ -12,13 +14,24 @@ import {
 import { SectionContent } from '../../../shared'
 import Alert from './publishing/Alert'
 
-const Publish = ({ manuscript, publishManuscript }) => {
+const Publish = ({ manuscript, publishManuscript, isDisplayed }) => {
   // Hooks from the old world
   const [isPublishing, setIsPublishing] = useState(false)
   const [publishResponse, setPublishResponse] = useState(null)
   const [publishingError, setPublishingError] = useState(null)
 
   const notAccepted = !['accepted', 'published'].includes(manuscript.status)
+
+  const { loading, data, refetch } = useQuery(getFullDois, {
+    variables: { id: manuscript.id },
+    fetchPolicy: 'cache-and-network',
+  })
+
+  useEffect(() => {
+    if (isDisplayed) {
+      refetch()
+    }
+  }, [isDisplayed])
 
   return (
     <SectionContent>
@@ -30,12 +43,29 @@ const Publish = ({ manuscript, publishManuscript }) => {
         <SectionActionInfo>
           {manuscript.published &&
             `This submission was published on ${manuscript.published}`}
-          {!manuscript.published &&
-            notAccepted &&
-            `You can only publish accepted submissions.`}
-          {!manuscript.published &&
-            !notAccepted &&
-            `Publishing will add a new entry on the public website and can not be undone.`}
+          {!manuscript.published && notAccepted && (
+            <div>
+              <p>You can only publish accepted submissions.</p>
+              {!loading && data.getFullDois.listOfDois && (
+                <p>
+                  DOIs to be published: {data.getFullDois.listOfDois.join(', ')}
+                </p>
+              )}
+            </div>
+          )}
+          {!manuscript.published && !notAccepted && (
+            <div>
+              <p>
+                Publishing will add a new entry on the public website and can
+                not be undone.
+              </p>
+              {!loading && data.getFullDois.listOfDois && (
+                <p>
+                  DOIs to be published: {data.getFullDois.listOfDois.join(', ')}
+                </p>
+              )}
+            </div>
+          )}
           {publishResponse &&
             publishResponse.steps.map(step => {
               if (step.succeeded) {
@@ -52,7 +82,7 @@ const Publish = ({ manuscript, publishManuscript }) => {
                   key={step.stepLabel}
                   type="error"
                 >
-                  Error posting to {step.stepLabel} : {step.errorMessage}
+                  Error posting to {step.stepLabel}
                 </Alert>
               )
             })}

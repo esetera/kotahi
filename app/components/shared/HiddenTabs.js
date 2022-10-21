@@ -109,7 +109,9 @@ const HiddenTabs = ({
             flexDirection: 'column',
           }}
         >
-          {section.content}
+          {typeof section.content === 'function'
+            ? section.content({ isDisplayed: section.key === activeKey })
+            : section.content}
         </div>
       ))}
     </>
