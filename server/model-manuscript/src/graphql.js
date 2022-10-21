@@ -1373,8 +1373,6 @@ const resolvers = {
         .findById(id)
         .withGraphFetched('reviews')
 
-      console.log(manuscript)
-      console.log(config.crossref.publicationType)
 
       const DOIs = []
 
