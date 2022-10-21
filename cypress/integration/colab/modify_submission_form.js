@@ -53,4 +53,3 @@ describe('validating doi field in submission form', () => {
     })
   })
 })
-
