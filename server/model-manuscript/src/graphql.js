@@ -1385,8 +1385,6 @@ const resolvers = {
             ? getDoiFromLink(getReviewOrSubmissionField(manuscript, 'DOI'))
             : getDoi(getReviewOrSubmissionField(manuscript, 'doiSuffix')),
         )
-        console.log(getReviewOrSubmissionField(manuscript, 'DOI'))
-        console.log(DOIs)
       } else {
         // @TODO: change this to directly push DOIs
         const notEmptyReviews = Object.entries(manuscript.submission)
