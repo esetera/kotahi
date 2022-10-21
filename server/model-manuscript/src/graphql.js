@@ -1415,8 +1415,6 @@ const resolvers = {
           ),
         )
 
-        console.log(DOIs)
-
         if (
           Object.entries(manuscript.submission).some(
             ([key, value]) =>
