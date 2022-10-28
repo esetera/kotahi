@@ -167,7 +167,6 @@ const FormForm = ({ form, updateForm, createForm }) => {
           purpose={form.purpose}
           setFieldValue={formikProps.setFieldValue}
           structure={form.structure}
-          isSubmitting={formikProps.isSubmitting}
         />
       )}
     </Formik>
