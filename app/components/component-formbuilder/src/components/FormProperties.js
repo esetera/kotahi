@@ -93,7 +93,7 @@ const FormProperties = ({
             />
           </Section>,
         ]}
-        <ActionButton primary type="submit" onClick={() => setIsClicked(true)} status={ isClicked == true ? 'success' : '' }>
+        <ActionButton primary type="submit" onClick={() => setIsClicked(true)} status={isClicked ? 'success' : ''}>
           {mode === 'create' ? 'Create Form' : 'Update Form'}
         </ActionButton>
       </form>
