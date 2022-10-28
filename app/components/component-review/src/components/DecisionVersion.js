@@ -228,22 +228,11 @@ const DecisionVersion = ({
     }
   }
 
-  const decisionSection = () => {
+  const teamSection = () => {
     return {
       content: (
         <>
-          {!isCurrentVersion && (
-            <SectionContent>
-              <SectionHeader>
-                <Title>Archived version</Title>
-              </SectionHeader>
-              <SectionRow>
-                This is not the current, but an archived read-only version of
-                the manuscript.
-              </SectionRow>
-            </SectionContent>
-          )}
-          {isCurrentVersion && (
+          {isCurrentVersion && ( //team
             <AssignEditorsReviewers
               allUsers={allUsers}
               AssignEditor={AssignEditor}
@@ -253,7 +242,7 @@ const DecisionVersion = ({
               updateTeam={updateTeam}
             />
           )}
-          {!isCurrentVersion && (
+          {!isCurrentVersion && ( //team
             <SectionContent>
               <SectionHeader>
                 <Title>Assigned editors</Title>
@@ -278,7 +267,29 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          {!isCurrentVersion && (
+        </>
+      ),
+      key: `team_${version.id}`,
+      label: 'Team',
+    }
+  }
+
+  const decisionSection = () => {
+    return {
+      content: (
+        <>
+          {!isCurrentVersion && ( //decision
+            <SectionContent>
+              <SectionHeader>
+                <Title>Archived version</Title>
+              </SectionHeader>
+              <SectionRow>
+                This is not the current, but an archived read-only version of
+                the manuscript.
+              </SectionRow>
+            </SectionContent>
+          )}
+          {!isCurrentVersion && ( //decision
             <DecisionAndReviews
               decisionForm={decisionForm}
               isControlPage
@@ -288,7 +299,7 @@ const DecisionVersion = ({
               threadedDiscussionProps={threadedDiscussionProps}
             />
           )}
-          {isCurrentVersion && (
+          {isCurrentVersion && ( //decision
             <AdminSection key="decision-review">
               <DecisionReviews
                 canHideReviews={canHideReviews}
@@ -302,7 +313,7 @@ const DecisionVersion = ({
               />
             </AdminSection>
           )}
-          {isCurrentVersion && (
+          {isCurrentVersion && ( //decision
             <AdminSection key="decision-form">
               <SectionContent>
                 <FormTemplate
@@ -356,7 +367,7 @@ const DecisionVersion = ({
               </SectionContent>
             </AdminSection>
           )}
-          {isCurrentVersion && (
+          {isCurrentVersion && ( //decision
             <AdminSection>
               <Publish
                 manuscript={version}
@@ -367,7 +378,7 @@ const DecisionVersion = ({
         </>
       ),
       key: version.id,
-      label: 'Workflow',
+      label: 'Decision',
     }
   }
 
@@ -375,6 +386,7 @@ const DecisionVersion = ({
     <HiddenTabs
       defaultActiveKey={version.id}
       sections={[
+        teamSection(),
         decisionSection(),
         editorSection,
         metadataSection(),
