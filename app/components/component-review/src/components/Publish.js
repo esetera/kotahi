@@ -27,11 +27,22 @@ const Publish = ({ manuscript, publishManuscript, isDisplayed }) => {
     fetchPolicy: 'cache-and-network',
   })
 
+  const registeringDOIs = !loading && data.getFullDois.listOfDois !== null
+
   useEffect(() => {
     if (isDisplayed) {
       refetch()
     }
   }, [isDisplayed])
+
+  const doiMessage =
+    !loading &&
+    registeringDOIs &&
+    (data.getFullDois.listOfDois.length > 0 ? (
+      <p>DOIs to be registered: {data.getFullDois.listOfDois.join(', ')}</p>
+    ) : (
+      <p>No DOIs will be registered with this publishment.</p>
+    ))
 
   return (
     <SectionContent>
@@ -46,11 +57,7 @@ const Publish = ({ manuscript, publishManuscript, isDisplayed }) => {
           {!manuscript.published && notAccepted && (
             <div>
               <p>You can only publish accepted submissions.</p>
-              {!loading && data.getFullDois.listOfDois && (
-                <p>
-                  DOIs to be published: {data.getFullDois.listOfDois.join(', ')}
-                </p>
-              )}
+              {doiMessage}
             </div>
           )}
           {!manuscript.published && !notAccepted && (
@@ -59,11 +66,7 @@ const Publish = ({ manuscript, publishManuscript, isDisplayed }) => {
                 Publishing will add a new entry on the public website and can
                 not be undone.
               </p>
-              {!loading && data.getFullDois.listOfDois && (
-                <p>
-                  DOIs to be published: {data.getFullDois.listOfDois.join(', ')}
-                </p>
-              )}
+              {doiMessage}
             </div>
           )}
           {publishResponse &&

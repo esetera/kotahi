@@ -215,9 +215,6 @@ const publishArticleToCrossref = async manuscript => {
   const issueYear = getIssueYear(manuscript)
   const publishDate = new Date()
   const journalDoi = getDoi(0)
-  // let doiSuffix = manuscript.id
-
-  const decision = manuscript.reviews.find(r => r.isDecision)
 
   const doiSuffix =
     getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id
@@ -365,19 +362,18 @@ const publishReviewsToCrossref = async manuscript => {
 
   const jsonResult = await parser.parseStringPromise(template)
 
-  const doiPrefix = config.crossref.doiPrefix + '/'
+  const doiPrefix = `${config.crossref.doiPrefix}/`
 
-  
   const doiSummarySuffix =
-        getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
-        `${manuscript.id}/`
+    getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+    `${manuscript.id}/`
 
   // only validate if a summary exists, ie there is a summary author/creator
   if (manuscript.submission.summarycreator) {
-    const isDOIValid = (await isDOIInUse(doiPrefix + doiSummarySuffix)).isDOIValid
+    const { isDOIValid } = await isDOIInUse(doiPrefix + doiSummarySuffix)
 
     if (isDOIValid) {
-      throw Error('Summary suffix is not available: ' + doiSummarySuffix)
+      throw Error(`Summary suffix is not available: ${doiSummarySuffix}`)
     }
   }
 
@@ -400,8 +396,8 @@ const publishReviewsToCrossref = async manuscript => {
           config.crossref.depositorName
         templateCopy.doi_batch.head[0].depositor[0].email_address[0] =
           config.crossref.depositorEmail
-        templateCopy.doi_batch.head[0].registrant[0] = 
-        config.crossref.registrant
+        templateCopy.doi_batch.head[0].registrant[0] =
+          config.crossref.registrant
         templateCopy.doi_batch.head[0].timestamp[0] = +new Date()
         templateCopy.doi_batch.head[0].doi_batch_id[0] = String(
           +new Date(),
@@ -444,10 +440,10 @@ const publishReviewsToCrossref = async manuscript => {
           ) || `${manuscript.id}/${reviewNumber}`
 
         // revalidate review DOI
-        let isDOIValid = (await isDOIInUse(doiPrefix + doiSuffix)).isDOIValid
+        const { isDOIValid } = await isDOIInUse(doiPrefix + doiSuffix)
 
         if (isDOIValid) {
-          throw Error('Review suffix is not available: ' + doiSuffix)
+          throw Error(`Review suffix is not available: ${doiSuffix}`)
         }
 
         templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = getDoi(

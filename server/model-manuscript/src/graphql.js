@@ -168,11 +168,6 @@ const getCss = async () => {
   return css
 }
 
-const getDoiFromLink = doiLink => {
-  const parts = doiLink.split(config.crossref.doiPrefix)
-  return config.crossref.doiPrefix + parts[1]
-}
-
 const ManuscriptResolvers = ({ isVersion }) => {
   const resolvers = {
     submission(parent) {
@@ -1376,13 +1371,14 @@ const resolvers = {
       const DOIs = []
 
       if (config.crossref.publicationType === 'article') {
-        DOIs.push(
-          getReviewOrSubmissionField(manuscript, 'DOI') != null
-            ? getDoiFromLink(getReviewOrSubmissionField(manuscript, 'DOI'))
-            : getDoi(getReviewOrSubmissionField(manuscript, 'doiSuffix')),
+        const manuscriptDOI = getDoi(
+          getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id,
         )
+
+        if (manuscriptDOI) {
+          DOIs.push(manuscriptDOI)
+        }
       } else {
-        // @TODO: change this to directly push DOIs
         const notEmptyReviews = Object.entries(manuscript.submission)
           .filter(
             ([key, value]) =>
@@ -1393,14 +1389,16 @@ const resolvers = {
           .map(([key]) => key.replace('review', ''))
 
         DOIs.push(
-          ...notEmptyReviews.map(reviewNumber =>
-            getDoi(
-              getReviewOrSubmissionField(
-                manuscript,
-                `review${reviewNumber}suffix`,
-              ) || `${manuscript.id}/${reviewNumber}`,
-            ),
-          ),
+          ...notEmptyReviews
+            .map(reviewNumber =>
+              getDoi(
+                getReviewOrSubmissionField(
+                  manuscript,
+                  `review${reviewNumber}suffix`,
+                ) || `${manuscript.id}/${reviewNumber}`,
+              ),
+            )
+            .filter(doi => !!doi),
         )
 
         if (
@@ -1409,12 +1407,14 @@ const resolvers = {
               key === 'summary' && !checkIsAbstractValueEmpty(value),
           )
         ) {
-          DOIs.push(
-            getDoi(
-              getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
-                `${manuscript.id}/`,
-            ),
+          const summaryDOI = getDoi(
+            getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+              `${manuscript.id}/`,
           )
+
+          if (summaryDOI) {
+            DOIs.push(summaryDOI)
+          }
         }
       }
 
