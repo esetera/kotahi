@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { isEmpty, omitBy } from 'lodash'
 import styled from 'styled-components'
-import { Button, TextField, ValidatedFieldFormik } from '@pubsweet/ui'
+import { TextField, ValidatedFieldFormik } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import { Formik } from 'formik'
 import { AbstractField, RadioBox } from './builderComponents'
@@ -25,9 +25,15 @@ const FormProperties = ({
   purpose,
   setFieldValue,
   structure,
+  isSubmitting
 }) => {
   const [popup, setPopup] = useState(structure.haspopup)
   const [isClicked, setIsClicked] = useState(false)
+  useEffect(() => {
+    if (isClicked) {
+      setTimeout(() => setIsClicked(false), 2000 )
+    }
+  }, [isClicked])
 
   return isEmpty(structure) && mode !== 'create' ? (
     <Page>
@@ -93,7 +99,7 @@ const FormProperties = ({
             />
           </Section>,
         ]}
-        <ActionButton primary type="submit" onClick={() => setIsClicked(true)} status={isClicked ? 'success' : ''}>
+        <ActionButton primary type="submit" onClick={() => setIsClicked(true) } status={isClicked ? 'success' : ''}>
           {mode === 'create' ? 'Create Form' : 'Update Form'}
         </ActionButton>
       </form>
@@ -134,6 +140,8 @@ const prepareForSubmit = (form, values) => {
   return newForm
 }
 
+
+
 const FormForm = ({ form, updateForm, createForm }) => {
   return (
     <Formik
@@ -159,6 +167,7 @@ const FormForm = ({ form, updateForm, createForm }) => {
           purpose={form.purpose}
           setFieldValue={formikProps.setFieldValue}
           structure={form.structure}
+          isSubmitting={formikProps.isSubmitting}
         />
       )}
     </Formik>

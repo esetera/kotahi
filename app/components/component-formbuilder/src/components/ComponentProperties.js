@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { isEmpty, omitBy } from 'lodash'
@@ -12,6 +12,7 @@ import {
 } from './config/Elements'
 import * as elements from './builderComponents'
 import { Section, Legend, Page, Heading, DetailText } from './style'
+import { ActionButton } from '../../../shared'
 
 const InvalidWarning = styled.div`
   color: ${th('colorError')};
@@ -69,6 +70,12 @@ const ComponentProperties = ({
   )
 
   const formIsValid = !Object.keys(formErrors).length
+  const [isClicked, setIsClicked] = useState(false)
+  useEffect(() => {
+    if (isClicked) {
+      setTimeout(() => setIsClicked(false), 2000 )
+    }
+  }, [isClicked])
 
   return (
     <Page key={selectedComponent}>
@@ -110,9 +117,9 @@ const ComponentProperties = ({
             )}
           </Section>
         ))}
-        <Button disabled={!formIsValid} primary type="submit">
+        <ActionButton disabled={!formIsValid} primary type="submit" onClick={() => setIsClicked(true) } status={isClicked ? 'success' : ''}>
           Update Field
-        </Button>
+        </ActionButton>
         {!formIsValid && (
           <InvalidWarning>
             Correct invalid values before updating

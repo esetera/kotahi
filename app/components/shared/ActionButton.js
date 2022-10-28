@@ -95,6 +95,7 @@ const ActionButton = ({
   children,
   className,
   dataTestid,
+  type="button",
   title,
 }) => {
   if (disabled)
@@ -154,7 +155,7 @@ const ActionButton = ({
       onClick={status !== 'pending' ? onClick : null}
       primary={primary}
       title={title}
-      type="button"
+      type={type}
     >
       {statusIndicator ? (
         <>
