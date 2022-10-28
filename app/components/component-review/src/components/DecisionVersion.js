@@ -232,7 +232,7 @@ const DecisionVersion = ({
     return {
       content: (
         <>
-          {isCurrentVersion && ( // team
+          {isCurrentVersion && (
             <AssignEditorsReviewers
               allUsers={allUsers}
               AssignEditor={AssignEditor}
@@ -242,7 +242,7 @@ const DecisionVersion = ({
               updateTeam={updateTeam}
             />
           )}
-          {!isCurrentVersion && ( // team
+          {!isCurrentVersion && (
             <SectionContent>
               <SectionHeader>
                 <Title>Assigned editors</Title>
@@ -278,7 +278,7 @@ const DecisionVersion = ({
     return {
       content: (
         <>
-          {!isCurrentVersion && ( // decision
+          {!isCurrentVersion && (
             <SectionContent>
               <SectionHeader>
                 <Title>Archived version</Title>
@@ -289,7 +289,7 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          {!isCurrentVersion && ( // decision
+          {!isCurrentVersion && (
             <DecisionAndReviews
               decisionForm={decisionForm}
               isControlPage
@@ -299,7 +299,7 @@ const DecisionVersion = ({
               threadedDiscussionProps={threadedDiscussionProps}
             />
           )}
-          {isCurrentVersion && ( // decision
+          {isCurrentVersion && (
             <AdminSection key="decision-review">
               <DecisionReviews
                 canHideReviews={canHideReviews}
@@ -313,7 +313,7 @@ const DecisionVersion = ({
               />
             </AdminSection>
           )}
-          {isCurrentVersion && ( // decision
+          {isCurrentVersion && (
             <AdminSection key="decision-form">
               <SectionContent>
                 <FormTemplate
@@ -367,7 +367,7 @@ const DecisionVersion = ({
               </SectionContent>
             </AdminSection>
           )}
-          {isCurrentVersion && ( // decision
+          {isCurrentVersion && (
             <AdminSection>
               <Publish
                 manuscript={version}
