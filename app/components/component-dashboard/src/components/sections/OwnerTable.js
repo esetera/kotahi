@@ -1,12 +1,12 @@
 import { useQuery } from '@apollo/client'
 import React, { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
 import { CommsErrorBanner, Spinner } from '../../../../shared'
 import queries from '../../graphql/queries'
 import { Placeholder } from '../../style'
 import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
-import { getUriQueryParams } from '../../../../../shared/urlUtils'
 import {
   URI_SEARCH_PARAM,
   ownerColumns,
@@ -15,6 +15,7 @@ import {
 const OwnerTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
   const [sortName, setSortName] = useState('created')
   const [sortDirection, setSortDirection] = useState('DESC')
+  const [searchParams] = useSearchParams()
 
   const { loading, data, error } = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
@@ -43,14 +44,12 @@ const OwnerTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
     urlFrag,
   }
 
-  const uriQueryParams = getUriQueryParams(window.location)
-
-  const currentSearchQuery = uriQueryParams.find(
+  const currentSearchQuery = searchParams.find(
     x => x.field === URI_SEARCH_PARAM,
   )?.value
 
   const displayProps = {
-    uriQueryParams,
+    searchParams,
     sortName,
     sortDirection,
     currentSearchQuery,
