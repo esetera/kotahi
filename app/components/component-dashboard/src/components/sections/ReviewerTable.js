@@ -9,8 +9,10 @@ import queries from '../../graphql/queries'
 import { Placeholder } from '../../style'
 import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
 import { getUriQueryParams } from '../../../../../shared/urlUtils'
-
-const URI_SEARCH_PARAM = 'search'
+import {
+  URI_SEARCH_PARAM,
+  reviewerColumns,
+} from '../../../../../../config/journal/manuscripts'
 
 const ReviewerTable = ({ urlFrag }) => {
   const [sortName, setSortName] = useState('created')
@@ -65,15 +67,6 @@ const ReviewerTable = ({ urlFrag }) => {
     currentSearchQuery,
   }
 
-  const columnNames = [
-    'shortId',
-    'meta.title',
-    'status',
-    'created',
-    'updated',
-    'reviewerLinks',
-  ]
-
   const setFilter = (fieldName, filterValue) => {
     // TODO
   }
@@ -85,7 +78,7 @@ const ReviewerTable = ({ urlFrag }) => {
   })
 
   const columnsProps = buildColumnDefinitions(
-    columnNames,
+    reviewerColumns,
     fieldDefinitions,
     specialComponentValues,
     displayProps,
