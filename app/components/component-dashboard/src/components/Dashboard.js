@@ -8,7 +8,7 @@ import {
   Title,
 } from '../../../shared'
 import { Container } from '../style'
-import EditorTable from './sections/EditorTableDraft'
+import EditorTable from './sections/EditorTable'
 import OwnerTable from './sections/OwnerTable'
 import ReviewerTable from './sections/ReviewerTable'
 

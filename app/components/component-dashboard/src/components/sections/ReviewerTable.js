@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import React, { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../../queries/team'
 import { CommsErrorBanner, Spinner } from '../../../../shared'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
@@ -8,7 +9,6 @@ import mutations from '../../graphql/mutations'
 import queries from '../../graphql/queries'
 import { Placeholder } from '../../style'
 import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
-import { getUriQueryParams } from '../../../../../shared/urlUtils'
 import {
   URI_SEARCH_PARAM,
   reviewerColumns,
@@ -18,6 +18,7 @@ const ReviewerTable = ({ urlFrag }) => {
   const [sortName, setSortName] = useState('created')
   const [sortDirection, setSortDirection] = useState('DESC')
   const [mainActionLink, setActionLink] = useState(null)
+  const [searchParams] = useSearchParams()
   const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
   const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
 
@@ -54,14 +55,12 @@ const ReviewerTable = ({ urlFrag }) => {
     setMainActionLink,
   }
 
-  const uriQueryParams = getUriQueryParams(window.location)
-
-  const currentSearchQuery = uriQueryParams.find(
+  const currentSearchQuery = searchParams.find(
     x => x.field === URI_SEARCH_PARAM,
   )?.value
 
   const displayProps = {
-    uriQueryParams,
+    searchParams,
     sortName,
     sortDirection,
     currentSearchQuery,
