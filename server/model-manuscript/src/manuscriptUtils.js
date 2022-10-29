@@ -1,4 +1,4 @@
-import { URI_SEARCH_PARAM } from '../../../config/journal/manuscripts'
+const { URI_SEARCH_PARAM } = require('../../../config/journal/manuscripts')
 
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 const { ensureJsonIsParsed } = require('../../utils/objectUtils')
