@@ -7,8 +7,10 @@ import queries from '../../graphql/queries'
 import { Placeholder } from '../../style'
 import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
 import { getUriQueryParams } from '../../../../../shared/urlUtils'
-
-const URI_SEARCH_PARAM = 'search'
+import {
+  URI_SEARCH_PARAM,
+  ownerColumns,
+} from '../../../../../../config/journal/manuscripts'
 
 const OwnerTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
   const [sortName, setSortName] = useState('created')
@@ -54,15 +56,6 @@ const OwnerTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
     currentSearchQuery,
   }
 
-  const columnNames = [
-    'shortId',
-    'meta.title',
-    'status',
-    'created',
-    'updated',
-    'submitChevron',
-  ]
-
   const setFilter = (fieldName, filterValue) => {
     // TODO
   }
@@ -74,7 +67,7 @@ const OwnerTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
   })
 
   const columnsProps = buildColumnDefinitions(
-    columnNames,
+    ownerColumns,
     fieldDefinitions,
     specialComponentValues,
     displayProps,

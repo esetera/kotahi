@@ -1,17 +1,22 @@
 import { useQuery } from '@apollo/client'
-import React from 'react'
-import prettyRoleText from '../../../../../shared/prettyRoleText'
-import { CommsErrorBanner, SectionRow, Spinner } from '../../../../shared'
+import React, { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
+import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
+import { CommsErrorBanner, Spinner } from '../../../../shared'
 import queries from '../../graphql/queries'
 import { Placeholder } from '../../style'
+import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
 import {
-  getLatestVersion,
-  getManuscriptsUserHasRoleIn,
-  getRoles,
-} from '../../utils'
-import EditorItem from './EditorItem'
+  URI_SEARCH_PARAM,
+  editorColumns,
+} from '../../../../../../config/journal/manuscripts'
 
 const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
+  const [sortName, setSortName] = useState('created')
+  const [sortDirection, setSortDirection] = useState('DESC')
+  const [searchParams] = useSearchParams()
+
   const { loading, data, error } = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
   })
@@ -21,8 +26,7 @@ const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
 
   const currentUser = data && data.currentUser
 
-  // Editors are always linked to the parent/original manuscript, not to versions
-  const latestVersions = data?.manuscriptsUserHasCurrentRoleIn.map(
+  const latestVersions = data.manuscriptsUserHasCurrentRoleIn.map(
     getLatestVersion,
   )
 
@@ -33,24 +37,56 @@ const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
   )
 
   if (editorLatestVersions.length === 0) {
-    return <Placeholder>You have not submitted any manuscripts yet</Placeholder>
+    return (
+      <Placeholder>
+        You have not been assigned as editor to any manuscripts yet
+      </Placeholder>
+    )
   }
 
+  const specialComponentValues = {
+    urlFrag,
+    currentUser,
+  }
+
+  const currentSearchQuery = searchParams.find(
+    x => x.field === URI_SEARCH_PARAM,
+  )?.value
+
+  const displayProps = {
+    searchParams,
+    sortName,
+    sortDirection,
+    currentSearchQuery,
+  }
+
+  const setFilter = (fieldName, filterValue) => {
+    // TODO
+  }
+
+  const fieldDefinitions = {}
+  const fields = data.formForPurposeAndCategory?.structure?.children ?? []
+  fields.forEach(field => {
+    if (field.name) fieldDefinitions[field.name] = field // Incomplete fields in the formbuilder may not have a name specified. Ignore these
+  })
+
+  const columnsProps = buildColumnDefinitions(
+    editorColumns,
+    fieldDefinitions,
+    specialComponentValues,
+    displayProps,
+  )
+
   return (
-    <>
-      {editorLatestVersions.map(manuscript => (
-        <SectionRow key={`manuscript-${manuscript.id}`}>
-          <EditorItem
-            currentRoles={getRoles(manuscript, currentUser.id)}
-            instanceName={instanceName}
-            prettyRoleText={prettyRoleText}
-            shouldShowShortId={shouldShowShortId}
-            urlFrag={urlFrag}
-            version={manuscript}
-          />
-        </SectionRow>
-      ))}
-    </>
+    <ManuscriptsTable
+      columnsProps={columnsProps}
+      manuscripts={editorLatestVersions}
+      setFilter={setFilter}
+      setSortDirection={setSortDirection}
+      setSortName={setSortName}
+      sortDirection={sortDirection}
+      sortName={sortName}
+    />
   )
 }
 

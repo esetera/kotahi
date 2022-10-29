@@ -1,3 +1,5 @@
+import { URI_SEARCH_PARAM } from '../../../config/journal/manuscripts'
+
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 const { ensureJsonIsParsed } = require('../../utils/objectUtils')
 const { formatSearchQueryForPostgres } = require('../../utils/searchUtils')
@@ -205,7 +207,7 @@ const applyFilters = (
 ) => {
   filters
     .filter(discardDuplicateFields)
-    .filter(f => f.field !== 'search')
+    .filter(f => f.field !== URI_SEARCH_PARAM)
     .forEach(filter => {
       if (['created', 'updated'].includes(filter.field)) {
         try {
@@ -293,7 +295,7 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
   addWhere('parent_id IS NULL')
   addWhere('is_hidden IS NOT TRUE')
 
-  const searchFilter = filters.find(f => f.field === 'search')
+  const searchFilter = filters.find(f => f.field === URI_SEARCH_PARAM)
 
   const searchQuery =
     searchFilter && formatSearchQueryForPostgres(searchFilter.value)
