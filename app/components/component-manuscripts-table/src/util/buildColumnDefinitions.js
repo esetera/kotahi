@@ -59,7 +59,7 @@ const buildColumnDefinition = (
     filterOptions,
     filterValue:
       ((filterOptions || presetProps.canFilterByDateRange) &&
-        uriQueryParams.find(p => p.field === columnName)?.value) ||
+        uriQueryParams.get(columnName)) ||
       null,
     sortDirection:
       canSort && columnToSortOn === columnName ? sortDirection : null,

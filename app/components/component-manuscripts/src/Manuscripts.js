@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Checkbox } from '@pubsweet/ui'
 import { grid } from '@pubsweet/ui-toolkit'
+import { useLocation } from 'react-router-dom'
 import {
   SelectAllField,
   SelectedManuscriptsNumber,
@@ -26,7 +27,6 @@ import { articleStatuses } from '../../../globals'
 import MessageContainer from '../../component-chat/src/MessageContainer'
 import Modal from '../../component-modal/src'
 import BulkArchiveModal from './BulkArchiveModal'
-import { getUriQueryParams } from '../../../shared/urlUtils'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
 import ManuscriptsTable from '../../component-manuscripts-table/src/ManuscriptsTable'
@@ -82,40 +82,24 @@ const Manuscripts = ({ history, ...props }) => {
   const [selectedNewManuscripts, setSelectedNewManuscripts] = useState([])
   const [isAdminChatOpen, setIsAdminChatOpen] = useState(true)
 
-  const uriQueryParams = getUriQueryParams(window.location)
+  const { rawUriQuery } = useLocation()
+  const uriQueryParams = new URLSearchParams(rawUriQuery)
 
-  const loadPageWithQuery = query => {
-    let newPath = `${urlFrag}/admin/manuscripts`
+  const loadPageWithQuery = () => {
+    const newPath = `${urlFrag}/admin/manuscripts`
 
-    if (query.length > 0) {
-      newPath = `${newPath}?${query
-        .filter(x => x.value)
-        .map(
-          param =>
-            `${encodeURIComponent(param.field)}=${encodeURIComponent(
-              param.value,
-            )}`,
-        )
-        .join('&')}`
-    }
-
-    history.replace(newPath)
+    history.replace({ pathname: newPath, search: uriQueryParams.toString() })
   }
 
   const setFilter = (fieldName, filterValue) => {
     if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
-    const revisedQuery = [...uriQueryParams].filter(x => x.field !== fieldName)
-    revisedQuery.push({ field: fieldName, value: filterValue })
-    loadPageWithQuery(revisedQuery)
+    uriQueryParams.set(fieldName, filterValue)
+    loadPageWithQuery()
   }
 
   const applySearchQuery = query => {
-    const revisedQuery = [...uriQueryParams].filter(
-      x => x.field !== URI_SEARCH_PARAM,
-    )
-
-    revisedQuery.push({ field: URI_SEARCH_PARAM, value: query })
-    loadPageWithQuery(revisedQuery)
+    uriQueryParams.set(URI_SEARCH_PARAM, query)
+    loadPageWithQuery()
   }
 
   const toggleNewManuscriptCheck = id => {
@@ -254,9 +238,7 @@ const Manuscripts = ({ history, ...props }) => {
     closeModalBulkArchiveConfirmation()
   }
 
-  const currentSearchQuery = uriQueryParams.find(
-    x => x.field === URI_SEARCH_PARAM,
-  )?.value
+  const currentSearchQuery = uriQueryParams.get(URI_SEARCH_PARAM)
 
   // Props for instantiating special components
   const specialComponentValues = {

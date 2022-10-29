@@ -1,14 +1,15 @@
 /*
 Journals may want to display their manuscript tables with different columns
 */
-export const editorColumns = [
+const editorColumns = [
   'shortId',
   'meta.title',
   'status',
   'statusCounts',
   'editorLinks',
 ]
-export const ownerColumns = [
+
+const ownerColumns = [
   'shortId',
   'meta.title',
   'status',
@@ -17,7 +18,7 @@ export const ownerColumns = [
   'submitChevron',
 ]
 
-export const reviewerColumns = [
+const reviewerColumns = [
   'shortId',
   'meta.title',
   'status',
@@ -26,4 +27,11 @@ export const reviewerColumns = [
   'reviewerLinks',
 ]
 
-export const URI_SEARCH_PARAM = 'search'
+const URI_SEARCH_PARAM = 'search'
+
+module.exports = {
+  editorColumns,
+  ownerColumns,
+  reviewerColumns,
+  URI_SEARCH_PARAM,
+}
