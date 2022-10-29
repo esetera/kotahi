@@ -86,40 +86,18 @@ const Manuscripts = ({ history, ...props }) => {
   const [selectedNewManuscripts, setSelectedNewManuscripts] = useState([])
   const [isAdminChatOpen, setIsAdminChatOpen] = useState(true)
 
-  const uriQueryParams = getUriQueryParams(window.location)
-
-  const loadPageWithQuery = query => {
-    let newPath = `${urlFrag}/admin/manuscripts`
-
-    if (query.length > 0) {
-      newPath = `${newPath}?${query
-        .filter(x => x.value)
-        .map(
-          param =>
-            `${encodeURIComponent(param.field)}=${encodeURIComponent(
-              param.value,
-            )}`,
-        )
-        .join('&')}`
-    }
-
-    history.replace(newPath)
-  }
+  const { pathname, search } = useLocation()
+  const uriQueryParams = new URLSearchParams(search)
 
   const setFilter = (fieldName, filterValue) => {
     if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
-    const revisedQuery = [...uriQueryParams].filter(x => x.field !== fieldName)
-    revisedQuery.push({ field: fieldName, value: filterValue })
-    loadPageWithQuery(revisedQuery)
+    uriQueryParams.set(fieldName, filterValue)
+    history.replace({ pathname, search: uriQueryParams.toString() })
   }
 
   const applySearchQuery = query => {
-    const revisedQuery = [...uriQueryParams].filter(
-      x => x.field !== URI_SEARCH_PARAM,
-    )
-
-    revisedQuery.push({ field: URI_SEARCH_PARAM, value: query })
-    loadPageWithQuery(revisedQuery)
+    uriQueryParams.set(URI_SEARCH_PARAM, query)
+    history.replace({ pathname, search: uriQueryParams.toString() })
   }
 
   const toggleNewManuscriptCheck = id => {
