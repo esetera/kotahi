@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client'
-import React, { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import React, { useMemo, useState } from 'react'
+import { useLocation, useHistory } from 'react-router-dom'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
 import { CommsErrorBanner, Spinner } from '../../../../shared'
@@ -13,13 +13,26 @@ import {
 } from '../../../../../../config/journal/manuscripts'
 
 const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
+  const { search, pathname } = useLocation()
+  const uriQueryParams = new URLSearchParams(search)
+  const history = useHistory()
   const [sortName, setSortName] = useState('created')
   const [sortDirection, setSortDirection] = useState('DESC')
-  const [searchParams] = useSearchParams()
 
   const { loading, data, error } = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
   })
+
+  // TODO: move graphQL query that returns fieldDefinitions to Dashboard and pass it in as a prop
+  const fieldDefinitions = useMemo(() => {
+    const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
+    const defs = {}
+    fields.forEach(field => {
+      // Incomplete fields in the formbuilder may not have a name specified. Ignore these
+      if (field.name) defs[field.name] = field
+    })
+    return defs
+  }, [data])
 
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
@@ -49,26 +62,19 @@ const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
     currentUser,
   }
 
-  const currentSearchQuery = searchParams.find(
-    x => x.field === URI_SEARCH_PARAM,
-  )?.value
+  const currentSearchQuery = uriQueryParams.get(URI_SEARCH_PARAM)
 
   const displayProps = {
-    searchParams,
+    uriQueryParams,
     sortName,
     sortDirection,
     currentSearchQuery,
   }
 
   const setFilter = (fieldName, filterValue) => {
-    // TODO
+    uriQueryParams.set(fieldName, filterValue)
+    history.replace({ pathname, search: uriQueryParams.toString() })
   }
-
-  const fieldDefinitions = {}
-  const fields = data.formForPurposeAndCategory?.structure?.children ?? []
-  fields.forEach(field => {
-    if (field.name) fieldDefinitions[field.name] = field // Incomplete fields in the formbuilder may not have a name specified. Ignore these
-  })
 
   const columnsProps = buildColumnDefinitions(
     editorColumns,
