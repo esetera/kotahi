@@ -31,8 +31,7 @@ import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
 import ManuscriptsTable from '../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../component-manuscripts-table/src/util/buildColumnDefinitions'
-
-const URI_SEARCH_PARAM = 'search'
+import { URI_SEARCH_PARAM } from '../../../../config/journal/manuscripts'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;
