@@ -40,7 +40,9 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
   const [isOpen, setIsOpen] = useState(!!currentSearchQuery)
   const ref = useRef(null)
   const theme = useTheme()
+  // console.log(applySearchQuery)
 
+  //
   const submitSearch = query => {
     if ((query || null) !== currentSearchQuery) applySearchQuery(query)
     setSearchText(query || '')

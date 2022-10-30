@@ -36,6 +36,7 @@ import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
 
 const URI_SEARCH_PARAM = 'search'
+const URI_PAGENUM_PARAM = 'pagenum'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;
@@ -89,6 +90,8 @@ const Manuscripts = ({ history, ...props }) => {
   const uriQueryParams = getUriQueryParams(window.location)
 
   const loadPageWithQuery = query => {
+    // console.log(query)
+
     let newPath = `${urlFrag}/admin/manuscripts`
 
     if (query.length > 0) {
@@ -114,11 +117,24 @@ const Manuscripts = ({ history, ...props }) => {
   }
 
   const applySearchQuery = query => {
+    // console.log(query)
+
     const revisedQuery = [...uriQueryParams].filter(
       x => x.field !== URI_SEARCH_PARAM,
     )
 
     revisedQuery.push({ field: URI_SEARCH_PARAM, value: query })
+    loadPageWithQuery(revisedQuery)
+  }
+
+  const applyPaginationQuery = query => {
+    // console.log(query)
+
+    const revisedQuery = [...uriQueryParams].filter(
+      x => x.field !== URI_PAGENUM_PARAM,
+    )
+
+    revisedQuery.push({ field: URI_PAGENUM_PARAM, value: query })
     loadPageWithQuery(revisedQuery)
   }
 
@@ -410,6 +426,7 @@ const Manuscripts = ({ history, ...props }) => {
               </ManuscriptsTable>
             </ScrollableContent>
             <Pagination
+              applyPaginationQuery={applyPaginationQuery}
               limit={limit}
               page={page}
               PaginationContainer={PaginationContainerShadowed}

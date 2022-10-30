@@ -55,6 +55,7 @@ export const Pagination = ({
   totalCount,
   // eslint-disable-next-line no-shadow
   PaginationContainer,
+  applyPaginationQuery,
 }) => {
   // e.g. Get [1,2,3] from totalCount 9, limit 3
   const pages = [...new Array(Math.ceil(totalCount / limit)).keys()].map(
@@ -63,6 +64,11 @@ export const Pagination = ({
 
   const firstResult = (page - 1) * limit + 1
   const lastResult = Math.min((page - 1) * limit + limit, totalCount)
+
+  const submitPagenum = query => {
+    // console.log(query)
+    applyPaginationQuery(query)
+  }
 
   return (
     <PaginationContainer>
@@ -85,7 +91,10 @@ export const Pagination = ({
           initialPage={page - 1}
           marginPagesDisplay={3}
           nextLabel=">"
-          onPageChange={nmb => setPage(nmb.selected + 1)}
+          onPageChange={nmb => {
+            submitPagenum(nmb.selected + 1)
+            return setPage(nmb.selected + 1)
+          }}
           pageCount={pages.length}
           pageRangeDisplayed={9}
           previousLabel="<"
