@@ -25,7 +25,6 @@ const FormProperties = ({
   purpose,
   setFieldValue,
   structure,
-  isSubmitting
 }) => {
   const [popup, setPopup] = useState(structure.haspopup)
   const [isClicked, setIsClicked] = useState(false)
