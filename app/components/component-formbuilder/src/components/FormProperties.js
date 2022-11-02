@@ -30,7 +30,7 @@ const FormProperties = ({
   const [isClicked, setIsClicked] = useState(false)
   useEffect(() => {
     if (isClicked) {
-      setTimeout(() => setIsClicked(false), 2000 )
+      setTimeout(() => setIsClicked(false), 2000)
     }
   }, [isClicked])
 
@@ -98,7 +98,12 @@ const FormProperties = ({
             />
           </Section>,
         ]}
-        <ActionButton primary type="submit" onClick={() => setIsClicked(true) } status={isClicked ? 'success' : ''}>
+        <ActionButton
+          primary
+          type="submit"
+          onClick={() => setIsClicked(true)}
+          status={isClicked ? 'success' : ''}
+        >
           {mode === 'create' ? 'Create Form' : 'Update Form'}
         </ActionButton>
       </form>
@@ -138,8 +143,6 @@ const prepareForSubmit = (form, values) => {
 
   return newForm
 }
-
-
 
 const FormForm = ({ form, updateForm, createForm }) => {
   return (

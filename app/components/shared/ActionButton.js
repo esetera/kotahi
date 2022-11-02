@@ -95,7 +95,7 @@ const ActionButton = ({
   children,
   className,
   dataTestid,
-  type="button",
+  type = 'button',
   title,
 }) => {
   if (disabled)

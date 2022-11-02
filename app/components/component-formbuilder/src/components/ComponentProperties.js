@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { isEmpty, omitBy } from 'lodash'
 import { Formik } from 'formik'
-import { ValidatedFieldFormik, Menu, Button } from '@pubsweet/ui'
+import { ValidatedFieldFormik, Menu } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import { v4 as uuid } from 'uuid'
 import {
@@ -73,7 +73,7 @@ const ComponentProperties = ({
   const [isClicked, setIsClicked] = useState(false)
   useEffect(() => {
     if (isClicked) {
-      setTimeout(() => setIsClicked(false), 2000 )
+      setTimeout(() => setIsClicked(false), 2000)
     }
   }, [isClicked])
 
@@ -117,7 +117,13 @@ const ComponentProperties = ({
             )}
           </Section>
         ))}
-        <ActionButton disabled={!formIsValid} primary type="submit" onClick={() => setIsClicked(true) } status={isClicked ? 'success' : ''}>
+        <ActionButton
+          disabled={!formIsValid}
+          primary
+          type="submit"
+          onClick={() => setIsClicked(true)}
+          status={isClicked ? 'success' : ''}
+        >
           Update Field
         </ActionButton>
         {!formIsValid && (
