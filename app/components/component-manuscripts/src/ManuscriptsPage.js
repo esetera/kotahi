@@ -11,6 +11,7 @@ import {
 } from '@apollo/client'
 import config from 'config'
 import fnv from 'fnv-plus'
+import { useLocation } from 'react-router-dom'
 import {
   GET_MANUSCRIPTS_AND_FORM,
   DELETE_MANUSCRIPT,
@@ -34,10 +35,19 @@ const chatRoomId = fnv.hash(config['pubsweet-client'].baseUrl).hex()
 const ManuscriptsPage = ({ history }) => {
   const [sortName, setSortName] = useState('created')
   const [sortDirection, setSortDirection] = useState('DESC')
-  const [page, setPage] = useState(1)
   const [isImporting, setIsImporting] = useState(false)
 
+  const setPage = pagenum => {
+    history.push({ search: `?pagenum=${pagenum}` })
+  }
+
+  // console.log(setPage)
+  useLocation()
+  // console.log(location)
+  // console.log(window.location)
   const uriQueryParams = getUriQueryParams(window.location)
+  const page = Number(uriQueryParams.find(f => f.field === 'pagenum').value)
+  // console.log(page)
   const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
 
   const queryObject = useQuery(GET_MANUSCRIPTS_AND_FORM, {
@@ -47,7 +57,7 @@ const ManuscriptsPage = ({ history }) => {
         : null,
       offset: (page - 1) * limit,
       limit,
-      filters: uriQueryParams,
+      filters: uriQueryParams.filter(f => f.field !== 'pagenum'),
       timezoneOffsetMinutes: new Date().getTimezoneOffset(),
     },
     fetchPolicy: 'network-only',
@@ -60,7 +70,7 @@ const ManuscriptsPage = ({ history }) => {
 
   useEffect(() => {
     queryObject.refetch()
-    setPage(1)
+    // setPage(1)
   }, [history.location.search])
 
   useSubscription(IMPORTED_MANUSCRIPTS_SUBSCRIPTION, {

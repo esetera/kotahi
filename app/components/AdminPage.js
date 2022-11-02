@@ -38,6 +38,8 @@ import currentRolesVar from '../shared/currentRolesVar'
 import RolesUpdater from './RolesUpdater'
 
 const getParams = ({ routerPath, path }) => {
+  // console.log(routerPath)
+  // console.log(path)
   return matchPath(routerPath, path).params
 }
 
@@ -151,7 +153,11 @@ const AdminPage = () => {
 
   const urlFrag = journal.metadata.toplevel_urlfragment
   const { pathname } = history.location
-  const showLinks = pathname.match(/^\/(submit|manuscript)/g)
+  // console.log("periwinkle")
+  // console.log(pathname)
+
+  const showLinks = pathname.match(/^\/(submit|manuscript|manuscripts)/g)
+  // const showLinks = pathname.match(/^\/(submit|manuscript|man)/g)
   let links = []
   const submissionFormBuilderLink = `${urlFrag}/admin/submission-form-builder`
   const reviewFormBuilderLink = `${urlFrag}/admin/review-form-builder`
@@ -164,12 +170,15 @@ const AdminPage = () => {
   const loginLink = `/login?next=${homeLink}`
   const path = `${urlFrag}/versions/:version`
   const redirectLink = `/login?next=${homeLink}`
+  // const paginationLink = `${urlFrag}/admin/manuscripts/:pagenum`
 
   if (showLinks) {
     const params = getParams(pathname, path)
+    // const paginationParams = getParams(pathname, paginationLink)
     const baseLink = `${urlFrag}/versions/${params.version}`
     const submitLink = `${baseLink}/submit`
     const manuscriptLink = `${baseLink}/manuscript`
+    // const paginationLink = `${baseLink}/manuscript`
 
     links = showLinks
       ? [
