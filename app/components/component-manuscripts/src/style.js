@@ -1,6 +1,8 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { grid } from '@pubsweet/ui-toolkit'
 import { Button } from '@pubsweet/ui'
+import { th } from '@pubsweet/ui-toolkit'
+import Color from 'color'
 
 export const SelectAllField = styled.div`
   align-items: center;
@@ -132,11 +134,4 @@ export const SortArrow = styled.span`
   &::before {
     content: '${({ direction }) => (direction === 'ASC' ? '▼' : '▲')}';
   }
-`
-
-export const ControlsContainer = styled.div`
-  display: flex;
-  flex: 1 1;
-  gap: ${grid(2)};
-  justify-content: flex-end;
 `

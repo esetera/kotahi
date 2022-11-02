@@ -120,20 +120,9 @@ const getData = async ctx => {
       ),
     )
 
-    const currentURLs = new Set(
-      manuscripts.map(
-        ({ submission }) =>
-          submission.articleURL || submission.link || submission.biorxivURL,
-      ),
-    )
-
     const withoutDOIDuplicates = importsFromSpecificPreprintServers.filter(
       preprints =>
         !currentDOIs.has(`https://doi.org/${preprints.externalIds.DOI}`),
-    )
-
-    const withoutUrlDuplicates = withoutDOIDuplicates.filter(
-      preprints => !currentURLs.has(preprints.url),
     )
 
     const withoutUrlDuplicates = withoutDOIDuplicates.filter(
