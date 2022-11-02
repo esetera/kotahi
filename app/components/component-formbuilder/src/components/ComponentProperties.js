@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { isEmpty, omitBy } from 'lodash'
@@ -71,11 +71,6 @@ const ComponentProperties = ({
 
   const formIsValid = !Object.keys(formErrors).length
   const [isClicked, setIsClicked] = useState(false)
-  useEffect(() => {
-    if (isClicked) {
-      setTimeout(() => setIsClicked(false), 2000)
-    }
-  }, [isClicked])
 
   return (
     <Page key={selectedComponent}>
@@ -119,10 +114,12 @@ const ComponentProperties = ({
         ))}
         <ActionButton
           disabled={!formIsValid}
-          primary
-          type="submit"
           onClick={() => setIsClicked(true)}
+          onReset={() => setIsClicked(false)}
+          primary
+          reset="true"
           status={isClicked ? 'success' : ''}
+          type="submit"
         >
           Update Field
         </ActionButton>

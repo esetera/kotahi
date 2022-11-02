@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { isEmpty, omitBy } from 'lodash'
 import styled from 'styled-components'
@@ -28,11 +28,6 @@ const FormProperties = ({
 }) => {
   const [popup, setPopup] = useState(structure.haspopup)
   const [isClicked, setIsClicked] = useState(false)
-  useEffect(() => {
-    if (isClicked) {
-      setTimeout(() => setIsClicked(false), 2000)
-    }
-  }, [isClicked])
 
   return isEmpty(structure) && mode !== 'create' ? (
     <Page>
@@ -99,10 +94,12 @@ const FormProperties = ({
           </Section>,
         ]}
         <ActionButton
-          primary
-          type="submit"
           onClick={() => setIsClicked(true)}
+          onReset={() => setIsClicked(false)}
+          primary
+          reset="true"
           status={isClicked ? 'success' : ''}
+          type="submit"
         >
           {mode === 'create' ? 'Create Form' : 'Update Form'}
         </ActionButton>

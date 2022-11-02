@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import PropTypes from 'prop-types'
 import Color from 'color'
@@ -91,6 +91,8 @@ const ActionButton = ({
   onClick,
   status,
   color,
+  reset = false,
+  onReset = null,
   isCompact,
   children,
   className,
@@ -98,6 +100,12 @@ const ActionButton = ({
   type = 'button',
   title,
 }) => {
+  useEffect(() => {
+    if (reset && status !== '') {
+      setTimeout(onReset, 2000)
+    }
+  }, [status])
+
   if (disabled)
     return (
       <DisabledButton className={className} disabled isCompact={isCompact}>
