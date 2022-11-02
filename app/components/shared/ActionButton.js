@@ -91,7 +91,6 @@ const ActionButton = ({
   onClick,
   status,
   color,
-  reset = false,
   onReset = null,
   isCompact,
   children,
@@ -101,7 +100,7 @@ const ActionButton = ({
   title,
 }) => {
   useEffect(() => {
-    if (reset && status !== '') {
+    if (onReset != null && status !== '') {
       setTimeout(onReset, 2000)
     }
   }, [status])

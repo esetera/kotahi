@@ -117,7 +117,6 @@ const ComponentProperties = ({
           onClick={() => setIsClicked(true)}
           onReset={() => setIsClicked(false)}
           primary
-          reset="true"
           status={isClicked ? 'success' : ''}
           type="submit"
         >
