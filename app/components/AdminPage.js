@@ -281,13 +281,13 @@ const AdminPage = () => {
           path={`${urlFrag}/versions/:version/submit`}
           redirectLink={redirectLink}
         />
-        <PrivateRoute
+        {/* <PrivateRoute
           component={ReviewersPage}
           currentUser={currentUser}
           exact
           path={`${urlFrag}/versions/:version/reviewers`}
           redirectLink={redirectLink}
-        />
+        /> */}
         <PrivateRoute
           component={ReviewPage}
           currentUser={currentUser}

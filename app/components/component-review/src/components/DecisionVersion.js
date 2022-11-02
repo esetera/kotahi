@@ -19,6 +19,9 @@ import {
 import DecisionAndReviews from '../../../component-submit/src/components/DecisionAndReviews'
 import FormTemplate from '../../../component-submit/src/components/FormTemplate'
 import TaskList from '../../../component-task-manager/src/TaskList'
+import ReviewersPage from './ReviewersPage'
+// eslint-disable-next-line import/no-cycle, import/named
+import { PrivateRoute, redirectLink } from '../../../AdminPage'
 
 const createBlankSubmissionBasedOnForm = form => {
   const allBlankedFields = {}
@@ -267,6 +270,7 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
+          {isCurrentVersion && <ReviewersPage />}
         </>
       ),
       key: `team_${version.id}`,
