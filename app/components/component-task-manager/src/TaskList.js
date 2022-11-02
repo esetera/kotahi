@@ -25,7 +25,6 @@ const TaskList = ({
   const repackageTask = task => ({
     id: task.id,
     manuscriptId,
-    isComplete: editAsTemplate ? false : task.isComplete,
     title: task.title,
     assigneeUserId: task.assignee?.id || null,
     defaultDurationDays: task.defaultDurationDays || 0,
@@ -39,6 +38,12 @@ const TaskList = ({
       persistTask({
         variables: {
           task: repackageTask({ ...updatedTask, id }),
+        },
+        optimisticResponse: {
+          updateTask: {
+            ...repackageTask({ ...updatedTask, id }),
+            __typename: 'Task',
+          },
         },
       })
     setTasks(tasks.map(t => (t.id === id ? updatedTask : t)))
@@ -54,7 +59,6 @@ const TaskList = ({
       ...tasks,
       {
         id: uuid(),
-        isComplete: false,
         title: '',
         assignee: null,
         dueDate: today,

@@ -118,7 +118,6 @@ const manuscriptFields = `
     dueDate
     reminderPeriodDays
     status
-    isComplete
   }
 `
 
@@ -138,7 +137,6 @@ const formFields = `
       description
       doiValidation
       placeholder
-      includeInReviewerPreview
       permitPublishing
       parse
       format

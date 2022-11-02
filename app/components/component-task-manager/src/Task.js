@@ -1,10 +1,14 @@
 import React, { useState, useContext } from 'react'
 import PropTypes from 'prop-types'
+import moment from 'moment-timezone'
 import styled, { ThemeContext, css } from 'styled-components'
 import { Draggable } from 'react-beautiful-dnd'
 import { Circle, CheckCircle, Trash2 } from 'react-feather'
 import { th, grid } from '@pubsweet/ui-toolkit'
-import lightenBy from '../../../shared/lightenBy'
+import {
+  transposeFromLocalToTimezone,
+  transposeFromTimezoneToLocal,
+} from '../../../shared/dateUtils'
 import {
   MinimalTextInput,
   MinimalSelect,
@@ -18,8 +22,14 @@ import {
 } from '../../shared'
 import { DragVerticalIcon } from '../../shared/Icons'
 import Modal from '../../component-modal/src'
+import { ConfigContext } from '../../config/src'
+
+const TextInput = styled(MinimalTextInput)`
+  margin-left: ${grid(0.5)};
+`
 
 const TaskRow = styled.div`
+  align-items: stretch;
   display: flex;
   gap: ${grid('1')};
 
@@ -27,15 +37,16 @@ const TaskRow = styled.div`
     align-items: center;
     background: linear-gradient(0deg, transparent, ${th('colorBackgroundHue')});
     display: flex;
-    height: ${grid(6)};
-    padding: 0 ${grid(2)};
+    line-height: 1em;
+    min-height: ${grid(6)};
+    padding: ${grid(1)} ${grid(0.5)};
   }
 
   ${props =>
     props.isOverdue
       ? css`
           & > div:last-child {
-            background: ${lightenBy('colorError', 0.5)};
+            border-right: ${grid(1)} solid ${th('colorError')};
           }
         `
       : ''}
@@ -58,8 +69,8 @@ const TaskHeaderRow = styled(TaskRow)`
     color: ${th('colorBorder')};
     font-size: ${th('fontSizeBaseSmall')};
     font-variant: all-small-caps;
-    height: ${grid(3)};
     line-height: ${th('lineHeightBaseSmall')};
+    min-height: ${grid(3)};
   }
 `
 /* stylelint-enable no-descending-specificity */
@@ -75,7 +86,7 @@ const AssigneeCell = styled.div`
 `
 
 const DueDateCell = styled.div`
-  flex: 0 1 12em;
+  flex: 0 0 7.6em;
   justify-content: flex-start;
   position: relative;
 `
@@ -94,9 +105,10 @@ const DurationDaysCell = styled.div`
 const Handle = styled.div`
   align-items: center;
   display: flex;
-  flex: 0 0 ${grid(4)};
+  flex: 0 0 ${grid(3)};
   height: ${grid(5)};
   justify-content: center;
+  width: ${grid(3)};
 `
 
 const DragIcon = styled(DragVerticalIcon)`
@@ -135,7 +147,6 @@ const calculateDaysDifference = (a, b) => {
 
 const statusOptions = [
   { label: 'Not started', value: 'Not started' },
-  { label: "Won't do", value: "Won't do" },
   { label: 'In progress', value: 'In progress' },
   { label: 'Done', value: 'Done' },
 ]
@@ -163,6 +174,23 @@ export const TaskHeader = ({ editAsTemplate }) => {
   )
 }
 
+const getLocalTimeString = val => {
+  const date = new Date(val)
+  const tzOffset = -date.getTimezoneOffset() // getTimezoneOffset gives an inverted value (a POSIX compliance thing)
+  const sign = tzOffset >= 0 ? '+' : '-'
+  const tzOffsetWholeHours = Math.abs(Math.trunc(tzOffset / 60))
+  const tzOffsetMinutes = Math.abs(tzOffset % 60)
+
+  const tzString =
+    tzOffset === 0
+      ? 'GMT'
+      : `GMT${sign}${tzOffsetWholeHours}${
+          tzOffsetMinutes ? `:${tzOffsetMinutes}` : ''
+        }`
+
+  return `${moment(date).format('YYYY-MM-DD HH:mm')} local time (${tzString})`
+}
+
 const Task = ({
   task,
   index,
@@ -173,15 +201,30 @@ const Task = ({
   isReadOnly,
   editAsTemplate,
 }) => {
+  const config = useContext(ConfigContext)
   const themeContext = useContext(ThemeContext)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
 
-  const today = new Date()
-  today.setHours(17) // Use 5pm local time for deadlines.
-  today.setMinutes(0)
-  today.setSeconds(0)
+  const dueDateLocalString = getLocalTimeString(moment(task.dueDate))
 
-  const daysDifference = calculateDaysDifference(today, task.dueDate)
+  const transposedDueDate = transposeFromTimezoneToLocal(
+    task.dueDate,
+    config.teamTimezone,
+  )
+
+  const transposedEndOfToday = moment
+    .tz(
+      transposeFromTimezoneToLocal(new Date(), config.teamTimezone),
+      config.teamTimezone,
+    )
+    .endOf('day')
+    .toDate()
+
+  const daysDifference = calculateDaysDifference(
+    transposedEndOfToday,
+    transposedDueDate,
+  )
+
   let daysDifferenceLabel = 'Today'
   if (daysDifference !== 0)
     daysDifferenceLabel =
@@ -189,11 +232,12 @@ const Task = ({
       (Math.abs(daysDifference) === 1 ? ' day' : ' days') +
       (daysDifference < 0 ? ' ago' : '')
 
-  const isOverdue =
-    daysDifference < 0 &&
-    ['Not started', 'In progress'].includes(task.status) &&
-    !task.isComplete &&
-    !editAsTemplate
+  const dueDateLabel = moment
+    .tz(task.dueDate, config.teamTimezone)
+    .format('YYYY-MM-DD')
+
+  const isDone = task.status === 'Done'
+  const isOverdue = daysDifference < 0 && !isDone && !editAsTemplate
 
   if (isReadOnly)
     return (
@@ -201,13 +245,13 @@ const Task = ({
         <TitleCell>
           <Handle />
           <Handle>
-            {task.isComplete ? (
+            {isDone ? (
               <CheckCircle color={themeContext.colorPrimary} />
             ) : (
               <Circle color={themeContext.colorBorder} />
             )}
           </Handle>
-          <MinimalTextInput isReadOnly value={task.title} />
+          <TextInput isReadOnly value={task.title} />
         </TitleCell>
         <AssigneeCell>{task.assignee?.username}</AssigneeCell>
         {editAsTemplate ? (
@@ -216,13 +260,13 @@ const Task = ({
           </>
         ) : (
           <>
-            <DueDateCell>
+            <DueDateCell title={dueDateLocalString}>
               <DaysNoteContainer>
                 <CompactDetailLabel isWarning={isOverdue}>
                   {daysDifferenceLabel}
                 </CompactDetailLabel>
               </DaysNoteContainer>
-              {new Date(task.dueDate).toISOString().split('T')[0]}
+              {dueDateLabel}
             </DueDateCell>
             <StatusCell isOverdue={isOverdue}>{task.status}</StatusCell>
           </>
@@ -264,19 +308,19 @@ const Task = ({
                   onClick={() =>
                     updateTask(task.id, {
                       ...task,
-                      isComplete: !task.isComplete,
+                      status: isDone ? 'In progress' : 'Done',
                     })
                   }
-                  title={task.isComplete ? '' : 'Click to mark as complete'}
+                  title={isDone ? '' : 'Click to mark as done'}
                 >
-                  {task.isComplete ? (
+                  {isDone ? (
                     <CheckCircle color={themeContext.colorPrimary} />
                   ) : (
                     <Circle color={themeContext.colorBorder} />
                   )}
                 </Handle>
               )}
-              <MinimalTextInput
+              <TextInput
                 autoFocus={!task.title}
                 onCancel={() => {
                   if (!task.title) onCancel()
@@ -284,13 +328,14 @@ const Task = ({
                 onChange={val => updateTask(task.id, { ...task, title: val })}
                 placeholder="Give your task a name..."
                 taskId={task.id}
+                title={task.title}
                 value={task.title}
               />
               <MinimalButton onClick={() => setIsConfirmingDelete(true)}>
                 <Trash2 size={18} />
               </MinimalButton>
             </TitleCell>
-            <AssigneeCell>
+            <AssigneeCell title={task.assignee?.username}>
               <MinimalSelect
                 aria-label="Assignee"
                 data-testid="Assignee_select"
@@ -324,7 +369,7 @@ const Task = ({
               </>
             ) : (
               <>
-                <DueDateCell>
+                <DueDateCell title={dueDateLocalString}>
                   <DaysNoteContainer>
                     <CompactDetailLabel isWarning={isOverdue}>
                       {daysDifferenceLabel}
@@ -333,18 +378,28 @@ const Task = ({
                   <MinimalDatePicker
                     clearIcon={null}
                     format="yyyy-MM-dd"
-                    minDate={today}
+                    minDate={transposedEndOfToday}
                     onChange={val =>
                       updateTask(task.id, {
                         ...task,
-                        dueDate: new Date(val),
+                        dueDate: moment
+                          .tz(
+                            transposeFromLocalToTimezone(
+                              val,
+                              config.teamTimezone,
+                            ),
+                            config.teamTimezone,
+                          )
+                          .endOf('day')
+                          .toDate(),
                       })
                     }
                     position="top center"
-                    value={new Date(task.dueDate)}
+                    suppressTodayHighlight
+                    value={transposedDueDate}
                   />
                 </DueDateCell>
-                <StatusCell isOverdue={isOverdue}>
+                <StatusCell isOverdue={isOverdue} title={task.status}>
                   <MinimalSelect
                     aria-label="Assignee"
                     data-testid="Assignee_select"
@@ -372,7 +427,6 @@ const Task = ({
 Task.propTypes = {
   task: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    isComplete: PropTypes.bool.isRequired,
     title: PropTypes.string.isRequired,
     assignee: PropTypes.shape({
       id: PropTypes.string.isRequired,

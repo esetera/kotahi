@@ -413,6 +413,7 @@ const permissions = {
     user: isAuthenticated,
     users: isAuthenticated,
     validateDOI: isAuthenticated,
+    userHasTaskAlerts: isAuthenticated,
   },
   Mutation: {
     upload: isAuthenticated,
@@ -439,6 +440,7 @@ const permissions = {
     deleteFormElement: userIsAdmin,
     updateCurrentEmail: isAuthenticated,
     updateCurrentUsername: isAuthenticated,
+    removeTaskAlertsForCurrentUser: isAuthenticated,
   },
   Subscription: {
     messageCreated: userIsAllowedToChat,
