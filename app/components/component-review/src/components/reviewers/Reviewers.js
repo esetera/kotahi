@@ -38,7 +38,6 @@ const Reviewers = ({
   manuscript,
   handleSubmit,
   removeReviewer,
-  history,
   updateTeamMember,
   refetchManuscriptData,
 }) => {
@@ -53,21 +52,10 @@ const Reviewers = ({
   }
 
   return (
-    <Container>
-      <HeadingWithAction>
-        <Heading>Reviewers</Heading>
-        <Button
-          onClick={() =>
-            history.push(`${urlFrag}/versions/${manuscript.id}/decision`)
-          }
-          primary
-        >
-          Back to control panel
-        </Button>
-      </HeadingWithAction>
+    <>
       <SectionContent>
         <SectionHeader>
-          <Title>Invite reviewers</Title>
+          <Title>Invite Reviewers</Title>
         </SectionHeader>
 
         <SectionRow>
@@ -80,7 +68,7 @@ const Reviewers = ({
       </SectionContent>
       <SectionContent>
         <SectionHeader>
-          <Title>Reviewer status</Title>
+          <Title>Reviewer Status</Title>
         </SectionHeader>
         <SectionRow>
           {reviewers && reviewers.length ? (
@@ -144,7 +132,7 @@ const Reviewers = ({
           )}
         </SectionRow>
       </SectionContent>
-    </Container>
+    </>
   )
 }
 
@@ -169,9 +157,6 @@ Reviewers.propTypes = {
   }).isRequired,
   handleSubmit: PropTypes.func.isRequired,
   removeReviewer: PropTypes.func.isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
 }
 
 export default Reviewers

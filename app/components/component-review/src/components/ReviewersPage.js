@@ -1,7 +1,7 @@
 import React from 'react'
 import { Formik } from 'formik'
 import { gql, useQuery, useMutation } from '@apollo/client'
-import { useHistory, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import Reviewers from './reviewers/Reviewers'
 import { Spinner, CommsErrorBanner } from '../../../shared'
 
@@ -106,12 +106,7 @@ const updateTeamMemberMutation = gql`
 `
 
 const ReviewersPage = () => {
-  console.log('Reviewers Page')
-  
   const { version } = useParams()
-  const history = useHistory()
-
-  console.log(version)
 
   const { data, error, loading, refetch } = useQuery(query, {
     variables: { id: version },
@@ -179,7 +174,6 @@ const ReviewersPage = () => {
       {props => (
         <Reviewers
           {...props}
-          history={history}
           manuscript={manuscript}
           refetchManuscriptData={refetch}
           removeReviewer={removeReviewer}

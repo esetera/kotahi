@@ -388,7 +388,7 @@ const DecisionVersion = ({
 
   return (
     <HiddenTabs
-      defaultActiveKey={version.id}
+      defaultActiveKey={`team_${version.id}`}
       sections={[
         teamSection(),
         decisionSection(),
