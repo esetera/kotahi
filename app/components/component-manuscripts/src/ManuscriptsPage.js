@@ -48,11 +48,11 @@ const ManuscriptsPage = ({ history }) => {
   // console.log(window.location)
   const uriQueryParams = getUriQueryParams(window.location)
 
-  const page = Number(
-    uriQueryParams.find(f => f.field === 'pagenum')?.value || 1,
-  )
+  // const page = Number(
+  //   uriQueryParams.find(f => f.field === 'pagenum')?.value || 1,
+  // )
 
-  const setPage = useState(
+  const [page, setPage] = useState(
     uriQueryParams.find(f => f.field === 'pagenum')?.value || 1,
   )
   // console.log(page)
@@ -79,6 +79,7 @@ const ManuscriptsPage = ({ history }) => {
 
   useEffect(() => {
     queryObject.refetch()
+    // setPage(uriQueryParams.find(f => f.field === 'pagenum')?.value || 1)
     // setPage(1)
   }, [history.location.search])
 

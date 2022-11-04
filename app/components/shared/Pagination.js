@@ -93,9 +93,8 @@ export const Pagination = ({
           marginPagesDisplay={3}
           nextLabel=">"
           onPageChange={nmb => {
-            console.log("HIII" + nmb.selected+1)
             submitPagenum(nmb.selected + 1)
-            return setPage(nmb.selected + 1)
+            setPage(nmb.selected + 1)
           }}
           pageCount={pages.length}
           pageRangeDisplayed={9}

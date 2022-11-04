@@ -133,10 +133,14 @@ const Manuscripts = ({ history, ...props }) => {
     // console.log(query)
 
     const revisedQuery = [...uriQueryParams].filter(
-      x => x.field !== URI_SEARCH_PARAM,
+      x => x.field !== URI_SEARCH_PARAM || URI_PAGENUM_PARAM,
     )
+    // change setPage() here?
 
-    revisedQuery.push({ field: URI_SEARCH_PARAM, value: query })
+    revisedQuery.push(
+      { field: URI_SEARCH_PARAM, value: query },
+      { field: URI_PAGENUM_PARAM, value: 1 },
+    )
     loadPageWithQuery(revisedQuery)
   }
 
