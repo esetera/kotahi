@@ -10,10 +10,13 @@ const ManuscriptRow = ({ manuscript, columnDefinitions, setFilter }) => {
       <ManuscriptsRow>
         {columnDefinitions.map(column => {
           const values = getFieldValueAndDisplayValue(column, manuscript)
+          // console.log(column)
+          // console.log(column.filterOptions)
           const Renderer = column.component
           return (
             <Cell key={column.name} {...column}>
               <Renderer
+              //
                 applyFilter={
                   column.filterOptions && (val => setFilter(column.name, val))
                 }

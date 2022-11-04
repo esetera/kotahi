@@ -67,6 +67,7 @@ export const Pagination = ({
 
   const submitPagenum = query => {
     // console.log(query)
+    //
     applyPaginationQuery(query)
   }
 
@@ -92,6 +93,7 @@ export const Pagination = ({
           marginPagesDisplay={3}
           nextLabel=">"
           onPageChange={nmb => {
+            console.log("HIII" + nmb.selected+1)
             submitPagenum(nmb.selected + 1)
             return setPage(nmb.selected + 1)
           }}

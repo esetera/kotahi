@@ -44,6 +44,9 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
 
   //
   const submitSearch = query => {
+    console.log("HI")
+    console.log(query)
+    
     if ((query || null) !== currentSearchQuery) applySearchQuery(query)
     setSearchText(query || '')
   }
@@ -63,7 +66,7 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
             }}
             onChange={e => setSearchText(e.target.value)}
             onKeyDown={e => {
-              if (e.key === 'Enter') submitSearch(searchText)
+              if (e.key === 'Enter') console.log("HERE"), submitSearch(searchText)
               else if (e.key === 'Escape') {
                 setSearchText(currentSearchQuery)
                 if (!currentSearchQuery) setIsOpen(false)

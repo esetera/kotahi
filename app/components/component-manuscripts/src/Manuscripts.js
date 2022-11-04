@@ -90,7 +90,7 @@ const Manuscripts = ({ history, ...props }) => {
   const uriQueryParams = getUriQueryParams(window.location)
 
   const loadPageWithQuery = query => {
-    // console.log(query)
+    console.log(query)
 
     let newPath = `${urlFrag}/admin/manuscripts`
 
@@ -106,12 +106,22 @@ const Manuscripts = ({ history, ...props }) => {
         .join('&')}`
     }
 
-    history.replace(newPath)
+    history.push(newPath)
   }
 
   const setFilter = (fieldName, filterValue) => {
     // console.log(fieldName)
     // console.log(filterValue)
+    if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
+    const revisedQuery = [...uriQueryParams].filter(x => x.field !== fieldName)
+
+    revisedQuery.push({ field: fieldName, value: filterValue })
+    loadPageWithQuery(revisedQuery)
+  }
+
+  const setSearch = (fieldName, filterValue) => {
+    console.log(fieldName)
+    console.log(filterValue)
     if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
     const revisedQuery = [...uriQueryParams].filter(x => x.field !== fieldName)
 
@@ -131,7 +141,7 @@ const Manuscripts = ({ history, ...props }) => {
   }
 
   const applyPaginationQuery = query => {
-    // console.log(query)
+    console.log(query)
 
     const revisedQuery = [...uriQueryParams].filter(
       x => x.field !== URI_PAGENUM_PARAM,
@@ -406,6 +416,7 @@ const Manuscripts = ({ history, ...props }) => {
                       columnInfo={info}
                       key={info.name}
                       setFilter={setFilter}
+                      //
                       setSortDirection={setSortDirection}
                       setSortName={setSortName}
                       sortDirection={sortDirection}
