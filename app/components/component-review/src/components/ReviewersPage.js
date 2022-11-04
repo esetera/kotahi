@@ -111,7 +111,6 @@ const ReviewersPage = () => {
   const { data, error, loading, refetch } = useQuery(query, {
     variables: { id: version },
   })
-  // before: id: match.params.version
 
   const [addReviewer] = useMutation(addReviewerMutation, {
     update: (cache, { data: { addReviewer: revisedReviewersObject } }) => {
