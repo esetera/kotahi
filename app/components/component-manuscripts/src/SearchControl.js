@@ -46,8 +46,9 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
   const submitSearch = query => {
     console.log("HI")
     console.log(query)
-    
-    if ((query || null) !== currentSearchQuery) applySearchQuery(query)
+    console.log(currentSearchQuery)
+    // can I add && query here?
+    if ((query || null) !== currentSearchQuery && query) applySearchQuery(query)
     setSearchText(query || '')
   }
 

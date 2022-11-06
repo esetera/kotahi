@@ -51,10 +51,11 @@ const ManuscriptsPage = ({ history }) => {
   // const page = Number(
   //   uriQueryParams.find(f => f.field === 'pagenum')?.value || 1,
   // )
-
+  console.log("HERE")
   const [page, setPage] = useState(
     uriQueryParams.find(f => f.field === 'pagenum')?.value || 1,
   )
+  console.log(page)
   // console.log(page)
 
   const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
@@ -78,8 +79,10 @@ const ManuscriptsPage = ({ history }) => {
   )
 
   useEffect(() => {
+    // spams with re-rendering haha
+    console.log(page)
     queryObject.refetch()
-    // setPage(uriQueryParams.find(f => f.field === 'pagenum')?.value || 1)
+    setPage(uriQueryParams.find(f => f.field === 'pagenum')?.value || 1)
     // setPage(1)
   }, [history.location.search])
 
