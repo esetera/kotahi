@@ -74,12 +74,10 @@ const FilterSortHeader = ({
 }) => {
   if (columnInfo.canFilterByDateRange) {
     const changeSort = () => {
-      console.log("snickerdoodle")
-
       const priorSortName = sortName
+
       setSortName(columnInfo.name)
 
-      console.log(sortName)
       if (priorSortName !== columnInfo.name) {
         setSortDirection(columnInfo.defaultSortDirection)
       } else if (sortDirection === 'ASC') {
@@ -88,12 +86,7 @@ const FilterSortHeader = ({
         setSortDirection('ASC')
       }
 
-      // fieldname, filtervalue 
-      // Takes care of created/updated
-      setFilter(sortName, sortDirection)
-
-      //Need to load page with query here. query = asc/desc, field = sortName (created or updated)
-
+      setFilter(columnInfo.name, sortDirection)
     }
 
     const filterByDateRange = range => {
@@ -187,9 +180,10 @@ const FilterSortHeader = ({
 
   if (columnInfo.canSort) {
     const changeSort = () => {
+      // sortName gets intiialized to created, which requires you to hit manuscript # twice
       const priorSortName = sortName
       setSortName(columnInfo.name)
-      console.log("croquet")
+
       if (priorSortName !== columnInfo.name) {
         setSortDirection(columnInfo.defaultSortDirection)
       } else if (sortDirection === 'ASC') {
@@ -198,7 +192,11 @@ const FilterSortHeader = ({
         setSortDirection('ASC')
       }
 
-      setFilter(sortName, sortDirection)
+      if (columnInfo.name === 'meta.title') {
+        setFilter('title', sortDirection)
+      } else {
+        setFilter(columnInfo.name, sortDirection)
+      }
     }
 
     return (

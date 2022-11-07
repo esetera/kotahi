@@ -90,8 +90,6 @@ const Manuscripts = ({ history, ...props }) => {
   const uriQueryParams = getUriQueryParams(window.location)
 
   const loadPageWithQuery = query => {
-    console.log(query)
-
     let newPath = `${urlFrag}/admin/manuscripts`
 
     if (query.length > 0) {
@@ -110,51 +108,43 @@ const Manuscripts = ({ history, ...props }) => {
   }
 
   const setFilter = (fieldName, filterValue) => {
-    console.log(fieldName)
-    console.log(filterValue)
     if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
-    const revisedQuery = [...uriQueryParams].filter(x => x.field !== fieldName)
 
-    revisedQuery.push({ field: fieldName, value: filterValue })
-    loadPageWithQuery(revisedQuery)
-  }
+    if (fieldName === 'status') {
+      // If filtering on manuscript status, reset to 1st page
+      const revisedQuery = [...uriQueryParams].filter(x => {
+        return x.field !== fieldName && x.field !== URI_PAGENUM_PARAM
+      })
 
-  const setSearch = (fieldName, filterValue) => {
-    console.log(fieldName)
-    console.log(filterValue)
-    if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
-    const revisedQuery = [...uriQueryParams].filter(x => x.field !== fieldName)
+      revisedQuery.push(
+        { field: fieldName, value: filterValue },
+        { field: URI_PAGENUM_PARAM, value: '1' },
+      )
+      loadPageWithQuery(revisedQuery)
+    } else {
+      const revisedQuery = [...uriQueryParams].filter(
+        x => x.field !== fieldName,
+      )
 
-    revisedQuery.push({ field: fieldName, value: filterValue })
-    loadPageWithQuery(revisedQuery)
+      revisedQuery.push({ field: fieldName, value: filterValue })
+      loadPageWithQuery(revisedQuery)
+    }
   }
 
   const applySearchQuery = query => {
-    // console.log(query)
+    const revisedQuery = [...uriQueryParams].filter(x => {
+      return x.field !== URI_SEARCH_PARAM && x.field !== URI_PAGENUM_PARAM
+    })
 
-    console.log(uriQueryParams)
-    const revisedQuery = [...uriQueryParams].filter(
-      x => {return (x.field !== URI_SEARCH_PARAM && x.field !== URI_PAGENUM_PARAM)})
-    // console.log(test)
-    // const revisedQuery = [...uriQueryParams].filter(
-    //   x => {
-    //     console.log(x.field)
-    //     return x.field !== URI_SEARCH_PARAM || URI_PAGENUM_PARAM}
-    // )
-    // change setPage() here?
-    
-    console.log(revisedQuery)
     revisedQuery.push(
       { field: URI_SEARCH_PARAM, value: query },
       { field: URI_PAGENUM_PARAM, value: '1' },
     )
-    console.log(revisedQuery)
+
     loadPageWithQuery(revisedQuery)
   }
 
   const applyPaginationQuery = query => {
-    console.log(query)
-
     const revisedQuery = [...uriQueryParams].filter(
       x => x.field !== URI_PAGENUM_PARAM,
     )
@@ -425,10 +415,10 @@ const Manuscripts = ({ history, ...props }) => {
                 <ManuscriptsHeaderRow>
                   {columnsProps.map(info => (
                     <FilterSortHeader
+                      applyPaginationQuery={applyPaginationQuery}
                       columnInfo={info}
                       key={info.name}
                       setFilter={setFilter}
-                      //
                       setSortDirection={setSortDirection}
                       setSortName={setSortName}
                       sortDirection={sortDirection}

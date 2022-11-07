@@ -40,14 +40,8 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
   const [isOpen, setIsOpen] = useState(!!currentSearchQuery)
   const ref = useRef(null)
   const theme = useTheme()
-  // console.log(applySearchQuery)
 
-  //
   const submitSearch = query => {
-    console.log("HI")
-    console.log(query)
-    console.log(currentSearchQuery)
-    // can I add && query here?
     if ((query || null) !== currentSearchQuery && query) applySearchQuery(query)
     setSearchText(query || '')
   }
@@ -67,7 +61,7 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
             }}
             onChange={e => setSearchText(e.target.value)}
             onKeyDown={e => {
-              if (e.key === 'Enter') console.log("HERE"), submitSearch(searchText)
+              if (e.key === 'Enter') submitSearch(searchText)
               else if (e.key === 'Escape') {
                 setSearchText(currentSearchQuery)
                 if (!currentSearchQuery) setIsOpen(false)
