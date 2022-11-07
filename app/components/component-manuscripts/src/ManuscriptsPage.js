@@ -37,7 +37,6 @@ const ManuscriptsPage = ({ history }) => {
   const [sortDirection, setSortDirection] = useState('DESC')
   const [isImporting, setIsImporting] = useState(false)
   // const setPage = useState(1)
-
   // const setPage = pagenum => {
   //   history.push({ search: `?pagenum=${pagenum}` })
   // }

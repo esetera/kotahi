@@ -110,8 +110,8 @@ const Manuscripts = ({ history, ...props }) => {
   }
 
   const setFilter = (fieldName, filterValue) => {
-    // console.log(fieldName)
-    // console.log(filterValue)
+    console.log(fieldName)
+    console.log(filterValue)
     if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
     const revisedQuery = [...uriQueryParams].filter(x => x.field !== fieldName)
 

@@ -16,7 +16,6 @@ const ManuscriptRow = ({ manuscript, columnDefinitions, setFilter }) => {
           return (
             <Cell key={column.name} {...column}>
               <Renderer
-              //
                 applyFilter={
                   column.filterOptions && (val => setFilter(column.name, val))
                 }

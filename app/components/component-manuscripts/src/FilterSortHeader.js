@@ -74,9 +74,12 @@ const FilterSortHeader = ({
 }) => {
   if (columnInfo.canFilterByDateRange) {
     const changeSort = () => {
+      console.log("snickerdoodle")
+
       const priorSortName = sortName
       setSortName(columnInfo.name)
 
+      console.log(sortName)
       if (priorSortName !== columnInfo.name) {
         setSortDirection(columnInfo.defaultSortDirection)
       } else if (sortDirection === 'ASC') {
@@ -84,6 +87,13 @@ const FilterSortHeader = ({
       } else if (sortDirection === 'DESC') {
         setSortDirection('ASC')
       }
+
+      // fieldname, filtervalue 
+      // Takes care of created/updated
+      setFilter(sortName, sortDirection)
+
+      //Need to load page with query here. query = asc/desc, field = sortName (created or updated)
+
     }
 
     const filterByDateRange = range => {
@@ -98,6 +108,7 @@ const FilterSortHeader = ({
     }
 
     return (
+      // Here is where sorting asc/desc happens on manuscripts header
       <HeadingCell onClick={changeSort} {...columnInfo}>
         {
           '\u200B' /* zero-width space so the layout engine understands where the baseline is */
@@ -178,7 +189,7 @@ const FilterSortHeader = ({
     const changeSort = () => {
       const priorSortName = sortName
       setSortName(columnInfo.name)
-
+      console.log("croquet")
       if (priorSortName !== columnInfo.name) {
         setSortDirection(columnInfo.defaultSortDirection)
       } else if (sortDirection === 'ASC') {
@@ -186,6 +197,8 @@ const FilterSortHeader = ({
       } else if (sortDirection === 'DESC') {
         setSortDirection('ASC')
       }
+
+      setFilter(sortName, sortDirection)
     }
 
     return (
