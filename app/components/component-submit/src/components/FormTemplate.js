@@ -216,6 +216,7 @@ const InnerFormTemplate = ({
             .toLowerCase()
             .replace(/ /g, '-')
             .replace(/[^\w-]+/g, '')}-action-btn`}
+          disabled={disabled}
           onClick={async () => {
             // TODO shouldn't this come after error checking and submission?
             if (republish) {
