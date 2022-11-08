@@ -81,11 +81,6 @@ const DecisionReviews = ({
       ) : (
         <SectionRow>No reviews completed yet.</SectionRow>
       )}
-      <SectionRow>
-        <Action to={`${urlFrag}/versions/${manuscript.id}/reviewers`}>
-          Manage Reviewers
-        </Action>
-      </SectionRow>
     </SectionContent>
   )
 }
