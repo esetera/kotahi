@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 // import Authorize from 'pubsweet-client/src/helpers/Authorize'
 import { useQuery, useMutation } from '@apollo/client'
 
@@ -52,6 +52,11 @@ const DashboardPage = ({ history, ...props }) => {
   const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
 
   const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
+
+  const [removeTaskAlertsForCurrentUser] = useMutation(
+    mutations.removeTaskAlertsForCurrentUserMutation,
+  )
+
   // const [deleteManuscript] = useMutation(mutations.deleteManuscriptMutation, {
   //   update: (cache, { data: { deleteManuscript } }) => {
   //     const data = cache.readQuery({ query: queries.dashboard })
@@ -66,6 +71,17 @@ const DashboardPage = ({ history, ...props }) => {
   //     })
   //   },
   // })
+
+  // eslint-disable-next-line no-unused-vars
+  const [createNewTaskAlerts] = useMutation(
+    mutations.createNewTaskAlertsMutation,
+  )
+
+  // Dismiss any alerts only after the page is fully loaded, so the alert indicator remains visible
+  useEffect(() => {
+    const removeAlertsFunc = async () => removeTaskAlertsForCurrentUser()
+    if (data) removeAlertsFunc()
+  }, [!!data])
 
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
@@ -106,6 +122,7 @@ const DashboardPage = ({ history, ...props }) => {
   return (
     <Dashboard
       authorLatestVersions={authorLatestVersions}
+      createNewTaskAlerts={null /* For testing only: createNewTaskAlerts */}
       currentUser={currentUser}
       editorLatestVersions={editorLatestVersions}
       instanceName={instanceName}

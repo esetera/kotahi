@@ -15,10 +15,12 @@ const styles = th => ({
   }),
   dropdownIndicator: (provided, state) => ({
     ...provided,
+    margin: '0 -3px',
     padding: '0',
   }),
   clearIndicator: (provided, state) => ({
     ...provided,
+    margin: '0 -2px',
     padding: '0',
   }),
   menu: (provided, state) => ({
@@ -40,7 +42,7 @@ const styles = th => ({
     const opacity = state.isDisabled ? 0.5 : 1
     const transition = 'opacity 300ms'
 
-    return { ...provided, opacity, transition }
+    return { ...provided, opacity, transition, height: '18px' }
   },
 
   option: (provided, state) => ({
@@ -49,7 +51,11 @@ const styles = th => ({
       state.isFocused || state.isSelected ? th.colorFurniture : 'white',
     color: th.colorText,
   }),
-  valueContainer: (provided, state) => ({ ...provided, padding: '0' }),
+  valueContainer: (provided, state) => ({
+    ...provided,
+    height: '34px',
+    padding: '0',
+  }),
 })
 
 // eslint-disable-next-line import/prefer-default-export
