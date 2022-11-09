@@ -43,8 +43,8 @@ const Reviews = ({ version, journal }) => (
     <JournalContext.Consumer>
       {journal =>
         journal.reviewStatus.map(status => (
-          <CountLabel data-testid={status.value} key={status.value}>
-            {`${countStatus(version, status.value)} ${status.label}`}
+          <CountLabel data-testid={status} key={status}>
+            {countStatus(version, status)} {status}
           </CountLabel>
         ))
       }

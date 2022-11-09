@@ -10,12 +10,11 @@ const decisionFileName = 'test-pdf.pdf'
 
 describe('checking manuscript version', () => {
   it('editor checks for new manuscript version', () => {
-    cy.task('restore', 'commons/bootstrap')
+    cy.task('restore', 'commons/colab_bootstrap')
     cy.task('seed', 'three_reviews_completed')
     cy.task('seedForms')
-
-    return cy.fixture('role_names').then(name => {
-      /* login as admin */
+    // eslint-disable-next-line jest/valid-expect-in-promise
+    cy.fixture('role_names').then(name => {
       cy.login(name.role.admin.name, dashboard)
       DashboardPage.clickManuscriptNavButton()
       ManuscriptsPage.clickControlButton()
@@ -43,15 +42,27 @@ describe('checking manuscript version', () => {
       cy.login(name.role.author.name, dashboard)
       /* Click on first MySubmission */
       DashboardPage.getSubmittedManuscript().click()
-      // Verify Decision Content
+      /* Verify Decision Content */
       DashboardPage.getDecisionField(0).should('contain', decisionTextContent)
       DashboardPage.getDecisionField(1).should('contain', decisionFileName)
       DashboardPage.getDecisionField(2).should('contain', 'revise')
       /* Create new manuscript version */
       DashboardPage.clickCreateNewVersionButton()
-      SubmissionFormPage.getTypeOfResearchObject()
-        .click()
-        .type('Dataset{enter}')
+      SubmissionFormPage.waitThreeSec()
+      // eslint-disable-next-line jest/valid-expect-in-promise
+      cy.fixture('submission_form_data').then(data => {
+        SubmissionFormPage.fillInAbstractColab(data.abstract)
+        SubmissionFormPage.getWaxInputBox(0).fillInput(data.abstract)
+        SubmissionFormPage.fillInFirstAuthor(data.creator)
+        SubmissionFormPage.fillInDatePublished(data.date)
+        SubmissionFormPage.fillInLink(data.doi)
+        SubmissionFormPage.getWaxInputBox(1).fillInput(data.ourTake)
+        SubmissionFormPage.getWaxInputBox(2).fillInput(data.mainFindings)
+        SubmissionFormPage.getWaxInputBox(3).fillInput(data.studyStrengths)
+        SubmissionFormPage.getWaxInputBox(4).fillInput(data.limitations)
+        SubmissionFormPage.fillInKeywords(data.keywords)
+        SubmissionFormPage.fillInReviewCreator(data.creator)
+      })
       SubmissionFormPage.clickSubmitResearch()
       SubmissionFormPage.clickSubmitYourManuscript()
       /* Verify new submission got created */

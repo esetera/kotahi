@@ -136,7 +136,6 @@ const DecisionVersion = ({
                 ...version,
                 submission: JSON.parse(version.submission),
               }}
-              listManuscriptFiles
               manuscript={version}
               showEditorOnlyFields
               threadedDiscussionProps={threadedDiscussionProps}

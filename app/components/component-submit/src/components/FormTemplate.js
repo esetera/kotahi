@@ -95,12 +95,7 @@ const FieldHead = styled.div`
 `
 
 const filterFileManuscript = files =>
-  files.filter(
-    file =>
-      file.tags.includes('manuscript') &&
-      file.storedObjects[0].mimetype !==
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  )
+  files.filter(file => file.tags.includes('manuscript'))
 
 /** Definitions for available field types */
 const elements = {
@@ -216,6 +211,7 @@ const InnerFormTemplate = ({
             .toLowerCase()
             .replace(/ /g, '-')
             .replace(/[^\w-]+/g, '')}-action-btn`}
+          disabled={disabled}
           onClick={async () => {
             // TODO shouldn't this come after error checking and submission?
             if (republish) {
@@ -378,9 +374,19 @@ const InnerFormTemplate = ({
                     values={values}
                   />
                 )}
-                {!['SupplementaryFiles', 'VisualAbstract'].includes(
-                  element.component,
-                ) && (
+                {element.component === 'ManuscriptFile' &&
+                submittedManuscriptFile ? (
+                  <Attachment
+                    file={submittedManuscriptFile}
+                    key={submittedManuscriptFile.storedObjects[0].url}
+                    uploaded
+                  />
+                ) : null}
+                {![
+                  'SupplementaryFiles',
+                  'VisualAbstract',
+                  'ManuscriptFile',
+                ].includes(element.component) && (
                   <ValidatedFieldFormik
                     {...rejectProps(element, [
                       'component',
@@ -440,17 +446,6 @@ const InnerFormTemplate = ({
               </Section>
             )
           })}
-
-        {submittedManuscriptFile ? (
-          <Section id="files.manuscript">
-            <Legend space>Submitted Manuscript</Legend>
-            <Attachment
-              file={submittedManuscriptFile}
-              key={submittedManuscriptFile.storedObjects[0].url}
-              uploaded
-            />
-          </Section>
-        ) : null}
 
         {showSubmitButton
           ? submitButton(submissionButtonText, showPopup)
