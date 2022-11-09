@@ -19,6 +19,7 @@ import {
 import DecisionAndReviews from '../../../component-submit/src/components/DecisionAndReviews'
 import FormTemplate from '../../../component-submit/src/components/FormTemplate'
 import TaskList from '../../../component-task-manager/src/TaskList'
+import ReviewersPage from './ReviewersPage'
 
 const createBlankSubmissionBasedOnForm = form => {
   const allBlankedFields = {}
@@ -228,21 +229,10 @@ const DecisionVersion = ({
     }
   }
 
-  const decisionSection = () => {
+  const teamSection = () => {
     return {
       content: (
         <>
-          {!isCurrentVersion && (
-            <SectionContent>
-              <SectionHeader>
-                <Title>Archived version</Title>
-              </SectionHeader>
-              <SectionRow>
-                This is not the current, but an archived read-only version of
-                the manuscript.
-              </SectionRow>
-            </SectionContent>
-          )}
           {isCurrentVersion && (
             <AssignEditorsReviewers
               allUsers={allUsers}
@@ -278,6 +268,29 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
+          {isCurrentVersion && <ReviewersPage />}
+        </>
+      ),
+      key: `team_${version.id}`,
+      label: 'Team',
+    }
+  }
+
+  const decisionSection = () => {
+    return {
+      content: (
+        <>
+          {!isCurrentVersion && (
+            <SectionContent>
+              <SectionHeader>
+                <Title>Archived version</Title>
+              </SectionHeader>
+              <SectionRow>
+                This is not the current, but an archived read-only version of
+                the manuscript.
+              </SectionRow>
+            </SectionContent>
+          )}
           {!isCurrentVersion && (
             <DecisionAndReviews
               decisionForm={decisionForm}
@@ -289,18 +302,16 @@ const DecisionVersion = ({
             />
           )}
           {isCurrentVersion && (
-            <AdminSection key="decision-review">
-              <DecisionReviews
-                canHideReviews={canHideReviews}
-                invitations={invitations}
-                manuscript={version}
-                reviewers={reviewers}
-                reviewForm={reviewForm}
-                threadedDiscussionProps={threadedDiscussionProps}
-                updateReview={updateReview}
-                urlFrag={urlFrag}
-              />
-            </AdminSection>
+            <DecisionReviews
+              canHideReviews={canHideReviews}
+              invitations={invitations}
+              manuscript={version}
+              reviewers={reviewers}
+              reviewForm={reviewForm}
+              threadedDiscussionProps={threadedDiscussionProps}
+              updateReview={updateReview}
+              urlFrag={urlFrag}
+            />
           )}
           {isCurrentVersion && (
             <AdminSection key="decision-form">
@@ -366,15 +377,16 @@ const DecisionVersion = ({
           )}
         </>
       ),
-      key: version.id,
-      label: 'Workflow',
+      key: `decision_${version.id}`,
+      label: 'Decision',
     }
   }
 
   return (
     <HiddenTabs
-      defaultActiveKey={version.id}
+      defaultActiveKey={`team_${version.id}`}
       sections={[
+        teamSection(),
         decisionSection(),
         editorSection,
         metadataSection(),

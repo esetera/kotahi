@@ -1,7 +1,7 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Formik } from 'formik'
 import { gql, useQuery, useMutation } from '@apollo/client'
+import { useParams } from 'react-router-dom'
 import Reviewers from './reviewers/Reviewers'
 import { Spinner, CommsErrorBanner } from '../../../shared'
 
@@ -105,9 +105,11 @@ const updateTeamMemberMutation = gql`
   }
 `
 
-const ReviewersPage = ({ match, history }) => {
+const ReviewersPage = () => {
+  const { version } = useParams()
+
   const { data, error, loading, refetch } = useQuery(query, {
-    variables: { id: match.params.version },
+    variables: { id: version },
   })
 
   const [addReviewer] = useMutation(addReviewerMutation, {
@@ -171,7 +173,6 @@ const ReviewersPage = ({ match, history }) => {
       {props => (
         <Reviewers
           {...props}
-          history={history}
           manuscript={manuscript}
           refetchManuscriptData={refetch}
           removeReviewer={removeReviewer}
@@ -182,17 +183,6 @@ const ReviewersPage = ({ match, history }) => {
       )}
     </Formik>
   )
-}
-
-ReviewersPage.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      version: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
 }
 
 export default ReviewersPage
