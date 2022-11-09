@@ -37,7 +37,7 @@ const DecisionReviews = ({
   return (
     <SectionContent>
       <SectionHeader>
-        <Title>Reviews</Title>
+        <Title>Completed Reviews</Title>
       </SectionHeader>
       <InvitationResults invitations={invitations} />
       {manuscript.reviews && manuscript.reviews.length ? (
@@ -81,11 +81,6 @@ const DecisionReviews = ({
       ) : (
         <SectionRow>No reviews completed yet.</SectionRow>
       )}
-      <SectionRow>
-        <Action to={`${urlFrag}/versions/${manuscript.id}/reviewers`}>
-          Manage Reviewers
-        </Action>
-      </SectionRow>
     </SectionContent>
   )
 }

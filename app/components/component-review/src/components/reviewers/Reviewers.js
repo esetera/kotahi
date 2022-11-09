@@ -5,6 +5,7 @@ import { grid } from '@pubsweet/ui-toolkit'
 import PropTypes from 'prop-types'
 import config from 'config'
 import ReviewerForm from './ReviewerForm'
+import { AdminSection } from '../style'
 import {
   Container,
   SectionRow,
@@ -38,7 +39,6 @@ const Reviewers = ({
   manuscript,
   handleSubmit,
   removeReviewer,
-  history,
   updateTeamMember,
   refetchManuscriptData,
 }) => {
@@ -53,98 +53,91 @@ const Reviewers = ({
   }
 
   return (
-    <Container>
-      <HeadingWithAction>
-        <Heading>Reviewers</Heading>
-        <Button
-          onClick={() =>
-            history.push(`${urlFrag}/versions/${manuscript.id}/decision`)
-          }
-          primary
-        >
-          Back to control panel
-        </Button>
-      </HeadingWithAction>
-      <SectionContent>
-        <SectionHeader>
-          <Title>Invite reviewers</Title>
-        </SectionHeader>
+    <>
+      <AdminSection>
+        <SectionContent>
+          <SectionHeader>
+            <Title>Invite Reviewers</Title>
+          </SectionHeader>
 
-        <SectionRow>
-          <ReviewerForm
-            handleSubmit={handleSubmit}
-            isValid={isValid}
-            reviewerUsers={reviewerUsers}
-          />
-        </SectionRow>
-      </SectionContent>
-      <SectionContent>
-        <SectionHeader>
-          <Title>Reviewer status</Title>
-        </SectionHeader>
-        <SectionRow>
-          {reviewers && reviewers.length ? (
-            <ReviewersList>
-              {reviewers
-                .slice()
-                .sort((reviewOne, reviewTwo) => {
-                  // Get the username of reviewer and convert to uppercase
-                  const usernameOne = reviewOne.user.username.toUpperCase()
-                  const usernameTwo = reviewTwo.user.username.toUpperCase()
+          <SectionRow>
+            <ReviewerForm
+              handleSubmit={handleSubmit}
+              isValid={isValid}
+              reviewerUsers={reviewerUsers}
+            />
+          </SectionRow>
+        </SectionContent>
+      </AdminSection>
+      <AdminSection>
+        <SectionContent>
+          <SectionHeader>
+            <Title>Reviewer Status</Title>
+          </SectionHeader>
+          <SectionRow>
+            {reviewers && reviewers.length ? (
+              <ReviewersList>
+                {reviewers
+                  .slice()
+                  .sort((reviewOne, reviewTwo) => {
+                    // Get the username of reviewer and convert to uppercase
+                    const usernameOne = reviewOne.user.username.toUpperCase()
+                    const usernameTwo = reviewTwo.user.username.toUpperCase()
 
-                  // Sort by username
-                  if (usernameOne < usernameTwo) return -1
-                  if (usernameOne > usernameTwo) return 1
+                    // Sort by username
+                    if (usernameOne < usernameTwo) return -1
+                    if (usernameOne > usernameTwo) return 1
 
-                  // If the username don't match then sort by reviewId
-                  if (reviewOne.id < reviewTwo.id) return -1
-                  if (reviewOne.id > reviewTwo.id) return 1
+                    // If the username don't match then sort by reviewId
+                    if (reviewOne.id < reviewTwo.id) return -1
+                    if (reviewOne.id > reviewTwo.id) return 1
 
-                  return 0
-                })
-                .map(reviewer => (
-                  <Reviewer key={reviewer.id}>
-                    <StatusBadge minimal status={reviewer.status} />
-                    <UserAvatar key={reviewer.id} user={reviewer.user} />
-                    <Primary>{reviewer.user.username}</Primary>
-                    <Secondary>
-                      {reviewer.user.defaultIdentity.identifier}
-                    </Secondary>
-                    {config.review.shared === 'true' && (
-                      <Checkbox
-                        checked={reviewer.isShared}
-                        label="Shared"
-                        name={`checkbox-shared-reviewer-${reviewer.id}`}
-                        onChange={() =>
-                          toggleReviewerSharedStatus(reviewer.id, {
-                            isShared: !reviewer.isShared,
-                          })
-                        }
-                      />
-                    )}
-                    <div>
-                      <Action
-                        onClick={() =>
-                          removeReviewer({
-                            variables: {
-                              userId: reviewer.user.id,
-                              manuscriptId: manuscript.id,
-                            },
-                          })
-                        }
-                      >
-                        Delete
-                      </Action>
-                    </div>
-                  </Reviewer>
-                ))}
-            </ReviewersList>
-          ) : (
-            <p>No reviewers have been invited yet</p>
-          )}
-        </SectionRow>
-      </SectionContent>
-    </Container>
+                    return 0
+                  })
+                  .map(reviewer => (
+                    <Reviewer key={reviewer.id}>
+                      <StatusBadge minimal status={reviewer.status} />
+                      <UserAvatar key={reviewer.id} user={reviewer.user} />
+                      <Primary>{reviewer.user.username}</Primary>
+                      <Secondary>
+                        {reviewer.user.defaultIdentity.identifier}
+                      </Secondary>
+                      {config.review.shared === 'true' && (
+                        <Checkbox
+                          checked={reviewer.isShared}
+                          label="Shared"
+                          name={`checkbox-shared-reviewer-${reviewer.id}`}
+                          onChange={() =>
+                            toggleReviewerSharedStatus(reviewer.id, {
+                              isShared: !reviewer.isShared,
+                            })
+                          }
+                        />
+                      )}
+                      <div>
+                        <Action
+                          onClick={() =>
+                            removeReviewer({
+                              variables: {
+                                userId: reviewer.user.id,
+                                manuscriptId: manuscript.id,
+                              },
+                            })
+                          }
+                        >
+                          Delete
+                        </Action>
+                      </div>
+                    </Reviewer>
+                  ))}
+              </ReviewersList>
+            ) : (
+              <p>No reviewers have been invited yet</p>
+            )}
+          </SectionRow>
+        </SectionContent>
+      </AdminSection>
+    </>
   )
 }
 
@@ -169,9 +162,6 @@ Reviewers.propTypes = {
   }).isRequired,
   handleSubmit: PropTypes.func.isRequired,
   removeReviewer: PropTypes.func.isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
 }
 
 export default Reviewers

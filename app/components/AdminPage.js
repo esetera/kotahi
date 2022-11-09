@@ -243,6 +243,7 @@ const AdminPage = () => {
             component={Profile}
             currentUser={currentUser}
             exact
+            key="view-profile"
             path={`${urlFrag}/profile/:id`}
             redirectLink={redirectLink}
           />
@@ -269,10 +270,59 @@ const AdminPage = () => {
             redirectLink={redirectLink}
           />
           <PrivateRoute
-            component={ReviewersPage}
+            component={ReviewPage}
             currentUser={currentUser}
             exact
-            path={`${urlFrag}/versions/:version/reviewers`}
+            path={`${urlFrag}/versions/:version/review`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={ReviewPreviewPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/versions/:version/reviewPreview`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={DecisionPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/versions/:version/decision`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={Profile}
+            exact
+            path={profileLink}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={Profile}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/profile/:id`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={DashboardPage}
+            currentUser={currentUser}
+            exact
+            path={homeLink}
+            redirectLink={redirectLink}
+          />
+
+          <PrivateRoute
+            component={NewSubmissionPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/newSubmission`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={SubmitPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/versions/:version/submit`}
             redirectLink={redirectLink}
           />
           <PrivateRoute
