@@ -42,7 +42,9 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
   const theme = useTheme()
 
   const submitSearch = query => {
-    if ((query || null) !== currentSearchQuery && query) applySearchQuery(query)
+    console.log(currentSearchQuery)
+    console.log(query)
+    if ((query || null) !== currentSearchQuery) applySearchQuery(query)
     setSearchText(query || '')
   }
 

@@ -90,6 +90,7 @@ const Manuscripts = ({ history, ...props }) => {
   const uriQueryParams = getUriQueryParams(window.location)
 
   const loadPageWithQuery = query => {
+    console.log(query)
     let newPath = `${urlFrag}/admin/manuscripts`
 
     if (query.length > 0) {
@@ -127,14 +128,23 @@ const Manuscripts = ({ history, ...props }) => {
   }
 
   const applySearchQuery = query => {
-    const revisedQuery = [...uriQueryParams].filter(x => {
-      return x.field !== URI_SEARCH_PARAM && x.field !== URI_PAGENUM_PARAM
+    let revisedQuery = [...uriQueryParams].filter(x => {
+      return x.field !== URI_SEARCH_PARAM
     })
 
-    revisedQuery.push(
-      { field: URI_SEARCH_PARAM, value: query },
-      { field: URI_PAGENUM_PARAM, value: '1' },
-    )
+    revisedQuery.push({ field: URI_SEARCH_PARAM, value: query })
+    console.log(query)
+    console.log(revisedQuery)
+
+    if (query.length !== 0) {
+      revisedQuery = [...revisedQuery].filter(x => {
+        return x.field !== URI_PAGENUM_PARAM
+      })
+      revisedQuery.push({ field: URI_PAGENUM_PARAM, value: '1' })
+    }
+    // else {
+    //   // revisedQuery.push({ field: URI_PAGENUM_PARAM, value: '2'})
+    // }
 
     loadPageWithQuery(revisedQuery)
   }
