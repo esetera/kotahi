@@ -95,12 +95,7 @@ const Manuscripts = ({ history, ...props }) => {
     if (query.length > 0) {
       newPath = `${newPath}?${query
         .filter(x => x.value)
-        .map(
-          param =>
-            `${encodeURIComponent(param.field)}=${encodeURIComponent(
-              param.value,
-            )}`,
-        )
+        .map(param => `${encodeURIComponent(param.field)}=${param.value}`)
         .join('&')}`
     }
 

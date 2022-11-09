@@ -86,7 +86,7 @@ const FilterSortHeader = ({
         setSortDirection('ASC')
       }
 
-      setFilter(columnInfo.name, sortDirection)
+      setFilter('sort', `${columnInfo.name}:${sortDirection}`)
     }
 
     const filterByDateRange = range => {
@@ -192,11 +192,7 @@ const FilterSortHeader = ({
         setSortDirection('ASC')
       }
 
-      if (columnInfo.name === 'meta.title') {
-        setFilter('title', sortDirection)
-      } else {
-        setFilter(columnInfo.name, sortDirection)
-      }
+      setFilter('sort', `${columnInfo.name}:${sortDirection}`)
     }
 
     return (
