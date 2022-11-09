@@ -1,19 +1,16 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Action, Button, Checkbox } from '@pubsweet/ui'
+import { Action, Checkbox } from '@pubsweet/ui'
 import { grid } from '@pubsweet/ui-toolkit'
 import PropTypes from 'prop-types'
 import config from 'config'
 import ReviewerForm from './ReviewerForm'
 import { AdminSection } from '../style'
 import {
-  Container,
   SectionRow,
   SectionContent,
   SectionHeader,
   Title,
-  Heading,
-  HeadingWithAction,
   StatusBadge,
   Primary,
   Secondary,
@@ -30,36 +27,35 @@ const ReviewersList = styled.div`
 
 const Reviewer = styled.div``
 
-const urlFrag = config.journal.metadata.toplevel_urlfragment
+// const urlFrag = config.journal.metadata.toplevel_urlfragment
 
-const Reviewers = ({
-  isValid,
-  reviewers,
-  reviewerUsers,
-  manuscript,
-  handleSubmit,
-  removeReviewer,
-  updateTeamMember,
-  refetchManuscriptData,
-}) => {
-  const toggleReviewerSharedStatus = async (id, delta) => {
-    await updateTeamMember({
-      variables: {
-        id,
-        input: JSON.stringify(delta),
-      },
-    })
-    refetchManuscriptData()
-  }
+const InviteReviewer =
+  (({
+    updateTeamMember,
+    refetchManuscriptData,
+    id,
+    delta,
+    handleSubmit,
+    isValid,
+    reviewerUsers,
+  }) => {
+    const updateTeamMemberData = async () => {
+      await updateTeamMember({
+        variables: {
+          id,
+          input: JSON.stringify(delta),
+        },
+      })
+      refetchManuscriptData()
+    }
 
-  return (
-    <>
-      <AdminSection>
+    updateTeamMemberData()
+    return (
+      <>
         <SectionContent>
           <SectionHeader>
             <Title>Invite Reviewers</Title>
           </SectionHeader>
-
           <SectionRow>
             <ReviewerForm
               handleSubmit={handleSubmit}
@@ -68,6 +64,28 @@ const Reviewers = ({
             />
           </SectionRow>
         </SectionContent>
+      </>
+    )
+  },
+  [])
+
+const Reviewers = ({
+  reviewers,
+  manuscript,
+  removeReviewer,
+  updateTeamMember,
+  refetchManuscriptData,
+  isValid,
+  reviewerUsers,
+  handleSubmit,
+}) => {
+  return (
+    <>
+      <AdminSection>
+        <InviteReviewer
+          refetchManuscriptData={refetchManuscriptData}
+          updateTeamMember={updateTeamMember}
+        />
       </AdminSection>
       <AdminSection>
         <SectionContent>
