@@ -302,18 +302,16 @@ const DecisionVersion = ({
             />
           )}
           {isCurrentVersion && (
-            <AdminSection key="decision-review">
-              <DecisionReviews
-                canHideReviews={canHideReviews}
-                invitations={invitations}
-                manuscript={version}
-                reviewers={reviewers}
-                reviewForm={reviewForm}
-                threadedDiscussionProps={threadedDiscussionProps}
-                updateReview={updateReview}
-                urlFrag={urlFrag}
-              />
-            </AdminSection>
+            <DecisionReviews
+              canHideReviews={canHideReviews}
+              invitations={invitations}
+              manuscript={version}
+              reviewers={reviewers}
+              reviewForm={reviewForm}
+              threadedDiscussionProps={threadedDiscussionProps}
+              updateReview={updateReview}
+              urlFrag={urlFrag}
+            />
           )}
           {isCurrentVersion && (
             <AdminSection key="decision-form">
@@ -379,7 +377,7 @@ const DecisionVersion = ({
           )}
         </>
       ),
-      key: version.id,
+      key: `decision_${version.id}`,
       label: 'Decision',
     }
   }
