@@ -322,8 +322,8 @@ CREATE TABLE public.manuscripts (
     import_source uuid,
     import_source_server text,
     short_id integer,
-    submitted_date timestamp with time zone
-
+    submitted_date timestamp with time zone,
+    doi text
 );
 
 update manuscripts child
@@ -400,6 +400,46 @@ CREATE TABLE public.reviews (
 
 
 ALTER TABLE public.reviews OWNER TO kotahidev;
+
+--
+-- Name: tasks; Type: TABLE; Schema: public; Owner: kotahidev
+--
+
+DROP TABLE IF EXISTS public.tasks;
+
+CREATE TABLE public.tasks (
+  id UUID PRIMARY KEY,
+  created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT current_timestamp,
+  updated TIMESTAMP WITH TIME ZONE,
+--  task_list_id uuid NOT NULL REFERENCES task_lists(id) ON DELETE CASCADE,
+  manuscript_id uuid,
+  title TEXT,
+  assignee_user_id uuid,
+  default_duration_days INTEGER,
+  due_date TIMESTAMP WITH TIME ZONE,
+  reminder_period_days INTEGER,
+  status TEXT,
+  sequence_index INTEGER NOT NULL
+);
+
+ALTER TABLE public.tasks OWNER TO kotahidev;
+
+--
+-- Name: task_alerts; Type: TABLE; Schema: public; Owner: kotahidev
+--
+
+DROP TABLE IF EXISTS public.task_alerts;
+
+CREATE TABLE public.task_alerts (
+  id UUID PRIMARY KEY,
+  task_id uuid NOT NULL,
+  user_id uuid NOT NULL,
+  created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT current_timestamp,
+  updated TIMESTAMP WITH TIME ZONE
+);
+
+ALTER TABLE public.task_alerts OWNER TO kotahidev;
+
 
 --
 -- Name: team_members; Type: TABLE; Schema: public; Owner: kotahidev
@@ -970,6 +1010,19 @@ ALTER TABLE ONLY public.reviews
 
 ALTER TABLE ONLY public.identities
     ADD CONSTRAINT sidentities_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+-- tasks and task_alerts
+
+ALTER TABLE tasks ADD FOREIGN KEY (manuscript_id) REFERENCES manuscripts(id) ON DELETE CASCADE;
+ALTER TABLE tasks ADD FOREIGN KEY (assignee_user_id) REFERENCES users(id) ON DELETE SET NULL;
+ALTER TABLE task_alerts ADD FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE;
+ALTER TABLE task_alerts ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+CREATE INDEX tasks_manuscript_id_idx ON tasks (manuscript_id);
+CREATE INDEX tasks_user_id_idx ON tasks (assignee_user_id);
+CREATE UNIQUE INDEX task_alerts_alerts_task_id_user_id_uniq_idx ON task_alerts(task_id, user_id);
+CREATE INDEX task_alerts_task_id_idx ON task_alerts (task_id);
+CREATE INDEX task_alerts_user_id_idx ON task_alerts (user_id);
 
 
 --
