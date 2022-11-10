@@ -233,7 +233,7 @@ const DecisionVersion = ({
 
   const decisionSection = () => {
     return {
-      content: () => (
+      content: (
         <>
           {!isCurrentVersion && (
             <SectionContent>

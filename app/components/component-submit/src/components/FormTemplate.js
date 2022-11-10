@@ -434,8 +434,8 @@ const InnerFormTemplate = ({
                         element.doiValidation ? element.doiValidation : false,
                       ),
                       JSON.parse(
-                        element.suffixValidation
-                          ? element.suffixValidation
+                        element.doiUniqueSuffixValidation
+                          ? element.doiUniqueSuffixValidation
                           : false,
                       ),
                       validateDoi,

@@ -7,7 +7,7 @@ export const validateFormField = (
   valueField = {},
   fieldName,
   doiValidation = false,
-  suffixValidation = false,
+  doiUniqueSuffixValidation = false,
   validateDoi,
   validateSuffix,
   componentType,
@@ -80,7 +80,7 @@ export const validateFormField = (
     return validateDoi(value)
   }
 
-  if (value && suffixValidation) {
+  if (value && doiUniqueSuffixValidation) {
     return validateSuffix(value)
   }
 

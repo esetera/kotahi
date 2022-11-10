@@ -111,7 +111,7 @@ const formFields = `
       name
       description
       doiValidation
-      suffixValidation
+      doiUniqueSuffixValidation
       placeholder
       permitPublishing
       parse
