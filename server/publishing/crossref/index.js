@@ -360,15 +360,14 @@ const publishReviewsToCrossref = async manuscript => {
 
   const jsonResult = await parser.parseStringPromise(template)
 
-  const doiPrefix = `${config.crossref.doiPrefix}/`
-
-  const doiSummarySuffix =
-    getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
-    `${manuscript.id}/`
+  const doiSummarySuffix = manuscript.submission.summarycreator
+    ? getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+      `${manuscript.id}/`
+    : null
 
   // only validate if a summary exists, ie there is a summary author/creator
   if (manuscript.submission.summarycreator) {
-    const { isDOIValid } = await isDOIInUse(doiPrefix + doiSummarySuffix)
+    const { isDOIValid } = await isDOIInUse(getDoi(doiSummarySuffix))
 
     if (isDOIValid) {
       throw Error(`Summary suffix is not available: ${doiSummarySuffix}`)
@@ -438,7 +437,7 @@ const publishReviewsToCrossref = async manuscript => {
           ) || `${manuscript.id}/${reviewNumber}`
 
         // revalidate review DOI
-        const { isDOIValid } = await isDOIInUse(doiPrefix + doiSuffix)
+        const { isDOIValid } = await isDOIInUse(getDoi(doiSuffix))
 
         if (isDOIValid) {
           throw Error(`Review suffix is not available: ${doiSuffix}`)
@@ -459,17 +458,21 @@ const publishReviewsToCrossref = async manuscript => {
             },
           ],
         }
-        templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] = {
-          inter_work_relation: [
-            {
-              _: getDoi(doiSummarySuffix),
-              $: {
-                'relationship-type': 'isSupplementTo',
-                'identifier-type': 'doi',
+
+        if (doiSummarySuffix) {
+          templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] = {
+            inter_work_relation: [
+              {
+                _: getDoi(doiSummarySuffix),
+                $: {
+                  'relationship-type': 'isSupplementTo',
+                  'identifier-type': 'doi',
+                },
               },
-            },
-          ],
+            ],
+          }
         }
+
         return { reviewNumber, xml: builder.buildObject(templateCopy) }
       }),
     )
