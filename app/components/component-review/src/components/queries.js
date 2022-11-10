@@ -219,6 +219,8 @@ export const query = gql`
         id
       }
     }
+
+    doisToRegister(id: $id)
   }
 `
 
@@ -294,14 +296,6 @@ export const setShouldPublishFieldMutation = gql`
       shouldPublish: $shouldPublish
     ) {
       ${manuscriptFields}
-    }
-  }
-`
-
-export const getFullDois = gql`
-  query getFullDois($id: ID!) {
-    getFullDois(id: $id) {
-      listOfDois
     }
   }
 `

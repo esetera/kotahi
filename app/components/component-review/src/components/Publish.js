@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Button } from '@pubsweet/ui'
 
-import { useQuery } from '@apollo/client'
-import { getFullDois } from './queries'
 import {
   Title,
   SectionHeader,
@@ -14,7 +12,7 @@ import {
 import { SectionContent } from '../../../shared'
 import Alert from './publishing/Alert'
 
-const Publish = ({ manuscript, publishManuscript, isDisplayed }) => {
+const Publish = ({ manuscript, publishManuscript, dois }) => {
   // Hooks from the old world
   const [isPublishing, setIsPublishing] = useState(false)
   const [publishResponse, setPublishResponse] = useState(null)
@@ -22,26 +20,12 @@ const Publish = ({ manuscript, publishManuscript, isDisplayed }) => {
 
   const notAccepted = !['accepted', 'published'].includes(manuscript.status)
 
-  const { loading, data, refetch } = useQuery(getFullDois, {
-    variables: { id: manuscript.id },
-    fetchPolicy: 'cache-and-network',
-  })
-
-  const registeringDOIs = !loading && data.getFullDois.listOfDois !== null
-
-  useEffect(() => {
-    if (isDisplayed) {
-      refetch()
-    }
-  }, [isDisplayed])
-
   const doiMessage =
-    !loading &&
-    registeringDOIs &&
-    (data.getFullDois.listOfDois.length > 0 ? (
-      <p>DOIs to be registered: {data.getFullDois.listOfDois.join(', ')}</p>
+    dois !== null &&
+    (dois.length > 0 ? (
+      <p>DOIs to be registered: {dois.join(', ')}.</p>
     ) : (
-      <p>No DOIs will be registered with this publishment.</p>
+      <p>No DOIs will be registered at time of publishing.</p>
     ))
 
   return (

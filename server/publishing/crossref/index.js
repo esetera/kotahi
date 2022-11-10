@@ -196,7 +196,6 @@ const isDOIInUse = async checkDOI => {
 const emailRegex = /^[\p{L}\p{N}!/+\-_]+(\.[\p{L}\p{N}!/+\-_]+)*@[\p{L}\p{N}!/+\-_]+(\.[\p{L}_-]+)+$/u
 
 /** Send submission to register an article, with appropriate metadata */
-/** replace manuscript.id with customSuffix so that the user  */
 const publishArticleToCrossref = async manuscript => {
   if (!manuscript.submission)
     throw new Error('Manuscript has no submission object')
@@ -219,14 +218,13 @@ const publishArticleToCrossref = async manuscript => {
   const doiSuffix =
     getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id
 
-  const DOI = `${config.crossref.doiPrefix}/${doiSuffix}`
-  const { isDOIValid } = await isDOIInUse(DOI) // True if DOI already in use
+  const doi = getDoi(doiSuffix)
+  const { isDOIValid } = await isDOIInUse(doi)
 
   if (isDOIValid) {
     throw Error('Custom DOI is not available.')
   }
 
-  const doi = getDoi(doiSuffix)
   const publishedLocation = `${config.crossref.publishedArticleLocationPrefix}${manuscript.shortId}`
   const batchId = uuid()
   const citations = getCitations(manuscript)

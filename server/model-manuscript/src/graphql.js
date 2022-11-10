@@ -1359,9 +1359,9 @@ const resolvers = {
           m.submission.uri,
       }))
     },
-    async getFullDois(_, { id }, ctx) {
+    async doisToRegister(_, { id }, ctx) {
       if (!config.crossref.login) {
-        return { listOfDois: null }
+        return null
       }
 
       const manuscript = await models.Manuscript.query()
@@ -1418,7 +1418,7 @@ const resolvers = {
         }
       }
 
-      return { listOfDois: DOIs }
+      return DOIs
     },
 
     async validateDOI(_, { articleURL }, ctx) {
@@ -1430,8 +1430,8 @@ const resolvers = {
     // To be called in submit manuscript as
     // first validation step for custom suffix
     async validateSuffix(_, { suffix }, ctx) {
-      const DOI = `${config.crossref.doiPrefix}/${suffix}`
-      const { isDOIValid } = await isDOIInUse(DOI) // True = suffix is already taken. False = suffix is not taken.
+      const doi = getDoi(suffix)
+      const { isDOIValid } = await isDOIInUse(doi)
       return { isDOIValid: !isDOIValid }
     },
   },
@@ -1457,7 +1457,7 @@ const typeDefs = `
     """ Get a published manuscript by ID, or null if this manuscript is not published or not found """
     publishedManuscript(id: ID!): PublishedManuscript
     unreviewedPreprints(token: String!): [Preprint]
-    getFullDois(id: ID!): ListOfDois
+    doisToRegister(id: ID!): [String]
   }
 
   input ManuscriptsFilter {
@@ -1477,10 +1477,6 @@ const typeDefs = `
   type PaginatedManuscripts {
     totalCount: Int
     manuscripts: [Manuscript]
-  }
-
-  type ListOfDois {
-    listOfDois: [String]
   }
 
   extend type Subscription {

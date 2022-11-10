@@ -5,7 +5,6 @@ import { Formik } from 'formik'
 import { unescape, get, set, debounce } from 'lodash'
 import { TextField, RadioGroup, CheckboxGroup } from '@pubsweet/ui'
 import { th, grid } from '@pubsweet/ui-toolkit'
-import { useApolloClient } from '@apollo/client'
 import {
   Section as Container,
   Select,
@@ -24,7 +23,6 @@ import ThreadedDiscussion from '../../../component-formbuilder/src/components/bu
 import ActionButton from '../../../shared/ActionButton'
 import { hasValue } from '../../../../shared/htmlUtils'
 import FormWaxEditor from '../../../component-formbuilder/src/components/FormWaxEditor'
-import { validateSuffix } from '../../../../shared/commsUtils'
 
 const Intro = styled.div`
   font-style: italic;
@@ -193,6 +191,7 @@ const InnerFormTemplate = ({
   urlFrag,
   displayShortIdAsIdentifier,
   validateDoi,
+  validateSuffix,
   createFile,
   deleteFile,
   isSubmission,
@@ -280,8 +279,6 @@ const InnerFormTemplate = ({
 
   const submittedManuscriptFile =
     isSubmission && manuscriptFiles.length ? manuscriptFiles[0] : null
-
-  const client = useApolloClient()
 
   return (
     <Container>
@@ -384,7 +381,6 @@ const InnerFormTemplate = ({
                 {!['SupplementaryFiles', 'VisualAbstract'].includes(
                   element.component,
                 ) && (
-                  
                   <ValidatedFieldFormik
                     {...rejectProps(element, [
                       'component',
@@ -435,7 +431,7 @@ const InnerFormTemplate = ({
                           : false,
                       ),
                       validateDoi,
-                      validateSuffix(client),
+                      validateSuffix,
                       element.component,
                       threadedDiscussionProps,
                     )}
@@ -495,6 +491,7 @@ const FormTemplate = ({
   urlFrag,
   displayShortIdAsIdentifier,
   validateDoi,
+  validateSuffix,
   createFile,
   deleteFile,
   isSubmission,
@@ -586,6 +583,7 @@ const FormTemplate = ({
           threadedDiscussionProps={threadedDiscussionProps}
           urlFrag={urlFrag}
           validateDoi={validateDoi}
+          validateSuffix={validateSuffix}
         />
       )}
     </Formik>

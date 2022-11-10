@@ -203,6 +203,25 @@ const publishingTagField = {
   },
 }
 
+const doiUniqueSuffixValidationField = {
+  component: 'RadioBox',
+  props: {
+    inline: true,
+    options: [
+      {
+        value: 'true',
+        label: 'Yes',
+      },
+      {
+        value: 'false',
+        label: 'No',
+      },
+    ],
+    label: 'Validate as a DOI suffix and ensure it is unique?',
+  },
+  defaultValue: 'false',
+}
+
 const submissionElements = {
   SupplementaryFiles: {
     id: textfield,
@@ -331,24 +350,7 @@ const submissionElements = {
       },
       defaultValue: 'false',
     },
-    suffixValidation: {
-      component: 'RadioBox',
-      props: {
-        inline: true,
-        options: [
-          {
-            value: 'true',
-            label: 'Yes',
-          },
-          {
-            value: 'false',
-            label: 'No',
-          },
-        ],
-        label: 'Validate suffix uniqueness?',
-      },
-      defaultValue: 'false',
-    },
+    doiUniqueSuffixValidation: doiUniqueSuffixValidationField,
     includeInReviewerPreview: reviewerPreviewField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
@@ -521,24 +523,7 @@ const elements = {
       },
       defaultValue: 'false',
     },
-    suffixValidation: {
-      component: 'RadioBox',
-      props: {
-        inline: true,
-        options: [
-          {
-            value: 'true',
-            label: 'Yes',
-          },
-          {
-            value: 'false',
-            label: 'No',
-          },
-        ],
-        label: 'Validate suffix uniqueness?',
-      },
-      defaultValue: 'false',
-    },
+    doiUniqueSuffixValidation: doiUniqueSuffixValidationField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
     publishingTag: publishingTagField,

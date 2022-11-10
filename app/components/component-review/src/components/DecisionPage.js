@@ -23,7 +23,7 @@ import {
   GET_INVITATIONS_FOR_MANUSCRIPT,
   GET_BLACKLIST_INFORMATION,
 } from '../../../../queries'
-import { validateDoi } from '../../../../shared/commsUtils'
+import { validateDoi, validateSuffix } from '../../../../shared/commsUtils'
 import {
   UPDATE_PENDING_COMMENT,
   COMPLETE_COMMENTS,
@@ -93,7 +93,7 @@ const DecisionPage = ({ match }) => {
 
   // end of code from submit page to handle possible form changes
 
-  const { loading, data, error } = useQuery(query, {
+  const { loading, data, error, refetch } = useQuery(query, {
     variables: {
       id: match.params.version,
     },
@@ -196,6 +196,7 @@ const DecisionPage = ({ match }) => {
     currentUser,
     users,
     threadedDiscussions,
+    doisToRegister,
   } = data
 
   const form = submissionForm?.structure ?? {
@@ -277,6 +278,7 @@ const DecisionPage = ({ match }) => {
         config['client-features'].displayShortIdAsIdentifier.toLowerCase() ===
           'true'
       }
+      dois={doisToRegister}
       externalEmail={externalEmail}
       form={form}
       handleChange={handleChange}
@@ -285,6 +287,7 @@ const DecisionPage = ({ match }) => {
       makeDecision={makeDecision}
       manuscript={manuscript}
       publishManuscript={publishManuscript}
+      refetch={refetch}
       reviewers={data?.manuscript?.reviews}
       reviewForm={reviewForm}
       selectedEmail={selectedEmail}
@@ -301,6 +304,7 @@ const DecisionPage = ({ match }) => {
       updateTeam={updateTeam}
       urlFrag={urlFrag}
       validateDoi={validateDoi(client)}
+      validateSuffix={validateSuffix(client)}
     />
   )
 }
