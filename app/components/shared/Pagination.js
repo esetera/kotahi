@@ -66,11 +66,6 @@ export const Pagination = ({
   const firstResult = (page - 1) * limit + 1
   const lastResult = Math.min((page - 1) * limit + limit, totalCount)
 
-  // const submitPagenum = query => {
-  //   // applyPaginationQuery(query)
-  //   appl
-  // }
-
   return (
     <PaginationContainer>
       <PaginationInfo>

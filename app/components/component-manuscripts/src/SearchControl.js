@@ -35,14 +35,20 @@ const InlineTextField = styled.input`
   }
 `
 
-const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
+//
+const SearchControl = ({
+  currentSearchQuery,
+  applyParamQuery,
+  URI_SEARCH_PARAM,
+}) => {
   const [searchText, setSearchText] = useState(currentSearchQuery || '')
   const [isOpen, setIsOpen] = useState(!!currentSearchQuery)
   const ref = useRef(null)
   const theme = useTheme()
 
   const submitSearch = query => {
-    if ((query || null) !== currentSearchQuery) applySearchQuery(query)
+    if ((query || null) !== currentSearchQuery)
+      applyParamQuery(URI_SEARCH_PARAM, query)
     setSearchText(query || '')
   }
 

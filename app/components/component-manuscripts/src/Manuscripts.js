@@ -37,6 +37,7 @@ import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
 
 const URI_SEARCH_PARAM = 'search'
 const URI_PAGENUM_PARAM = 'pagenum'
+const URI_SORT_PARAM = 'sort'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;
@@ -105,8 +106,6 @@ const Manuscripts = ({ history, ...props }) => {
   const setFilter = (fieldName, filterValue) => {
     if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
 
-    // if (fieldName === 'status') {
-    // If filtering on manuscript status, reset to 1st page
     const revisedQuery = [...uriQueryParams].filter(x => {
       return x.field !== fieldName && x.field !== URI_PAGENUM_PARAM
     })
@@ -116,54 +115,34 @@ const Manuscripts = ({ history, ...props }) => {
       { field: URI_PAGENUM_PARAM, value: '1' },
     )
     loadPageWithQuery(revisedQuery)
-    // } else {
-    //   const revisedQuery = [...uriQueryParams].filter(
-    //     x => x.field !== fieldName,
-    //   )
-
-    //   revisedQuery.push({ field: fieldName, value: filterValue })
-    //   loadPageWithQuery(revisedQuery)
-    // }
   }
 
   const applyParamQuery = (fieldName, filterValue) => {
     const revisedQuery = [...uriQueryParams].filter(x => {
+      if (fieldName === URI_SEARCH_PARAM) {
+        return x.field !== fieldName && x.field !== URI_PAGENUM_PARAM
+      }
+
       return x.field !== fieldName
     })
 
+    if (fieldName === URI_SEARCH_PARAM) {
+      revisedQuery.push({ field: URI_PAGENUM_PARAM, value: '1' })
+    }
+
     revisedQuery.push({ field: fieldName, value: filterValue })
-    loadPageWithQuery(revisedQuery)
-  }
-
-  const applySearchQuery = query => {
-    console.log(query)
-
-    const revisedQuery = [...uriQueryParams].filter(x => {
-      return x.field !== URI_SEARCH_PARAM && x.field !== URI_PAGENUM_PARAM
-    })
-
-    revisedQuery.push({ field: URI_SEARCH_PARAM, value: query })
-    revisedQuery.push({ field: URI_PAGENUM_PARAM, value: '1' })
-
-    // if (query.length !== 0) {
-    // revisedQuery = [...revisedQuery].filter(x => {
-    //   return x.field !== URI_PAGENUM_PARAM
-    // })
-
-    // }
-    // else {
-    //   // revisedQuery.push({ field: URI_PAGENUM_PARAM, value: '2'})
-    // }
 
     loadPageWithQuery(revisedQuery)
   }
 
-  // const applyPaginationQuery = query => {
-  //   const revisedQuery = [...uriQueryParams].filter(
-  //     x => x.field !== URI_PAGENUM_PARAM,
-  //   )
+  // const applySearchQuery = query => {
+  //   const revisedQuery = [...uriQueryParams].filter(x => {
+  //     return x.field !== URI_SEARCH_PARAM && x.field !== URI_PAGENUM_PARAM
+  //   })
 
-  //   revisedQuery.push({ field: URI_PAGENUM_PARAM, value: query })
+  //   revisedQuery.push({ field: URI_SEARCH_PARAM, value: query })
+  //   revisedQuery.push({ field: URI_PAGENUM_PARAM, value: '1' })
+
   //   loadPageWithQuery(revisedQuery)
   // }
 
@@ -361,8 +340,9 @@ const Manuscripts = ({ history, ...props }) => {
       )}
 
       <SearchControl
-        applySearchQuery={applySearchQuery}
+        applyParamQuery={applyParamQuery}
         currentSearchQuery={currentSearchQuery}
+        URI_SEARCH_PARAM={URI_SEARCH_PARAM}
       />
       {!isAdminChatOpen && (
         <RoundIconButton
@@ -429,7 +409,6 @@ const Manuscripts = ({ history, ...props }) => {
                 <ManuscriptsHeaderRow>
                   {columnsProps.map(info => (
                     <FilterSortHeader
-                      // applyPaginationQuery={applyPaginationQuery}
                       applyParamQuery={applyParamQuery}
                       columnInfo={info}
                       key={info.name}
@@ -438,6 +417,7 @@ const Manuscripts = ({ history, ...props }) => {
                       setSortName={setSortName}
                       sortDirection={sortDirection}
                       sortName={sortName}
+                      URI_SORT_PARAM={URI_SORT_PARAM}
                     />
                   ))}
                 </ManuscriptsHeaderRow>
@@ -457,7 +437,6 @@ const Manuscripts = ({ history, ...props }) => {
               </ManuscriptsTable>
             </ScrollableContent>
             <Pagination
-              // applyPaginationQuery={applyPaginationQuery}
               applyParamQuery={applyParamQuery}
               limit={limit}
               page={page}

@@ -72,6 +72,7 @@ const FilterSortHeader = ({
   setSortDirection,
   setFilter,
   applyParamQuery,
+  URI_SORT_PARAM,
 }) => {
   if (columnInfo.canFilterByDateRange) {
     const changeSort = () => {
@@ -87,7 +88,7 @@ const FilterSortHeader = ({
         setSortDirection('ASC')
       }
 
-      applyParamQuery('sort', `${columnInfo.name}:${sortDirection}`)
+      applyParamQuery(URI_SORT_PARAM, `${columnInfo.name}:${sortDirection}`)
     }
 
     const filterByDateRange = range => {
@@ -181,7 +182,6 @@ const FilterSortHeader = ({
 
   if (columnInfo.canSort) {
     const changeSort = () => {
-      // sortName gets intiialized to created, which requires you to hit manuscript # twice
       const priorSortName = sortName
       setSortName(columnInfo.name)
 
@@ -193,7 +193,7 @@ const FilterSortHeader = ({
         setSortDirection('ASC')
       }
 
-      applyParamQuery('sort', `${columnInfo.name}:${sortDirection}`)
+      applyParamQuery(URI_SORT_PARAM, `${columnInfo.name}:${sortDirection}`)
     }
 
     return (
