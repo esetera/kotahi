@@ -18,6 +18,7 @@ import {
 } from '../../../shared'
 import DecisionAndReviews from '../../../component-submit/src/components/DecisionAndReviews'
 import FormTemplate from '../../../component-submit/src/components/FormTemplate'
+import TaskList from '../../../component-task-manager/src/TaskList'
 
 const createBlankSubmissionBasedOnForm = form => {
   const allBlankedFields = {}
@@ -30,10 +31,10 @@ const DecisionVersion = ({
   allUsers,
   decisionForm,
   form,
-  current,
   currentDecisionData,
   currentUser,
   version,
+  isCurrentVersion,
   parent,
   updateManuscript, // To handle manuscript editing
   onChange, // To handle form editing
@@ -65,6 +66,8 @@ const DecisionVersion = ({
   isEmailAddressOptedOut,
   dois,
   refetch,
+  updateTask,
+  updateTasks,
 }) => {
   // Hooks from the old world
   const addEditor = (manuscript, label, isCurrent, user) => {
@@ -106,12 +109,12 @@ const DecisionVersion = ({
   const editorSection = addEditor(
     version,
     'Manuscript text',
-    current,
+    isCurrentVersion,
     currentUser,
   )
 
   const metadataSection = () => {
-    const submissionValues = current
+    const submissionValues = isCurrentVersion
       ? createBlankSubmissionBasedOnForm(form)
       : {}
 
@@ -127,7 +130,7 @@ const DecisionVersion = ({
     return {
       content: (
         <>
-          {!current ? (
+          {!isCurrentVersion ? (
             <ReadonlyFormTemplate
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
               form={form}
@@ -135,7 +138,6 @@ const DecisionVersion = ({
                 ...version,
                 submission: JSON.parse(version.submission),
               }}
-              listManuscriptFiles
               manuscript={version}
               showEditorOnlyFields
               threadedDiscussionProps={threadedDiscussionProps}
@@ -188,11 +190,52 @@ const DecisionVersion = ({
     }
   }
 
+  const tasksAndNotificationsSection = () => {
+    return {
+      content: (
+        <>
+          {isCurrentVersion &&
+            ['aperture', 'colab'].includes(process.env.INSTANCE_NAME) && (
+              <EmailNotifications
+                allUsers={allUsers}
+                currentUser={currentUser}
+                externalEmail={externalEmail}
+                isEmailAddressOptedOut={isEmailAddressOptedOut}
+                manuscript={version}
+                selectedEmail={selectedEmail}
+                sendChannelMessageCb={sendChannelMessageCb}
+                sendNotifyEmail={sendNotifyEmail}
+                setExternalEmail={setExternalEmail}
+                setSelectedEmail={setSelectedEmail}
+              />
+            )}
+          <SectionContent>
+            <SectionHeader>
+              <Title>Tasks</Title>
+            </SectionHeader>
+            <SectionRow>
+              <TaskList
+                isReadOnly={!isCurrentVersion}
+                manuscriptId={version.id}
+                tasks={version.tasks}
+                updateTask={updateTask}
+                updateTasks={updateTasks}
+                users={allUsers}
+              />
+            </SectionRow>
+          </SectionContent>
+        </>
+      ),
+      key: `tasks_${version.id}`,
+      label: 'Tasks & Notifications',
+    }
+  }
+
   const decisionSection = () => {
     return {
       content: ({ isDisplayed }) => (
         <>
-          {!current && (
+          {!isCurrentVersion && (
             <SectionContent>
               <SectionHeader>
                 <Title>Archived version</Title>
@@ -203,33 +246,17 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          {current && (
-            <>
-              {['aperture', 'colab'].includes(process.env.INSTANCE_NAME) && (
-                <EmailNotifications
-                  allUsers={allUsers}
-                  currentUser={currentUser}
-                  externalEmail={externalEmail}
-                  isEmailAddressOptedOut={isEmailAddressOptedOut}
-                  manuscript={version}
-                  selectedEmail={selectedEmail}
-                  sendChannelMessageCb={sendChannelMessageCb}
-                  sendNotifyEmail={sendNotifyEmail}
-                  setExternalEmail={setExternalEmail}
-                  setSelectedEmail={setSelectedEmail}
-                />
-              )}
-              <AssignEditorsReviewers
-                allUsers={allUsers}
-                AssignEditor={AssignEditor}
-                createTeam={createTeam}
-                manuscript={parent}
-                teamLabels={teamLabels}
-                updateTeam={updateTeam}
-              />
-            </>
+          {isCurrentVersion && (
+            <AssignEditorsReviewers
+              allUsers={allUsers}
+              AssignEditor={AssignEditor}
+              createTeam={createTeam}
+              manuscript={parent}
+              teamLabels={teamLabels}
+              updateTeam={updateTeam}
+            />
           )}
-          {!current && (
+          {!isCurrentVersion && (
             <SectionContent>
               <SectionHeader>
                 <Title>Assigned editors</Title>
@@ -254,7 +281,7 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          {!current && (
+          {!isCurrentVersion && (
             <DecisionAndReviews
               decisionForm={decisionForm}
               isControlPage
@@ -264,7 +291,7 @@ const DecisionVersion = ({
               threadedDiscussionProps={threadedDiscussionProps}
             />
           )}
-          {current && (
+          {isCurrentVersion && (
             <AdminSection key="decision-review">
               <DecisionReviews
                 canHideReviews={canHideReviews}
@@ -278,7 +305,7 @@ const DecisionVersion = ({
               />
             </AdminSection>
           )}
-          {current && (
+          {isCurrentVersion && (
             <AdminSection key="decision-form">
               <SectionContent>
                 <FormTemplate
@@ -293,7 +320,7 @@ const DecisionVersion = ({
                   initialValues={
                     currentDecisionData?.jsonData
                       ? JSON.parse(currentDecisionData?.jsonData)
-                      : { comment: '', verdict: '', discussion: '' }
+                      : { comment: '', verdict: '', discussion: '' } // TODO this should just be {}, but needs testing.
                   }
                   isSubmission={false}
                   manuscriptId={version.id}
@@ -333,7 +360,7 @@ const DecisionVersion = ({
               </SectionContent>
             </AdminSection>
           )}
-          {current && (
+          {isCurrentVersion && (
             <AdminSection>
               <Publish
                 dois={dois}
@@ -354,7 +381,12 @@ const DecisionVersion = ({
     <HiddenTabs
       defaultActiveKey={version.id}
       onChange={refetch}
-      sections={[decisionSection(), editorSection, metadataSection()]}
+      sections={[
+        decisionSection(),
+        editorSection,
+        metadataSection(),
+        tasksAndNotificationsSection(),
+      ]}
     />
   )
 }
@@ -372,17 +404,10 @@ DecisionVersion.propTypes = {
     ).isRequired,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  current: PropTypes.bool.isRequired,
+  isCurrentVersion: PropTypes.bool.isRequired,
   version: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    meta: PropTypes.shape({
-      notes: PropTypes.arrayOf(
-        PropTypes.shape({
-          notesType: PropTypes.string.isRequired,
-          content: PropTypes.string.isRequired,
-        }).isRequired,
-      ).isRequired,
-    }).isRequired,
+    meta: PropTypes.shape({}).isRequired,
     files: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
@@ -415,7 +440,7 @@ DecisionVersion.propTypes = {
             user: PropTypes.shape({
               id: PropTypes.string.isRequired,
               defaultIdentity: PropTypes.shape({
-                name: PropTypes.string.isRequired,
+                name: PropTypes.string,
               }),
             }),
           }).isRequired,

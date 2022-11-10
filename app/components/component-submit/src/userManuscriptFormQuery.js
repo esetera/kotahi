@@ -11,6 +11,7 @@ export const reviewFields = `
   canBePublishedPublicly
   user {
     id
+    profilePicture
     defaultIdentity {
       id
       name
@@ -103,34 +104,9 @@ export const fragmentFields = `
     title
     source
     abstract
-    declarations {
-      openData
-      openPeerReview
-      preregistered
-      previouslySubmitted
-      researchNexus
-      streamlinedReview
-    }
-    articleSections
-    articleType
     history {
       type
       date
-    }
-    notes {
-      notesType
-      content
-    }
-    keywords
-  }
-  suggestions {
-    reviewers {
-      opposed
-      suggested
-    }
-    editors {
-      opposed
-      suggested
     }
   }
   authors {

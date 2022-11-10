@@ -100,37 +100,12 @@ const fragmentFields = `
     title
     source
     abstract
-    declarations {
-      openData
-      openPeerReview
-      preregistered
-      previouslySubmitted
-      researchNexus
-      streamlinedReview
-    }
-    articleSections
-    articleType
     history {
       type
       date
     }
-    notes {
-      notesType
-      content
-    }
-    keywords
   }
   submission
-  suggestions {
-    reviewers {
-      opposed
-      suggested
-    }
-    editors {
-      opposed
-      suggested
-    }
-  }
 `
 
 const formStructure = `
@@ -168,6 +143,7 @@ const formStructure = `
         maxChars
         minSize
       }
+      hideFromReviewers
     }
   }
 `

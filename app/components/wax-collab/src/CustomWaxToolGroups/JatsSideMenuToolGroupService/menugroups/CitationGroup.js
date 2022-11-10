@@ -1,4 +1,5 @@
 import React from 'react'
+// eslint-disable-next-line no-unused-vars
 import { decorate, injectable, inject } from 'inversify'
 import { LeftMenuTitle } from 'wax-prosemirror-components'
 import { ToolGroup } from 'wax-prosemirror-services'
@@ -18,6 +19,7 @@ class CitationGroup extends ToolGroup {
     @inject('FirstPage') firstPage,
     @inject('LastPage') lastPage,
     @inject('Volume') volume,
+    @inject('CitationLabel') citationLabel,
     @inject('Issue') issue,
     @inject('Year') year,
   ) {
@@ -25,6 +27,7 @@ class CitationGroup extends ToolGroup {
     this.tools = [
       refList,
       mixedCitationSpan,
+      citationLabel,
       // authorGroup,
       authorName,
       articleTitle,

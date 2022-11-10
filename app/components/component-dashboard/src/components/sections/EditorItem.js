@@ -7,11 +7,12 @@ import { Item, StatusBadge } from '../../style'
 import Meta from '../metadata/Meta'
 import MetadataSubmittedDate from '../metadata/MetadataSubmittedDate'
 import MetadataAuthors from '../metadata/MetadataAuthors'
-import MetadataStreamLined from '../metadata/MetadataStreamLined'
 import ControlPageLink from '../ControlPageLink'
 
 import Reviews from '../Reviews'
 import VersionTitle from './VersionTitle'
+import { MediumRow } from '../../../../shared'
+import { LabelBadge } from '../../../../component-manuscripts/src/style'
 
 const VersionTitleLink = styled(ControlPageLink)`
   color: #333;
@@ -51,14 +52,6 @@ EditorItemLinks.propTypes = {
   }).isRequired,
 }
 
-const getDeclarationsObject = (version, value) => {
-  // eslint-disable-next-line no-param-reassign
-  if (!version.meta) version.meta = {}
-  const declarations = version.meta.declarations || {}
-
-  return declarations[value] || 'no'
-}
-
 const getMetadataObject = (version, value) => {
   const metadata = version.meta || {}
   return metadata[value] || []
@@ -80,18 +73,17 @@ const EditorItem = ({
   // <Authorize object={[version]} operation="can view my manuscripts section">
   <>
     <Item>
-      <StatusBadge
-        minimal
-        published={version.published}
-        status={version.status}
-      />
-      <Meta>
-        <MetadataStreamLined
-          streamlinedReview={getDeclarationsObject(
-            version,
-            'streamlinedReview',
-          )}
+      <MediumRow>
+        <StatusBadge
+          minimal
+          published={version.published}
+          status={version.status}
         />
+        {version.hasOverdueTasksForUser && (
+          <LabelBadge color="red">Overdue task</LabelBadge>
+        )}
+      </MediumRow>
+      <Meta>
         <MetadataAuthors authors={getMembersOfTeam(version, 'author')} />
         {getSubmitedDate(version) ? (
           <MetadataSubmittedDate submitted={getSubmitedDate(version).date} />

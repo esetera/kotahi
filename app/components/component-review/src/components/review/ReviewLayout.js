@@ -64,7 +64,6 @@ const ReviewLayout = ({
           <ReadonlyFormTemplate
             form={submissionForm}
             formData={reviewData}
-            listManuscriptFiles
             manuscript={msVersion}
             showEditorOnlyFields={false}
             threadedDiscussionProps={threadedDiscussionProps}
@@ -108,7 +107,6 @@ const ReviewLayout = ({
               ...latestVersion,
               submission: JSON.parse(latestVersion.submission),
             }}
-            listManuscriptFiles
             manuscript={latestVersion}
             showEditorOnlyFields={false}
             threadedDiscussionProps={threadedDiscussionProps}
@@ -188,14 +186,7 @@ ReviewLayout.propTypes = {
       id: PropTypes.string.isRequired,
       reviews: PropTypes.arrayOf(PropTypes.shape({})),
       status: PropTypes.string.isRequired,
-      meta: PropTypes.shape({
-        notes: PropTypes.arrayOf(
-          PropTypes.shape({
-            notesType: PropTypes.string.isRequired,
-            content: PropTypes.string.isRequired,
-          }).isRequired,
-        ).isRequired,
-      }).isRequired,
+      meta: PropTypes.shape({}).isRequired,
       files: PropTypes.arrayOf(
         PropTypes.shape({
           name: PropTypes.string.isRequired,

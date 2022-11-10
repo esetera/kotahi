@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
 import { unescape, get, set, debounce } from 'lodash'
+import { sanitize } from 'dompurify'
 import { TextField, RadioGroup, CheckboxGroup } from '@pubsweet/ui'
 import { th, grid } from '@pubsweet/ui-toolkit'
 import {
@@ -95,12 +96,7 @@ const FieldHead = styled.div`
 `
 
 const filterFileManuscript = files =>
-  files.filter(
-    file =>
-      file.tags.includes('manuscript') &&
-      file.storedObjects[0].mimetype !==
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  )
+  files.filter(file => file.tags.includes('manuscript'))
 
 /** Definitions for available field types */
 const elements = {
@@ -159,7 +155,7 @@ const link = (urlFrag, manuscriptId) =>
   String.raw`<a href=${urlFrag}/versions/${manuscriptId}/manuscript>view here</a>`
 
 const createMarkup = encodedHtml => ({
-  __html: unescape(encodedHtml),
+  __html: sanitize(unescape(encodedHtml)),
 })
 
 /** Rename some props so the various formik components can understand them */
@@ -217,6 +213,7 @@ const InnerFormTemplate = ({
             .toLowerCase()
             .replace(/ /g, '-')
             .replace(/[^\w-]+/g, '')}-action-btn`}
+          disabled={disabled}
           onClick={async () => {
             // TODO shouldn't this come after error checking and submission?
             if (republish) {
@@ -378,9 +375,19 @@ const InnerFormTemplate = ({
                     values={values}
                   />
                 )}
-                {!['SupplementaryFiles', 'VisualAbstract'].includes(
-                  element.component,
-                ) && (
+                {element.component === 'ManuscriptFile' &&
+                submittedManuscriptFile ? (
+                  <Attachment
+                    file={submittedManuscriptFile}
+                    key={submittedManuscriptFile.storedObjects[0].url}
+                    uploaded
+                  />
+                ) : null}
+                {![
+                  'SupplementaryFiles',
+                  'VisualAbstract',
+                  'ManuscriptFile',
+                ].includes(element.component) && (
                   <ValidatedFieldFormik
                     {...rejectProps(element, [
                       'component',
@@ -446,17 +453,6 @@ const InnerFormTemplate = ({
               </Section>
             )
           })}
-
-        {submittedManuscriptFile ? (
-          <Section id="files.manuscript">
-            <Legend space>Submitted Manuscript</Legend>
-            <Attachment
-              file={submittedManuscriptFile}
-              key={submittedManuscriptFile.storedObjects[0].url}
-              uploaded
-            />
-          </Section>
-        ) : null}
 
         {showSubmitButton
           ? submitButton(submissionButtonText, showPopup)

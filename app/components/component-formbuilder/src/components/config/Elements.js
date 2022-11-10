@@ -46,14 +46,14 @@ const nameField = {
   },
 }
 
-const submissionNameFieldRegex = /^(?:submission\.[a-zA-Z]\w*|meta.title|meta.abstract|fileName|visualAbstract)$/
+const submissionNameFieldRegex = /^(?:submission\.[a-zA-Z]\w*|meta.title|meta.abstract|fileName|visualAbstract|manuscriptFile)$/
 
 const submissionNameField = {
   component: 'TextField',
   props: {
     label: 'Name (internal field name)',
     description:
-      'Use either "submission.yourFieldNameHere", or one of the following: "meta.title" for manuscript title, "meta.abstract" for abstract, "fileName" for SupplementaryFiles, or "visualAbstract" for a VisualAbstract.',
+      'Use either "submission.yourFieldNameHere", or one of the following: "meta.title" for manuscript title, "meta.abstract" for abstract, "fileName" for SupplementaryFiles, or "visualAbstract" for a VisualAbstract, or "manuscriptFile" for a ManuscriptFile.',
     validate: val =>
       submissionNameFieldRegex.test(val) ? null : 'Invalid name',
   },
@@ -134,7 +134,7 @@ const radiofield = {
   defaultValue: 'false',
 }
 
-const reviewerPreviewField = {
+const hideFromReviewersField = {
   component: 'RadioBox',
   props: {
     inline: true,
@@ -148,7 +148,7 @@ const reviewerPreviewField = {
         label: 'No',
       },
     ],
-    label: "Include in reviewers' preview?",
+    label: 'Hide from reviewers?',
   },
   defaultValue: 'false',
 }
@@ -223,6 +223,15 @@ const doiUniqueSuffixValidationField = {
 }
 
 const submissionElements = {
+  ManuscriptFile: {
+    id: textfield,
+    title: requiredTextField,
+    name: submissionNameField,
+    description: editorfield,
+    shortDescription: shortDescriptionField,
+    hideFromReviewers: hideFromReviewersField,
+    hideFromAuthors: hideFromAuthorsField,
+  },
   SupplementaryFiles: {
     id: textfield,
     title: requiredTextField,
@@ -230,7 +239,7 @@ const submissionElements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
-    includeInReviewerPreview: reviewerPreviewField,
+    hideFromReviewers: hideFromReviewersField,
     hideFromAuthors: hideFromAuthorsField,
   },
   VisualAbstract: {
@@ -240,7 +249,7 @@ const submissionElements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
-    includeInReviewerPreview: reviewerPreviewField,
+    hideFromReviewers: hideFromReviewersField,
     hideFromAuthors: hideFromAuthorsField,
   },
   AuthorsInput: {
@@ -250,7 +259,7 @@ const submissionElements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
-    includeInReviewerPreview: reviewerPreviewField,
+    hideFromReviewers: hideFromReviewersField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
     publishingTag: publishingTagField,
@@ -262,7 +271,7 @@ const submissionElements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateCollection,
-    includeInReviewerPreview: reviewerPreviewField,
+    hideFromReviewers: hideFromReviewersField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
     publishingTag: publishingTagField,
@@ -275,7 +284,7 @@ const submissionElements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateText,
-    includeInReviewerPreview: reviewerPreviewField,
+    hideFromReviewers: hideFromReviewersField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
     publishingTag: publishingTagField,
@@ -287,7 +296,7 @@ const submissionElements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
-    includeInReviewerPreview: reviewerPreviewField,
+    hideFromReviewers: hideFromReviewersField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
     publishingTag: publishingTagField,
@@ -351,7 +360,7 @@ const submissionElements = {
       defaultValue: 'false',
     },
     doiUniqueSuffixValidation: doiUniqueSuffixValidationField,
-    includeInReviewerPreview: reviewerPreviewField,
+    hideFromReviewers: hideFromReviewersField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
     publishingTag: publishingTagField,
@@ -364,7 +373,7 @@ const submissionElements = {
     options: optionfield,
     shortDescription: shortDescriptionField,
     validate: validateCollection,
-    includeInReviewerPreview: reviewerPreviewField,
+    hideFromReviewers: hideFromReviewersField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
     publishingTag: publishingTagField,
@@ -378,7 +387,7 @@ const submissionElements = {
     options: optionfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
-    includeInReviewerPreview: reviewerPreviewField,
+    hideFromReviewers: hideFromReviewersField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
     publishingTag: publishingTagField,
@@ -393,7 +402,7 @@ const submissionElements = {
     sectioncss: textarea,
     shortDescription: shortDescriptionField,
     validate: validateOther,
-    includeInReviewerPreview: reviewerPreviewField,
+    hideFromReviewers: hideFromReviewersField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
     publishingTag: publishingTagField,
@@ -401,6 +410,15 @@ const submissionElements = {
 }
 
 const elements = {
+  ManuscriptFile: {
+    id: textfield,
+    title: requiredTextField,
+    name: submissionNameField,
+    description: editorfield,
+    shortDescription: shortDescriptionField,
+    hideFromReviewers: hideFromReviewersField,
+    hideFromAuthors: hideFromAuthorsField,
+  },
   SupplementaryFiles: {
     id: textfield,
     title: requiredTextField,
@@ -460,7 +478,7 @@ const elements = {
     description: editorfield,
     shortDescription: shortDescriptionField,
     validate: validateOther,
-    includeInReviewerPreview: reviewerPreviewField,
+    hideFromReviewers: hideFromReviewersField,
     hideFromAuthors: hideFromAuthorsField,
     permitPublishing: permitPublishingField,
     publishingTag: publishingTagField,

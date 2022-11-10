@@ -76,26 +76,22 @@ export default {
         meta {
           manuscriptId
           title
-          declarations {
-            openData
-            openPeerReview
-            preregistered
-            previouslySubmitted
-            researchNexus
-            streamlinedReview
-          }
-          articleSections
-          articleType
           history {
             type
             date
           }
-          notes {
-            notesType
-            content
-          }
         }
       }
+    }
+  `,
+  createNewTaskAlertsMutation: gql`
+    mutation {
+      createNewTaskAlerts
+    }
+  `,
+  removeTaskAlertsForCurrentUserMutation: gql`
+    mutation {
+      removeTaskAlertsForCurrentUser
     }
   `,
 }

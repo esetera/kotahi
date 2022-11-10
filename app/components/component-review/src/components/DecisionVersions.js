@@ -48,6 +48,8 @@ const DecisionVersions = ({
   isEmailAddressOptedOut,
   dois,
   refetch,
+  updateTask,
+  updateTasks,
 }) => {
   const [initialValue, setInitialValue] = useState(null)
 
@@ -87,7 +89,6 @@ const DecisionVersions = ({
                 canHideReviews={canHideReviews}
                 createFile={createFile}
                 createTeam={createTeam}
-                current={index === 0}
                 currentDecisionData={initialValue}
                 currentUser={currentUser}
                 decisionForm={decisionForm}
@@ -97,6 +98,7 @@ const DecisionVersions = ({
                 externalEmail={externalEmail}
                 form={form}
                 invitations={invitations}
+                isCurrentVersion={index === 0}
                 isEmailAddressOptedOut={isEmailAddressOptedOut}
                 key={version.manuscript.id}
                 makeDecision={makeDecision}
@@ -124,6 +126,8 @@ const DecisionVersions = ({
                     version.manuscript.id,
                   )
                 }
+                updateTask={index === 0 ? updateTask : null}
+                updateTasks={index === 0 ? updateTasks : null}
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}

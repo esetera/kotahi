@@ -8,7 +8,10 @@ const models = require('@pubsweet/models')
 const cheerio = require('cheerio')
 const { raw } = require('objection')
 
-const { importManuscripts } = require('./manuscriptCommsUtils')
+const {
+  importManuscripts,
+  manuscriptHasOverdueTasksForUser,
+} = require('./manuscriptCommsUtils')
 
 const Team = require('../../model-team/src/team')
 const TeamMember = require('../../model-team/src/team_member')
@@ -55,6 +58,11 @@ const sendEmailNotification = require('../../email-notifications')
 const publishToGoogleSpreadSheet = require('../../publishing/google-spreadsheet')
 const validateApiToken = require('../../utils/validateApiToken')
 const { deepMergeObjectsReplacingArrays } = require('../../utils/objectUtils')
+
+const {
+  populateTemplatedTasksForManuscript,
+  deleteAlertsForManuscript,
+} = require('../../model-task/src/taskCommsUtils')
 
 const {
   convertFilesToFullObjects,
@@ -371,18 +379,7 @@ const resolvers = {
         : emptySubmission
 
       const emptyManuscript = {
-        meta: Object.assign(meta, {
-          notes: [
-            {
-              notesType: 'fundingAcknowledgement',
-              content: '',
-            },
-            {
-              notesType: 'specialInstructions',
-              content: '',
-            },
-          ],
-        }),
+        meta,
         status: 'new',
         submission,
         submitterId: ctx.user,
@@ -464,6 +461,9 @@ const resolvers = {
         manuscript,
       )
 
+      // newly uploaded files get tasks populated
+      await populateTemplatedTasksForManuscript(manuscript.id)
+
       updatedManuscript.manuscriptVersions = []
 
       return updatedManuscript
@@ -474,6 +474,8 @@ const resolvers = {
     },
 
     async archiveManuscripts(_, { ids }, ctx) {
+      await Promise.all(ids.map(id => deleteAlertsForManuscript(id)))
+
       // finding the ids of the first versions of all manuscripts:
       const selectedManuscripts = await models.Manuscript.query()
         .select('parentId', 'id')
@@ -492,6 +494,7 @@ const resolvers = {
     },
 
     async archiveManuscript(_, { id }, ctx) {
+      await deleteAlertsForManuscript(id)
       const manuscript = await models.Manuscript.find(id)
 
       // getting the ID of the firstVersion for all manuscripts.
@@ -1065,7 +1068,9 @@ const resolvers = {
 
       const manuscript = await ManuscriptModel.query()
         .findById(id)
-        .withGraphFetched('[teams, channels, files, reviews.user]')
+        .withGraphFetched(
+          '[teams, channels, files, reviews.user, tasks(orderBySequence).assignee]',
+        )
 
       const user = ctx.user
         ? await models.User.query().findById(ctx.user)
@@ -1089,16 +1094,6 @@ const resolvers = {
         )
       }
 
-      manuscript.meta.notes = (manuscript.meta || {}).notes || [
-        {
-          notesType: 'fundingAcknowledgement',
-          content: '',
-        },
-        {
-          notesType: 'specialInstructions',
-          content: '',
-        },
-      ]
       manuscript.decision = ''
 
       manuscript.manuscriptVersions = await manuscript.getManuscriptVersions()
@@ -1137,7 +1132,7 @@ const resolvers = {
       // Get those top-level manuscripts with all versions, all with teams and members
       const manuscripts = await models.Manuscript.query()
         .withGraphFetched(
-          '[teams.[members], manuscriptVersions(orderByCreated).[teams.[members]]]',
+          '[teams.[members], tasks, manuscriptVersions(orderByCreated).[teams.[members], tasks]]',
         )
         .whereIn(
           'id',
@@ -1157,8 +1152,15 @@ const resolvers = {
           latestVersion.teams.some(t =>
             t.members.some(member => member.userId === ctx.user),
           )
-        )
+        ) {
+          // eslint-disable-next-line no-param-reassign
+          latestVersion.hasOverdueTasksForUser = manuscriptHasOverdueTasksForUser(
+            latestVersion,
+            ctx.user,
+          )
+
           filteredManuscripts.push(m)
+        }
       })
 
       return Promise.all(filteredManuscripts.map(m => repackageForGraphql(m)))
@@ -1514,7 +1516,6 @@ const typeDefs = `
     reviews: [Review]
     status: String
     decision: String
-    suggestions: Suggestions
     authors: [Author]
     meta: ManuscriptMeta
     submission: String
@@ -1528,6 +1529,8 @@ const typeDefs = `
     searchRank: Float
     searchSnippet: String
     importSourceServer: String
+    tasks: [Task!]
+    hasOverdueTasksForUser: Boolean
   }
 
   input ManuscriptInput {
@@ -1587,29 +1590,12 @@ const typeDefs = `
     affiliation: String
   }
 
-  type Suggestion {
-    suggested: String
-    opposed: String
-  }
-
-  type Suggestions {
-    reviewers: Suggestion
-    editors: Suggestion
-  }
-
   type ManuscriptMeta {
     title: String!
     source: String
-    articleType: String
-    declarations: Declarations
-    articleSections: [String]
-    articleIds: [ArticleId]
     abstract: String
     subjects: [String]
     history: [MetaDate]
-    publicationDates: [MetaDate]
-    notes: [Note]
-    keywords: String
     manuscriptId: ID
   }
 
@@ -1631,15 +1617,6 @@ const typeDefs = `
   type MetaDate {
     type: String
     date: DateTime
-  }
-
-  type Declarations {
-    openData: String
-    openPeerReview: String
-    preregistered: String
-    previouslySubmitted: String
-    researchNexus: String
-    streamlinedReview: String
   }
 
   type Note {

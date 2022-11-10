@@ -20,8 +20,6 @@ status
 meta {
   manuscriptId
   title
-  articleSections
-  articleType
   history {
     type
     date
@@ -29,6 +27,7 @@ meta {
 }
 submission
 published
+hasOverdueTasksForUser
 `
 
 export default {

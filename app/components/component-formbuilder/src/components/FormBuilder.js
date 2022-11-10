@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import styled, { withTheme } from 'styled-components'
-import { unescape } from 'lodash'
 import { th, grid } from '@pubsweet/ui-toolkit'
 import { Icon, Action, Button } from '@pubsweet/ui'
 import { v4 as uuid } from 'uuid'
 import { Draggable } from 'react-beautiful-dnd'
 
 import { Page, Heading } from './style'
+import { DragVerticalIcon } from '../../../shared/Icons'
 import lightenBy from '../../../../shared/lightenBy'
 import Modal from '../../../component-modal/src/index'
 
@@ -18,13 +18,17 @@ const ModalContainer = styled.div`
 `
 
 const FeildWrapper = styled.div`
-  display: flex;
   align-items: center;
   border-radius: ${th('borderRadius')};
+  display: flex;
   padding: ${grid(0.5)};
-}
+
   &.active {
     background-color: ${lightenBy('colorPrimary', 0.7)};
+  }
+
+  &:hover svg:first-child {
+    stroke: ${th('colorPrimary')};
   }
 `
 
@@ -54,9 +58,12 @@ const StatusIcon = withTheme(({ children, theme }) => (
   <Icon color={theme.colorPrimary}>{children}</Icon>
 ))
 
-const VeticalEllipsisIcon = withTheme(({ children, theme }) => (
-  <Icon color={theme.colorPrimary}>{children}</Icon>
-))
+const DragIcon = styled(DragVerticalIcon)`
+  height: 20px;
+  margin-right: ${grid(1)};
+  stroke: transparent;
+  width: 20px;
+`
 
 const UnpaddedIcon = styled(Icon)`
   padding: 0;
@@ -103,8 +110,6 @@ const Main = styled.div`
   justify-content: center;
 `
 
-const ElementTitle = styled.span``
-
 const CancelButton = styled(Button)`
   background: #e9ebe8;
   padding: 8px;
@@ -122,10 +127,6 @@ const ConfirmationString = styled.p`
   margin-bottom: 20px;
   width: 100%;
 `
-
-const createMarkup = encodedHtml => ({
-  __html: unescape(encodedHtml),
-})
 
 const BuilderElement = ({
   element,
@@ -175,19 +176,15 @@ const BuilderElement = ({
               alignItems: 'center',
             }}
           >
-            <VeticalEllipsisIcon>more_vertical</VeticalEllipsisIcon>
+            <DragIcon />
             <Element
               className={isActive || snapshot.isDragging ? 'active' : undefined}
               key={`element-${element.id}`}
               onClick={() => setActiveFieldId(element.id)}
             >
               <MainAction>
-                <ElementTitle
-                  dangerouslySetInnerHTML={createMarkup(
-                    element.shortDescription ?? element.title,
-                  )}
-                />{' '}
-                ({element.component})
+                {element.shortDescription ?? element.title} ({element.component}
+                )
               </MainAction>
               <IconAction
                 onClick={() =>

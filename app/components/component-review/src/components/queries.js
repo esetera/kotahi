@@ -65,41 +65,34 @@ const manuscriptFields = `
     title
     source
     abstract
-    declarations {
-      openData
-      openPeerReview
-      preregistered
-      previouslySubmitted
-      researchNexus
-      streamlinedReview
-    }
-    articleSections
-    articleType
     history {
       type
       date
     }
-    notes {
-      notesType
-      content
-    }
-    keywords
   }
   submission
-  suggestions {
-    reviewers {
-      opposed
-      suggested
-    }
-    editors {
-      opposed
-      suggested
-    }
-  }
   published
   formFieldsToPublish {
     objectId
     fieldsToPublish
+  }
+  tasks {
+    id
+    created
+    updated
+    manuscriptId
+    title
+    assigneeUserId
+    assignee {
+      id
+      username
+      email
+      profilePicture
+    }
+    defaultDurationDays
+    dueDate
+    reminderPeriodDays
+    status
   }
 `
 
@@ -120,7 +113,6 @@ const formFields = `
       doiValidation
       suffixValidation
       placeholder
-      includeInReviewerPreview
       permitPublishing
       parse
       format

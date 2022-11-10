@@ -209,11 +209,6 @@ export const DELETE_MANUSCRIPT = gql`
   }
 `
 
-export const DELETE_MANUSCRIPTS = gql`
-  mutation($ids: [ID]!) {
-    deleteManuscripts(ids: $ids)
-  }
-`
 export const ASSIGN_USER_AS_AUTHOR = gql`
 mutation($manuscriptId: ID!, $userId: ID!) {
   assignUserAsAuthor(manuscriptId: $manuscriptId, userId: $userId ) {
@@ -368,6 +363,49 @@ export const GET_SYSTEM_WIDE_DISCUSSION_CHANNEL = gql`
   query {
     systemWideDiscussionChannel {
       id
+    }
+  }
+`
+
+const taskFields = `
+id
+created
+updated
+manuscriptId
+title
+assigneeUserId
+assignee {
+  id
+  username
+  email
+  profilePicture
+}
+defaultDurationDays
+dueDate
+reminderPeriodDays
+status
+`
+
+export const UPDATE_TASKS = gql`
+  mutation($manuscriptId: ID, $tasks: [TaskInput!]!) {
+    updateTasks(manuscriptId: $manuscriptId, tasks: $tasks) {
+      ${taskFields}
+    }
+  }
+`
+
+export const UPDATE_TASK = gql`
+  mutation($task: TaskInput!) {
+    updateTask(task: $task) {
+      ${taskFields}
+    }
+  }
+`
+
+export const POPULATE_TASKS = gql`
+  mutation($manuscriptId: ID!) {
+    populateTasksForManuscript(manuscriptId: $manuscriptId) {
+      ${taskFields}
     }
   }
 `

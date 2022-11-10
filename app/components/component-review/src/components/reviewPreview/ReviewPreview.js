@@ -39,10 +39,9 @@ const ReviewPreview = ({
           ...manuscript,
           submission: JSON.parse(manuscript.submission),
         }}
-        listManuscriptFiles
+        hideSpecialInstructions
         manuscript={manuscript}
         showEditorOnlyFields={false}
-        showPreviewMetadataOnly
         threadedDiscussionProps={threadedDiscussionProps}
       />
       <IconLink onClick={() => history.goBack()}>
