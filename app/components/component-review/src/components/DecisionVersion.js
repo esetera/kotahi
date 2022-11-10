@@ -233,7 +233,7 @@ const DecisionVersion = ({
 
   const decisionSection = () => {
     return {
-      content: ({ isDisplayed }) => (
+      content: () => (
         <>
           {!isCurrentVersion && (
             <SectionContent>
@@ -364,7 +364,6 @@ const DecisionVersion = ({
             <AdminSection>
               <Publish
                 dois={dois}
-                isDisplayed={isDisplayed}
                 manuscript={version}
                 publishManuscript={publishManuscript}
               />
