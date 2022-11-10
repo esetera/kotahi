@@ -257,6 +257,7 @@ const InnerFormTemplate = ({
       </div>
     )
   }
+
   // this is whether the form includes a popup
   const hasPopup = form.haspopup ? JSON.parse(form.haspopup) : false
 
