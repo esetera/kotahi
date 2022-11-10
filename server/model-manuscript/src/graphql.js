@@ -1391,16 +1391,14 @@ const resolvers = {
           .map(([key]) => key.replace('review', ''))
 
         DOIs.push(
-          ...notEmptyReviews
-            .map(reviewNumber =>
-              getDoi(
-                getReviewOrSubmissionField(
-                  manuscript,
-                  `review${reviewNumber}suffix`,
-                ) || `${manuscript.id}/${reviewNumber}`,
-              ),
-            )
-            .filter(doi => !!doi),
+          ...notEmptyReviews.map(reviewNumber =>
+            getDoi(
+              getReviewOrSubmissionField(
+                manuscript,
+                `review${reviewNumber}suffix`,
+              ) || `${manuscript.id}/${reviewNumber}`,
+            ),
+          ),
         )
 
         if (
