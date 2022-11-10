@@ -42,8 +42,6 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
   const theme = useTheme()
 
   const submitSearch = query => {
-    console.log(currentSearchQuery)
-    console.log(query)
     if ((query || null) !== currentSearchQuery) applySearchQuery(query)
     setSearchText(query || '')
   }
@@ -91,9 +89,10 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
       <RoundIconButton
         iconName="Search"
         onClick={() => {
-          submitSearch(searchText)
-          if (isOpen) ref.current.focus()
-          else setIsOpen(true)
+          if (isOpen) {
+            submitSearch(searchText)
+            ref.current.focus()
+          } else setIsOpen(true)
         }}
         primary={isOpen}
         title="Search"

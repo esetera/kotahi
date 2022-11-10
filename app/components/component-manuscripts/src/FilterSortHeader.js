@@ -71,6 +71,7 @@ const FilterSortHeader = ({
   setSortName,
   setSortDirection,
   setFilter,
+  applyParamQuery,
 }) => {
   if (columnInfo.canFilterByDateRange) {
     const changeSort = () => {
@@ -86,7 +87,7 @@ const FilterSortHeader = ({
         setSortDirection('ASC')
       }
 
-      setFilter('sort', `${columnInfo.name}:${sortDirection}`)
+      applyParamQuery('sort', `${columnInfo.name}:${sortDirection}`)
     }
 
     const filterByDateRange = range => {
@@ -192,7 +193,7 @@ const FilterSortHeader = ({
         setSortDirection('ASC')
       }
 
-      setFilter('sort', `${columnInfo.name}:${sortDirection}`)
+      applyParamQuery('sort', `${columnInfo.name}:${sortDirection}`)
     }
 
     return (
