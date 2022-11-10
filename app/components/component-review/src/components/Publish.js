@@ -23,7 +23,7 @@ const Publish = ({ manuscript, publishManuscript, dois }) => {
   const doiMessage =
     dois !== null &&
     (dois.length > 0 ? (
-      <p>DOIs to be registered: {dois.join(', ')}.</p>
+      <p>DOIs to be registered: {dois.join(', ')}</p>
     ) : (
       <p>No DOIs will be registered at time of publishing.</p>
     ))
