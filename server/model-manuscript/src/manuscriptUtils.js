@@ -275,6 +275,7 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
   limit,
   filters,
   submissionForm,
+  manuscriptIDs = null,
   timezoneOffsetMinutes,
 ) => {
   // These keep track of the various terms we're adding to SELECT, FROM, WHERE and ORDER BY, as well as params.
@@ -292,6 +293,7 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
   addFrom('manuscripts')
   addWhere('parent_id IS NULL')
   addWhere('is_hidden IS NOT TRUE')
+  manuscriptIDs && addWhere('id IN ?', manuscriptIDs)
 
   const searchFilter = filters.find(f => f.field === 'search')
 

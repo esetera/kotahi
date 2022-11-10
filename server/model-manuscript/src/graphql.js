@@ -1267,6 +1267,48 @@ const resolvers = {
 
       return { totalCount, manuscripts: result }
     },
+
+    async paginatedTableManuscripts(
+      _,
+      { sort, offset, limit, filters, timezoneOffsetMinutes },
+      ctx,
+    ) {
+      const submissionForm = await Form.findOneByField('purpose', 'submit')
+      const roleManuscriptIDs = await this.manuscriptsUserHasCurrentRoleIn()
+
+      const [rawQuery, rawParams] = buildQueryForManuscriptSearchFilterAndOrder(
+        sort,
+        offset,
+        limit,
+        filters,
+        submissionForm,
+        roleManuscriptIDs,
+        timezoneOffsetMinutes || 0,
+      )
+
+      const knex = models.Manuscript.knex()
+      const rawQResult = await knex.raw(rawQuery, rawParams)
+      let totalCount = 0
+      if (rawQResult.rowCount)
+        totalCount = parseInt(rawQResult.rows[0].full_count, 10)
+
+      const ids = rawQResult.rows.map(row => row.id)
+
+      const manuscripts = await models.Manuscript.query()
+        .findByIds(ids)
+        .withGraphFetched(
+          '[submitter, teams.members.user.defaultIdentity, manuscriptVersions(orderByCreated).[submitter, teams.members.user.defaultIdentity]]',
+        )
+
+      const result = rawQResult.rows.map(row => ({
+        ...manuscripts.find(m => m.id === row.id),
+        searchRank: row.rank,
+        searchSnippet: row.snippet,
+      }))
+
+      return { totalCount, manuscripts: result }
+    },
+
     async manuscriptsPublishedSinceDate(_, { startDate, limit }, ctx) {
       const query = models.Manuscript.query()
         .whereNotNull('published')
@@ -1397,6 +1439,7 @@ const typeDefs = `
     manuscript(id: ID!): Manuscript!
     manuscripts: [Manuscript]!
     paginatedManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
+    paginatedTableManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
     publishedManuscripts(sort:String, offset: Int, limit: Int): PaginatedManuscripts
     validateDOI(articleURL: String): validateDOIResponse
     manuscriptsUserHasCurrentRoleIn: [Manuscript]
