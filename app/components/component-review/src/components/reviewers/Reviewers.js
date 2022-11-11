@@ -4,7 +4,7 @@ import { Action, Checkbox } from '@pubsweet/ui'
 import { grid } from '@pubsweet/ui-toolkit'
 import PropTypes from 'prop-types'
 import config from 'config'
-import ReviewerForm from './ReviewerForm'
+import InviteReviewer from './InviteReviewer'
 import { AdminSection } from '../style'
 import {
   SectionRow,
@@ -26,27 +26,6 @@ const ReviewersList = styled.div`
 `
 
 const Reviewer = styled.div``
-
-// const urlFrag = config.journal.metadata.toplevel_urlfragment
-
-const InviteReviewer = ({ handleSubmit, isValid, reviewerUsers }) => {
-  return (
-    <>
-      <SectionContent>
-        <SectionHeader>
-          <Title>Invite Reviewers</Title>
-        </SectionHeader>
-        <SectionRow>
-          <ReviewerForm
-            handleSubmit={handleSubmit}
-            isValid={isValid}
-            reviewerUsers={reviewerUsers}
-          />
-        </SectionRow>
-      </SectionContent>
-    </>
-  )
-}
 
 const Reviewers = ({
   reviewers,
