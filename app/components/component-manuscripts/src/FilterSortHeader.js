@@ -77,18 +77,24 @@ const FilterSortHeader = ({
   if (columnInfo.canFilterByDateRange) {
     const changeSort = () => {
       const priorSortName = sortName
+      if (setSortName) setSortName(columnInfo.name)
 
-      setSortName(columnInfo.name)
+      let newSortDirection
 
       if (priorSortName !== columnInfo.name) {
-        setSortDirection(columnInfo.defaultSortDirection)
+        newSortDirection = columnInfo.defaultSortDirection
+        // setSortDirection(columnInfo.defaultSortDirection)
       } else if (sortDirection === 'ASC') {
-        setSortDirection('DESC')
+        newSortDirection = 'DESC'
+        // setSortDirection('DESC')
       } else if (sortDirection === 'DESC') {
-        setSortDirection('ASC')
+        // setSortDirection('ASC')
+        newSortDirection = 'ASC'
       }
 
-      applyParamQuery(URI_SORT_PARAM, `${columnInfo.name}:${sortDirection}`)
+      if (setSortDirection) setSortDirection(newSortDirection)
+
+      applyParamQuery(URI_SORT_PARAM, `${columnInfo.name}:${newSortDirection}`)
     }
 
     const filterByDateRange = range => {
@@ -182,17 +188,36 @@ const FilterSortHeader = ({
   if (columnInfo.canSort) {
     const changeSort = () => {
       const priorSortName = sortName
-      setSortName(columnInfo.name)
+      if (setSortName) setSortName(columnInfo.name)
+
+      let newSortDirection
 
       if (priorSortName !== columnInfo.name) {
-        setSortDirection(columnInfo.defaultSortDirection)
+        newSortDirection = columnInfo.defaultSortDirection
+        // setSortDirection(columnInfo.defaultSortDirection)
       } else if (sortDirection === 'ASC') {
-        setSortDirection('DESC')
+        newSortDirection = 'DESC'
+        // setSortDirection('DESC')
       } else if (sortDirection === 'DESC') {
-        setSortDirection('ASC')
+        // setSortDirection('ASC')
+        newSortDirection = 'ASC'
       }
 
-      applyParamQuery(URI_SORT_PARAM, `${columnInfo.name}:${sortDirection}`)
+      if (setSortDirection) setSortDirection(newSortDirection)
+
+      applyParamQuery(URI_SORT_PARAM, `${columnInfo.name}:${newSortDirection}`)
+      // const priorSortName = sortName
+      // setSortName(columnInfo.name)
+
+      // if (priorSortName !== columnInfo.name) {
+      //   setSortDirection(columnInfo.defaultSortDirection)
+      // } else if (sortDirection === 'ASC') {
+      //   setSortDirection('DESC')
+      // } else if (sortDirection === 'DESC') {
+      //   setSortDirection('ASC')
+      // }
+
+      // applyParamQuery(URI_SORT_PARAM, `${columnInfo.name}:${sortDirection}`)
     }
 
     return (
