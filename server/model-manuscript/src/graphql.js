@@ -1125,7 +1125,13 @@ const resolvers = {
 
       return repackageForGraphql(manuscript)
     },
-    async manuscriptsUserHasCurrentRoleIn(_, input, ctx) {
+    async manuscriptsUserHasCurrentRoleIn(
+      _,
+      { sort, offset, limit, filters, timezoneOffsetMinutes },
+      ctx,
+    ) {
+      const submissionForm = await Form.findOneByField('purpose', 'submit')
+
       // Get IDs of the top-level manuscripts
       const topLevelManuscripts = await models.Manuscript.query()
         .distinct(
@@ -1138,7 +1144,7 @@ const resolvers = {
         .where('team_members.user_id', ctx.user)
 
       // Get those top-level manuscripts with all versions, all with teams and members
-      const manuscripts = await models.Manuscript.query()
+      const allManuscriptsWithInfo = await models.Manuscript.query()
         .withGraphFetched(
           '[teams.[members], manuscriptVersions(orderByCreated).[teams.[members]]]',
         )
@@ -1148,9 +1154,9 @@ const resolvers = {
         )
         .orderBy('created', 'desc')
 
-      const filteredManuscripts = []
+      const usersManuscriptIDs = []
 
-      manuscripts.forEach(m => {
+      allManuscriptsWithInfo.forEach(m => {
         const latestVersion =
           m.manuscriptVersions && m.manuscriptVersions.length > 0
             ? m.manuscriptVersions[m.manuscriptVersions.length - 1]
@@ -1161,10 +1167,44 @@ const resolvers = {
             t.members.some(member => member.userId === ctx.user),
           )
         )
-          filteredManuscripts.push(m)
+          usersManuscriptIDs.push(m.id)
       })
 
-      return Promise.all(filteredManuscripts.map(m => repackageForGraphql(m)))
+      const [rawQuery, rawParams] = buildQueryForManuscriptSearchFilterAndOrder(
+        sort,
+        offset,
+        limit,
+        filters,
+        submissionForm,
+        usersManuscriptIDs,
+        timezoneOffsetMinutes || 0,
+      )
+
+      // eslint-disable-next-line no-console
+      console.log(rawQuery, rawParams)
+
+      const knex = models.Manuscript.knex()
+      const rawQResult = await knex.raw(rawQuery, rawParams)
+      let totalCount = 0
+      if (rawQResult.rowCount)
+        totalCount = parseInt(rawQResult.rows[0].full_count, 10)
+
+      const paginatedIds = rawQResult.rows.map(row => row.id)
+
+      const paginatedManuscriptsWithInfo = await models.Manuscript.query()
+        .findByIds(paginatedIds)
+        .withGraphFetched(
+          '[submitter, teams.members.user.defaultIdentity, manuscriptVersions(orderByCreated).[submitter, teams.members.user.defaultIdentity]]',
+        )
+
+      const result = rawQResult.rows.map(row => ({
+        ...paginatedManuscriptsWithInfo.find(m => m.id === row.id),
+        searchRank: row.rank,
+        searchSnippet: row.snippet,
+      }))
+
+      return { totalCount, manuscripts: result }
+      // return Promise.all(filteredManuscripts.map(m => repackageForGraphql(m)))
     },
     async manuscripts(_, { where }, ctx) {
       const manuscripts = models.Manuscript.query()
@@ -1242,47 +1282,7 @@ const resolvers = {
         limit,
         filters,
         submissionForm,
-        timezoneOffsetMinutes || 0,
-      )
-
-      const knex = models.Manuscript.knex()
-      const rawQResult = await knex.raw(rawQuery, rawParams)
-      let totalCount = 0
-      if (rawQResult.rowCount)
-        totalCount = parseInt(rawQResult.rows[0].full_count, 10)
-
-      const ids = rawQResult.rows.map(row => row.id)
-
-      const manuscripts = await models.Manuscript.query()
-        .findByIds(ids)
-        .withGraphFetched(
-          '[submitter, teams.members.user.defaultIdentity, manuscriptVersions(orderByCreated).[submitter, teams.members.user.defaultIdentity]]',
-        )
-
-      const result = rawQResult.rows.map(row => ({
-        ...manuscripts.find(m => m.id === row.id),
-        searchRank: row.rank,
-        searchSnippet: row.snippet,
-      }))
-
-      return { totalCount, manuscripts: result }
-    },
-
-    async paginatedTableManuscripts(
-      _,
-      { sort, offset, limit, filters, timezoneOffsetMinutes },
-      ctx,
-    ) {
-      const submissionForm = await Form.findOneByField('purpose', 'submit')
-      const roleManuscriptIDs = await this.manuscriptsUserHasCurrentRoleIn()
-
-      const [rawQuery, rawParams] = buildQueryForManuscriptSearchFilterAndOrder(
-        sort,
-        offset,
-        limit,
-        filters,
-        submissionForm,
-        roleManuscriptIDs,
+        null,
         timezoneOffsetMinutes || 0,
       )
 
@@ -1439,10 +1439,9 @@ const typeDefs = `
     manuscript(id: ID!): Manuscript!
     manuscripts: [Manuscript]!
     paginatedManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
-    paginatedTableManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
+    manuscriptsUserHasCurrentRoleIn(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
     publishedManuscripts(sort:String, offset: Int, limit: Int): PaginatedManuscripts
     validateDOI(articleURL: String): validateDOIResponse
-    manuscriptsUserHasCurrentRoleIn: [Manuscript]
 
     """ Get published manuscripts with irrelevant fields stripped out. Optionally, you can specify a startDate and/or limit. """
     manuscriptsPublishedSinceDate(startDate: DateTime, limit: Int): [PublishedManuscript]!
