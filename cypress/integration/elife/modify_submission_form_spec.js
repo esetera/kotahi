@@ -7,7 +7,7 @@ import { dashboard } from '../../support/routes'
 const invalidDoiLnk = 'https://hours.com'
 describe('validating doi field in submission form', () => {
   it('check doi link is available in submission form', () => {
-    cy.task('restore', 'commons/elife_bootstrap')
+    cy.task('restore', 'commons/colab_bootstrap')
     cy.task('seed', 'submission_complete') // task to restore the database as per the  dumps/submission_complete.sql
     cy.task('seedForms')
     // eslint-disable-next-line jest/valid-expect-in-promise

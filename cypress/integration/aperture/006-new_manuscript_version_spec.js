@@ -14,7 +14,8 @@ describe('checking manuscript version', () => {
     cy.task('seed', 'three_reviews_completed')
     cy.task('seedForms')
 
-    return cy.fixture('role_names').then(name => {
+    // eslint-disable-next-line jest/valid-expect-in-promise
+    cy.fixture('role_names').then(name => {
       /* login as admin */
       cy.login(name.role.admin.name, dashboard)
       DashboardPage.clickManuscriptNavButton()
