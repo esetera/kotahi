@@ -123,6 +123,8 @@ const DashboardPage = ({ history, ...props }) => {
       shouldShowShortId={shouldShowShortId}
       updateMemberStatus={updateMemberStatus}
       urlFrag={urlFrag}
+      applySearchQuery={null}
+      currentSearchQuery={null}
     />
   )
 }

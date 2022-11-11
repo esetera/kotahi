@@ -4,6 +4,7 @@ import { Container, Placeholder } from '../style'
 import EditorItem from './sections/EditorItem'
 import OwnerItem from './sections/OwnerItem'
 import ReviewerItem from './sections/ReviewerItem'
+import SearchControl from '../../../component-manuscripts/src/SearchControl'
 import {
   SectionHeader,
   Title,
@@ -12,6 +13,8 @@ import {
   Heading,
   HeadingWithAction,
 } from '../../../shared'
+import { ControlsContainer } from '../../../component-manuscripts/src/style'
+import { FlexRow } from '../../../../globals'
 
 const getRoles = (m, userId) =>
   m.teams
@@ -30,15 +33,23 @@ const Dashboard = ({
   urlFrag,
   shouldShowShortId,
   prettyRoleText,
+  applySearchQuery,
+  currentSearchQuery,
 }) => {
   return (
     <Container>
-      <HeadingWithAction>
+      <FlexRow>
         <Heading>Dashboard</Heading>
-        <Button onClick={newSubmission} primary>
-          ＋ New submission
-        </Button>
-      </HeadingWithAction>
+        <ControlsContainer>
+          <SearchControl
+            applySearchQuery={applySearchQuery}
+            currentSearchQuery={currentSearchQuery}
+          />
+          <Button onClick={newSubmission} primary>
+            ＋ New submission
+          </Button>
+        </ControlsContainer>
+      </FlexRow>
       {!['ncrc'].includes(instanceName) && (
         <SectionContent>
           <SectionHeader>
