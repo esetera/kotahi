@@ -326,12 +326,6 @@ CREATE TABLE public.manuscripts (
     doi text
 );
 
-update manuscripts child
-set short_id=parent.short_id
-from manuscripts parent
-where parent.id = child.parent_id;
-
-
 ALTER TABLE public.manuscripts OWNER TO kotahidev;
 
 --
