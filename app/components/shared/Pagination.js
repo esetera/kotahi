@@ -55,7 +55,6 @@ export const Pagination = ({
   totalCount,
   // eslint-disable-next-line no-shadow
   PaginationContainer,
-  // applyPaginationQuery,
   applyParamQuery,
 }) => {
   // e.g. Get [1,2,3] from totalCount 9, limit 3

@@ -35,7 +35,6 @@ const InlineTextField = styled.input`
   }
 `
 
-//
 const SearchControl = ({
   currentSearchQuery,
   applyParamQuery,

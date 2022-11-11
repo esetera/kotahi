@@ -103,7 +103,6 @@ const FilterSortHeader = ({
     }
 
     return (
-      // Here is where sorting asc/desc happens on manuscripts header
       <HeadingCell onClick={changeSort} {...columnInfo}>
         {
           '\u200B' /* zero-width space so the layout engine understands where the baseline is */

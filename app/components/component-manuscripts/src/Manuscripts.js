@@ -135,17 +135,6 @@ const Manuscripts = ({ history, ...props }) => {
     loadPageWithQuery(revisedQuery)
   }
 
-  // const applySearchQuery = query => {
-  //   const revisedQuery = [...uriQueryParams].filter(x => {
-  //     return x.field !== URI_SEARCH_PARAM && x.field !== URI_PAGENUM_PARAM
-  //   })
-
-  //   revisedQuery.push({ field: URI_SEARCH_PARAM, value: query })
-  //   revisedQuery.push({ field: URI_PAGENUM_PARAM, value: '1' })
-
-  //   loadPageWithQuery(revisedQuery)
-  // }
-
   const toggleNewManuscriptCheck = id => {
     setSelectedNewManuscripts(s => {
       return selectedNewManuscripts.includes(id)
