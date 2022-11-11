@@ -29,45 +29,24 @@ const Reviewer = styled.div``
 
 // const urlFrag = config.journal.metadata.toplevel_urlfragment
 
-const InviteReviewer =
-  (({
-    updateTeamMember,
-    refetchManuscriptData,
-    id,
-    delta,
-    handleSubmit,
-    isValid,
-    reviewerUsers,
-  }) => {
-    const updateTeamMemberData = async () => {
-      await updateTeamMember({
-        variables: {
-          id,
-          input: JSON.stringify(delta),
-        },
-      })
-      refetchManuscriptData()
-    }
-
-    updateTeamMemberData()
-    return (
-      <>
-        <SectionContent>
-          <SectionHeader>
-            <Title>Invite Reviewers</Title>
-          </SectionHeader>
-          <SectionRow>
-            <ReviewerForm
-              handleSubmit={handleSubmit}
-              isValid={isValid}
-              reviewerUsers={reviewerUsers}
-            />
-          </SectionRow>
-        </SectionContent>
-      </>
-    )
-  },
-  [])
+const InviteReviewer = ({ handleSubmit, isValid, reviewerUsers }) => {
+  return (
+    <>
+      <SectionContent>
+        <SectionHeader>
+          <Title>Invite Reviewers</Title>
+        </SectionHeader>
+        <SectionRow>
+          <ReviewerForm
+            handleSubmit={handleSubmit}
+            isValid={isValid}
+            reviewerUsers={reviewerUsers}
+          />
+        </SectionRow>
+      </SectionContent>
+    </>
+  )
+}
 
 const Reviewers = ({
   reviewers,
@@ -79,12 +58,23 @@ const Reviewers = ({
   reviewerUsers,
   handleSubmit,
 }) => {
+  const toggleReviewerSharedStatus = async (id, delta) => {
+    await updateTeamMember({
+      variables: {
+        id,
+        input: JSON.stringify(delta),
+      },
+    })
+    refetchManuscriptData()
+  }
+
   return (
     <>
       <AdminSection>
         <InviteReviewer
-          refetchManuscriptData={refetchManuscriptData}
-          updateTeamMember={updateTeamMember}
+          handleSubmit={handleSubmit}
+          isValid={isValid}
+          reviewerUsers={reviewerUsers}
         />
       </AdminSection>
       <AdminSection>
