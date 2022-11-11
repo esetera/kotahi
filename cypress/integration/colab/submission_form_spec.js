@@ -12,7 +12,7 @@ describe('manuscripts page tests', () => {
 
     // login as admin
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin, dashboard) // TODO: name.role.admin.name?
+      cy.login(name.role.admin, dashboard)
     })
     cy.awaitDisappearSpinner()
     DashboardPage.clickSubmit()

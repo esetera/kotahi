@@ -12,7 +12,7 @@ describe('Email Notification Tests', () => {
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('role_names').then(name => {
       // login as seniorEditor
-      cy.login(name.role.seniorEditor.name, dashboard)
+      cy.login(name.role.seniorEditor, dashboard)
 
       // select Control on the Manuscripts page
       Menu.clickManuscripts()

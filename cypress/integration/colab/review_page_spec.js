@@ -17,7 +17,7 @@ describe('review page tests', () => {
     // login as admin
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin.name, dashboard)
+      cy.login(name.role.admin, dashboard)
     })
     cy.awaitDisappearSpinner()
     DashboardPage.clickSubmit()
@@ -26,13 +26,13 @@ describe('review page tests', () => {
     ManuscriptsPage.clickControl()
     ControlPage.clickManageReviewers()
     cy.fixture('role_names').then(name => {
-      ReviewersPage.inviteReviewer(name.role.reviewers[0].username)
-      ReviewersPage.inviteReviewer(name.role.reviewers[1].username)
+      ReviewersPage.inviteReviewer(name.role.reviewers[0])
+      ReviewersPage.inviteReviewer(name.role.reviewers[1])
     })
   })
   it('evaluation summary block should be visible to the reviewer', () => {
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.reviewers[0].name, dashboard)
+      cy.login(name.role.reviewers[0], dashboard)
     })
     DashboardPage.clickAcceptReviewButton()
     DashboardPage.clickDoReviewAndVerifyPageLoaded()
@@ -51,7 +51,7 @@ describe('review page tests', () => {
     ControlPage.clickRevise()
     ControlPage.clickSubmit()
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.reviewers[0].name, dashboard)
+      cy.login(name.role.reviewers[0], dashboard)
     })
     DashboardPage.clickAcceptReviewButton()
     DashboardPage.clickDoReviewAndVerifyPageLoaded()
@@ -59,7 +59,7 @@ describe('review page tests', () => {
   })
   it('reviewer should see decision after submitting a positive review', () => {
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.reviewers[1].name, dashboard)
+      cy.login(name.role.reviewers[1], dashboard)
     })
     DashboardPage.clickAcceptReviewButton()
     DashboardPage.clickDoReviewAndVerifyPageLoaded()
@@ -70,7 +70,7 @@ describe('review page tests', () => {
     ReviewPage.clickConfirmSubmitButton()
     cy.awaitDisappearSpinner()
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin.name, manuscripts)
+      cy.login(name.role.admin, manuscripts)
     })
     cy.awaitDisappearSpinner()
     ManuscriptsPage.clickControl()
@@ -78,7 +78,7 @@ describe('review page tests', () => {
     ControlPage.clickAccept()
     ControlPage.clickSubmit()
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.reviewers[1].name, dashboard)
+      cy.login(name.role.reviewers[1], dashboard)
     })
     DashboardPage.clickCompletedReviewButton()
     cy.awaitDisappearSpinner()
@@ -91,7 +91,7 @@ describe('review page tests', () => {
   })
   it('reviewer should see decision after submitting a neutral review', () => {
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.reviewers[1].name, dashboard)
+      cy.login(name.role.reviewers[1], dashboard)
     })
     DashboardPage.clickAcceptReviewButton()
     DashboardPage.clickDoReviewAndVerifyPageLoaded()
@@ -102,7 +102,7 @@ describe('review page tests', () => {
     ReviewPage.clickConfirmSubmitButton()
     cy.awaitDisappearSpinner()
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin.name, manuscripts)
+      cy.login(name.role.admin, manuscripts)
     })
     cy.awaitDisappearSpinner()
     ManuscriptsPage.clickControl()
@@ -110,7 +110,7 @@ describe('review page tests', () => {
     ControlPage.clickRevise()
     ControlPage.clickSubmit()
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.reviewers[1].name, dashboard)
+      cy.login(name.role.reviewers[1], dashboard)
     })
     DashboardPage.clickCompletedReviewButton()
     cy.awaitDisappearSpinner()
@@ -123,7 +123,7 @@ describe('review page tests', () => {
   })
   it('reviewer should see decision after submitting a negative review', () => {
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.reviewers[1].name, dashboard)
+      cy.login(name.role.reviewers[1], dashboard)
     })
     DashboardPage.clickAcceptReviewButton()
     DashboardPage.clickDoReviewAndVerifyPageLoaded()
@@ -134,7 +134,7 @@ describe('review page tests', () => {
     ReviewPage.clickConfirmSubmitButton()
     cy.awaitDisappearSpinner()
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin.name, manuscripts)
+      cy.login(name.role.admin, manuscripts)
     })
     cy.awaitDisappearSpinner()
     ManuscriptsPage.clickControl()
@@ -142,7 +142,7 @@ describe('review page tests', () => {
     ControlPage.clickReject()
     ControlPage.clickSubmit()
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.reviewers[1].name, dashboard)
+      cy.login(name.role.reviewers[1], dashboard)
     })
     DashboardPage.clickCompletedReviewButton()
     cy.awaitDisappearSpinner()

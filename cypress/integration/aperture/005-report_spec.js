@@ -12,7 +12,7 @@ describe('Report Spec', () => {
 
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('role_names').then(name => {
-      cy.login(name.role.admin.name, dashboard)
+      cy.login(name.role.admin, dashboard)
     })
 
     /* Admin can access the Reports */
