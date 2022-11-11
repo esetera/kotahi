@@ -649,12 +649,12 @@ ALTER TABLE "public"."threaded_discussions" ADD FOREIGN KEY ("manuscript_id") RE
 
 -- tasks and task_alerts
 
-ALTER TABLE tasks ADD FOREIGN KEY (manuscript_id) REFERENCES manuscripts(id) ON DELETE CASCADE;
-ALTER TABLE tasks ADD FOREIGN KEY (assignee_user_id) REFERENCES users(id) ON DELETE SET NULL;
-ALTER TABLE task_alerts ADD FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE;
-ALTER TABLE task_alerts ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-CREATE INDEX tasks_manuscript_id_idx ON tasks (manuscript_id);
-CREATE INDEX tasks_user_id_idx ON tasks (assignee_user_id);
-CREATE UNIQUE INDEX task_alerts_alerts_task_id_user_id_uniq_idx ON task_alerts(task_id, user_id);
-CREATE INDEX task_alerts_task_id_idx ON task_alerts (task_id);
-CREATE INDEX task_alerts_user_id_idx ON task_alerts (user_id);
+ALTER TABLE public.tasks ADD FOREIGN KEY (manuscript_id) REFERENCES public.manuscripts(id) ON DELETE CASCADE;
+ALTER TABLE public.tasks ADD FOREIGN KEY (assignee_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE public.task_alerts ADD FOREIGN KEY (task_id) REFERENCES public.tasks(id) ON DELETE CASCADE;
+ALTER TABLE public.task_alerts ADD FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+CREATE INDEX tasks_manuscript_id_idx ON public.tasks (manuscript_id);
+CREATE INDEX tasks_user_id_idx ON public.tasks (assignee_user_id);
+CREATE UNIQUE INDEX task_alerts_alerts_task_id_user_id_uniq_idx ON public.task_alerts (task_id, user_id);
+CREATE INDEX task_alerts_task_id_idx ON public.task_alerts (task_id);
+CREATE INDEX task_alerts_user_id_idx ON public.task_alerts (user_id);
