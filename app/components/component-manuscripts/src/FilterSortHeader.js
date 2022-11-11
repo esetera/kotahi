@@ -9,6 +9,7 @@ import {
   dateToCompactStringLocal,
   compactStringToDateLocal,
 } from '../../../shared/dateUtils'
+import { URI_SORT_PARAM } from '../../../shared/urlParamUtils'
 
 const SortUp = styled(ArrowUp)`
   height: ${grid(2)};
@@ -72,7 +73,6 @@ const FilterSortHeader = ({
   setSortDirection,
   setFilter,
   applyParamQuery,
-  URI_SORT_PARAM,
 }) => {
   if (columnInfo.canFilterByDateRange) {
     const changeSort = () => {

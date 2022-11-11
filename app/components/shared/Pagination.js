@@ -2,6 +2,7 @@ import React from 'react'
 import ReactPagination from 'react-paginate'
 import styled from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
+import { URI_PAGENUM_PARAM } from '../../shared/urlParamUtils'
 
 const PaginationInfo = styled.div`
   strong {
@@ -87,7 +88,7 @@ export const Pagination = ({
           marginPagesDisplay={3}
           nextLabel=">"
           onPageChange={nmb => {
-            applyParamQuery('pagenum', nmb.selected + 1)
+            applyParamQuery(URI_PAGENUM_PARAM, nmb.selected + 1)
             setPage(nmb.selected + 1)
           }}
           pageCount={pages.length}

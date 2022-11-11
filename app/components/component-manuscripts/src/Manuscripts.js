@@ -34,10 +34,10 @@ import getUriQueryParams from './getUriQueryParams'
 import FilterSortHeader from './FilterSortHeader'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
-
-const URI_SEARCH_PARAM = 'search'
-const URI_PAGENUM_PARAM = 'pagenum'
-const URI_SORT_PARAM = 'sort'
+import {
+  URI_SEARCH_PARAM,
+  URI_PAGENUM_PARAM,
+} from '../../../shared/urlParamUtils'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;
@@ -406,7 +406,7 @@ const Manuscripts = ({ history, ...props }) => {
                       setSortName={setSortName}
                       sortDirection={sortDirection}
                       sortName={sortName}
-                      URI_SORT_PARAM={URI_SORT_PARAM}
+                      // URI_SORT_PARAM={URI_SORT_PARAM}
                     />
                   ))}
                 </ManuscriptsHeaderRow>

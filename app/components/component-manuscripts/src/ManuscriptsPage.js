@@ -28,6 +28,10 @@ import { publishManuscriptMutation } from '../../component-review/src/components
 import getUriQueryParams from './getUriQueryParams'
 import Manuscripts from './Manuscripts'
 import { validateDoi } from '../../../shared/commsUtils'
+import {
+  URI_PAGENUM_PARAM,
+  URI_SORT_PARAM,
+} from '../../../shared/urlParamUtils'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 const chatRoomId = fnv.hash(config['pubsweet-client'].baseUrl).hex()
@@ -40,7 +44,7 @@ const ManuscriptsPage = ({ history }) => {
   const uriQueryParams = getUriQueryParams(window.location)
 
   const [page, setPage] = useState(
-    uriQueryParams.find(f => f.field === 'pagenum')?.value || 1,
+    uriQueryParams.find(f => f.field === URI_PAGENUM_PARAM)?.value || 1,
   )
 
   const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
@@ -52,7 +56,9 @@ const ManuscriptsPage = ({ history }) => {
         : null,
       offset: (page - 1) * limit,
       limit,
-      filters: uriQueryParams.filter(f => f.field !== 'pagenum'),
+      filters: uriQueryParams.filter(f => {
+        return f.field !== URI_PAGENUM_PARAM && f.field !== URI_SORT_PARAM
+      }),
       timezoneOffsetMinutes: new Date().getTimezoneOffset(),
     },
     fetchPolicy: 'network-only',
@@ -65,7 +71,7 @@ const ManuscriptsPage = ({ history }) => {
 
   useEffect(() => {
     queryObject.refetch()
-    setPage(uriQueryParams.find(f => f.field === 'pagenum')?.value || 1)
+    setPage(uriQueryParams.find(f => f.field === URI_PAGENUM_PARAM)?.value || 1)
   }, [history.location.search])
 
   useSubscription(IMPORTED_MANUSCRIPTS_SUBSCRIPTION, {
