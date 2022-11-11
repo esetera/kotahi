@@ -16,6 +16,17 @@ teams {
     status
   }
 }
+submitter {
+  username
+  isOnline
+  defaultIdentity {
+    id
+    identifier
+    name
+  }
+  id
+  profilePicture
+}
 status
 meta {
   manuscriptId
@@ -33,19 +44,31 @@ published
 
 export default {
   dashboard: gql`
-    {
+    query Dashboard($sort: ManuscriptsSort, $filters: [ManuscriptsFilter!]!, $offset: Int, $limit: Int, $timezoneOffsetMinutes: Int) {
       currentUser {
         id
         username
         admin
       }
-      manuscriptsUserHasCurrentRoleIn {
-        manuscriptVersions {
-          ${manuscriptFragment}
-          parentId
+      manuscriptsUserHasCurrentRoleIn(
+        sort: $sort
+        filters: $filters
+        offset: $offset
+        limit: $limit
+        timezoneOffsetMinutes: $timezoneOffsetMinutes)
+        {
+          totalCount
+          manuscripts {
+
+            manuscriptVersions {
+              ${manuscriptFragment}
+              parentId
+            }
+            ${manuscriptFragment}
+            searchSnippet
+          }
         }
-        ${manuscriptFragment}
-      }
+    
     }
   `,
   getUser: gql`

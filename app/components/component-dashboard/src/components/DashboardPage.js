@@ -38,6 +38,13 @@ const getManuscriptsUserHasRoleIn = (manuscripts, userId, roles) =>
 
 const DashboardPage = ({ history, ...props }) => {
   const { loading, data, error } = useQuery(queries.dashboard, {
+    variables: {
+      sort: { field: 'created', isAscending: false},
+      filters: [],
+      offset: 0,
+      limit: 100,
+      timezoneOffsetMinutes: 360,
+    },
     fetchPolicy: 'cache-and-network',
   })
 
@@ -71,7 +78,7 @@ const DashboardPage = ({ history, ...props }) => {
   if (error) return <CommsErrorBanner error={error} />
   const currentUser = data && data.currentUser
 
-  const latestVersions = data.manuscriptsUserHasCurrentRoleIn.map(
+  const latestVersions = data.manuscriptsUserHasCurrentRoleIn.manuscripts.map(
     getLatestVersion,
   )
 
