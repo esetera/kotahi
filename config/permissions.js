@@ -449,11 +449,6 @@ const permissions = {
     validateDOI: isAuthenticated,
   },
   Mutation: {
-    upload: isAuthenticated,
-    createManuscript: isAuthenticated,
-    updateManuscript: or(userIsAuthor, userIsEditor, userIsAdmin),
-    createMessage: userIsAllowedToChat,
-    reviewerResponse: or(userIsInvitedReviewer, userHasAcceptedInvitation),
     updateTeamMemberStatus: or(
       userIsReviewAuthorAndReviewIsNotCompleted,
       userIsEditorOfTheManuscriptOfTheReview,
@@ -472,6 +467,8 @@ const permissions = {
     // createDocxToHTMLJob seems to be exposed from xsweet???
     createFile: isAuthenticated,
     createForm: userIsAdmin,
+    createManuscript: isAuthenticated,
+    createMessage: userIsAllowedToChat,
     createNewTaskAlerts: userIsAdmin, // Only used when test code is enabled
     createNewVersion: or(userIsAuthor, userIsEditor, userIsAdmin),
     createTeam: or(userIsEditor, userIsAdmin), // TODO scrap this mutation in favour of an 'assignEditor' mutation
@@ -492,6 +489,7 @@ const permissions = {
     publishManuscript: or(userIsEditor, userIsAdmin),
     removeReviewer: or(userIsEditor, userIsAdmin),
     removeTaskAlertsForCurrentUser: isAuthenticated,
+    reviewerResponse: or(userIsInvitedReviewer, userHasAcceptedInvitation),
     sendEmail: or(userIsEditor, userIsAdmin),
     setShouldPublishField: or(userIsEditor, userIsAdmin),
     submitManuscript: or(userIsAuthor, userIsEditor, userIsAdmin),
@@ -502,6 +500,7 @@ const permissions = {
     updateFormElement: userIsAdmin,
     updateInvitationResponse: allow,
     updateInvitationStatus: allow,
+    updateManuscript: or(userIsAuthor, userIsEditor, userIsAdmin),
     updatePendingComment: isAuthenticated,
     updateReview: or(
       userIsReviewAuthorAndReviewIsNotCompleted,
@@ -514,6 +513,7 @@ const permissions = {
     updateTeam: or(userIsEditor, userIsAdmin),
     updateTeamMember: or(userIsEditor, userIsAdmin),
     updateUser: userIsAdmin,
+    upload: isAuthenticated,
     uploadFile: isAuthenticated,
     uploadFiles: isAuthenticated,
   },
