@@ -39,7 +39,7 @@ const getManuscriptsUserHasRoleIn = (manuscripts, userId, roles) =>
 const DashboardPage = ({ history, ...props }) => {
   const { loading, data, error } = useQuery(queries.dashboard, {
     variables: {
-      sort: { field: 'created', isAscending: false},
+      sort: { field: 'created', isAscending: false },
       filters: [],
       offset: 0,
       limit: 100,

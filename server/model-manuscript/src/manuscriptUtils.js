@@ -293,7 +293,9 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
   addFrom('manuscripts')
   addWhere('parent_id IS NULL')
   addWhere('is_hidden IS NOT TRUE')
-  manuscriptIDs && addWhere('id = ANY(?)', manuscriptIDs)
+  if (manuscriptIDs !== null) {
+    addWhere('id = ANY(?)', manuscriptIDs)
+  }
 
   const searchFilter = filters.find(f => f.field === 'search')
 
