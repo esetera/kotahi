@@ -39,6 +39,7 @@ import {
   JatsSideMenuToolGroupService,
   JatsAnnotationListTooolGroupService,
 } from '../CustomWaxToolGroups'
+// import AnystyleService from '../CustomWaxToolGroups/AnystyleService'
 import JatsTagsService from '../JatsTags'
 import CharactersList from './CharactersList'
 import KotahiSchema from './KotahiSchema'
@@ -165,6 +166,8 @@ const productionWaxEditorConfig = (readOnlyComments, handleAssetManager) => ({
     new JatsTagsService(),
     new JatsSideMenuToolGroupService(),
     new JatsAnnotationListTooolGroupService(),
+    // for anystyle
+    // new AnystyleService(),
   ],
 })
 
