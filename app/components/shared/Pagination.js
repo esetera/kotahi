@@ -56,7 +56,7 @@ export const Pagination = ({
   totalCount,
   // eslint-disable-next-line no-shadow
   PaginationContainer,
-  applyParamQuery,
+  applyQueryParams,
 }) => {
   // e.g. Get [1,2,3] from totalCount 9, limit 3
   const pages = [...new Array(Math.ceil(totalCount / limit)).keys()].map(
@@ -88,8 +88,8 @@ export const Pagination = ({
           marginPagesDisplay={3}
           nextLabel=">"
           onPageChange={nmb => {
-            if (applyParamQuery)
-              applyParamQuery(URI_PAGENUM_PARAM, nmb.selected + 1)
+            if (applyQueryParams)
+              applyQueryParams({ [URI_PAGENUM_PARAM]: nmb.selected + 1 })
             if (setPage) setPage(nmb.selected + 1)
           }}
           pageCount={pages.length}

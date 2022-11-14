@@ -34,10 +34,7 @@ import getUriQueryParams from './getUriQueryParams'
 import FilterSortHeader from './FilterSortHeader'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
-import {
-  URI_SEARCH_PARAM,
-  URI_PAGENUM_PARAM,
-} from '../../../shared/urlParamUtils'
+import { URI_SEARCH_PARAM } from '../../../shared/urlParamUtils'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;
@@ -87,49 +84,15 @@ const Manuscripts = ({ history, ...props }) => {
 
   const uriQueryParams = getUriQueryParams(window.location)
 
-  const loadPageWithQuery = query => {
-    let newPath = `${urlFrag}/admin/manuscripts`
-
-    if (query.length > 0) {
-      newPath = `${newPath}?${query
-        .filter(x => x.value)
-        .map(param => `${encodeURIComponent(param.field)}=${param.value}`)
-        .join('&')}`
-    }
-
-    history.push(newPath)
-  }
-
-  const setFilter = (fieldName, filterValue) => {
-    if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
-
-    const revisedQuery = [...uriQueryParams].filter(x => {
-      return x.field !== fieldName && x.field !== URI_PAGENUM_PARAM
+  const applyQueryParams = queryParams => {
+    const params = new URLSearchParams(history.search)
+    Object.entries(queryParams).forEach(([fieldName, fieldValue]) => {
+      params.set(fieldName, fieldValue)
     })
-
-    revisedQuery.push(
-      { field: fieldName, value: filterValue },
-      { field: URI_PAGENUM_PARAM, value: '1' },
-    )
-    loadPageWithQuery(revisedQuery)
-  }
-
-  const applyParamQuery = (fieldName, filterValue) => {
-    const revisedQuery = [...uriQueryParams].filter(x => {
-      if (fieldName === URI_SEARCH_PARAM) {
-        return x.field !== fieldName && x.field !== URI_PAGENUM_PARAM
-      }
-
-      return x.field !== fieldName
+    history.push({
+      pathname: history.pathname,
+      search: `?${params}`,
     })
-
-    if (fieldName === URI_SEARCH_PARAM) {
-      revisedQuery.push({ field: URI_PAGENUM_PARAM, value: '1' })
-    }
-
-    revisedQuery.push({ field: fieldName, value: filterValue })
-
-    loadPageWithQuery(revisedQuery)
   }
 
   const toggleNewManuscriptCheck = id => {
@@ -326,7 +289,7 @@ const Manuscripts = ({ history, ...props }) => {
       )}
 
       <SearchControl
-        applyParamQuery={applyParamQuery}
+        applyQueryParams={applyQueryParams}
         currentSearchQuery={currentSearchQuery}
         URI_SEARCH_PARAM={URI_SEARCH_PARAM}
       />
@@ -395,10 +358,9 @@ const Manuscripts = ({ history, ...props }) => {
                 <ManuscriptsHeaderRow>
                   {columnsProps.map(info => (
                     <FilterSortHeader
-                      applyParamQuery={applyParamQuery}
+                      applyQueryParams={applyQueryParams}
                       columnInfo={info}
                       key={info.name}
-                      setFilter={setFilter}
                       sortDirection={sortDirection}
                       sortName={sortName}
                     />
@@ -410,17 +372,17 @@ const Manuscripts = ({ history, ...props }) => {
 
                   return (
                     <ManuscriptRow
+                      applyQueryParams={applyQueryParams}
                       columnDefinitions={columnsProps}
                       key={latestVersion.id}
                       manuscript={latestVersion}
-                      setFilter={setFilter}
                     />
                   )
                 })}
               </ManuscriptsTable>
             </ScrollableContent>
             <Pagination
-              applyParamQuery={applyParamQuery}
+              applyQueryParams={applyQueryParams}
               limit={limit}
               page={page}
               PaginationContainer={PaginationContainerShadowed}

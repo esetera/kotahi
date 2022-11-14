@@ -4,7 +4,10 @@ import { X } from 'react-feather'
 import { th, grid } from '@pubsweet/ui-toolkit'
 import { RoundIconButton } from '../../shared'
 import lightenBy from '../../../shared/lightenBy'
-import { URI_SEARCH_PARAM } from '../../../shared/urlParamUtils'
+import {
+  URI_SEARCH_PARAM,
+  URI_PAGENUM_PARAM,
+} from '../../../shared/urlParamUtils'
 
 const SearchContainer = styled.div`
   align-items: center;
@@ -36,7 +39,7 @@ const InlineTextField = styled.input`
   }
 `
 
-const SearchControl = ({ currentSearchQuery, applyParamQuery }) => {
+const SearchControl = ({ currentSearchQuery, applyQueryParams }) => {
   const [searchText, setSearchText] = useState(currentSearchQuery || '')
   const [isOpen, setIsOpen] = useState(!!currentSearchQuery)
   const ref = useRef(null)
@@ -44,7 +47,7 @@ const SearchControl = ({ currentSearchQuery, applyParamQuery }) => {
 
   const submitSearch = query => {
     if ((query || null) !== currentSearchQuery)
-      applyParamQuery(URI_SEARCH_PARAM, query)
+      applyQueryParams({ [URI_SEARCH_PARAM]: query, [URI_PAGENUM_PARAM]: 1 })
     setSearchText(query || '')
   }
 

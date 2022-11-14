@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import {
@@ -11,7 +11,6 @@ import {
 } from '@apollo/client'
 import config from 'config'
 import fnv from 'fnv-plus'
-import { useLocation } from 'react-router-dom'
 import {
   GET_MANUSCRIPTS_AND_FORM,
   DELETE_MANUSCRIPT,
@@ -29,6 +28,7 @@ import getUriQueryParams from './getUriQueryParams'
 import Manuscripts from './Manuscripts'
 import { validateDoi } from '../../../shared/commsUtils'
 import {
+  extractSortData,
   URI_PAGENUM_PARAM,
   URI_SORT_PARAM,
 } from '../../../shared/urlParamUtils'
@@ -42,8 +42,8 @@ const ManuscriptsPage = ({ history }) => {
 
   const url = new URLSearchParams(history.location.search)
   const page = url.get(URI_PAGENUM_PARAM) || 1
-  const sortName = url.get(URI_SORT_PARAM)?.split(':')[0] || 'created'
-  const sortDirection = url.get(URI_SORT_PARAM)?.split(':')[1] || 'DESC'
+  const sortName = extractSortData(url).name || 'created'
+  const sortDirection = extractSortData(url).direction || 'DESC'
 
   const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
 
