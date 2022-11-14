@@ -449,10 +449,6 @@ const permissions = {
     validateDOI: isAuthenticated,
   },
   Mutation: {
-    updateTeamMemberStatus: or(
-      userIsReviewAuthorAndReviewIsNotCompleted,
-      userIsEditorOfTheManuscriptOfTheReview,
-    ),
     addEmailToBlacklist: allow, // TODO scrap this mutation and trigger its action inside updateInvitationResponse
     addReviewer: or(userIsEditor, userIsAdmin),
     archiveManuscript: or(userIsEditor, userIsAdmin),
@@ -512,6 +508,10 @@ const permissions = {
     updateTasks: or(userIsEditor, userIsAuthor),
     updateTeam: or(userIsEditor, userIsAdmin),
     updateTeamMember: or(userIsEditor, userIsAdmin),
+    updateTeamMemberStatus: or(
+      userIsReviewAuthorAndReviewIsNotCompleted,
+      userIsEditorOfTheManuscriptOfTheReview,
+    ),
     updateUser: userIsAdmin,
     upload: isAuthenticated,
     uploadFile: isAuthenticated,
