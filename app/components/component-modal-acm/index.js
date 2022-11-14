@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
@@ -148,7 +148,7 @@ const Modal = ({ children, ...props }) => {
 }
 
 export const ACMModal = ({
-  isOpen, // bool used to open and close modal
+  isOpen,, // bool used to open and close modal
   closeModal, // function to close your modal / set isOpen=false
   title = 'Main Title', // main title in black
   subtitle = '0000-0000-0000-0000', // optional subtitle in grey
@@ -167,7 +167,7 @@ export const ACMModal = ({
   children,
 }) => {
   return (
-    <Modal isOpen styles={styles}>
+    <Modal isOpen={isOpen} styles={styles}>
       <MainHeader>
         <Titles>
           <Title>{title}</Title>
