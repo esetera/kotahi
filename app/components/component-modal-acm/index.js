@@ -1,61 +1,142 @@
-import { React, useState } from 'react'
+import React from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
-import { th, grid, darken } from '@pubsweet/ui-toolkit'
+import { th, grid } from '@pubsweet/ui-toolkit'
 import { Button } from '@pubsweet/ui'
-import xIcon from './x.svg'
+import { ActionButton, Icon } from '../shared'
 
 const styles = {
   overlay: {
     backgroundColor: 'rgba(0,0,0,0.2)',
   },
   content: {
-    backgroundColor: '#ffffff',
+    overflow: 'hidden',
+    backgroundColor: 'white',
     border: 'none',
-    width: '1020px',
-    height: '820px',
+    borderRadius: '4px',
+    width: '60%',
+    height: '80%',
     margin: '0px',
-    padding: '0px !important',
+    padding: '0px',
+    top: '10%',
+    left: '20%',
+    bottom: '10%',
+    right: '20%',
   },
 }
 
-const Header = styled.div`
+const MainHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  font-family: 'Roboto';
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 23px;
+  line-height: 22px;
+  height: 12%;
   align-items: center;
-  color: #000000;
   z-index: 10000;
-  padding: 1em;
+  padding: ${grid(2.5)} ${grid(3)};
   border-color: grey;
   border-style: solid;
   border-bottom-width: 2px;
-  background: #ffffff;
+`
+
+const Titles = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-weight: 600;
+  font-family: ${th('fontHeading')};
+`
+
+const Headers = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  column-gap: 180px;
+  font-family: ${th('fontHeading')};
+  font-weight: 600;
+`
+
+const Title = styled.div`
+  font-size: ${th('fontSizeHeading5')};
+`
+
+const Subtitle = styled.div`
+  font-size: ${th('fontSizeHeading5')};
+  color: grey;
 `
 
 const CloseButton = styled(Button)`
-    background: #ffffff;
-    margin-left: 1em;
-    padding: ${grid(1)};
-    text-decoration: none;
-    width: 24px !important,
-    height: 24px !important,
-    &:hover {
-      background-color: ${darken('colorFurniture', 0.1)};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fffff;
+  min-width: unset;
+  width: 30px;
+  height: 30px;
+  &:hover {
+    background-color: #d3d3d3;
+    cursor: pointer;
+    svg {
+      stroke: white;
     }
-  
+  }
+`
+
+const Buttons = styled.div`
+  position: absolute;
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  bottom: 0px;
+  margin: 10px 0px;
+  background-color: white;
+  height: 12%;
+  width: 100%;
+  z-index: 10001;
+`
+
+const ButtonContainer = styled.div`
+  display: flex;
+  height: 100%;
+`
+
+const PrimaryButton = styled(ActionButton)`
+  color: white;
+  background-color: ${th('colorPrimary')};
+  border-radius: 6px;
+  margin: 0px 10px;
+  &:hover {
+    cursor: pointer;
+  }
+`
+
+const SecondaryButton = styled(ActionButton)`
+  color: white;
+  background-color: grey;
+  border-radius: 6px;
+  margin: 0px 10px;
+  &:hover {
+    cursor: pointer;
+  }
+`
+
+const CheckBoxButton = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 10px 5px;
+  &:hover {
+    cursor: pointer;
+  }
 `
 
 const ModalContainer = styled.div`
   background-color: ${th('colorBackground')};
   padding: ${grid(2.5)} ${grid(3)};
   z-index: 10000;
-  overflow-y: scroll;
+  overflow-y: auto;
   border-radius: 0;
   margin: 0;
+  width: 100%;
+  height: 72%;
 `
 
 const Modal = ({ children, ...props }) => {
@@ -65,30 +146,67 @@ const Modal = ({ children, ...props }) => {
     </ReactModal>
   )
 }
-const [isOpen1, setIsOpen] = useState(true)
 
 export const ACMModal = ({
-  isOpen,
-  title = 'title',
-  subtitle = 'subtitle',
-  header = 'header',
-  subheader = 'subheader',
-  closeModal = setIsOpen('false'),
+  isOpen, // bool used to open and close modal
+  closeModal, // function to close your modal / set isOpen=false
+  title = 'Main Title', // main title in black
+  subtitle = '0000-0000-0000-0000', // optional subtitle in grey
+  header = 'Header', // header in black
+  subheader = 'Subheader', // optional header in grey
+  primaryAction = null, // primary button action (green, rightmost)
+  primaryContent = 'Primary',
+  secondaryAction = null, // secondary button action (grey)
+  secondaryContent = 'Secondary',
+  box1 = false, // primary checkbox (leftmost)
+  box2 = false, // secondary checkbox
+  box1Action = null,
+  box1Content = 'Primary Checkbox',
+  box2Action = null,
+  box2Content = 'Secondary Checkbox',
+  children,
 }) => {
   return (
     <Modal isOpen styles={styles}>
-      <Header>
-        <h1>{title}</h1>
-        <h1 color="#808080">{subtitle}</h1>
-        <CloseButton onClick={closeModal} primary>
-          <img alt="X" src={xIcon} />
+      <MainHeader>
+        <Titles>
+          <Title>{title}</Title>
+          <Subtitle>{subtitle}</Subtitle>
+        </Titles>
+        <CloseButton onClick={closeModal}>
+          <Icon>x</Icon>
         </CloseButton>
-      </Header>
+      </MainHeader>
 
       <ModalContainer>
-        <h1>{header}</h1>
-        <h2>{subheader}</h2>
+        <Headers>
+          <Title>{header}</Title>
+          <Subtitle>{subheader}</Subtitle>
+        </Headers>
+        {children}
       </ModalContainer>
+
+      <Buttons>
+        <ButtonContainer>
+          <CheckBoxButton onClick={box1Action}>
+            {(box1 && <Icon>check-square</Icon>) || <Icon>square</Icon>}
+            {box1Content}
+          </CheckBoxButton>
+          <CheckBoxButton onClick={box2Action}>
+            {(box2 && <Icon>check-square</Icon>) || <Icon>square</Icon>}
+            {box2Content}
+          </CheckBoxButton>
+        </ButtonContainer>
+
+        <ButtonContainer>
+          <SecondaryButton onClick={secondaryAction}>
+            {secondaryContent}
+          </SecondaryButton>
+          <PrimaryButton onClick={primaryAction}>
+            {primaryContent}
+          </PrimaryButton>
+        </ButtonContainer>
+      </Buttons>
     </Modal>
   )
 }
