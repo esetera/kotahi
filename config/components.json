@@ -20,5 +20,6 @@
   "./server/jatsexport",
   "./server/model-threaded-discussion/src/",
   "./server/model-task/src",
-  "./server/config/src"
+  "./server/config/src",
+	"./server/anystyle"
 ]
