@@ -83,12 +83,9 @@ const FilterSortHeader = ({
 
       if (priorSortName !== columnInfo.name) {
         newSortDirection = columnInfo.defaultSortDirection
-        // setSortDirection(columnInfo.defaultSortDirection)
       } else if (sortDirection === 'ASC') {
         newSortDirection = 'DESC'
-        // setSortDirection('DESC')
       } else if (sortDirection === 'DESC') {
-        // setSortDirection('ASC')
         newSortDirection = 'ASC'
       }
 
@@ -194,30 +191,15 @@ const FilterSortHeader = ({
 
       if (priorSortName !== columnInfo.name) {
         newSortDirection = columnInfo.defaultSortDirection
-        // setSortDirection(columnInfo.defaultSortDirection)
       } else if (sortDirection === 'ASC') {
         newSortDirection = 'DESC'
-        // setSortDirection('DESC')
       } else if (sortDirection === 'DESC') {
-        // setSortDirection('ASC')
         newSortDirection = 'ASC'
       }
 
       if (setSortDirection) setSortDirection(newSortDirection)
 
       applyParamQuery(URI_SORT_PARAM, `${columnInfo.name}:${newSortDirection}`)
-      // const priorSortName = sortName
-      // setSortName(columnInfo.name)
-
-      // if (priorSortName !== columnInfo.name) {
-      //   setSortDirection(columnInfo.defaultSortDirection)
-      // } else if (sortDirection === 'ASC') {
-      //   setSortDirection('DESC')
-      // } else if (sortDirection === 'DESC') {
-      //   setSortDirection('ASC')
-      // }
-
-      // applyParamQuery(URI_SORT_PARAM, `${columnInfo.name}:${sortDirection}`)
     }
 
     return (

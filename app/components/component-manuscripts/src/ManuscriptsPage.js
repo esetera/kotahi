@@ -37,17 +37,10 @@ const urlFrag = config.journal.metadata.toplevel_urlfragment
 const chatRoomId = fnv.hash(config['pubsweet-client'].baseUrl).hex()
 
 const ManuscriptsPage = ({ history }) => {
-  // const [sortName, setSortName] = useState('created')
-  // const [sortDirection, setSortDirection] = useState('DESC')
   const [isImporting, setIsImporting] = useState(false)
-  // useLocation()
   const uriQueryParams = getUriQueryParams(window.location)
 
-  // const [page, setPage] = useState(
-  //   uriQueryParams.find(f => f.field === URI_PAGENUM_PARAM)?.value || 1,
-  // )
   const url = new URLSearchParams(history.location.search)
-  // setPage(url.get(URI_PAGENUM_PARAM) || 1)
   const page = url.get(URI_PAGENUM_PARAM) || 1
   const sortName = url.get(URI_SORT_PARAM)?.split(':')[0] || 'created'
   const sortDirection = url.get(URI_SORT_PARAM)?.split(':')[1] || 'DESC'
@@ -59,7 +52,7 @@ const ManuscriptsPage = ({ history }) => {
       sort: sortName
         ? { field: sortName, isAscending: sortDirection === 'ASC' }
         : null,
-      offset: (page - 1) * limit, // setPage(uriQueryParams.find(f => f.field === URI_PAGENUM_PARAM)?.value || 1)
+      offset: (page - 1) * limit,
       limit,
       filters: uriQueryParams.filter(f => {
         return f.field !== URI_PAGENUM_PARAM && f.field !== URI_SORT_PARAM
@@ -73,17 +66,6 @@ const ManuscriptsPage = ({ history }) => {
   const systemWideDiscussionChannel = useQuery(
     GET_SYSTEM_WIDE_DISCUSSION_CHANNEL,
   )
-
-  // useEffect(() => {
-  //   queryObject.refetch()
-  //   const url = new URLSearchParams(history.location.search)
-  //   // setPage(url.get(URI_PAGENUM_PARAM) || 1)
-  //   // meta.titl:DESC
-  //   // setSortName(url.get(URI_SORT_PARAM) || 'created')
-  //   // setSortDirection(url.get(URI_SORT_PARAM).split(':')[1] || 'DESC')
-  //   // do the same for setSort
-  //   // setPage(uriQueryParams.find(f => f.field === URI_PAGENUM_PARAM)?.value || 1)
-  // }, [history.location.search])
 
   useSubscription(IMPORTED_MANUSCRIPTS_SUBSCRIPTION, {
     onSubscriptionData: data => {
@@ -217,10 +199,7 @@ const ManuscriptsPage = ({ history }) => {
       page={page}
       publishManuscripts={publishManuscripts}
       queryObject={queryObject}
-      // setPage={setPage}
       setReadyToEvaluateLabels={setReadyToEvaluateLabels}
-      // setSortDirection={setSortDirection}
-      // setSortName={setSortName}
       shouldAllowBulkImport={shouldAllowBulkImport}
       sortDirection={sortDirection}
       sortName={sortName}

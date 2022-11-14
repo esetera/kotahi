@@ -67,9 +67,6 @@ const Manuscripts = ({ history, ...props }) => {
     importManuscripts,
     isImporting,
     publishManuscripts,
-    // setSortName,
-    setSortDirection,
-    // setPage,
     queryObject,
     sortDirection,
     sortName,
@@ -402,11 +399,8 @@ const Manuscripts = ({ history, ...props }) => {
                       columnInfo={info}
                       key={info.name}
                       setFilter={setFilter}
-                      // setSortDirection={setSortDirection}
-                      // setSortName={setSortName}
                       sortDirection={sortDirection}
                       sortName={sortName}
-                      // URI_SORT_PARAM={URI_SORT_PARAM}
                     />
                   ))}
                 </ManuscriptsHeaderRow>
@@ -430,7 +424,6 @@ const Manuscripts = ({ history, ...props }) => {
               limit={limit}
               page={page}
               PaginationContainer={PaginationContainerShadowed}
-              // setPage={setPage}
               totalCount={totalCount}
             />
           </div>
