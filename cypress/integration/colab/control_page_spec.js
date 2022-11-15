@@ -36,7 +36,7 @@ describe('control page tests', () => {
       cy.fixture('role_names').then(name => {
         cy.login(name.role.reviewers[0], dashboard)
         cy.awaitDisappearSpinner()
-        DashboardPage.clickAcceptReview()
+        DashboardPage.clickAcceptReviewButton()
         DashboardPage.clickDoReviewAndVerifyPageLoaded()
         cy.fixture('submission_form_data').then(data => {
           ReviewPage.fillInReviewComment(data.review1)
@@ -59,7 +59,7 @@ describe('control page tests', () => {
       cy.fixture('role_names').then(name => {
         cy.login(name.role.reviewers[0], dashboard)
         cy.awaitDisappearSpinner()
-        DashboardPage.clickAcceptReview()
+        DashboardPage.clickAcceptReviewButton()
         DashboardPage.clickDoReviewAndVerifyPageLoaded()
         cy.fixture('submission_form_data').then(data => {
           ReviewPage.fillInReviewComment(data.review1)
@@ -81,7 +81,7 @@ describe('control page tests', () => {
         cy.login(name.role.reviewers[0], dashboard)
       })
       cy.awaitDisappearSpinner()
-      DashboardPage.clickAcceptReview()
+      DashboardPage.clickAcceptReviewButton()
       DashboardPage.clickDoReviewAndVerifyPageLoaded()
       cy.fixture('submission_form_data').then(data => {
         ReviewPage.fillInReviewComment(data.review1)
@@ -103,7 +103,7 @@ describe('control page tests', () => {
         cy.login(name.role.reviewers[0], dashboard)
       })
       cy.awaitDisappearSpinner()
-      DashboardPage.clickAcceptReview()
+      DashboardPage.clickAcceptReviewButton()
       DashboardPage.clickDoReviewAndVerifyPageLoaded()
       cy.fixture('submission_form_data').then(data => {
         ReviewPage.fillInReviewComment(data.review1)
@@ -141,7 +141,7 @@ describe('control page tests', () => {
         ReviewersPage.waitThreeSec()
         cy.login(name.role.reviewers[0], dashboard)
         cy.awaitDisappearSpinner()
-        DashboardPage.clickAcceptReview()
+        DashboardPage.clickAcceptReviewButton()
         DashboardPage.clickDoReview()
         cy.fixture('submission_form_data').then(data => {
           ReviewPage.fillInReviewComment(data.review1)
@@ -222,7 +222,7 @@ describe('control page tests', () => {
         ReviewersPage.waitThreeSec()
         cy.login(name.role.reviewers[1], dashboard)
         cy.awaitDisappearSpinner()
-        DashboardPage.clickAcceptReview()
+        DashboardPage.clickAcceptReviewButton()
         DashboardPage.clickDoReview()
         cy.fixture('submission_form_data').then(data => {
           ReviewPage.fillInReviewComment(data.review1)
