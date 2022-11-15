@@ -52,6 +52,15 @@ module.exports = (on, config) => {
 
       const user = await User.query().where({ username }).first()
 
+      if (!user) {
+        const users = await User.query().select('username')
+        throw new Error(
+          `Could not find ${username} among users [${users
+            .map(u => `'${username}'`)
+            .join(', ')}]`,
+        )
+      }
+
       const jwt = createJWT(user)
 
       return jwt

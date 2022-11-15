@@ -234,7 +234,7 @@ CREATE TABLE public.files (
     mime_type text,
     size integer NOT NULL,
     type text NOT NULL,
-    manuscript_id uuid NOT NULL,
+    object_id uuid,
     review_comment_id uuid
 );
 
@@ -936,14 +936,6 @@ ALTER TABLE ONLY public.channel_members
 
 ALTER TABLE ONLY public.channels
     ADD CONSTRAINT channels_manuscript_id_fkey FOREIGN KEY (manuscript_id) REFERENCES public.manuscripts(id) ON DELETE CASCADE;
-
-
---
--- Name: files files_manuscript_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: kotahidev
---
-
-ALTER TABLE ONLY public.files
-    ADD CONSTRAINT files_manuscript_id_fkey FOREIGN KEY (manuscript_id) REFERENCES public.manuscripts(id) ON DELETE CASCADE;
 
 
 --
