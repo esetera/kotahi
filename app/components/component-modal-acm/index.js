@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import ReactModal from 'react-modal'
 import styled from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
@@ -60,7 +60,7 @@ const Title = styled.div`
 `
 
 const Subtitle = styled.div`
-  font-size: ${th('fontSizeHeading5')};
+  font-size: ${th('fontSizeHeading6')};
   color: grey;
 `
 
@@ -89,7 +89,7 @@ const Buttons = styled.div`
   bottom: 0px;
   margin: 10px 0px;
   background-color: white;
-  height: 12%;
+  height: 8%;
   width: 100%;
   z-index: 10001;
 `
@@ -148,7 +148,7 @@ const Modal = ({ children, ...props }) => {
 }
 
 export const ACMModal = ({
-  isOpen,, // bool used to open and close modal
+  isOpen, // bool used to open and close modal
   closeModal, // function to close your modal / set isOpen=false
   title = 'Main Title', // main title in black
   subtitle = '0000-0000-0000-0000', // optional subtitle in grey
@@ -171,7 +171,7 @@ export const ACMModal = ({
       <MainHeader>
         <Titles>
           <Title>{title}</Title>
-          <Subtitle>{subtitle}</Subtitle>
+          {title && <Subtitle>{subtitle}</Subtitle>}
         </Titles>
         <CloseButton onClick={closeModal}>
           <Icon>x</Icon>
@@ -180,31 +180,39 @@ export const ACMModal = ({
 
       <ModalContainer>
         <Headers>
-          <Title>{header}</Title>
-          <Subtitle>{subheader}</Subtitle>
+          {header && <Title>{header}</Title>}
+          {subheader && <Subtitle>{subheader}</Subtitle>}
         </Headers>
         {children}
       </ModalContainer>
 
       <Buttons>
-        <ButtonContainer>
-          <CheckBoxButton onClick={box1Action}>
-            {(box1 && <Icon>check-square</Icon>) || <Icon>square</Icon>}
-            {box1Content}
-          </CheckBoxButton>
-          <CheckBoxButton onClick={box2Action}>
-            {(box2 && <Icon>check-square</Icon>) || <Icon>square</Icon>}
-            {box2Content}
-          </CheckBoxButton>
+        <ButtonContainer style={{ alignSelf: 'flex-start' }}>
+          {box1Content && (
+            <CheckBoxButton onClick={box1Action}>
+              {(box1 && <Icon>check-square</Icon>) || <Icon>square</Icon>}
+              {box1Content}
+            </CheckBoxButton>
+          )}
+          {box2Content && (
+            <CheckBoxButton onClick={box2Action}>
+              {(box2 && <Icon>check-square</Icon>) || <Icon>square</Icon>}
+              {box2Content}
+            </CheckBoxButton>
+          )}
         </ButtonContainer>
 
-        <ButtonContainer>
-          <SecondaryButton onClick={secondaryAction}>
-            {secondaryContent}
-          </SecondaryButton>
-          <PrimaryButton onClick={primaryAction}>
-            {primaryContent}
-          </PrimaryButton>
+        <ButtonContainer style={{ alignSelf: 'flex-end' }}>
+          {secondaryContent && (
+            <SecondaryButton onClick={secondaryAction}>
+              {secondaryContent}
+            </SecondaryButton>
+          )}
+          {primaryContent && (
+            <PrimaryButton onClick={primaryAction}>
+              {primaryContent}
+            </PrimaryButton>
+          )}
         </ButtonContainer>
       </Buttons>
     </Modal>
