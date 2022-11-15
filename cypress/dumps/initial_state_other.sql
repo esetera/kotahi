@@ -1104,7 +1104,7 @@ ALTER TABLE public.threaded_discussions
 
 
 
-
+DROP FUNCTION IF EXISTS public.manuscripts_searchable_text_trigger;
 CREATE FUNCTION public.manuscripts_searchable_text_trigger() RETURNS trigger AS $$
 DECLARE
   a TEXT;
@@ -1195,6 +1195,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER searchable_text_update BEFORE INSERT OR UPDATE
   ON public.manuscripts FOR EACH ROW EXECUTE PROCEDURE public.manuscripts_searchable_text_trigger();
 
+DROP FUNCTION IF EXISTS public.team_members_trigger;
 CREATE FUNCTION public.team_members_trigger() RETURNS trigger AS $$
 BEGIN
   UPDATE public.manuscripts m SET updated = m.updated -- Cause trigger function to regenerate searchable_text
@@ -1207,6 +1208,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER team_member_update AFTER INSERT OR UPDATE
   ON public.team_members FOR EACH ROW EXECUTE PROCEDURE public.team_members_trigger();
 
+DROP FUNCTION IF EXISTS public.invitations_trigger;
 CREATE FUNCTION public.invitations_trigger() RETURNS trigger AS $$
 BEGIN
   UPDATE public.manuscripts m SET updated = m.updated -- Cause trigger function to regenerate searchable_text
