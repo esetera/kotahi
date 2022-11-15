@@ -4,12 +4,12 @@ import { cloneDeep, get } from 'lodash'
 import { FieldArray } from 'formik'
 import { grid, th } from '@pubsweet/ui-toolkit'
 import styled from 'styled-components'
+import Modal from 'react-modal'
 import UploadingFile from './UploadingFile'
 import { Dropzone } from './Dropzone'
 import { Icon } from './Icon'
 import theme from '../../theme'
-import { Spinner } from './'
-import Modal from 'react-modal'
+import { Spinner } from './Spinner'
 
 const Root = styled.div`
   border: 1px dashed ${th('colorBorder')};
