@@ -56,7 +56,7 @@ module.exports = (on, config) => {
         const users = await User.query().select('username')
         throw new Error(
           `Could not find ${username} among users [${users
-            .map(u => `'${username}'`)
+            .map(u => `'${u.username}'`)
             .join(', ')}]`,
         )
       }

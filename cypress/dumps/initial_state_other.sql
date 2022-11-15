@@ -322,7 +322,7 @@ CREATE TABLE public.manuscripts (
     is_imported boolean,
     import_source uuid,
     import_source_server text,
-    short_id integer,
+    short_id SERIAL,
     submitted_date timestamp with time zone,
     form_fields_to_publish JSONB DEFAULT '[]'::JSONB NOT NULL,
     searchable_text TEXT DEFAULT '' NOT NULL,
