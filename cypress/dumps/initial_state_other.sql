@@ -1050,3 +1050,59 @@ ALTER TABLE ONLY public.team_members
 --
 -- PostgreSQL database dump complete
 --
+
+DROP table IF EXISTS public.invitations;
+DROP type IF EXISTS public.invitation_status;
+DROP type IF EXISTS public.invitation_declined_reason_type;
+DROP type IF EXISTS public.invitation_type;
+CREATE TYPE public.invitation_status as enum ('UNANSWERED','ACCEPTED','REJECTED');
+CREATE TYPE public.invitation_declined_reason_type AS enum ('UNAVAILABLE','TOPIC','CONFLICT_OF_INTEREST','OTHER','DO_NOT_CONTACT');
+CREATE TYPE public.invitation_type AS enum ('AUTHOR','REVIEWER');
+
+CREATE TABLE public.invitations (
+    id UUID PRIMARY KEY,
+    created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT current_timestamp,
+    updated TIMESTAMP WITH TIME ZONE,
+    manuscript_id UUID NOT NULL,
+        CONSTRAINT fk_man_id FOREIGN KEY (manuscript_id) REFERENCES public.manuscripts (id) ON DELETE CASCADE,
+    purpose TEXT,
+    to_email TEXT NOT NULL,
+    status public.invitation_status NOT NULL,
+    invited_person_type public.invitation_type NOT NULL,
+    invited_person_name TEXT NOT NULL,
+    response_date TIMESTAMP WITH TIME ZONE,
+    response_comment TEXT,
+    declined_reason public.invitation_declined_reason_type ,
+    user_id UUID, 
+        CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES public.users (id),
+    sender_id UUID NOT NULL,
+        CONSTRAINT fk_sender_id FOREIGN KEY (sender_id) REFERENCES public.users (id)
+);
+
+
+ALTER TABLE public.reviews ADD CONSTRAINT reviews_pkey PRIMARY KEY (id);
+ALTER TABLE public.reviews ADD CONSTRAINT reviews_manuscript_id_fkey FOREIGN KEY (manuscript_id)
+  REFERENCES public.manuscripts(id) ON DELETE CASCADE;
+
+
+CREATE TABLE public.email_blacklist (
+  id UUID PRIMARY KEY,
+  created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT current_timestamp,
+  updated TIMESTAMP WITH TIME ZONE,
+  email TEXT NOT NULL
+);
+
+
+
+CREATE TABLE IF NOT EXISTS public.threaded_discussions (
+  id uuid NOT NULL,
+  created timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  updated timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  manuscript_id uuid NOT NULL,
+  threads JSONB NOT NULL
+);
+
+ALTER TABLE public.threaded_discussions
+  ADD CONSTRAINT threaded_discussions_manuscript_id_fkey FOREIGN KEY (manuscript_id) REFERENCES public.manuscripts(id) ON DELETE CASCADE;
+
+
