@@ -173,7 +173,7 @@ export const SubmissionFormPage = {
     this.getSubmitManuscriptButton().click()
   },
   clickSubmitManuscriptAndWaitPageLoad() {
-    this.clickSubmitManuscript()
+    this.clickSubmitYourManuscript()
     cy.url().should('not.contain', submit)
     cy.awaitDisappearSpinner()
   },
