@@ -7,6 +7,8 @@
 const BUTTON = 'button'
 const USERNAME_FIELD = '[class*=ChangeUsername] > input'
 const EMAIL_FIELD = '[class*=ChangeEmail] > input'
+const POPUP_EMAIL_FIELD = '[id=enter-email]'
+const POPUP_NEXT_BUTTON = '[id=enter-email] ~ button'
 const EMAIL_CHANGE_ERROR_MESSAGE = 'ChangeEmail__UpdateEmailError'
 
 // eslint-disable-next-line import/prefer-default-export
@@ -28,6 +30,18 @@ export const ProfilePage = {
   },
   updateEmail(email) {
     this.getEmailField().fillInput(email)
+  },
+  getPopupEmailField() {
+    return cy.get(POPUP_EMAIL_FIELD)
+  },
+  updateEmailInPopup(email) {
+    this.getPopupEmailField().fillInput(email)
+  },
+  getPopupNextButton() {
+    return cy.get(POPUP_NEXT_BUTTON)
+  },
+  clickPopupNextButton() {
+    this.getPopupNextButton().click()
   },
   getEmailChangeError() {
     return cy.getByContainsClass(EMAIL_CHANGE_ERROR_MESSAGE)

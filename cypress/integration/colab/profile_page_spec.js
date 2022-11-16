@@ -75,8 +75,10 @@ describe('profile page tests', () => {
     ProfilePage.getEmailChangeError().should('contain', 'invalid')
   })
   it('first login - after adding email user can navigate away', () => {
-    ProfilePage.updateEmail('test@email.com')
-    ProfilePage.clickNthButton(-1)
+    ProfilePage.updateEmailInPopup('test@email.com')
+    ProfilePage.clickPopupNextButton()
+    // ProfilePage.updateEmail('test@email.com')
+    // ProfilePage.clickNthButton(-1)
     ProfilePage.getEmailChangeError().should('not.exist')
     cy.visit(dashboard)
     cy.awaitDisappearSpinner()
