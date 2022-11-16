@@ -30,7 +30,6 @@ import MessageContainer from '../../component-chat/src/MessageContainer'
 import Modal from '../../component-modal/src'
 import BulkArchiveModal from './BulkArchiveModal'
 import getColumnsProps from './getColumnsProps'
-import getUriQueryParams from './getUriQueryParams'
 import FilterSortHeader from './FilterSortHeader'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
@@ -82,7 +81,7 @@ const Manuscripts = ({ history, ...props }) => {
   const [selectedNewManuscripts, setSelectedNewManuscripts] = useState([])
   const [isAdminChatOpen, setIsAdminChatOpen] = useState(true)
 
-  const uriQueryParams = getUriQueryParams(window.location)
+  const params = new URLSearchParams(history.location.search)
 
   const toggleNewManuscriptCheck = id => {
     setSelectedNewManuscripts(s => {
@@ -220,14 +219,12 @@ const Manuscripts = ({ history, ...props }) => {
     closeModalBulkArchiveConfirmation()
   }
 
-  const currentSearchQuery = uriQueryParams.find(
-    x => x.field === URI_SEARCH_PARAM,
-  )?.value
+  const currentSearchQuery = params.get(URI_SEARCH_PARAM)
 
   const columnsProps = getColumnsProps(
     configuredColumnNames,
     fieldDefinitions,
-    uriQueryParams,
+    params,
     sortName,
     sortDirection,
     deleteManuscript,

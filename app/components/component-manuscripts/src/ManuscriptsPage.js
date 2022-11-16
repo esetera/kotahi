@@ -24,13 +24,12 @@ import {
 import configuredColumnNames from './configuredColumnNames'
 import { updateMutation } from '../../component-submit/src/components/SubmitPage'
 import { publishManuscriptMutation } from '../../component-review/src/components/queries'
-import getUriQueryParams from './getUriQueryParams'
 import Manuscripts from './Manuscripts'
 import { validateDoi } from '../../../shared/commsUtils'
 import {
+  extractFilters,
   extractSortData,
   URI_PAGENUM_PARAM,
-  URI_SORT_PARAM,
 } from '../../../shared/urlParamUtils'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
@@ -38,12 +37,12 @@ const chatRoomId = fnv.hash(config['pubsweet-client'].baseUrl).hex()
 
 const ManuscriptsPage = ({ history }) => {
   const [isImporting, setIsImporting] = useState(false)
-  const uriQueryParams = getUriQueryParams(window.location)
 
-  const url = new URLSearchParams(history.location.search)
-  const page = url.get(URI_PAGENUM_PARAM) || 1
-  const sortName = extractSortData(url).name || 'created'
-  const sortDirection = extractSortData(url).direction || 'DESC'
+  const params = new URLSearchParams(history.location.search)
+  const page = params.get(URI_PAGENUM_PARAM) || 1
+  const sortName = extractSortData(params).name
+  const sortDirection = extractSortData(params).direction
+  const filters = extractFilters(params)
 
   const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
 
@@ -54,9 +53,7 @@ const ManuscriptsPage = ({ history }) => {
         : null,
       offset: (page - 1) * limit,
       limit,
-      filters: uriQueryParams.filter(f => {
-        return f.field !== URI_PAGENUM_PARAM && f.field !== URI_SORT_PARAM
-      }),
+      filters,
       timezoneOffsetMinutes: new Date().getTimezoneOffset(),
     },
     fetchPolicy: 'network-only',

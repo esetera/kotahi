@@ -15,6 +15,16 @@ export const extractSortData = params => ({
 })
 
 /**
+ * Extracts filters from query param and returns them as [{field, value}]
+ *
+ * @param {URLSearchParams} params
+ */
+export const extractFilters = params =>
+  Array.from(params.keys())
+    .filter(field => field !== URI_PAGENUM_PARAM && field !== URI_SORT_PARAM)
+    .map(field => ({ field, value: params.get(field) }))
+
+/**
  * Custom hook to return a function that can load a new page with certain URI query params
  */
 export const useQueryParams = () => {
@@ -24,6 +34,7 @@ export const useQueryParams = () => {
     const params = new URLSearchParams(history.location.search)
     Object.entries(queryParams).forEach(([fieldName, fieldValue]) => {
       if (fieldValue) params.set(fieldName, fieldValue)
+      else params.delete(fieldName)
     })
 
     history.push({
