@@ -169,9 +169,10 @@ export const Modal = ({
       <ModalContainer>{children}</ModalContainer>
 
       <Buttons>
-        <ButtonContainer style={{ alignSelf: 'flex-start' }}>
-          {leftActions}
-          {/* {box1Content && (
+        {leftActions && (
+          <ButtonContainer style={{ alignSelf: 'flex-start' }}>
+            {leftActions}
+            {/* {box1Content && (
             <CheckBoxButton onClick={box1Action}>
               {(box1 && <Icon>check-square</Icon>) || <Icon>square</Icon>}
               {box1Content}
@@ -183,11 +184,13 @@ export const Modal = ({
               {box2Content}
             </CheckBoxButton>
           )} */}
-        </ButtonContainer>
+          </ButtonContainer>
+        )}
 
-        <ButtonContainer style={{ alignSelf: 'flex-end' }}>
-          {rightActions}
-          {/* {secondaryContent && (
+        {rightActions && (
+          <ButtonContainer style={{ alignSelf: 'flex-end' }}>
+            {rightActions}
+            {/* {secondaryContent && (
             <SecondaryButton onClick={secondaryAction}>
               {secondaryContent}
             </SecondaryButton>
@@ -197,7 +200,8 @@ export const Modal = ({
               {primaryContent}
             </PrimaryButton>
           )} */}
-        </ButtonContainer>
+          </ButtonContainer>
+        )}
       </Buttons>
     </ReactModal>
   )
