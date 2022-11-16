@@ -133,14 +133,6 @@ const ModalContainer = styled.div`
   height: 72%;
 `
 
-const MainModal = ({ children, ...props }) => {
-  return (
-    <ReactModal style={styles} {...props}>
-      {children}
-    </ReactModal>
-  )
-}
-
 export const Modal = ({
   isOpen, // bool used to open and close modal
   onClose, // function to close your modal / set isOpen=false
@@ -162,7 +154,7 @@ export const Modal = ({
   children,
 }) => {
   return (
-    <MainModal isOpen={isOpen} styles={styles}>
+    <ReactModal isOpen={isOpen} styles={styles}>
       <MainHeader>
         {headerContent}
         {/* <Titles>
@@ -207,7 +199,7 @@ export const Modal = ({
           )} */}
         </ButtonContainer>
       </Buttons>
-    </MainModal>
+    </ReactModal>
   )
 }
 
