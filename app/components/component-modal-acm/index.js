@@ -179,10 +179,6 @@ export const ACMModal = ({
       </MainHeader>
 
       <ModalContainer>
-        <Headers>
-          {header && <Title>{header}</Title>}
-          {subheader && <Subtitle>{subheader}</Subtitle>}
-        </Headers>
         {children}
       </ModalContainer>
 
