@@ -25,7 +25,7 @@ export const Menu = {
     this.getDashboardButton().click()
   },
   clickDashboardAndVerifyPageLoaded() {
-    this.getDashboardButton().click()
+    this.clickDashboard()
     cy.awaitDisappearSpinner()
     DashboardPage.getHeader().should('contain', 'Dashboard')
   },
