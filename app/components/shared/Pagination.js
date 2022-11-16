@@ -89,8 +89,7 @@ export const Pagination = ({
           marginPagesDisplay={3}
           nextLabel=">"
           onPageChange={nmb => {
-            if (applyQueryParams)
-              applyQueryParams({ [URI_PAGENUM_PARAM]: nmb.selected + 1 })
+            applyQueryParams({ [URI_PAGENUM_PARAM]: nmb.selected + 1 })
             if (setPage) setPage(nmb.selected + 1)
           }}
           pageCount={pages.length}

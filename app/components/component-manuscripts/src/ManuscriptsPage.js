@@ -30,6 +30,7 @@ import {
   extractFilters,
   extractSortData,
   URI_PAGENUM_PARAM,
+  useQueryParams,
 } from '../../../shared/urlParamUtils'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
@@ -37,6 +38,7 @@ const chatRoomId = fnv.hash(config['pubsweet-client'].baseUrl).hex()
 
 const ManuscriptsPage = ({ history }) => {
   const [isImporting, setIsImporting] = useState(false)
+  const applyQueryParams = useQueryParams()
 
   const params = new URLSearchParams(history.location.search)
   const page = params.get(URI_PAGENUM_PARAM) || 1
@@ -72,9 +74,8 @@ const ManuscriptsPage = ({ history }) => {
         },
       } = data
 
-      queryObject.refetch()
       setIsImporting(false)
-      // setPage(1)
+      applyQueryParams({ [URI_PAGENUM_PARAM]: 1 })
 
       toast.success(
         manuscriptsImportStatus && 'Manuscripts successfully imported',
