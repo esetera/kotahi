@@ -504,6 +504,7 @@ CREATE TABLE "public"."teams" (
     "global" bool,
     "type" text NOT NULL,
     "object_id" uuid,
+    "object_type" text,
     PRIMARY KEY ("id")
 );
 
