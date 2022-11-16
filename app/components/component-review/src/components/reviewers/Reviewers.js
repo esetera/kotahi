@@ -44,6 +44,8 @@ const Column = styled.div`
 
 const StatusLabel = styled.div`
   background-color: ${props => props.statusColor || '#ffffff'};
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.65);
   padding-left: 10px;
   padding-right: 10px;
   padding-top: 4px;
@@ -55,7 +57,6 @@ const StatusLabel = styled.div`
 
 const CardsWrapper = styled.div`
   background-color: #f8f8f9;
-  padding: 10px;
   height: 100%;
   width: 100%;
   overflow-x: hidden;
