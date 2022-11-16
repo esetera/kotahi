@@ -1154,7 +1154,8 @@ const resolvers = {
         )
         .orderBy('created', 'desc')
 
-      const usersManuscriptIDs = []
+      // Get the latest version of each manuscript, and check the users role in that version
+      const userManuscriptsWithInfo = {}
 
       allManuscriptsWithInfo.forEach(m => {
         const latestVersion =
@@ -1167,21 +1168,19 @@ const resolvers = {
             t.members.some(member => member.userId === ctx.user),
           )
         )
-          usersManuscriptIDs.push(m.id)
+        userManuscriptsWithInfo[m.id] = m
       })
 
+      // Apply filters to the manuscripts, limiting results to those the user has a role in
       const [rawQuery, rawParams] = buildQueryForManuscriptSearchFilterAndOrder(
         sort,
         offset,
         limit,
         filters,
         submissionForm,
-        usersManuscriptIDs,
         timezoneOffsetMinutes || 0,
+        Object.keys(userManuscriptsWithInfo),
       )
-
-      // eslint-disable-next-line no-console
-      console.log(rawQuery, rawParams)
 
       const knex = models.Manuscript.knex()
       const rawQResult = await knex.raw(rawQuery, rawParams)
@@ -1189,22 +1188,14 @@ const resolvers = {
       if (rawQResult.rowCount)
         totalCount = parseInt(rawQResult.rows[0].full_count, 10)
 
-      const paginatedIds = rawQResult.rows.map(row => row.id)
-
-      const paginatedManuscriptsWithInfo = await models.Manuscript.query()
-        .findByIds(paginatedIds)
-        .withGraphFetched(
-          '[submitter, teams.members.user.defaultIdentity, manuscriptVersions(orderByCreated).[submitter, teams.members.user.defaultIdentity]]',
-        )
-
+      // Add in searchRank and searchSnippet
       const result = rawQResult.rows.map(row => ({
-        ...paginatedManuscriptsWithInfo.find(m => m.id === row.id),
+        ...userManuscriptsWithInfo[row.id],
         searchRank: row.rank,
         searchSnippet: row.snippet,
       }))
 
       return { totalCount, manuscripts: result }
-      // return Promise.all(filteredManuscripts.map(m => repackageForGraphql(m)))
     },
     async manuscripts(_, { where }, ctx) {
       const manuscripts = models.Manuscript.query()
@@ -1282,7 +1273,6 @@ const resolvers = {
         limit,
         filters,
         submissionForm,
-        null,
         timezoneOffsetMinutes || 0,
       )
 

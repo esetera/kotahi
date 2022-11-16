@@ -39,11 +39,11 @@ const getManuscriptsUserHasRoleIn = (manuscripts, userId, roles) =>
 const DashboardPage = ({ history, ...props }) => {
   const { loading, data, error } = useQuery(queries.dashboard, {
     variables: {
-      sort: { field: 'created', isAscending: false},
+      sort: { field: 'created', isAscending: false },
       filters: [],
       offset: 0,
-      limit: 100,
-      timezoneOffsetMinutes: 360,
+      limit: process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10,
+      timezoneOffsetMinutes: new Date().getTimezoneOffset(),
     },
     fetchPolicy: 'cache-and-network',
   })
