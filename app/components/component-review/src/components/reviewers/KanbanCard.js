@@ -6,13 +6,14 @@ import { UserAvatar } from '../../../../component-avatar/src'
 
 const Card = styled.div`
   background-color: #f8f8f9;
+  border-bottom: 0.8px solid #bfbfbf;
   border-radius: 8px;
   display: flex;
   max-width: 20vw;
   padding: 10px;
 
   &:hover {
-    box-shadow: 0px 9px 5px -6px #868686;
+    box-shadow: 0px 9px 5px -6px #bfbfbf;
     transition: 0.3s ease;
   }
 `
@@ -35,7 +36,7 @@ const NameDisplay = styled.div`
 
 const DateDisplay = styled.div`
   color: gray;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.2;
 `
 
