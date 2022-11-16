@@ -119,9 +119,7 @@ const CheckBoxButton = styled.div`
   display: flex;
   align-items: center;
   margin: 10px 5px;
-  &:hover {
-    cursor: pointer;
-  }
+  cursor: pointer;
 `
 
 const ModalContainer = styled.div`
@@ -148,8 +146,6 @@ export const Modal = ({
   onClose, // function to close your modal / set isOpen=false
   title, // main title in black
   subtitle, // optional subtitle in grey
-  header, // header in black
-  subheader, // optional header in grey
   primaryAction, // primary button action (green, rightmost)
   primaryContent,
   secondaryAction, // secondary button action (grey)
