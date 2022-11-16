@@ -35,7 +35,7 @@ describe('Email Notification Tests', () => {
 
       ControlPage.getMessageContainer().should(
         'contain',
-        'Author Invitation Email Template sent by 0000000256415729 to Emily Clay',
+        'Author Invitation Email Template sent by Elaine Barnes to Emily Clay',
       )
 
       /* New User */
@@ -54,7 +54,7 @@ describe('Email Notification Tests', () => {
 
       ControlPage.getMessageContainer().should(
         'contain',
-        'Author Invitation Email Template sent by 0000000256415729 to Jon',
+        'Author Invitation Email Template sent by Elaine Barnes to Jon',
       )
     })
   })

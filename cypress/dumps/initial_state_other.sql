@@ -320,6 +320,7 @@ CREATE TABLE public.manuscripts (
     type text NOT NULL,
     evaluations_hypothesis_map jsonb,
     is_imported boolean,
+    is_hidden boolean,
     import_source uuid,
     import_source_server text,
     short_id SERIAL,
@@ -1215,3 +1216,9 @@ CREATE TRIGGER invitation_update AFTER INSERT OR UPDATE
 
 CREATE INDEX IF NOT EXISTS manuscripts_search_idx ON public.manuscripts
   USING GIN (search_tsvector);
+
+INSERT INTO public.channels ( 
+  id, topic, type 
+) VALUES (  
+  '9fd7774c-11e5-4802-804c-ab64aefd5080', 'System-wide discussion', 'editorial'
+) ON CONFLICT DO NOTHING;
