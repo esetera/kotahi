@@ -21,10 +21,11 @@ export const useQueryParams = () => {
   const history = useHistory()
 
   const applyQueryParams = queryParams => {
-    const params = new URLSearchParams(history.search)
+    const params = new URLSearchParams(history.location.search)
     Object.entries(queryParams).forEach(([fieldName, fieldValue]) => {
-      params.set(fieldName, fieldValue)
+      if (fieldValue) params.set(fieldName, fieldValue)
     })
+
     history.push({
       pathname: history.pathname,
       search: `?${params}`,
