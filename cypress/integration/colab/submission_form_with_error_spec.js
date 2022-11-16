@@ -60,7 +60,6 @@ describe('Submission with errors test', () => {
       cy.fixture('submission_form_data').then(data => {
         SubmissionFormPage.fillInTitle(data.newTitle)
         SubmissionFormPage.fillInAbstractColab(data.abstract)
-        SubmissionFormPage.getWaxInputBox(0).fillInput(data.abstract)
         SubmissionFormPage.fillInFirstAuthor(data.creator)
         SubmissionFormPage.fillInDatePublished(data.date)
         SubmissionFormPage.fillInLink(data.doi)
