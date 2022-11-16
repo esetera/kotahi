@@ -20,6 +20,7 @@ const STUDY_STRENGTHS = 'submission.studyStrengths'
 const LIMITATIONS_FIELD = 'submission.limitations'
 const DROPDOWN_OPTION_LIST = '[class*=MenuList] > [id*=option]'
 const KEYWORDS_FIELD = 'submission.keywords'
+const LABELS_DROPDOWN = 'Labels'
 const REFERENCES_FIELD = 'submission.references'
 const SUBMIT_RESEARCH_BUTTON = 'form > div > button'
 const SUBMIT_YOUR_MANUSCRIPT_BUTTON = 'button[type=submit]'
@@ -125,7 +126,15 @@ export const SubmissionFormPage = {
   fillInLimitations(limitations) {
     this.getWaxInputBox(4).find(CONTENT_EDITABLE_VALUE).fillInput(limitations)
   },
-
+  getLabelsDropdown() {
+    return cy.getByContainsAriaLabel(LABELS_DROPDOWN)
+  },
+  clickLabelsDropdown() {
+    this.getLabelsDropdown().click({ force: true })
+  },
+  selectDropdownOption(nth) {
+    return cy.get(DROPDOWN_OPTION_LIST).eq(nth).click()
+  },
   getAllWaxInputBoxes() {
     return cy.getByContainsClass(SUBMISSION_FORM_INPUT_BOX)
   },
