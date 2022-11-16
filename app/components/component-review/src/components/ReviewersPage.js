@@ -4,6 +4,7 @@ import { gql, useQuery, useMutation } from '@apollo/client'
 import { useParams } from 'react-router-dom'
 import Reviewers from './reviewers/Reviewers'
 import { Spinner, CommsErrorBanner } from '../../../shared'
+import { KanbanCard } from './reviewers/KanbanCard'
 
 const teamFields = `
   id
@@ -12,6 +13,7 @@ const teamFields = `
   objectId
   objectType
   members {
+    updated
     id
     user {
       id
@@ -157,31 +159,34 @@ const ReviewersPage = () => {
 
   const reviewers = reviewersTeam.members || []
   return (
-    <Formik
-      displayName="reviewers"
-      initialValues={{ user: undefined }}
-      onSubmit={values =>
-        addReviewer({
-          variables: {
-            userId: values.user.id,
-            manuscriptId: manuscript.id,
-            status: 'invited',
-          },
-        })
-      }
-    >
-      {props => (
-        <Reviewers
-          {...props}
-          manuscript={manuscript}
-          refetchManuscriptData={refetch}
-          removeReviewer={removeReviewer}
-          reviewers={reviewers}
-          reviewerUsers={users}
-          updateTeamMember={updateTeamMember}
-        />
-      )}
-    </Formik>
+    <>
+      <KanbanCard reviewer={reviewers[0].user} />
+      <Formik
+        displayName="reviewers"
+        initialValues={{ user: undefined }}
+        onSubmit={values =>
+          addReviewer({
+            variables: {
+              userId: values.user.id,
+              manuscriptId: manuscript.id,
+              status: 'invited',
+            },
+          })
+        }
+      >
+        {props => (
+          <Reviewers
+            {...props}
+            manuscript={manuscript}
+            refetchManuscriptData={refetch}
+            removeReviewer={removeReviewer}
+            reviewers={reviewers}
+            reviewerUsers={users}
+            updateTeamMember={updateTeamMember}
+          />
+        )}
+      </Formik>
+    </>
   )
 }
 
