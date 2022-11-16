@@ -456,10 +456,11 @@ const resolvers = {
         }
       }
 
-      const updatedManuscript = await models.Manuscript.query().updateAndFetchById(
-        manuscript.id,
-        manuscript,
-      )
+      const updatedManuscript =
+        await models.Manuscript.query().updateAndFetchById(
+          manuscript.id,
+          manuscript,
+        )
 
       // newly uploaded files get tasks populated
       await populateTemplatedTasksForManuscript(manuscript.id)
@@ -1042,10 +1043,8 @@ const resolvers = {
             : 'evaluated'
       }
 
-      const updatedManuscript = await models.Manuscript.query().updateAndFetchById(
-        id,
-        update,
-      )
+      const updatedManuscript =
+        await models.Manuscript.query().updateAndFetchById(id, update)
 
       return { manuscript: await repackageForGraphql(updatedManuscript), steps }
     },
@@ -1168,7 +1167,7 @@ const resolvers = {
             t.members.some(member => member.userId === ctx.user),
           )
         )
-        userManuscriptsWithInfo[m.id] = m
+          userManuscriptsWithInfo[m.id] = m
       })
 
       // Apply filters to the manuscripts, limiting results to those the user has a role in

@@ -78,9 +78,8 @@ const DashboardPage = ({ history, ...props }) => {
   if (error) return <CommsErrorBanner error={error} />
   const currentUser = data && data.currentUser
 
-  const latestVersions = data.manuscriptsUserHasCurrentRoleIn.manuscripts.map(
-    getLatestVersion,
-  )
+  const latestVersions =
+    data.manuscriptsUserHasCurrentRoleIn.manuscripts.map(getLatestVersion)
 
   const authorLatestVersions = getManuscriptsUserHasRoleIn(
     latestVersions,
@@ -112,7 +111,9 @@ const DashboardPage = ({ history, ...props }) => {
 
   return (
     <Dashboard
+      applySearchQuery={null}
       authorLatestVersions={authorLatestVersions}
+      currentSearchQuery={null}
       currentUser={currentUser}
       editorLatestVersions={editorLatestVersions}
       instanceName={instanceName}
@@ -123,8 +124,6 @@ const DashboardPage = ({ history, ...props }) => {
       shouldShowShortId={shouldShowShortId}
       updateMemberStatus={updateMemberStatus}
       urlFrag={urlFrag}
-      applySearchQuery={null}
-      currentSearchQuery={null}
     />
   )
 }
