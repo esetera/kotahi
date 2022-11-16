@@ -1,13 +1,10 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 // import Authorize from 'pubsweet-client/src/helpers/Authorize'
-import { useQuery, useMutation } from '@apollo/client'
 
 import config from 'config'
 import { Redirect } from 'react-router-dom'
 import ReactRouterPropTypes from 'react-router-prop-types'
 import Dashboard from './Dashboard'
-import mutations from '../graphql/mutations'
-import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../queries/team'
 
 
 const DashboardPage = ({ history, ...props }) => {
