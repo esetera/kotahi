@@ -82,6 +82,7 @@ const InvitationAcceptedPage = () => {
       const invitedUserId = invitedUser ? invitedUser.id : null
 
       if (data.invitationManuscriptId.invitedPersonType === 'AUTHOR') {
+        // TODO For better security we should require the invitation ID to be sent in this mutation
         assignUserAsAuthor({
           variables: { manuscriptId, userId: invitedUserId },
         })

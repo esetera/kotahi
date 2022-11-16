@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import { sanitize } from 'dompurify'
 import 'rc-tooltip/assets/bootstrap_white.css'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
@@ -63,7 +64,13 @@ const ManuscriptRow = ({
   return (
     <>
       <ManuscriptsRow>{columnContent}</ManuscriptsRow>
-      {manuscript.searchSnippet && searchSnippet}
+      {manuscript.searchSnippet && (
+        <SnippetRow
+          dangerouslySetInnerHTML={{
+            __html: `... ${sanitize(manuscript.searchSnippet)} ...`,
+          }}
+        />
+      )}
     </>
   )
 }

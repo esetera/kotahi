@@ -72,6 +72,10 @@ const TaskHeaderRow = styled(TaskRow)`
     line-height: ${th('lineHeightBaseSmall')};
     min-height: ${grid(3)};
   }
+
+  & > div > div {
+    height: unset;
+  }
 `
 /* stylelint-enable no-descending-specificity */
 
@@ -86,7 +90,7 @@ const AssigneeCell = styled.div`
 `
 
 const DueDateCell = styled.div`
-  flex: 0 0 7.6em;
+  flex: 0 0 7.8em;
   justify-content: flex-start;
   position: relative;
 `
@@ -212,11 +216,9 @@ const Task = ({
     config.teamTimezone,
   )
 
-  const transposedEndOfToday = moment
-    .tz(
-      transposeFromTimezoneToLocal(new Date(), config.teamTimezone),
-      config.teamTimezone,
-    )
+  const transposedEndOfToday = moment(
+    transposeFromTimezoneToLocal(new Date(), config.teamTimezone),
+  )
     .endOf('day')
     .toDate()
 
@@ -237,7 +239,9 @@ const Task = ({
     .format('YYYY-MM-DD')
 
   const isDone = task.status === 'Done'
-  const isOverdue = daysDifference < 0 && !isDone && !editAsTemplate
+
+  const isOverdue =
+    Date.now() > new Date(task.dueDate).getTime() && !isDone && !editAsTemplate
 
   if (isReadOnly)
     return (

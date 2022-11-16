@@ -13,19 +13,17 @@ const fragmentFields = `
     manuscriptId
     title
     abstract
-    declarations {
-      openData
-      openPeerReview
-      preregistered
-      previouslySubmitted
-      researchNexus
-      streamlinedReview
-    }
-    articleSections
-    articleType
-    keywords
   }
   submission
+  files {
+    id
+    name
+    tags
+    storedObjects {
+      mimetype
+      url
+    }
+  }
 `
 
 const query = gql`

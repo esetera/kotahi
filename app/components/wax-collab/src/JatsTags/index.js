@@ -6,6 +6,7 @@ import AcknowledgementsSection from './AcknowledgementSection'
 import RefList from './citations/RefList'
 import ArticleTitle from './citations/ArticleTitle'
 import JournalTitle from './citations/JournalTitle'
+import CitationLabel from './citations/CitationLabel'
 import MixedCitationSpan from './citations/MixedCitationSpan'
 import AuthorName from './citations/AuthorName'
 import AuthorGroup from './citations/AuthorGroup'
@@ -22,7 +23,6 @@ import KeywordList from './keywords/KeywordList'
 import Keyword from './keywords/Keyword'
 import GlossarySection from './glossary/GlossarySection'
 import GlossaryTerm from './glossary/GlossaryTerm'
-import GlossaryItem from './glossary/GlossaryItem'
 
 // copied from here: https://gitlab.coko.foundation/wax/wax-prosemirror/-/blob/master/wax-prosemirror-services/src/DisplayBlockLevel/HeadingService/HeadingService.js
 
@@ -62,6 +62,7 @@ class JatsTagsService extends Service {
     this.container.bind('MixedCitationSpan').to(MixedCitationSpan)
     this.container.bind('AuthorName').to(AuthorName)
     this.container.bind('AuthorGroup').to(AuthorGroup)
+    this.container.bind('CitationLabel').to(CitationLabel)
     this.container.bind('Doi').to(Doi)
     this.container.bind('Volume').to(Volume)
     this.container.bind('Issue').to(Issue)
@@ -72,7 +73,6 @@ class JatsTagsService extends Service {
     this.container.bind('Keyword').to(Keyword)
     this.container.bind('GlossarySection').to(GlossarySection)
     this.container.bind('GlossaryTerm').to(GlossaryTerm)
-    this.container.bind('GlossaryItem').to(GlossaryItem)
     const createNode = this.container.get('CreateNode')
     const createMark = this.container.get('CreateMark')
 
@@ -355,36 +355,6 @@ class JatsTagsService extends Service {
         },
       },
     })
-    createNode({
-      glossaryItem: {
-        content: 'inline*',
-        group: 'block',
-        priority: 0,
-        defining: true,
-        attrs: {
-          class: { default: 'glossary-item' },
-        },
-        parseDOM: [
-          {
-            tag: 'p.glossary-item',
-            getAttrs(hook, next) {
-              Object.assign(hook, {
-                class: hook?.dom?.getAttribute('class') || 'glossary-item',
-              })
-              typeof next !== 'undefined' && next()
-            },
-          },
-        ],
-        toDOM(hook) {
-          const attrs = {
-            class: hook.node?.attrs?.class || 'glossary-item',
-            title: 'Glossary item',
-          }
-
-          return ['p', attrs, 0]
-        },
-      },
-    })
     // marks
     createMark({
       mixedCitationSpan: {
@@ -452,6 +422,23 @@ class JatsTagsService extends Service {
         parseDOM: [{ tag: 'span.author-name' }],
         toDOM() {
           return ['span', { class: 'author-name', title: 'Author Name' }, 0]
+        },
+      },
+    })
+    createMark({
+      citationLabel: {
+        attrs: {
+          class: { default: 'citation-label' },
+        },
+        group: 'citationMarks',
+        excludes: 'citationMarks',
+        parseDOM: [{ tag: 'span.citation-label' }],
+        toDOM() {
+          return [
+            'span',
+            { class: 'citation-label', title: 'Citation Label' },
+            0,
+          ]
         },
       },
     })
