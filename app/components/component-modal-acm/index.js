@@ -33,9 +33,9 @@ const MainHeader = styled.div`
   align-items: center;
   z-index: 10000;
   padding: ${grid(2.5)} ${grid(3)};
-  border-color: grey;
+  border-color: #d3d3d3;
   border-style: solid;
-  border-bottom-width: 2px;
+  border-bottom-width: 1.5px;
 `
 
 const Titles = styled.div`
@@ -72,9 +72,9 @@ const CloseButton = styled(Button)`
   min-width: unset;
   width: 30px;
   height: 30px;
+  cursor: pointer;
   &:hover {
     background-color: #d3d3d3;
-    cursor: pointer;
     svg {
       stroke: white;
     }
@@ -104,9 +104,7 @@ const PrimaryButton = styled(ActionButton)`
   background-color: ${th('colorPrimary')};
   border-radius: 6px;
   margin: 0px 10px;
-  &:hover {
-    cursor: pointer;
-  }
+  cursor: pointer;
 `
 
 const SecondaryButton = styled(ActionButton)`
@@ -114,9 +112,7 @@ const SecondaryButton = styled(ActionButton)`
   background-color: grey;
   border-radius: 6px;
   margin: 0px 10px;
-  &:hover {
-    cursor: pointer;
-  }
+  cursor: pointer;
 `
 
 const CheckBoxButton = styled.div`
@@ -139,7 +135,7 @@ const ModalContainer = styled.div`
   height: 72%;
 `
 
-const Modal = ({ children, ...props }) => {
+const MainModal = ({ children, ...props }) => {
   return (
     <ReactModal style={styles} {...props}>
       {children}
@@ -147,33 +143,33 @@ const Modal = ({ children, ...props }) => {
   )
 }
 
-export const ACMModal = ({
+export const Modal = ({
   isOpen, // bool used to open and close modal
-  closeModal, // function to close your modal / set isOpen=false
-  title = 'Main Title', // main title in black
-  subtitle = '0000-0000-0000-0000', // optional subtitle in grey
-  header = 'Header', // header in black
-  subheader = 'Subheader', // optional header in grey
-  primaryAction = null, // primary button action (green, rightmost)
-  primaryContent = 'Primary',
-  secondaryAction = null, // secondary button action (grey)
-  secondaryContent = 'Secondary',
-  box1 = false, // primary checkbox (leftmost)
-  box2 = false, // secondary checkbox
-  box1Action = null,
-  box1Content = 'Primary Checkbox',
-  box2Action = null,
-  box2Content = 'Secondary Checkbox',
+  onClose, // function to close your modal / set isOpen=false
+  title, // main title in black
+  subtitle, // optional subtitle in grey
+  header, // header in black
+  subheader, // optional header in grey
+  primaryAction, // primary button action (green, rightmost)
+  primaryContent,
+  secondaryAction, // secondary button action (grey)
+  secondaryContent,
+  box1, // primary checkbox (leftmost)
+  box2, // secondary checkbox
+  box1Action,
+  box1Content,
+  box2Action,
+  box2Content,
   children,
 }) => {
   return (
-    <Modal isOpen={isOpen} styles={styles}>
+    <MainModal isOpen={isOpen} styles={styles}>
       <MainHeader>
         <Titles>
           <Title>{title}</Title>
           {title && <Subtitle>{subtitle}</Subtitle>}
         </Titles>
-        <CloseButton onClick={closeModal}>
+        <CloseButton onClick={onClose}>
           <Icon>x</Icon>
         </CloseButton>
       </MainHeader>
@@ -215,8 +211,8 @@ export const ACMModal = ({
           )}
         </ButtonContainer>
       </Buttons>
-    </Modal>
+    </MainModal>
   )
 }
 
-export default ACMModal
+export default Modal
