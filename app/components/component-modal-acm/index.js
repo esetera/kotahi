@@ -181,8 +181,8 @@ export const Modal = ({
   onClose, // function to close your modal / set isOpen=false
   leftActions,
   rightActions,
-  title = 'Title', // main title in black
-  subtitle = 'Subtitle', // optional subtitle in grey
+  title, // main title in black
+  subtitle, // optional subtitle in grey
   children,
 }) => {
   return (
@@ -218,3 +218,5 @@ export const Modal = ({
     </ReactModal>
   )
 }
+
+export default Modal
