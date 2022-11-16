@@ -189,13 +189,7 @@ export const Modal = ({
     <ReactModal isOpen={isOpen} style={styles}>
       <MainHeader>
         <RowHeader subtitle={subtitle} title={title} />
-        <CloseButton
-          alignSelf="flex-end"
-          onClick={() => {
-            setClickedClose(true)
-            onClose
-          }}
-        >
+        <CloseButton alignSelf="flex-end" onClick={onClose}>
           <Icon>x</Icon>
         </CloseButton>
       </MainHeader>
