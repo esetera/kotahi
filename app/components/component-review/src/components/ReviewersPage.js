@@ -157,10 +157,20 @@ const ReviewersPage = () => {
   const reviewersTeam =
     manuscript.teams.find(team => team.role === 'reviewer') || {}
 
+  // eslint-disable-next-line no-console
+  const placeHolderFunc = e => {
+    // eslint-disable-next-line no-console, no-alert
+    alert('Modal should pop up')
+  }
+
   const reviewers = reviewersTeam.members || []
   return (
     <>
-      <KanbanCard reviewer={reviewers[0].user} />
+      <KanbanCard
+        // eslint-disable-next-line no-console
+        onClickAction={placeHolderFunc}
+        reviewer={reviewers[0]}
+      />
       <Formik
         displayName="reviewers"
         initialValues={{ user: undefined }}

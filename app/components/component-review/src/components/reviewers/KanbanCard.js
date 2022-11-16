@@ -35,23 +35,48 @@ const NameDisplay = styled.div`
 
 const DateDisplay = styled.div`
   color: gray;
+  font-size: 12px;
+  line-height: 1.2;
 `
 
-export const KanbanCard = ({ reviewer }) => {
+const handleDate = dateStr => {
+  const updatedTime = new Date(dateStr)
+  const currTime = new Date()
+  const diff = Math.round((currTime - updatedTime) / (1000 * 3600 * 24))
+
+  if (diff === 0) {
+    return 'today'
+  }
+
+  if (diff === 1) {
+    return 'yesterday'
+  }
+
+  if (diff <= 7) {
+    return `${diff} days ago`
+  }
+
+  if (diff > 7) {
+    return updatedTime.toLocaleDateString()
+  }
+
+  return ''
+}
+
+export const KanbanCard = ({ reviewer, onClickAction }) => {
   return (
-    <Card>
+    <Card onClick={() => onClickAction()}>
       <AvatarGrid>
-        <UserAvatar user={reviewer} />
+        <UserAvatar user={reviewer.user} />
       </AvatarGrid>
       <InfoGrid>
-        <NameDisplay>{reviewer.username}</NameDisplay>
-        <DateDisplay>Placeholder date</DateDisplay>
+        <NameDisplay>{reviewer.user.username}</NameDisplay>
+        <DateDisplay>Last updated {handleDate(reviewer.updated)}</DateDisplay>
       </InfoGrid>
     </Card>
   )
 }
 
-// Refering to Reviwers.js props
 KanbanCard.propTypes = {
   reviwer: PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -64,6 +89,7 @@ KanbanCard.propTypes = {
       }),
     }).isRequired,
   }).isRequired,
+  onClickAction: PropTypes.func.isRequired,
 }
 
 export default KanbanCard
