@@ -1,4 +1,5 @@
 /* eslint-disable jest/expect-expect */
+import Color from 'color'
 import { Menu } from '../../page-object/page-component/menu'
 import { LoginPage } from '../../page-object/login-page'
 import { manuscripts, login, dashboard } from '../../support/routes'
@@ -16,7 +17,7 @@ describe('Login page tests', () => {
       // assert settings are specific to colab instance
       LoginPage.getBackground()
         .should('have.css', 'background-image')
-        .and('contains', settings.colab.primaryColor)
+        .and('contains', Color(settings.colab.primaryColor).string())
       LoginPage.getLogo()
         .should('have.attr', 'alt')
         .and('eq', settings.colab.brandName)
@@ -44,7 +45,7 @@ describe('Login page tests', () => {
       cy.awaitDisappearSpinner()
       Menu.getBackground()
         .should('have.css', 'background-image')
-        .and('contains', settings.colab.primaryColor)
+        .and('contains', Color(settings.colab.primaryColor).string())
 
       ManuscriptsPage.getCreatedCaret(0)
         .should('have.css', 'color')
