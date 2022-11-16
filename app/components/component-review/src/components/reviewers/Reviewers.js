@@ -22,6 +22,7 @@ import {
 // TODO: Make this a proper shared component?
 import { UserAvatar } from '../../../../component-avatar/src'
 import reviewStatus from '../../../../../../config/journal/review-status'
+import Color from 'color'
 
 const Kanban = styled.div`
   margin-top: 15px;
@@ -39,6 +40,17 @@ const Column = styled.div`
   margin-left: 7.5px;
   margin-right: 7.5px;
   display: inline-block;
+`
+
+const StatusLabel = styled.div`
+  background-color: ${props => props.statusColor || '#ffffff'};
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-bottom: 5px;
+  display: inline-block;
+  border-radius: 12px;
 `
 
 const CardsWrapper = styled.div`
@@ -163,7 +175,7 @@ const Reviewers = ({
               <p>No reviewers have been invited yet</p>
             )} */}
             <Kanban>
-              {statuses.map((status) => <Column>{status}<CardsWrapper></CardsWrapper></Column>)}
+              {statuses.map((status) => <Column><StatusLabel statusColor={status.color}>{status.label}</StatusLabel><CardsWrapper></CardsWrapper></Column>)}
             </Kanban>
           </SectionRow>
         </SectionContent>
