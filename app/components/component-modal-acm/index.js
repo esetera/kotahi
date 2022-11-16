@@ -171,7 +171,7 @@ export const ACMModal = ({
       <MainHeader>
         <Titles>
           <Title>{title}</Title>
-          {title && <Subtitle>{subtitle}</Subtitle>}
+          {subtitle && <Subtitle>{subtitle}</Subtitle>}
         </Titles>
         <CloseButton onClick={closeModal}>
           <Icon>x</Icon>
