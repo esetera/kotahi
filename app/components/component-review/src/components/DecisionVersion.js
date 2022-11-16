@@ -1,8 +1,5 @@
 import React, { useRef, useEffect, useCallback } from 'react'
-import { Formik } from 'formik'
-import { useParams } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import { gql, useQuery, useMutation } from '@apollo/client'
 import { set, debounce } from 'lodash'
 import DecisionReviews from './decision/DecisionReviews'
 import AssignEditorsReviewers from './assignEditors/AssignEditorsReviewers'
@@ -18,15 +15,18 @@ import {
   SectionHeader,
   SectionRow,
   Title,
-  Spinner,
-  CommsErrorBanner,
 } from '../../../shared'
 import DecisionAndReviews from '../../../component-submit/src/components/DecisionAndReviews'
 import FormTemplate from '../../../component-submit/src/components/FormTemplate'
 import TaskList from '../../../component-task-manager/src/TaskList'
-// import ReviewersPage from './ReviewersPage'
-// import Reviewers from './reviewers/Reviewers'
-import InviteReviewer from './reviewers/InviteReviewer'
+import ReviewersPage from './ReviewersPage'
+
+const createBlankSubmissionBasedOnForm = form => {
+  const allBlankedFields = {}
+  const fieldNames = form?.children?.map(field => field.name)
+  fieldNames.forEach(fieldName => set(allBlankedFields, fieldName, ''))
+  return allBlankedFields.submission ?? {}
+}
 
 const DecisionVersion = ({
   allUsers,
@@ -90,164 +90,6 @@ const DecisionVersion = ({
       label,
     }
   }
-
-  const teamFields = `
-  id
-  role
-  name
-  objectId
-  objectType
-  members {
-    id
-    user {
-      id
-      username
-      profilePicture
-      isOnline
-      defaultIdentity {
-        id
-        identifier
-      }
-    }
-    status
-    isShared
-  }
-`
-
-const fragmentFields = `
-  id
-  created
-  files {
-    id
-    created
-    tags
-    storedObjects {
-      key
-      mimetype
-      url
-    }
-    objectId
-  }
-  reviews {
-    open
-    created
-    user {
-      id
-      username
-    }
-  }
-  decision
-  teams {
-    ${teamFields}
-  }
-  status
-`
-
-const addReviewerMutation = gql`
-  mutation($manuscriptId: ID!, $userId: ID!) {
-    addReviewer(manuscriptId: $manuscriptId, userId: $userId) {
-      ${teamFields}
-    }
-  }
-`
-
-const removeReviewerMutation = gql`
-  mutation($manuscriptId: ID!, $userId: ID!) {
-    removeReviewer(manuscriptId: $manuscriptId, userId: $userId) {
-      ${teamFields}
-    }
-  }
-`
-
-const query = gql`
-  query($id: ID!) {
-    users {
-      id
-      username
-      profilePicture
-      isOnline
-      admin
-    }
-
-    manuscript(id: $id) {
-      ${fragmentFields}
-    }
-  }
-`
-
-const updateTeamMemberMutation = gql`
-  mutation($id: ID!, $input: String) {
-    updateTeamMember(id: $id, input: $input) {
-      id
-      user {
-        id
-        username
-        profilePicture
-        isOnline
-      }
-      status
-      isShared
-    }
-  }
-`
-
-const { version } = useParams()
-
-const { data, error, loading, refetch } = useQuery(query, {
-  variables: { id: version },
-})
-
-const [addReviewer] = useMutation(addReviewerMutation, {
-  update: (cache, { data: { addReviewer: revisedReviewersObject } }) => {
-    cache.modify({
-      id: cache.identify({
-        __typename: 'Manuscript',
-        id: revisedReviewersObject.objectId,
-      }),
-      fields: {
-        teams(existingTeamRefs = []) {
-          const newTeamRef = cache.writeFragment({
-            data: revisedReviewersObject,
-            fragment: gql`
-              fragment NewTeam on Team {
-                id
-                role
-                members {
-                  id
-                  user {
-                    id
-                  }
-                }
-              }
-            `,
-          })
-
-          return [...existingTeamRefs, newTeamRef]
-        },
-      },
-    })
-  },
-})
-
-const [removeReviewer] = useMutation(removeReviewerMutation)
-const [updateTeamMember] = useMutation(updateTeamMemberMutation)
-
-if (loading) return <Spinner />
-if (error) return <CommsErrorBanner error={error} />
-
-const { manuscript, users } = data
-
-const reviewersTeam =
-  manuscript.teams.find(team => team.role === 'reviewer') || {}
-
-const reviewers = reviewersTeam.members || {}
-
-const createBlankSubmissionBasedOnForm = form => {
-  const allBlankedFields = {}
-  const fieldNames = form?.children?.map(field => field.name)
-  fieldNames.forEach(fieldName => set(allBlankedFields, fieldName, ''))
-  return allBlankedFields.submission ?? {}
-}
 
   const reviewOrInitial = manuscript =>
     manuscript?.reviews?.find(review => review.isDecision) || {
@@ -425,20 +267,7 @@ const createBlankSubmissionBasedOnForm = form => {
               </SectionRow>
             </SectionContent>
           )}
-          {/* {isCurrentVersion && <ReviewersPage />} */}
-          <Formik
-          displayName="reviewers"
-          initialValues={{ user: undefined }}
-          onSubmit={values =>
-          addReviewer({
-            variables: {
-              userId: values.user.id,
-              manuscriptId: manuscript.id,
-              status: 'invited',
-          },
-        })
-      }
-  >{isCurrentVersion && <InviteReviewer />}</Formik>
+          {isCurrentVersion && <ReviewersPage />}
         </>
       ),
       key: `team_${version.id}`,
