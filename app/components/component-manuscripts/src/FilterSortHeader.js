@@ -12,6 +12,7 @@ import {
 import {
   URI_SORT_PARAM,
   URI_PAGENUM_PARAM,
+  useQueryParams,
 } from '../../../shared/urlParamUtils'
 
 const SortUp = styled(ArrowUp)`
@@ -74,8 +75,9 @@ const FilterSortHeader = ({
   sortDirection,
   setSortName,
   setSortDirection,
-  applyQueryParams,
 }) => {
+  const applyQueryParams = useQueryParams()
+
   if (columnInfo.canFilterByDateRange) {
     const changeSort = () => {
       const priorSortName = sortName

@@ -2,7 +2,7 @@ import React from 'react'
 import ReactPagination from 'react-paginate'
 import styled from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
-import { URI_PAGENUM_PARAM } from '../../shared/urlParamUtils'
+import { URI_PAGENUM_PARAM, useQueryParams } from '../../shared/urlParamUtils'
 
 const PaginationInfo = styled.div`
   strong {
@@ -56,8 +56,9 @@ export const Pagination = ({
   totalCount,
   // eslint-disable-next-line no-shadow
   PaginationContainer,
-  applyQueryParams,
 }) => {
+  const applyQueryParams = useQueryParams()
+
   // e.g. Get [1,2,3] from totalCount 9, limit 3
   const pages = [...new Array(Math.ceil(totalCount / limit)).keys()].map(
     p => p + 1,

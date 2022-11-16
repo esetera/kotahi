@@ -84,17 +84,6 @@ const Manuscripts = ({ history, ...props }) => {
 
   const uriQueryParams = getUriQueryParams(window.location)
 
-  const applyQueryParams = queryParams => {
-    const params = new URLSearchParams(history.search)
-    Object.entries(queryParams).forEach(([fieldName, fieldValue]) => {
-      params.set(fieldName, fieldValue)
-    })
-    history.push({
-      pathname: history.pathname,
-      search: `?${params}`,
-    })
-  }
-
   const toggleNewManuscriptCheck = id => {
     setSelectedNewManuscripts(s => {
       return selectedNewManuscripts.includes(id)
@@ -289,7 +278,6 @@ const Manuscripts = ({ history, ...props }) => {
       )}
 
       <SearchControl
-        applyQueryParams={applyQueryParams}
         currentSearchQuery={currentSearchQuery}
         URI_SEARCH_PARAM={URI_SEARCH_PARAM}
       />
@@ -358,7 +346,6 @@ const Manuscripts = ({ history, ...props }) => {
                 <ManuscriptsHeaderRow>
                   {columnsProps.map(info => (
                     <FilterSortHeader
-                      applyQueryParams={applyQueryParams}
                       columnInfo={info}
                       key={info.name}
                       sortDirection={sortDirection}
@@ -372,7 +359,6 @@ const Manuscripts = ({ history, ...props }) => {
 
                   return (
                     <ManuscriptRow
-                      applyQueryParams={applyQueryParams}
                       columnDefinitions={columnsProps}
                       key={latestVersion.id}
                       manuscript={latestVersion}
@@ -382,7 +368,6 @@ const Manuscripts = ({ history, ...props }) => {
               </ManuscriptsTable>
             </ScrollableContent>
             <Pagination
-              applyQueryParams={applyQueryParams}
               limit={limit}
               page={page}
               PaginationContainer={PaginationContainerShadowed}

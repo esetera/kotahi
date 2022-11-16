@@ -7,6 +7,7 @@ import lightenBy from '../../../shared/lightenBy'
 import {
   URI_SEARCH_PARAM,
   URI_PAGENUM_PARAM,
+  useQueryParams,
 } from '../../../shared/urlParamUtils'
 
 const SearchContainer = styled.div`
@@ -39,11 +40,13 @@ const InlineTextField = styled.input`
   }
 `
 
-const SearchControl = ({ currentSearchQuery, applyQueryParams }) => {
+const SearchControl = ({ currentSearchQuery }) => {
   const [searchText, setSearchText] = useState(currentSearchQuery || '')
   const [isOpen, setIsOpen] = useState(!!currentSearchQuery)
   const ref = useRef(null)
   const theme = useTheme()
+
+  const applyQueryParams = useQueryParams()
 
   const submitSearch = query => {
     if ((query || null) !== currentSearchQuery)

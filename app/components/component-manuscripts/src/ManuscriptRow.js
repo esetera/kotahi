@@ -3,9 +3,13 @@ import PropTypes from 'prop-types'
 import 'rc-tooltip/assets/bootstrap_white.css'
 import { ManuscriptsRow, SnippetRow, Cell } from './style'
 import { getFieldValueAndDisplayValue } from '../../../shared/manuscriptUtils'
-import { URI_PAGENUM_PARAM } from '../../../shared/urlParamUtils'
+import {
+  URI_PAGENUM_PARAM,
+  useQueryParams,
+} from '../../../shared/urlParamUtils'
 
-const ManuscriptRow = ({ manuscript, columnDefinitions, applyQueryParams }) => {
+const ManuscriptRow = ({ manuscript, columnDefinitions }) => {
+  const applyQueryParams = useQueryParams()
   return (
     <>
       <ManuscriptsRow>
@@ -85,7 +89,6 @@ ManuscriptRow.propTypes = {
       extraProps: PropTypes.shape({}),
     }).isRequired,
   ).isRequired,
-  applyQueryParams: PropTypes.func.isRequired,
 }
 
 export default ManuscriptRow
