@@ -7,7 +7,6 @@ import { th } from '@pubsweet/ui-toolkit'
 import { Formik } from 'formik'
 import { AbstractField, RadioBox } from './builderComponents'
 import { Page, Heading } from './style'
-import Modal from '../../../component-modal-acm'
 
 export const Legend = styled.div`
   font-size: ${th('fontSizeBase')};
@@ -95,7 +94,6 @@ const FormProperties = ({
         <Button primary type="submit">
           {mode === 'create' ? 'Create Form' : 'Update Form'}
         </Button>
-        <Modal isOpen>Some stuff here</Modal>
       </form>
     </Page>
   )
