@@ -167,20 +167,14 @@ export const Modal = ({
       <MainHeader>
         <Titles>
           <Title>{title}</Title>
-          {title && <Subtitle>{subtitle}</Subtitle>}
+          {subtitle && <Subtitle>{subtitle}</Subtitle>}
         </Titles>
         <CloseButton onClick={onClose}>
           <Icon>x</Icon>
         </CloseButton>
       </MainHeader>
 
-      <ModalContainer>
-        <Headers>
-          {header && <Title>{header}</Title>}
-          {subheader && <Subtitle>{subheader}</Subtitle>}
-        </Headers>
-        {children}
-      </ModalContainer>
+      <ModalContainer>{children}</ModalContainer>
 
       <Buttons>
         <ButtonContainer style={{ alignSelf: 'flex-start' }}>
