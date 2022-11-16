@@ -19,7 +19,7 @@ import {
 import DecisionAndReviews from '../../../component-submit/src/components/DecisionAndReviews'
 import FormTemplate from '../../../component-submit/src/components/FormTemplate'
 import TaskList from '../../../component-task-manager/src/TaskList'
-import ReviewersPage from './ReviewersPage'
+import InviteReviewer from './reviewers/InviteReviewer'
 
 const createBlankSubmissionBasedOnForm = form => {
   const allBlankedFields = {}
@@ -30,6 +30,7 @@ const createBlankSubmissionBasedOnForm = form => {
 
 const DecisionVersion = ({
   allUsers,
+  addReviewer,
   decisionForm,
   form,
   currentDecisionData,
@@ -267,7 +268,7 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          {isCurrentVersion && <ReviewersPage />}
+          {isCurrentVersion && <InviteReviewer addReviewer={addReviewer} />}
         </>
       ),
       key: `team_${version.id}`,
@@ -374,6 +375,7 @@ const DecisionVersion = ({
               />
             </AdminSection>
           )}
+          {isCurrentVersion}
         </>
       ),
       key: `decision_${version.id}`,
@@ -396,6 +398,7 @@ const DecisionVersion = ({
 }
 
 DecisionVersion.propTypes = {
+  addReviewer: PropTypes.func.isRequired,
   updateManuscript: PropTypes.func.isRequired,
   form: PropTypes.shape({
     children: PropTypes.arrayOf(

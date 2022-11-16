@@ -1,4 +1,5 @@
 import React from 'react'
+import { Formik } from 'formik'
 import ReviewerForm from './ReviewerForm'
 import {
   SectionRow,
@@ -7,20 +8,40 @@ import {
   Title,
 } from '../../../../shared'
 
-const InviteReviewer = ({ handleSubmit, isValid, reviewerUsers }) => {
+const InviteReviewer = ({
+  handleSubmit,
+  isValid,
+  reviewerUsers,
+  manuscript,
+  addReviewer,
+}) => {
   return (
-    <SectionContent>
-      <SectionHeader>
-        <Title>Invite Reviewers</Title>
-      </SectionHeader>
-      <SectionRow>
-        <ReviewerForm
-          handleSubmit={handleSubmit}
-          isValid={isValid}
-          reviewerUsers={reviewerUsers}
-        />
-      </SectionRow>
-    </SectionContent>
+    <Formik
+      displayName="reviewers"
+      initialValues={{ user: undefined }}
+      onSubmit={values =>
+        addReviewer({
+          variables: {
+            userId: values.user.id,
+            manuscriptId: manuscript.id,
+            status: 'invited',
+          },
+        })
+      }
+    >
+      <SectionContent>
+        <SectionHeader>
+          <Title>Invite Reviewers</Title>
+        </SectionHeader>
+        <SectionRow>
+          <ReviewerForm
+            handleSubmit={handleSubmit}
+            isValid={isValid}
+            reviewerUsers={reviewerUsers}
+          />
+        </SectionRow>
+      </SectionContent>
+    </Formik>
   )
 }
 
