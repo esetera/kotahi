@@ -3,7 +3,7 @@ import ReactModal from 'react-modal'
 import styled from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
 import { Button } from '@pubsweet/ui'
-import { ActionButton, Icon } from '../shared'
+import { Icon } from '../shared'
 
 const styles = {
   overlay: {
@@ -38,31 +38,31 @@ const MainHeader = styled.div`
   border-bottom-width: 1.5px;
 `
 
-const Titles = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  font-weight: 600;
-  font-family: ${th('fontHeading')};
-`
+// const Titles = styled.div`
+//   display: flex;
+//   align-items: center;
+//   gap: 16px;
+//   font-weight: 600;
+//   font-family: ${th('fontHeading')};
+/// `
 
-const Headers = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  column-gap: 180px;
-  font-family: ${th('fontHeading')};
-  font-weight: 600;
-`
+// const Headers = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   align-items: flex-start;
+//   column-gap: 180px;
+//   font-family: ${th('fontHeading')};
+//   font-weight: 600;
+// `
 
-const Title = styled.div`
-  font-size: ${th('fontSizeHeading5')};
-`
+// const Title = styled.div`
+//   font-size: ${th('fontSizeHeading5')};
+// `
 
-const Subtitle = styled.div`
-  font-size: ${th('fontSizeHeading6')};
-  color: grey;
-`
+// const Subtitle = styled.div`
+//   font-size: ${th('fontSizeHeading6')};
+//   color: grey;
+// `
 
 const CloseButton = styled(Button)`
   display: flex;
@@ -99,28 +99,28 @@ const ButtonContainer = styled.div`
   height: 100%;
 `
 
-const PrimaryButton = styled(ActionButton)`
-  color: white;
-  background-color: ${th('colorPrimary')};
-  border-radius: 6px;
-  margin: 0px 10px;
-  cursor: pointer;
-`
+// const PrimaryButton = styled(ActionButton)`
+//   color: white;
+//   background-color: ${th('colorPrimary')};
+//   border-radius: 6px;
+//   margin: 0px 10px;
+//   cursor: pointer;
+// `
 
-const SecondaryButton = styled(ActionButton)`
-  color: white;
-  background-color: grey;
-  border-radius: 6px;
-  margin: 0px 10px;
-  cursor: pointer;
-`
+// const SecondaryButton = styled(ActionButton)`
+//   color: white;
+//   background-color: grey;
+//   border-radius: 6px;
+//   margin: 0px 10px;
+//   cursor: pointer;
+// `
 
-const CheckBoxButton = styled.div`
-  display: flex;
-  align-items: center;
-  margin: 10px 5px;
-  cursor: pointer;
-`
+// const CheckBoxButton = styled.div`
+//   display: flex;
+//   align-items: center;
+//   margin: 10px 5px;
+//   cursor: pointer;
+// `
 
 const ModalContainer = styled.div`
   background-color: ${th('colorBackground')};
@@ -144,28 +144,32 @@ const MainModal = ({ children, ...props }) => {
 export const Modal = ({
   isOpen, // bool used to open and close modal
   onClose, // function to close your modal / set isOpen=false
-  title, // main title in black
-  subtitle, // optional subtitle in grey
-  primaryAction, // primary button action (green, rightmost)
-  primaryContent,
-  secondaryAction, // secondary button action (grey)
-  secondaryContent,
-  box1, // primary checkbox (leftmost)
-  box2, // secondary checkbox
-  box1Action,
-  box1Content,
-  box2Action,
-  box2Content,
+  headerContent,
+  leftActions,
+  rightActions,
+  // title, // main title in black
+  // subtitle, // optional subtitle in grey
+  // primaryAction, // primary button action (green, rightmost)
+  // primaryContent,
+  // secondaryAction, // secondary button action (grey)
+  // secondaryContent,
+  // box1, // primary checkbox (leftmost)
+  // box2, // secondary checkbox
+  // box1Action,
+  // box1Content,
+  // box2Action,
+  // box2Content,
   children,
 }) => {
   return (
     <MainModal isOpen={isOpen} styles={styles}>
       <MainHeader>
-        <Titles>
+        {headerContent}
+        {/* <Titles>
           <Title>{title}</Title>
           {subtitle && <Subtitle>{subtitle}</Subtitle>}
-        </Titles>
-        <CloseButton onClick={onClose}>
+        </Titles> */}
+        <CloseButton alignSelf="flex-end" onClick={onClose}>
           <Icon>x</Icon>
         </CloseButton>
       </MainHeader>
@@ -174,7 +178,8 @@ export const Modal = ({
 
       <Buttons>
         <ButtonContainer style={{ alignSelf: 'flex-start' }}>
-          {box1Content && (
+          {leftActions}
+          {/* {box1Content && (
             <CheckBoxButton onClick={box1Action}>
               {(box1 && <Icon>check-square</Icon>) || <Icon>square</Icon>}
               {box1Content}
@@ -185,11 +190,12 @@ export const Modal = ({
               {(box2 && <Icon>check-square</Icon>) || <Icon>square</Icon>}
               {box2Content}
             </CheckBoxButton>
-          )}
+          )} */}
         </ButtonContainer>
 
         <ButtonContainer style={{ alignSelf: 'flex-end' }}>
-          {secondaryContent && (
+          {rightActions}
+          {/* {secondaryContent && (
             <SecondaryButton onClick={secondaryAction}>
               {secondaryContent}
             </SecondaryButton>
@@ -198,7 +204,7 @@ export const Modal = ({
             <PrimaryButton onClick={primaryAction}>
               {primaryContent}
             </PrimaryButton>
-          )}
+          )} */}
         </ButtonContainer>
       </Buttons>
     </MainModal>
