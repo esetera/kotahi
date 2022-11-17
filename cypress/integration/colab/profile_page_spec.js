@@ -43,9 +43,6 @@ describe('profile page tests', () => {
     cy.awaitDisappearSpinner()
     cy.url().should('not.contain', formBuilder).and('contain', profile)
     ProfilePage.getPopupEmailField().should('exist').and('be.visible')
-    Menu.clickDashboard()
-    cy.awaitDisappearSpinner()
-    cy.url().should('not.contain', dashboard).and('contain', profile)
   })
   it('first login - validate email', () => {
     ProfilePage.updateEmailInPopup('test')
