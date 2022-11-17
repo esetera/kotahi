@@ -3,6 +3,7 @@ import { grid } from '@pubsweet/ui-toolkit'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { UserAvatar } from '../../../../component-avatar/src'
+import { convertTimestampToRelativeDateString } from '../../../../../shared/dateUtils'
 
 const Card = styled.div`
   background-color: #f8f8f9;
@@ -40,39 +41,17 @@ const DateDisplay = styled.div`
   line-height: 1.2;
 `
 
-const handleDate = dateStr => {
-  const updatedTime = new Date(dateStr)
-  const currTime = new Date()
-  const diff = Math.round((currTime - updatedTime) / (1000 * 3600 * 24))
-
-  if (diff === 0) {
-    return 'today'
-  }
-
-  if (diff === 1) {
-    return 'yesterday'
-  }
-
-  if (diff <= 7) {
-    return `${diff} days ago`
-  }
-
-  if (diff > 7) {
-    return updatedTime.toLocaleDateString()
-  }
-
-  return ''
-}
-
-export const KanbanCard = ({ reviewer, onClickAction }) => {
+const KanbanCard = ({ reviewer, onClickAction }) => {
   return (
-    <Card onClick={() => onClickAction()}>
+    <Card onClick={onClickAction}>
       <AvatarGrid>
         <UserAvatar user={reviewer.user} />
       </AvatarGrid>
       <InfoGrid>
         <NameDisplay>{reviewer.user.username}</NameDisplay>
-        <DateDisplay>Last updated {handleDate(reviewer.updated)}</DateDisplay>
+        <DateDisplay>
+          Last updated {convertTimestampToRelativeDateString(reviewer.updated)}
+        </DateDisplay>
       </InfoGrid>
     </Card>
   )

@@ -4,7 +4,7 @@ import { gql, useQuery, useMutation } from '@apollo/client'
 import { useParams } from 'react-router-dom'
 import Reviewers from './reviewers/Reviewers'
 import { Spinner, CommsErrorBanner } from '../../../shared'
-import { KanbanCard } from './reviewers/KanbanCard'
+import KanbanCard from './reviewers/KanbanCard'
 
 const teamFields = `
   id
@@ -158,7 +158,7 @@ const ReviewersPage = () => {
     manuscript.teams.find(team => team.role === 'reviewer') || {}
 
   // eslint-disable-next-line no-console
-  const placeHolderFunc = e => {
+  const placeHolderFunc = () => {
     // eslint-disable-next-line no-console, no-alert
     alert('Modal should pop up')
   }
