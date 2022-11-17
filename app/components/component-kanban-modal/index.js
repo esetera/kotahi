@@ -7,21 +7,23 @@ import { Icon, ActionButton } from '../shared'
 
 const styles = {
   overlay: {
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
     overflow: 'hidden',
     backgroundColor: 'white',
     border: 'none',
     borderRadius: '4px',
-    width: '60%',
-    height: '80%',
+    minWidth: '30%',
+    maxWidth: '60%',
+    maxHeight: '80%',
     margin: '0px',
     padding: '0px',
-    top: '10%',
-    left: '20%',
-    bottom: '10%',
-    right: '20%',
+    inset: 'unset',
   },
 }
 
@@ -29,10 +31,9 @@ const MainHeader = styled.div`
   display: flex;
   justify-content: space-between;
   line-height: 22px;
-  height: 12%;
   align-items: center;
   z-index: 10000;
-  padding: ${grid(2.5)} ${grid(3)};
+  padding: ${grid(2)} ${grid(3)};
   border-color: #d3d3d3;
   border-style: solid;
   border-bottom-width: 1.5px;
@@ -42,7 +43,6 @@ const RowHeaderContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
-  font-weight: 600;
   font-family: ${th('fontHeading')};
 `
 
@@ -56,6 +56,7 @@ const StackedHeaderContainer = styled.div`
 `
 
 const Title = styled.div`
+  font-weight: 500;
   font-size: ${th('fontSizeHeading5')};
 `
 
@@ -68,13 +69,14 @@ const CloseButton = styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #fffff;
+  background-color: #ffffff;
+  border-radius: 50%;
   min-width: unset;
   width: 30px;
   height: 30px;
   cursor: pointer;
   &:hover {
-    background-color: #d3d3d3;
+    background-color: #d7efd4;
     svg {
       stroke: white;
     }
@@ -82,37 +84,33 @@ const CloseButton = styled(Button)`
 `
 
 const ButtonPanel = styled.div`
-  position: absolute;
   display: flex;
-  align-content: center;
+  align-items: center;
   justify-content: space-between;
-  bottom: 0px;
-  margin: 10px 0px;
-  background-color: white;
-  height: 8%;
+  flex-direction: row;
+  padding: 1rem ${grid(1.5)};
   width: 100%;
   z-index: 10001;
 `
 
 const ButtonContainer = styled.div`
   display: flex;
-  height: 100%;
 `
 
 const PrimaryActionButton = styled(ActionButton)`
   color: white;
   background-color: ${th('colorPrimary')};
   border-radius: 6px;
-  margin: 0px 10px;
   cursor: pointer;
+  margin: 0px 5px;
 `
 
 const SecondaryActionButton = styled(ActionButton)`
   color: white;
   background-color: grey;
   border-radius: 6px;
-  margin: 0px 10px;
   cursor: pointer;
+  margin: 0px 5px;
 `
 
 const CheckBoxContainer = styled.div`
@@ -130,7 +128,7 @@ const ModalContainer = styled.div`
   border-radius: 0;
   margin: 0;
   width: 100%;
-  height: 72%;
+  max-height: calc(80vh - 10em);
 `
 
 export const PrimaryButton = ({ onClick, children }) => {
@@ -176,7 +174,7 @@ export const RowHeader = ({
   )
 }
 
-export const Modal = ({
+const Modal = ({
   isOpen, // bool used to open and close modal
   onClose, // function to close your modal / set isOpen=false
   leftActions,
@@ -184,9 +182,19 @@ export const Modal = ({
   title, // main title in black
   subtitle, // optional subtitle in grey
   children,
+  overlayStyles,
+  contentStyles,
+  ...props
 }) => {
   return (
-    <ReactModal isOpen={isOpen} style={styles}>
+    <ReactModal
+      isOpen={isOpen}
+      style={{
+        overlay: { ...styles.overlay, ...overlayStyles },
+        content: { ...styles.content, ...contentStyles },
+      }}
+      {...props}
+    >
       <MainHeader>
         <RowHeader subtitle={subtitle} title={title} />
         <CloseButton alignSelf="flex-end" onClick={onClose}>
@@ -197,17 +205,8 @@ export const Modal = ({
       <ModalContainer>{children}</ModalContainer>
 
       <ButtonPanel>
-        {leftActions && (
-          <ButtonContainer style={{ alignSelf: 'flex-start' }}>
-            {leftActions}
-          </ButtonContainer>
-        )}
-
-        {rightActions && (
-          <ButtonContainer style={{ alignSelf: 'flex-end' }}>
-            {rightActions}
-          </ButtonContainer>
-        )}
+        <ButtonContainer>{leftActions && leftActions}</ButtonContainer>
+        <ButtonContainer>{rightActions && rightActions}</ButtonContainer>
       </ButtonPanel>
     </ReactModal>
   )
