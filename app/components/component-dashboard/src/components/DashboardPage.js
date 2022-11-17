@@ -6,7 +6,6 @@ import { Redirect } from 'react-router-dom'
 import ReactRouterPropTypes from 'react-router-prop-types'
 import Dashboard from './Dashboard'
 
-
 const DashboardPage = ({ history, ...props }) => {
   const invitationId = window.localStorage.getItem('invitationId')
     ? window.localStorage.getItem('invitationId')

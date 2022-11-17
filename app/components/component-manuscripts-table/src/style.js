@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components'
 import { Button, Action } from '@pubsweet/ui'
 import { th, grid } from '@pubsweet/ui-toolkit'
+import { AlertCircle } from 'react-feather'
 import Color from 'color'
 
 export const StyledButton = styled(Button)`
@@ -143,4 +144,11 @@ export const SortArrow = styled.span`
   &::before {
     content: '${({ direction }) => (direction === 'ASC' ? '▼' : '▲')}';
   }
+`
+
+export const StyledAlertCircle = styled(AlertCircle)`
+  height: 20px;
+  width: 20px;
+  color: white;
+  fill: red;
 `

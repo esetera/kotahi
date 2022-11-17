@@ -12,6 +12,7 @@ import {
   EditorItemLinks,
   ReviewStatusCounts,
   RoleText,
+  OverdueTooltip,
 } from '../cell-components'
 /**
  * @typedef {Object} ComponentValues
@@ -139,6 +140,11 @@ const buildSpecialColumnProps = specialComponentValues => {
         updateMemberStatus,
         setMainActionLink,
       },
+    },
+    overdueTooltip: {
+      flex: '0 0 1.5em',
+      padding: '0',
+      component: OverdueTooltip,
     },
     newItemCheckbox: {
       flex: '0 1 2em',
