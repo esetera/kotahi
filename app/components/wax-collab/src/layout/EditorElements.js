@@ -624,6 +624,7 @@ const EditorStyles = css`
 
   span.article-title,
   span.journal-title,
+  span.citation-label,
   span.author-group,
   span.author-name,
   span.volume,
@@ -653,6 +654,11 @@ const EditorStyles = css`
     &:hover {
       outline-color: var(--citationColorValues);
     }
+  }
+
+  span.citation-label {
+    --citationColorValues: ${th('colorCitationLabel')};
+    --citationTextColor: white;
   }
 
   span.article-title {
@@ -721,6 +727,10 @@ const EditorStyles = css`
     outline: var(--citationColorValues) 2px solid;
   }
 
+  .show-citation-label .citation-label {
+    outline: var(--citationColorValues) 2px solid;
+  }
+
   .show-author-group .author-group {
     outline: var(--citationColorValues) 2px solid;
   }
@@ -784,9 +794,9 @@ const EditorStyles = css`
       border-radius: 100%;
       display: none;
     }
-    // &:hover {
-    //   outline-color: var(--keywordColorValues);
-    // }
+    /* &:hover {
+       outline-color: var(--keywordColorValues);
+     } */
   }
 
   /* glossary */
@@ -825,9 +835,6 @@ const EditorStyles = css`
     margin: 0 0 8px 0;
     font-size: 18px;
     font-weight: bold;
-  }
-
-  .glossary-item {
   }
 
   .glossary-term {

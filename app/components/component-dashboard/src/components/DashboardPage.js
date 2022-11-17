@@ -1,5 +1,4 @@
 import React from 'react'
-// import Authorize from 'pubsweet-client/src/helpers/Authorize'
 
 import config from 'config'
 import { Redirect } from 'react-router-dom'
