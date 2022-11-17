@@ -1,3 +1,12 @@
+/** Find the named GET param in the URI, decode any plus-encoding and percent-encoding, and return the decoded value */
+function getParameterByName(name, url = window.location.href) {
+  const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`)
+  const results = regex.exec(url)
+  if (!results) return null
+  if (!results[2]) return ''
+  return decodeURIComponent(results[2].replace(/\+/g, ' '))
+}
+
 const isParamNonrepeatedAndNonempty = (param, i, self) =>
   self.findIndex(x => x.field === param.field) === i && param.value
 
@@ -28,4 +37,4 @@ const getUriQueryParams = uri => {
   return result.filter(isParamNonrepeatedAndNonempty)
 }
 
-export default getUriQueryParams
+export { getUriQueryParams, getParameterByName }

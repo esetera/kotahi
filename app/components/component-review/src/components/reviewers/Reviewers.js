@@ -1,23 +1,20 @@
+import { Action, Checkbox } from '@pubsweet/ui'
+import { grid } from '@pubsweet/ui-toolkit'
+import config from 'config'
+import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'styled-components'
-import { Action, Button, Checkbox } from '@pubsweet/ui'
-import { grid } from '@pubsweet/ui-toolkit'
-import PropTypes from 'prop-types'
-import config from 'config'
-import ReviewerForm from './ReviewerForm'
-import { AdminSection } from '../style'
 import {
-  Container,
-  SectionRow,
-  SectionContent,
-  SectionHeader,
-  Title,
-  Heading,
-  HeadingWithAction,
-  StatusBadge,
   Primary,
   Secondary,
+  SectionContent,
+  SectionHeader,
+  SectionRow,
+  StatusBadge,
+  Title,
 } from '../../../../shared'
+import { AdminSection } from '../style'
+import ReviewerForm from './ReviewerForm'
 
 // TODO: Make this a proper shared component?
 import { UserAvatar } from '../../../../component-avatar/src'
@@ -29,8 +26,6 @@ const ReviewersList = styled.div`
 `
 
 const Reviewer = styled.div``
-
-const urlFrag = config.journal.metadata.toplevel_urlfragment
 
 const Reviewers = ({
   isValid,

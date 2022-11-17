@@ -7,7 +7,8 @@ import { sumBy } from 'lodash'
 import { th } from '@pubsweet/ui-toolkit'
 
 const Root = styled.div`
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   font-family: ${th('fontReviewer')};
   font-size: 0.9em;
   margin-bottom: 0.6em;
@@ -37,14 +38,14 @@ const countStatus = (version, status) => {
   return 0
 }
 
-const Reviews = ({ version, journal }) => (
+const ReviewStatusCounts = ({ manuscript }) => (
   <Root>
     {['invited', 'accepted', 'rejected', 'completed'].map(status => (
       <CountLabel data-testid={status} key={status}>
-        {countStatus(version, status)} {status}
+        {countStatus(manuscript, status)} {status}
       </CountLabel>
     ))}
   </Root>
 )
 
-export default Reviews
+export default ReviewStatusCounts
