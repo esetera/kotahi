@@ -1,9 +1,11 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react'
+import { getMembersOfTeam } from '../../../../../shared/manuscriptUtils'
 
-const MetadataAuthors = ({ authors }) =>
-  authors.length ? (
+const MetadataAuthors = ({ manuscript }) => {
+  const authors = getMembersOfTeam(manuscript, 'author')
+  return authors.length ? (
     <span>
       {authors
         .map(author => (
@@ -14,5 +16,6 @@ const MetadataAuthors = ({ authors }) =>
         .reduce((prev, curr) => [prev, ', ', curr])}
     </span>
   ) : null
+}
 
 export default MetadataAuthors

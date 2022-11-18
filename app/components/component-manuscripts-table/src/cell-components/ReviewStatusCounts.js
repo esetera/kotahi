@@ -67,7 +67,7 @@ const CenterLabel = styled.div`
   width: 50px;
 `
 
-const Reviews = ({ version }) => {
+const ReviewStatusCounts = ({ version }) => {
   const statusCounts = getUserFromTeam(version, 'reviewer').reduce((a, b) => {
     // eslint-disable-next-line no-param-reassign
     a[b.status] = a[b.status] + 1 || 1
@@ -129,4 +129,4 @@ const Reviews = ({ version }) => {
   )
 }
 
-export default Reviews
+export default ReviewStatusCounts

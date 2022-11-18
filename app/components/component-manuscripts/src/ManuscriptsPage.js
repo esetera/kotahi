@@ -24,9 +24,9 @@ import {
 import configuredColumnNames from './configuredColumnNames'
 import { updateMutation } from '../../component-submit/src/components/SubmitPage'
 import { publishManuscriptMutation } from '../../component-review/src/components/queries'
-import getUriQueryParams from './getUriQueryParams'
 import Manuscripts from './Manuscripts'
 import { validateDoi } from '../../../shared/commsUtils'
+import { getUriQueryParams } from '../../../shared/urlUtils'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 const chatRoomId = fnv.hash(config['pubsweet-client'].baseUrl).hex()
