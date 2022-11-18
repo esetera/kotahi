@@ -14,7 +14,7 @@ const OverdueTooltip = ({ manuscript }) => {
             fontWeight: 'bold',
             color: 'red',
           }}
-          placement="topRight"
+          placement="top"
         >
           <StyledAlertCircle />
         </Tooltip>
