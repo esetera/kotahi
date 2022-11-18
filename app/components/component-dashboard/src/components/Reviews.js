@@ -66,6 +66,7 @@ const CenterLabel = styled.div`
   top: 1px;
   width: 50px;
 `
+
 const Reviews = ({ version }) => {
   const statusCounts = getUserFromTeam(version, 'reviewer').reduce((a, b) => {
     // eslint-disable-next-line no-param-reassign
@@ -82,7 +83,7 @@ const Reviews = ({ version }) => {
 
   const statusTooltips = Object.keys(statusCounts).reduce((a, status) => {
     const count = statusCounts[status]
-    const text = statusOptions[status].text
+    const { text } = statusOptions[status]
     // eslint-disable-next-line no-param-reassign
     a[
       status
@@ -118,11 +119,11 @@ const Reviews = ({ version }) => {
     <Root>
       <Chart
         chartType="PieChart"
-        width="50px"
-        height="50px"
         data={data}
+        height="50px"
         options={options}
-      ></Chart>
+        width="50px"
+      />
       <CenterLabel>{totalStatusCount}</CenterLabel>
     </Root>
   )
