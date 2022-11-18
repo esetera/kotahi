@@ -840,6 +840,10 @@ const EditorStyles = css`
   .glossary-term {
     font-weight: bold;
   }
+
+  .anystyle-placeholder {
+    background-color: magenta;
+  }
 `
 
 export default EditorStyles

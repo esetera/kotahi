@@ -49,6 +49,13 @@ const updateTitle = title => {
   // console.log(`Title changed: ${title}`)
 }
 
+const updateAnystyle = x => {
+  console.log('Sent to Anystyle:', x)
+  // Is there a reason for this?
+  console.log('Returned: ', x)
+  return 'Returned!'
+}
+
 const productionWaxEditorConfig = (readOnlyComments, handleAssetManager) => ({
   EnableTrackChangeService: {
     enabled: false,
@@ -124,6 +131,7 @@ const productionWaxEditorConfig = (readOnlyComments, handleAssetManager) => ({
   SpecialCharactersService: CharactersList,
 
   TitleService: { updateTitle },
+  AnystyleService: { updateAnystyle },
   ImageService: handleAssetManager ? { handleAssetManager } : {},
   services: [
     new AnnotationToolGroupService(),
