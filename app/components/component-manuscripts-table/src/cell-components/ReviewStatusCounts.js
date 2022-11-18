@@ -9,6 +9,8 @@ import { Chart } from 'react-google-charts'
 const Root = styled.div`
   font-family: ${th('fontReviewer')};
   font-size: 0.9em;
+  height: 100%;
+  width: 100%;
   margin-bottom: 0.6em;
   margin-top: 0.3em;
   position: relative;
@@ -56,19 +58,17 @@ const statusOptions = {
 }
 
 const CenterLabel = styled.div`
-  font-size: 8px;
-  height: 50px;
-  left: 1px;
-  line-height: 50px;
+  font-size: ${th('fontSizeBase')};
+  left: 50%;
   pointer-events: none;
   position: absolute;
   text-align: center;
-  top: 1px;
-  width: 50px;
+  top: 50%;
+  transform: translate(-50%, -50%);
 `
 
-const ReviewStatusCounts = ({ version }) => {
-  const statusCounts = getUserFromTeam(version, 'reviewer').reduce((a, b) => {
+const ReviewStatusCounts = ({ manuscript }) => {
+  const statusCounts = getUserFromTeam(manuscript, 'reviewer').reduce((a, b) => {
     // eslint-disable-next-line no-param-reassign
     a[b.status] = a[b.status] + 1 || 1
     return a
@@ -87,7 +87,7 @@ const ReviewStatusCounts = ({ version }) => {
     // eslint-disable-next-line no-param-reassign
     a[
       status
-    ] = `<div style="padding: 5px 15px; font-size: 0.9em; color: black; white-space: nowrap;">${text}: ${count}</div>`
+    ] = `<div style="padding: 5px 15px; font-size: ${th('fontSizeBase')}; color: black; white-space: nowrap;">${text}: ${count}</div>`
     return a
   }, {})
 
@@ -101,6 +101,7 @@ const ReviewStatusCounts = ({ version }) => {
     { type: 'string', role: 'tooltip', p: { html: true } },
   ]
 
+  
   const data = [
     header,
     ...Object.keys(statusCounts).map(status => [
@@ -115,14 +116,17 @@ const ReviewStatusCounts = ({ version }) => {
     colors: statusColors,
   }
 
+  // console.log(manuscript)
+  // console.log('rendering', data, options, Chart)
+
   return (
     <Root>
       <Chart
         chartType="PieChart"
         data={data}
-        height="50px"
+        height={"100%"}
         options={options}
-        width="50px"
+        width={"100%"}
       />
       <CenterLabel>{totalStatusCount}</CenterLabel>
     </Root>
