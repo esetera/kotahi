@@ -158,33 +158,31 @@ const ReviewersPage = () => {
 
   const reviewers = reviewersTeam.members || []
   return (
-    <>
-      <Formik
-        displayName="reviewers"
-        initialValues={{ user: undefined }}
-        onSubmit={values =>
-          addReviewer({
-            variables: {
-              userId: values.user.id,
-              manuscriptId: manuscript.id,
-              status: 'invited',
-            },
-          })
-        }
-      >
-        {props => (
-          <Reviewers
-            {...props}
-            manuscript={manuscript}
-            refetchManuscriptData={refetch}
-            removeReviewer={removeReviewer}
-            reviewers={reviewers}
-            reviewerUsers={users}
-            updateTeamMember={updateTeamMember}
-          />
-        )}
-      </Formik>
-    </>
+    <Formik
+      displayName="reviewers"
+      initialValues={{ user: undefined }}
+      onSubmit={values =>
+        addReviewer({
+          variables: {
+            userId: values.user.id,
+            manuscriptId: manuscript.id,
+            status: 'invited',
+          },
+        })
+      }
+    >
+      {props => (
+        <Reviewers
+          {...props}
+          manuscript={manuscript}
+          refetchManuscriptData={refetch}
+          removeReviewer={removeReviewer}
+          reviewers={reviewers}
+          reviewerUsers={users}
+          updateTeamMember={updateTeamMember}
+        />
+      )}
+    </Formik>
   )
 }
 
