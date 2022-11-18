@@ -12,6 +12,7 @@ const teamFields = `
   objectId
   objectType
   members {
+    updated
     id
     user {
       id
