@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useCallback } from 'react'
+import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { set, debounce } from 'lodash'
 import DecisionReviews from './decision/DecisionReviews'
@@ -20,6 +21,54 @@ import DecisionAndReviews from '../../../component-submit/src/components/Decisio
 import FormTemplate from '../../../component-submit/src/components/FormTemplate'
 import TaskList from '../../../component-task-manager/src/TaskList'
 import ReviewersPage from './ReviewersPage'
+import reviewStatus from '../../../../../config/journal/review-status'
+import Reviewers from './reviewers/Reviewers'
+
+const statuses = reviewStatus
+
+const Kanban = styled.div`
+  margin-top: 15px;
+  margin-left: 7.5px;
+  margin-right: 7.5px;
+  margin-bottom: 15px;
+`
+const Column = styled.div`
+  width: calc(${100/statuses.length}% - 15px);
+  height: 300px;
+  margin-left: 7.5px;
+  margin-right: 7.5px;
+  display: inline-block;
+`
+
+const StatusLabel = styled.div`
+  background-color: ${props => props.statusColor || '#ffffff'};
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.60);
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-bottom: 5px;
+  display: inline-block;
+  border-radius: 12px;
+`
+
+const CardsWrapper = styled.div`
+  background-color: #f8f8f9;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+`
+
+const ReviewerStatusHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+const VersionNumber = styled.div`
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.40);
+`
 
 const createBlankSubmissionBasedOnForm = form => {
   const allBlankedFields = {}
@@ -35,6 +84,7 @@ const DecisionVersion = ({
   currentDecisionData,
   currentUser,
   version,
+  versionNumber,
   isCurrentVersion,
   parent,
   updateManuscript, // To handle manuscript editing
@@ -267,7 +317,22 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          {isCurrentVersion && <ReviewersPage />}
+          <AdminSection>
+            <SectionContent>
+              <SectionHeader>
+                <ReviewerStatusHeader>
+                  <Title>Reviewer Status</Title>
+                  <Title><VersionNumber>Version {versionNumber}</VersionNumber></Title>
+                </ReviewerStatusHeader>
+                {console.log(versionNumber)}
+              </SectionHeader>
+              <SectionRow style={{padding: 0}}>
+                <Kanban>
+                  {statuses.map((status) => <Column><StatusLabel statusColor={status.color}>{status.label}</StatusLabel><CardsWrapper></CardsWrapper></Column>)}
+                </Kanban>
+              </SectionRow>
+            </SectionContent>
+          </AdminSection>
         </>
       ),
       key: `team_${version.id}`,
@@ -441,6 +506,7 @@ DecisionVersion.propTypes = {
       }).isRequired,
     ).isRequired,
   }).isRequired,
+  versionNumber: PropTypes.number.isRequired,
   parent: PropTypes.shape({
     id: PropTypes.string.isRequired,
     teams: PropTypes.arrayOf(

@@ -18,50 +18,10 @@ import {
   Primary,
   Secondary,
 } from '../../../../shared'
+import { useParams } from 'react-router-dom'
 
 // TODO: Make this a proper shared component?
 import { UserAvatar } from '../../../../component-avatar/src'
-import reviewStatus from '../../../../../../config/journal/review-status'
-import Color from 'color'
-
-const Kanban = styled.div`
-  margin-top: 15px;
-  margin-left: 7.5px;
-  margin-right: 7.5px;
-  margin-bottom: 15px;
-`
-
-const statuses = reviewStatus;
-//const statuses = ['invited', 'accepted', 'inProgress', 'completed']
-
-const Column = styled.div`
-  width: calc(${100/statuses.length}% - 15px);
-  height: 300px;
-  margin-left: 7.5px;
-  margin-right: 7.5px;
-  display: inline-block;
-`
-
-const StatusLabel = styled.div`
-  background-color: ${props => props.statusColor || '#ffffff'};
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.65);
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  margin-bottom: 5px;
-  display: inline-block;
-  border-radius: 12px;
-`
-
-const CardsWrapper = styled.div`
-  background-color: #f8f8f9;
-  height: 100%;
-  width: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-`
 
 const ReviewersList = styled.div`
   display: grid;
@@ -107,77 +67,6 @@ const Reviewers = ({
               isValid={isValid}
               reviewerUsers={reviewerUsers}
             />
-          </SectionRow>
-        </SectionContent>
-      </AdminSection>
-      <AdminSection>
-        <SectionContent>
-          <SectionHeader>
-            <Title>Reviewer Status</Title>
-          </SectionHeader>
-          <SectionRow style={{padding: 0}}>
-          {/* {reviewers && reviewers.length ? (
-            <ReviewersList>
-              {reviewers
-                .slice()
-                .sort((reviewOne, reviewTwo) => {
-                  // Get the username of reviewer and convert to uppercase
-                  const usernameOne = reviewOne.user.username.toUpperCase()
-                  const usernameTwo = reviewTwo.user.username.toUpperCase()
-
-                  // Sort by username
-                  if (usernameOne < usernameTwo) return -1
-                  if (usernameOne > usernameTwo) return 1
-
-                  // If the username don't match then sort by reviewId
-                  if (reviewOne.id < reviewTwo.id) return -1
-                  if (reviewOne.id > reviewTwo.id) return 1
-
-                  return 0
-                })
-                .map(reviewer => (
-                  <Reviewer key={reviewer.id}>
-                    <StatusBadge minimal status={reviewer.status} />
-                    <UserAvatar key={reviewer.id} user={reviewer.user} />
-                    <Primary>{reviewer.user.username}</Primary>
-                    <Secondary>
-                      {reviewer.user.defaultIdentity.identifier}
-                    </Secondary>
-                    {config.review.shared === 'true' && (
-                      <Checkbox
-                        checked={reviewer.isShared}
-                        label="Shared"
-                        name={`checkbox-shared-reviewer-${reviewer.id}`}
-                        onChange={() =>
-                          toggleReviewerSharedStatus(reviewer.id, {
-                            isShared: !reviewer.isShared,
-                          })
-                        }
-                      />
-                    )}
-                    <div>
-                      <Action
-                        onClick={() =>
-                          removeReviewer({
-                            variables: {
-                              userId: reviewer.user.id,
-                              manuscriptId: manuscript.id,
-                            },
-                          })
-                        }
-                      >
-                        Delete
-                      </Action>
-                    </div>
-                  </Reviewer>
-                ))}
-            </ReviewersList>
-            ) : (
-              <p>No reviewers have been invited yet</p>
-            )} */}
-            <Kanban>
-              {statuses.map((status) => <Column><StatusLabel statusColor={status.color}>{status.label}</StatusLabel><CardsWrapper></CardsWrapper></Column>)}
-            </Kanban>
           </SectionRow>
         </SectionContent>
       </AdminSection>
