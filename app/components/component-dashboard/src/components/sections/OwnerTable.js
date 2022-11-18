@@ -12,7 +12,7 @@ import {
   ownerColumns,
 } from '../../../../../../config/journal/manuscripts'
 
-const OwnerTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
+const OwnerTable = ({ urlFrag }) => {
   const { search, pathname } = useLocation()
   const uriQueryParams = new URLSearchParams(search)
   const history = useHistory()
