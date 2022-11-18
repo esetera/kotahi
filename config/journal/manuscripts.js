@@ -3,6 +3,7 @@ Journals may want to display their manuscript tables with different columns
 */
 const editorColumns = [
   'shortId',
+  'overdueTooltip',
   'meta.title',
   'status',
   'statusCounts',
