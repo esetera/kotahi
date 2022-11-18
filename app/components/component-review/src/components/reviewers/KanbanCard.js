@@ -10,8 +10,8 @@ const Card = styled.div`
   border-bottom: 0.8px solid #bfbfbf;
   border-radius: 8px;
   display: flex;
-  max-width: 20vw;
   padding: 10px;
+  width: 100%;
 
   &:hover {
     box-shadow: 0px 9px 5px -6px #bfbfbf;

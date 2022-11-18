@@ -156,6 +156,15 @@ export const convertTimestampToDateString = timestamp => {
   return `${month} ${pad(day)}, ${year} ${cleanHours}:${pad(minutes)}${ampm}`
 }
 
+export const convertTimestampToDateWithoutTimeString = timestamp => {
+  const date = new Date(timestamp)
+  const day = date.getDate()
+  const month = monthAbbrevs[date.getMonth()]
+  const year = date.getFullYear()
+
+  return `${month} ${pad(day)}, ${year}`
+}
+
 export const convertTimestampToRelativeDateString = timestamp => {
   const updatedTime = new Date(timestamp)
   const currTime = new Date()
@@ -173,5 +182,5 @@ export const convertTimestampToRelativeDateString = timestamp => {
     return `${diff} days ago`
   }
 
-  return convertTimestampToDateString(timestamp)
+  return convertTimestampToDateWithoutTimeString(timestamp)
 }

@@ -4,7 +4,6 @@ import { gql, useQuery, useMutation } from '@apollo/client'
 import { useParams } from 'react-router-dom'
 import Reviewers from './reviewers/Reviewers'
 import { Spinner, CommsErrorBanner } from '../../../shared'
-import KanbanCard from './reviewers/KanbanCard'
 
 const teamFields = `
   id
@@ -157,20 +156,9 @@ const ReviewersPage = () => {
   const reviewersTeam =
     manuscript.teams.find(team => team.role === 'reviewer') || {}
 
-  // eslint-disable-next-line no-console
-  const placeHolderFunc = () => {
-    // eslint-disable-next-line no-console, no-alert
-    alert('Modal should pop up')
-  }
-
   const reviewers = reviewersTeam.members || []
   return (
     <>
-      <KanbanCard
-        // eslint-disable-next-line no-console
-        onClickAction={placeHolderFunc}
-        reviewer={reviewers[0]}
-      />
       <Formik
         displayName="reviewers"
         initialValues={{ user: undefined }}
