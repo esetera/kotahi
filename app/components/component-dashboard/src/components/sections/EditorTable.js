@@ -17,7 +17,6 @@ const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
   const [sortName, setSortName] = useState('created')
   const [sortDirection, setSortDirection] = useState('DESC')
 
-  // TODO: move graphQL query that returns fieldDefinitions to Dashboard and pass it in as a prop
   const fieldDefinitions = useMemo(() => {
     const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
     const defs = {}

@@ -25,7 +25,6 @@ const ReviewerTable = ({ urlFrag, query: { data, loading, error } }) => {
   const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
   const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
 
-  // TODO: move graphQL query that returns fieldDefinitions to Dashboard and pass it in as a prop
   const fieldDefinitions = useMemo(() => {
     const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
     const defs = {}
