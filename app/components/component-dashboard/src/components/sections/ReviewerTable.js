@@ -1,20 +1,20 @@
-import { useMutation, useQuery } from '@apollo/client'
-import React, { useState, useMemo } from 'react'
-import { useLocation, useHistory } from 'react-router-dom'
+import { useMutation } from '@apollo/client'
+import React, { useMemo, useState } from 'react'
+import { useHistory, useLocation } from 'react-router-dom'
 import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../../queries/team'
-import { CommsErrorBanner, Spinner } from '../../../../shared'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
+import { CommsErrorBanner, Spinner } from '../../../../shared'
 import mutations from '../../graphql/mutations'
-import queries from '../../graphql/queries'
+
+import {
+  reviewerColumns,
+  URI_SEARCH_PARAM,
+} from '../../../../../../config/journal/manuscripts'
 import { Placeholder } from '../../style'
 import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
-import {
-  URI_SEARCH_PARAM,
-  reviewerColumns,
-} from '../../../../../../config/journal/manuscripts'
 
-const ReviewerTable = ({ urlFrag }) => {
+const ReviewerTable = ({ urlFrag, query: { data, loading, error } }) => {
   const history = useHistory()
   const { search, pathname } = useLocation()
   const uriQueryParams = new URLSearchParams(search)
@@ -25,11 +25,6 @@ const ReviewerTable = ({ urlFrag }) => {
   const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
   const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
 
-  const { loading, data, error } = useQuery(queries.dashboard, {
-    fetchPolicy: 'cache-and-network',
-  })
-
-  // TODO: move graphQL query that returns fieldDefinitions to Dashboard and pass it in as a prop
   const fieldDefinitions = useMemo(() => {
     const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
     const defs = {}

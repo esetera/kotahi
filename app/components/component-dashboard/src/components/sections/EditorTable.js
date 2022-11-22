@@ -1,10 +1,8 @@
-import { useQuery } from '@apollo/client'
 import React, { useMemo, useState } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
 import { CommsErrorBanner, Spinner } from '../../../../shared'
-import queries from '../../graphql/queries'
 import { Placeholder } from '../../style'
 import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
 import {
@@ -12,18 +10,13 @@ import {
   editorColumns,
 } from '../../../../../../config/journal/manuscripts'
 
-const EditorTable = ({ instanceName, shouldShowShortId, urlFrag }) => {
+const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
   const { search, pathname } = useLocation()
   const uriQueryParams = new URLSearchParams(search)
   const history = useHistory()
   const [sortName, setSortName] = useState('created')
   const [sortDirection, setSortDirection] = useState('DESC')
 
-  const { loading, data, error } = useQuery(queries.dashboard, {
-    fetchPolicy: 'cache-and-network',
-  })
-
-  // TODO: move graphQL query that returns fieldDefinitions to Dashboard and pass it in as a prop
   const fieldDefinitions = useMemo(() => {
     const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
     const defs = {}
