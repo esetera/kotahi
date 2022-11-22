@@ -30,14 +30,10 @@ import MessageContainer from '../../component-chat/src/MessageContainer'
 import Modal from '../../component-modal/src'
 import BulkArchiveModal from './BulkArchiveModal'
 import getColumnsProps from './getColumnsProps'
-import getUriQueryParams from './getUriQueryParams'
 import FilterSortHeader from './FilterSortHeader'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
-import {
-  URI_SEARCH_PARAM,
-  URI_PAGENUM_PARAM,
-} from '../../../shared/urlParamUtils'
+import { URI_SEARCH_PARAM } from '../../../shared/urlParamUtils'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;
@@ -85,52 +81,7 @@ const Manuscripts = ({ history, ...props }) => {
   const [selectedNewManuscripts, setSelectedNewManuscripts] = useState([])
   const [isAdminChatOpen, setIsAdminChatOpen] = useState(true)
 
-  const uriQueryParams = getUriQueryParams(window.location)
-
-  const loadPageWithQuery = query => {
-    let newPath = `${urlFrag}/admin/manuscripts`
-
-    if (query.length > 0) {
-      newPath = `${newPath}?${query
-        .filter(x => x.value)
-        .map(param => `${encodeURIComponent(param.field)}=${param.value}`)
-        .join('&')}`
-    }
-
-    history.push(newPath)
-  }
-
-  const setFilter = (fieldName, filterValue) => {
-    if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
-
-    const revisedQuery = [...uriQueryParams].filter(x => {
-      return x.field !== fieldName && x.field !== URI_PAGENUM_PARAM
-    })
-
-    revisedQuery.push(
-      { field: fieldName, value: filterValue },
-      { field: URI_PAGENUM_PARAM, value: '1' },
-    )
-    loadPageWithQuery(revisedQuery)
-  }
-
-  const applyParamQuery = (fieldName, filterValue) => {
-    const revisedQuery = [...uriQueryParams].filter(x => {
-      if (fieldName === URI_SEARCH_PARAM) {
-        return x.field !== fieldName && x.field !== URI_PAGENUM_PARAM
-      }
-
-      return x.field !== fieldName
-    })
-
-    if (fieldName === URI_SEARCH_PARAM) {
-      revisedQuery.push({ field: URI_PAGENUM_PARAM, value: '1' })
-    }
-
-    revisedQuery.push({ field: fieldName, value: filterValue })
-
-    loadPageWithQuery(revisedQuery)
-  }
+  const params = new URLSearchParams(history.location.search)
 
   const toggleNewManuscriptCheck = id => {
     setSelectedNewManuscripts(s => {
@@ -268,14 +219,12 @@ const Manuscripts = ({ history, ...props }) => {
     closeModalBulkArchiveConfirmation()
   }
 
-  const currentSearchQuery = uriQueryParams.find(
-    x => x.field === URI_SEARCH_PARAM,
-  )?.value
+  const currentSearchQuery = params.get(URI_SEARCH_PARAM)
 
   const columnsProps = getColumnsProps(
     configuredColumnNames,
     fieldDefinitions,
-    uriQueryParams,
+    params,
     sortName,
     sortDirection,
     deleteManuscript,
@@ -326,7 +275,6 @@ const Manuscripts = ({ history, ...props }) => {
       )}
 
       <SearchControl
-        applyParamQuery={applyParamQuery}
         currentSearchQuery={currentSearchQuery}
         URI_SEARCH_PARAM={URI_SEARCH_PARAM}
       />
@@ -395,10 +343,8 @@ const Manuscripts = ({ history, ...props }) => {
                 <ManuscriptsHeaderRow>
                   {columnsProps.map(info => (
                     <FilterSortHeader
-                      applyParamQuery={applyParamQuery}
                       columnInfo={info}
                       key={info.name}
-                      setFilter={setFilter}
                       sortDirection={sortDirection}
                       sortName={sortName}
                     />
@@ -413,14 +359,12 @@ const Manuscripts = ({ history, ...props }) => {
                       columnDefinitions={columnsProps}
                       key={latestVersion.id}
                       manuscript={latestVersion}
-                      setFilter={setFilter}
                     />
                   )
                 })}
               </ManuscriptsTable>
             </ScrollableContent>
             <Pagination
-              applyParamQuery={applyParamQuery}
               limit={limit}
               page={page}
               PaginationContainer={PaginationContainerShadowed}

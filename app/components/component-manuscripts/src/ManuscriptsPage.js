@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import {
@@ -11,7 +11,6 @@ import {
 } from '@apollo/client'
 import config from 'config'
 import fnv from 'fnv-plus'
-import { useLocation } from 'react-router-dom'
 import {
   GET_MANUSCRIPTS_AND_FORM,
   DELETE_MANUSCRIPT,
@@ -25,12 +24,13 @@ import {
 import configuredColumnNames from './configuredColumnNames'
 import { updateMutation } from '../../component-submit/src/components/SubmitPage'
 import { publishManuscriptMutation } from '../../component-review/src/components/queries'
-import getUriQueryParams from './getUriQueryParams'
 import Manuscripts from './Manuscripts'
 import { validateDoi } from '../../../shared/commsUtils'
 import {
+  extractFilters,
+  extractSortData,
   URI_PAGENUM_PARAM,
-  URI_SORT_PARAM,
+  useQueryParams,
 } from '../../../shared/urlParamUtils'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
@@ -38,12 +38,13 @@ const chatRoomId = fnv.hash(config['pubsweet-client'].baseUrl).hex()
 
 const ManuscriptsPage = ({ history }) => {
   const [isImporting, setIsImporting] = useState(false)
-  const uriQueryParams = getUriQueryParams(window.location)
+  const applyQueryParams = useQueryParams()
 
-  const url = new URLSearchParams(history.location.search)
-  const page = url.get(URI_PAGENUM_PARAM) || 1
-  const sortName = url.get(URI_SORT_PARAM)?.split(':')[0] || 'created'
-  const sortDirection = url.get(URI_SORT_PARAM)?.split(':')[1] || 'DESC'
+  const params = new URLSearchParams(history.location.search)
+  const page = params.get(URI_PAGENUM_PARAM) || 1
+  const sortName = extractSortData(params).name
+  const sortDirection = extractSortData(params).direction
+  const filters = extractFilters(params)
 
   const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
 
@@ -54,9 +55,7 @@ const ManuscriptsPage = ({ history }) => {
         : null,
       offset: (page - 1) * limit,
       limit,
-      filters: uriQueryParams.filter(f => {
-        return f.field !== URI_PAGENUM_PARAM && f.field !== URI_SORT_PARAM
-      }),
+      filters,
       timezoneOffsetMinutes: new Date().getTimezoneOffset(),
     },
     fetchPolicy: 'network-only',
@@ -75,9 +74,8 @@ const ManuscriptsPage = ({ history }) => {
         },
       } = data
 
-      queryObject.refetch()
       setIsImporting(false)
-      // setPage(1)
+      applyQueryParams({ [URI_PAGENUM_PARAM]: 1 })
 
       toast.success(
         manuscriptsImportStatus && 'Manuscripts successfully imported',
