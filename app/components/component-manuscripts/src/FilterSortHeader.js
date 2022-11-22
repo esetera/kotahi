@@ -9,7 +9,11 @@ import {
   dateToCompactStringLocal,
   compactStringToDateLocal,
 } from '../../../shared/dateUtils'
-import { URI_SORT_PARAM } from '../../../shared/urlParamUtils'
+import {
+  URI_SORT_PARAM,
+  URI_PAGENUM_PARAM,
+  useQueryParams,
+} from '../../../shared/urlParamUtils'
 
 const SortUp = styled(ArrowUp)`
   height: ${grid(2)};
@@ -71,9 +75,9 @@ const FilterSortHeader = ({
   sortDirection,
   setSortName,
   setSortDirection,
-  setFilter,
-  applyParamQuery,
 }) => {
+  const applyQueryParams = useQueryParams()
+
   if (columnInfo.canFilterByDateRange) {
     const changeSort = () => {
       const priorSortName = sortName
@@ -91,18 +95,21 @@ const FilterSortHeader = ({
 
       if (setSortDirection) setSortDirection(newSortDirection)
 
-      applyParamQuery(URI_SORT_PARAM, `${columnInfo.name}:${newSortDirection}`)
+      applyQueryParams({
+        [URI_SORT_PARAM]: `${columnInfo.name}_${newSortDirection}`,
+      })
     }
 
     const filterByDateRange = range => {
       if (range?.length === 2) {
-        setFilter(
-          columnInfo.name,
-          `${dateToCompactStringLocal(range[0])}-${dateToCompactStringLocal(
-            range[1],
-          )}`,
-        )
-      } else setFilter(columnInfo.name, null)
+        applyQueryParams({
+          [columnInfo.name]: `${dateToCompactStringLocal(
+            range[0],
+          )}-${dateToCompactStringLocal(range[1])}`,
+          [URI_PAGENUM_PARAM]: 1,
+        })
+      } else
+        applyQueryParams({ [columnInfo.name]: null, [URI_PAGENUM_PARAM]: 1 })
     }
 
     return (
@@ -173,7 +180,12 @@ const FilterSortHeader = ({
           }}
           data-testid={columnInfo.name}
           label={columnInfo.title}
-          onChange={selected => setFilter(columnInfo.name, selected.value)}
+          onChange={selected =>
+            applyQueryParams({
+              [columnInfo.name]: selected.value,
+              [URI_PAGENUM_PARAM]: 1,
+            })
+          }
           options={options}
           placeholder={columnInfo.title}
           value={columnInfo.filterValue}
@@ -199,7 +211,10 @@ const FilterSortHeader = ({
 
       if (setSortDirection) setSortDirection(newSortDirection)
 
-      applyParamQuery(URI_SORT_PARAM, `${columnInfo.name}:${newSortDirection}`)
+      applyQueryParams({
+        [URI_SORT_PARAM]: `${columnInfo.name}_${newSortDirection}`,
+        [URI_PAGENUM_PARAM]: 1,
+      })
     }
 
     return (

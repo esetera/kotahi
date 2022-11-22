@@ -16,7 +16,7 @@ const fieldCanBeSorted = field => {
 const getColumnsProps = (
   columnNames,
   fieldDefinitions,
-  uriQueryParams,
+  params,
   columnToSortOn,
   sortDirection,
   deleteManuscript,
@@ -146,7 +146,7 @@ const getColumnsProps = (
       filterOptions,
       filterValue:
         ((filterOptions || presetProps.canFilterByDateRange) &&
-          uriQueryParams.find(p => p.field === columnName)?.value) ||
+          params.get(columnName)) ||
         null,
       sortDirection:
         canSort && columnToSortOn === columnName ? sortDirection : null,
