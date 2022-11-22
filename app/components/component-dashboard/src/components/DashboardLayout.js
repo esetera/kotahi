@@ -1,7 +1,7 @@
 import { Button } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import {
   Heading,
@@ -17,11 +17,11 @@ const TabLink = styled(Link)`
 `
 
 const DashboardLayout = ({
-  newSubmission,
   createNewTaskAlerts, // For testing only. Pass in null to disable.
   urlFrag,
   children,
 }) => {
+  const history = useHistory()
   const location = useLocation()
 
   const dashboardPages = [
@@ -43,7 +43,10 @@ const DashboardLayout = ({
     <Container>
       <HeadingWithAction>
         <Heading>Dashboard</Heading>
-        <Button onClick={newSubmission} primary>
+        <Button
+          onClick={() => history.push(`${urlFrag}/newSubmission`)}
+          primary
+        >
           + New submission
         </Button>
         {createNewTaskAlerts && (

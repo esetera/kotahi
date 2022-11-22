@@ -1,7 +1,8 @@
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import config from 'config'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SectionContent, SectionHeader, Title } from '../../../shared'
+import mutations from '../graphql/mutations'
 import queries from '../graphql/queries'
 import OwnerTable from './sections/OwnerTable'
 
@@ -13,6 +14,16 @@ const DashboardSubmissionsPage = () => {
   const query = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
   })
+
+  const [updateTab] = useMutation(mutations.updateTab)
+
+  useEffect(() => {
+    updateTab({
+      variables: {
+        tab: 'submissions',
+      },
+    })
+  }, [])
 
   return !['ncrc'].includes(instanceName) ? (
     <SectionContent>

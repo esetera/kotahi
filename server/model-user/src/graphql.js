@@ -187,6 +187,13 @@ const resolvers = {
         return { success: false, error: 'Something went wrong', user: null }
       }
     },
+    async updateRecentTab(_, { tab }, ctx) {
+      const user = await models.User.query().updateAndFetchById(ctx.user, {
+        recentTab: tab,
+      })
+
+      return user
+    },
     async sendEmail(_, { input }, ctx) {
       const inputParsed = JSON.parse(input)
 
@@ -402,6 +409,7 @@ const typeDefs = `
     updateCurrentUsername(username: String): User
     sendEmail(input: String): SendEmailResponse
     updateCurrentEmail(email: String): UpdateEmailResponse
+    updateRecentTab(tab: String): User
   }
 
   type UpdateEmailResponse {
@@ -441,6 +449,7 @@ const typeDefs = `
     online: Boolean
     lastOnline: DateTime
     isOnline: Boolean
+    recentTab: String
     _currentRoles: [CurrentRole]
     _currentGlobalRoles: [String]
   }
