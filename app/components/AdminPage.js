@@ -220,8 +220,13 @@ const AdminPage = () => {
     invitationId ? (
       <Redirect to="/invitation/accepted" />
     ) : (
-      // TODO: Default this to the user's saved last dashboard tab
-      <Redirect to={dashboardSubmissionsLink} />
+      <Redirect
+        to={
+          currentUser.recentTab
+            ? `${urlFrag}/dashboard/${currentUser.recentTab}`
+            : dashboardSubmissionsLink
+        }
+      />
     )
 
   // Throttled refetch query `currentUser` once every 2mins
@@ -264,11 +269,7 @@ const AdminPage = () => {
             path={`${urlFrag}/profile/:id`}
             redirectLink={redirectLink}
           />
-          <PrivateRoute
-            exact
-            path={`${urlFrag}/dashboard/:path?`}
-            redirectLink={redirectLink}
-          >
+          <Route exact path={`${urlFrag}/dashboard/:path?`}>
             <DashboardLayout urlFrag={urlFrag}>
               <Switch>
                 <PrivateRoute
@@ -301,7 +302,7 @@ const AdminPage = () => {
                 />
               </Switch>
             </DashboardLayout>
-          </PrivateRoute>
+          </Route>
           <PrivateRoute
             component={NewSubmissionPage}
             currentUser={currentUser}

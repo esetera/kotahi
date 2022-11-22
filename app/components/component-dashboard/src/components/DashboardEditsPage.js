@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import config from 'config'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { SectionContent, SectionHeader, Title } from '../../../shared'
 import queries from '../graphql/queries'
 import EditorTable from './sections/EditorTable'
+import mutations from '../graphql/mutations'
 
 const DashboardEditsPage = () => {
   const urlFrag = config.journal.metadata.toplevel_urlfragment
@@ -11,6 +12,16 @@ const DashboardEditsPage = () => {
   const query = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
   })
+
+  const [updateTab] = useMutation(mutations.updateTab)
+
+  useEffect(() => {
+    updateTab({
+      variables: {
+        tab: 'edits',
+      },
+    })
+  }, [])
 
   return (
     <SectionContent>

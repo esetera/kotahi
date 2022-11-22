@@ -70,6 +70,7 @@ export default {
         id
         username
         admin
+        recentTab
       }
       manuscriptsUserHasCurrentRoleIn {
         manuscriptVersions {
