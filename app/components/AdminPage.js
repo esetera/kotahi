@@ -151,7 +151,6 @@ const AdminPage = () => {
 
   const urlFrag = journal.metadata.toplevel_urlfragment
   const { pathname } = history.location
-
   const showLinks = pathname.match(/^\/(submit|manuscript)/g)
   let links = []
   const submissionFormBuilderLink = `${urlFrag}/admin/submission-form-builder`
