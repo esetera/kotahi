@@ -104,6 +104,7 @@ export const Cell = styled.div`
       cursor: pointer;
     `}
 
+  overflow: hidden;
   overflow-wrap: anywhere;
 `
 

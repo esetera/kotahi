@@ -26,7 +26,7 @@ const EditorItemLinks = ({ manuscript, urlFrag }) => (
 )
 
 EditorItemLinks.propTypes = {
-  manuscript: PropTypes.shape({
+  version: PropTypes.shape({
     id: PropTypes.string.isRequired,
     parentId: PropTypes.string,
   }).isRequired,
