@@ -70,7 +70,6 @@ const KanbanBoard = ({versionNumber}) => {
               <Title>Reviewer Status</Title>
               <Title><VersionNumber>Version {versionNumber}</VersionNumber></Title>
             </ReviewerStatusHeader>
-            {console.log(versionNumber)}
           </SectionHeader>
           <SectionRow style={{ padding: 0 }}>
             <Kanban>
