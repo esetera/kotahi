@@ -5,7 +5,7 @@ import { grid } from '@pubsweet/ui-toolkit'
 import PropTypes from 'prop-types'
 import config from 'config'
 import ReviewerForm from './ReviewerForm'
-import {  AdminSection } from '../style'
+import { AdminSection } from '../style'
 import {
   Container,
   SectionRow,
