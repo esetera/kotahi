@@ -4,7 +4,7 @@ import ManuscriptsTable from '../../../../component-manuscripts-table/src/Manusc
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
 import { CommsErrorBanner, Spinner } from '../../../../shared'
 import { Placeholder } from '../../style'
-import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
+import { getLatestVersion } from '../../utils'
 import {
   URI_SEARCH_PARAM,
   editorColumns,
@@ -32,14 +32,8 @@ const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
 
   const currentUser = data && data.currentUser
 
-  const latestVersions = data.manuscriptsUserHasCurrentRoleIn.map(
+  const editorLatestVersions = data.manuscriptsUserHasCurrentRoleIn.manuscripts.map(
     getLatestVersion,
-  )
-
-  const editorLatestVersions = getManuscriptsUserHasRoleIn(
-    latestVersions,
-    currentUser.id,
-    ['seniorEditor', 'handlingEditor', 'editor'],
   )
 
   if (editorLatestVersions.length === 0) {
