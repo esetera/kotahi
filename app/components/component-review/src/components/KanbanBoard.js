@@ -74,7 +74,7 @@ const KanbanBoard = ({versionNumber}) => {
           </SectionHeader>
           <SectionRow style={{padding: 0}}>
             <Kanban>
-              {statuses.map((status) => <Column><StatusLabel statusColor={status.color}>{status.label}</StatusLabel><CardsWrapper></CardsWrapper></Column>)}
+              {statuses.map((status) => <Column key={status.value}><StatusLabel statusColor={status.color}>{status.label}</StatusLabel><CardsWrapper></CardsWrapper></Column>)}
             </Kanban>
           </SectionRow>
         </SectionContent>
