@@ -3,15 +3,15 @@ import { decorate, injectable } from 'inversify'
 import { v4 as uuidv4 } from 'uuid'
 import { isEmpty } from 'lodash'
 import { WaxContext } from 'wax-prosemirror-core'
-import { LeftSideButton } from 'wax-prosemirror-components'
 import { Commands } from 'wax-prosemirror-utilities'
 import { Tools } from 'wax-prosemirror-services'
+import AnstyleLeftSideButton from './AnstyleLeftSideButton'
 import anystyleConnector from './anystyleConnector'
 
 class AnyStyle extends Tools {
   title = 'Change to Anystyle'
   label = 'Change to Anystyle'
-  color = 'colorFirstPage'
+  color = 'colorCitation'
   className = 'anystyle-parsed-citation'
   // icon = 'title'
   name = 'Anystyle'
@@ -22,9 +22,7 @@ class AnyStyle extends Tools {
   }
 
   select = state => {
-    const {
-      selection: { from },
-    } = state
+    const from = state?.selection?.from || null
 
     if (from === null) return false
     return true
@@ -39,25 +37,18 @@ class AnyStyle extends Tools {
   }
 
   renderTool(view) {
-    const { updateAnystyle } = this.config.get('AnystyleService')
-
-    console.log("What's passed through: ", updateAnystyle)
+    const { updateAnystyle } = this.config.get('config.AnystyleService')
 
     if (isEmpty(view)) return null
-    const context = useContext(WaxContext)
-
-    const connector = anystyleConnector(
-      view,
-      updateAnystyle,
-      this.pmplugins.get('anystylePlaceHolder'),
-      context,
-    )
 
     return this._isDisplayed ? (
-      <LeftSideButton
-        anystyleConnector={connector}
+      // this should be memoized?
+      <AnstyleLeftSideButton
+        connector={anystyleConnector}
         item={this.toJSON()}
         key={uuidv4()}
+        placeholder={this.pmplugins.get('anystylePlaceHolder')}
+        updateAnystyle={updateAnystyle}
         view={view}
       />
     ) : null

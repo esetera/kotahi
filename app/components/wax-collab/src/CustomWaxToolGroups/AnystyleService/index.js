@@ -1,7 +1,7 @@
 import { Service } from 'wax-prosemirror-services'
 import Anystyle from './Anystyle'
 import anystylemixedcitationMark from './schema/anystylemixedcitationMark'
-import AnystylePlaceHolderPlugin from './plugins/anystylePlaceHolderPlugin.js'
+import AnystylePlaceHolderPlugin from './plugins/anystylePlaceHolderPlugin'
 import AnystyleAltComponent from './AnystyleAltComponent'
 
 class AnystyleService extends Service {
