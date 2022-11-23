@@ -7,7 +7,6 @@ import { NewSubmissionPage } from '../../page-object/new-submission-page'
 import { Menu } from '../../page-object/page-component/menu'
 import { DashboardPage } from '../../page-object/dashboard-page'
 import { ControlPage } from '../../page-object/control-page'
-import { ReviewersPage } from '../../page-object/reviewers-page'
 import { ReviewPage } from '../../page-object/review-page'
 import { SubmissionFormPage } from '../../page-object/submission-form-page'
 
@@ -25,14 +24,12 @@ describe('control page tests', () => {
         ManuscriptsPage.clickControlAndVerifyPageLoaded()
         ControlPage.clickAssignSeniorEditorDropdown()
         ControlPage.selectDropdownOptionByName(name.role.reviewers.reviewer1)
-        ControlPage.clickManageReviewers()
-        ReviewersPage.inviteReviewer(name.role.reviewers.reviewer1)
+        ControlPage.inviteReviewer(name.role.reviewers.reviewer1)
       })
     })
     it('shared message is visible', () => {
-      ReviewersPage.clickSharedCheckbox(0)
-      ReviewersPage.waitThreeSec()
-      ReviewersPage.clickBackToControlPage()
+      ControlPage.clickSharedCheckbox()
+      ControlPage.waitThreeSec()
       cy.fixture('role_names').then(name => {
         cy.login(name.role.reviewers.reviewer1, dashboard)
         cy.awaitDisappearSpinner()
@@ -54,8 +51,7 @@ describe('control page tests', () => {
       })
     })
     it('shared message is not visible', () => {
-      ReviewersPage.clickBackToControlPage()
-      ReviewersPage.waitThreeSec()
+      ControlPage.waitThreeSec()
       cy.fixture('role_names').then(name => {
         cy.login(name.role.reviewers.reviewer1, dashboard)
         cy.awaitDisappearSpinner()
@@ -74,9 +70,8 @@ describe('control page tests', () => {
       ControlPage.getShowButton().should('not.exist')
     })
     it('checkbox can be published publicly is visible', () => {
-      ReviewersPage.clickSharedCheckbox(0)
-      ReviewersPage.waitThreeSec()
-      ReviewersPage.clickBackToControlPage()
+      ControlPage.clickSharedCheckbox()
+      ControlPage.waitThreeSec()
       cy.fixture('role_names').then(name => {
         cy.login(name.role.reviewers.reviewer1, dashboard)
       })
@@ -96,9 +91,8 @@ describe('control page tests', () => {
       )
     })
     it('icon for accepted to publish review is visible', () => {
-      ReviewersPage.clickSharedCheckbox(0)
-      ReviewersPage.waitThreeSec()
-      ReviewersPage.clickBackToControlPage()
+      ControlPage.clickSharedCheckbox()
+      ControlPage.waitThreeSec()
       cy.fixture('role_names').then(name => {
         cy.login(name.role.reviewers.reviewer1, dashboard)
       })
@@ -135,10 +129,9 @@ describe('control page tests', () => {
         ManuscriptsPage.clickControlAndVerifyPageLoaded()
         ControlPage.clickAssignSeniorEditorDropdown()
         ControlPage.selectDropdownOptionByName(name.role.reviewers.reviewer1)
-        ControlPage.clickManageReviewers()
-        ReviewersPage.inviteReviewer(name.role.reviewers.reviewer1)
-        ReviewersPage.clickSharedCheckbox(0)
-        ReviewersPage.waitThreeSec()
+        ControlPage.inviteReviewer(name.role.reviewers.reviewer1)
+        ControlPage.clickSharedCheckbox()
+        ControlPage.waitThreeSec()
         cy.login(name.role.reviewers.reviewer1, dashboard)
         cy.awaitDisappearSpinner()
         DashboardPage.clickAcceptReview()
@@ -216,10 +209,9 @@ describe('control page tests', () => {
         ManuscriptsPage.clickControlAndVerifyPageLoaded()
         ControlPage.clickAssignSeniorEditorDropdown()
         ControlPage.selectDropdownOptionByName(name.role.reviewers.reviewer2)
-        ControlPage.clickManageReviewers()
-        ReviewersPage.inviteReviewer(name.role.reviewers.reviewer2)
-        ReviewersPage.clickSharedCheckbox(0)
-        ReviewersPage.waitThreeSec()
+        ControlPage.inviteReviewer(name.role.reviewers.reviewer2)
+        ControlPage.clickSharedCheckbox()
+        ControlPage.waitThreeSec()
         cy.login(name.role.reviewers.reviewer2, dashboard)
         cy.awaitDisappearSpinner()
         DashboardPage.clickAcceptReview()
