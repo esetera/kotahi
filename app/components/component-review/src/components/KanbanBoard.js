@@ -72,7 +72,7 @@ const KanbanBoard = ({versionNumber}) => {
             </ReviewerStatusHeader>
             {console.log(versionNumber)}
           </SectionHeader>
-          <SectionRow style={{padding: 0}}>
+          <SectionRow style={{ padding: 0 }}>
             <Kanban>
               {statuses.map((status) => <Column><StatusLabel statusColor={status.color}>{status.label}</StatusLabel><CardsWrapper></CardsWrapper></Column>)}
             </Kanban>
