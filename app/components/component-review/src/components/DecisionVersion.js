@@ -383,7 +383,6 @@ const DecisionVersion = ({
               />
             </AdminSection>
           )}
-          {isCurrentVersion}
         </>
       ),
       key: `decision_${version.id}`,
