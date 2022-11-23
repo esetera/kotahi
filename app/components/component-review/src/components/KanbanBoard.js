@@ -61,7 +61,7 @@ const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.40);
 `
 
-const KanbanBoard = ({versionNumber}) => {
+const KanbanBoard = ({ versionNumber }) => {
     return (
         <AdminSection>
         <SectionContent>
