@@ -65,20 +65,31 @@ const formForPurposeAndCategoryFragment = `formForPurposeAndCategory(purpose: "s
 
 export default {
   dashboard: gql`
-    query Dashboard($wantedRoles: [String]!) {
+    query Dashboard($wantedRoles: [String]!, $sort: ManuscriptsSort, $filters: [ManuscriptsFilter!]!, $offset: Int, $limit: Int, $timezoneOffsetMinutes: Int) {
       currentUser {
         id
         username
         admin
         recentTab
       }
-      manuscriptsUserHasCurrentRoleIn(wantedRoles: $wantedRoles) {
-        manuscriptVersions {
-          ${manuscriptFragment}
-          parentId
+      manuscriptsUserHasCurrentRoleIn(
+        wantedRoles: $wantedRoles
+        sort: $sort
+        filters: $filters
+        offset: $offset
+        limit: $limit
+        timezoneOffsetMinutes: $timezoneOffsetMinutes)
+        {
+          totalCount
+          manuscripts {
+            manuscriptVersions {
+              ${manuscriptFragment}
+              parentId
+            }
+            ${manuscriptFragment}
+            searchSnippet
+          }
         }
-        ${manuscriptFragment}
-      }
       ${formForPurposeAndCategoryFragment}
     }
   `,

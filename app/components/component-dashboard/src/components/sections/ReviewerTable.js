@@ -12,7 +12,7 @@ import {
   URI_SEARCH_PARAM,
 } from '../../../../../../config/journal/manuscripts'
 import { Placeholder } from '../../style'
-import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
+import { getLatestVersion } from '../../utils'
 
 const ReviewerTable = ({ urlFrag, query: { data, loading, error } }) => {
   const history = useHistory()
@@ -40,14 +40,8 @@ const ReviewerTable = ({ urlFrag, query: { data, loading, error } }) => {
 
   const currentUser = data && data.currentUser
 
-  const latestVersions = data?.manuscriptsUserHasCurrentRoleIn.map(
+  const reviewerLatestVersions = data?.manuscriptsUserHasCurrentRoleIn.manuscripts.map(
     getLatestVersion,
-  )
-
-  const reviewerLatestVersions = getManuscriptsUserHasRoleIn(
-    latestVersions,
-    currentUser.id,
-    ['reviewer', 'invited:reviewer', 'accepted:reviewer', 'completed:reviewer'],
   )
 
   if (reviewerLatestVersions.length === 0) {

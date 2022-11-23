@@ -269,6 +269,7 @@ const applyFilters = (
 }
 
 /** Builds a raw query string and an array of params, based on the requested filtering, sorting, offset and limit.
+ * If manuscriptIDs is specified, then the query is restricted to those IDs.
  * Returns [query, params]
  */
 const buildQueryForManuscriptSearchFilterAndOrder = (
@@ -278,6 +279,7 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
   filters,
   submissionForm,
   timezoneOffsetMinutes,
+  manuscriptIDs = null,
 ) => {
   // These keep track of the various terms we're adding to SELECT, FROM, WHERE and ORDER BY, as well as params.
   const selectItems = { rawFragments: [], params: [] }
@@ -294,6 +296,10 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
   addFrom('manuscripts')
   addWhere('parent_id IS NULL')
   addWhere('is_hidden IS NOT TRUE')
+
+  if (manuscriptIDs) {
+    addWhere('id = ANY(?)', manuscriptIDs)
+  }
 
   const searchFilter = filters.find(f => f.field === URI_SEARCH_PARAM)
 

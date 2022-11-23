@@ -8,7 +8,7 @@ import ManuscriptsTable from '../../../../component-manuscripts-table/src/Manusc
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
 import { CommsErrorBanner, Spinner } from '../../../../shared'
 import { Placeholder } from '../../style'
-import { getLatestVersion, getManuscriptsUserHasRoleIn } from '../../utils'
+import { getLatestVersion } from '../../utils'
 
 const OwnerTable = ({ urlFrag, query: { data, loading, error } }) => {
   const { search, pathname } = useLocation()
@@ -30,16 +30,8 @@ const OwnerTable = ({ urlFrag, query: { data, loading, error } }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const currentUser = data && data.currentUser
-
-  const latestVersions = data.manuscriptsUserHasCurrentRoleIn.map(
+  const authorLatestVersions = data.manuscriptsUserHasCurrentRoleIn.manuscripts.map(
     getLatestVersion,
-  )
-
-  const authorLatestVersions = getManuscriptsUserHasRoleIn(
-    latestVersions,
-    currentUser.id,
-    ['author'],
   )
 
   if (authorLatestVersions.length === 0) {
