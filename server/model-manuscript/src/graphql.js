@@ -1111,7 +1111,7 @@ const resolvers = {
 
       return repackageForGraphql(manuscript)
     },
-    async manuscriptsUserHasCurrentRoleIn(_, input, ctx) {
+    async manuscriptsUserHasCurrentRoleIn(_, { wantedRoles }, ctx) {
       // Get IDs of the top-level manuscripts
       const topLevelManuscripts = await models.Manuscript.query()
         .distinct(
@@ -1144,7 +1144,9 @@ const resolvers = {
 
         if (
           latestVersion.teams.some(t =>
-            t.members.some(member => member.userId === ctx.user),
+            t.members.some(member => {
+              return member.userId === ctx.user && wantedRoles.includes(t.role)
+            }),
           )
         ) {
           // eslint-disable-next-line no-param-reassign
@@ -1156,7 +1158,6 @@ const resolvers = {
           filteredManuscripts.push(m)
         }
       })
-
       return Promise.all(filteredManuscripts.map(m => repackageForGraphql(m)))
     },
     async manuscripts(_, { where }, ctx) {
@@ -1392,7 +1393,7 @@ const typeDefs = `
     paginatedManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
     publishedManuscripts(sort:String, offset: Int, limit: Int): PaginatedManuscripts
     validateDOI(articleURL: String): validateDOIResponse
-    manuscriptsUserHasCurrentRoleIn: [Manuscript]
+    manuscriptsUserHasCurrentRoleIn(wantedRoles: [String]!): [Manuscript]
 
     """ Get published manuscripts with irrelevant fields stripped out. Optionally, you can specify a startDate and/or limit. """
     manuscriptsPublishedSinceDate(startDate: DateTime, limit: Int): [PublishedManuscript]!

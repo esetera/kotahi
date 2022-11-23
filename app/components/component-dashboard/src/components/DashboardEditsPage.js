@@ -8,9 +8,11 @@ import mutations from '../graphql/mutations'
 
 const DashboardEditsPage = () => {
   const urlFrag = config.journal.metadata.toplevel_urlfragment
+  const wantedRoles = ['seniorEditor', 'handlingEditor', 'editor']
 
   const query = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
+    variables: { wantedRoles },
   })
 
   const [updateTab] = useMutation(mutations.updateTab)
