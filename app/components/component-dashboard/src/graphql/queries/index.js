@@ -65,14 +65,14 @@ const formForPurposeAndCategoryFragment = `formForPurposeAndCategory(purpose: "s
 
 export default {
   dashboard: gql`
-    {
+    query Dashboard($wantedRoles: [String]!) {
       currentUser {
         id
         username
         admin
         recentTab
       }
-      manuscriptsUserHasCurrentRoleIn {
+      manuscriptsUserHasCurrentRoleIn(wantedRoles: $wantedRoles) {
         manuscriptVersions {
           ${manuscriptFragment}
           parentId

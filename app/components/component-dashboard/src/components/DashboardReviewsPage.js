@@ -8,11 +8,18 @@ import ReviewerTable from './sections/ReviewerTable'
 
 const DashboardReviewsPage = () => {
   const instanceName = process.env.INSTANCE_NAME
-
   const urlFrag = config.journal.metadata.toplevel_urlfragment
+
+  const wantedRoles = [
+    'reviewer',
+    'invited:reviewer',
+    'accepted:reviewer',
+    'completed:reviewer',
+  ]
 
   const query = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
+    variables: { wantedRoles },
   })
 
   const [updateTab] = useMutation(mutations.updateTab)

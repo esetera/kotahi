@@ -8,11 +8,12 @@ import OwnerTable from './sections/OwnerTable'
 
 const DashboardSubmissionsPage = () => {
   const instanceName = process.env.INSTANCE_NAME
-
   const urlFrag = config.journal.metadata.toplevel_urlfragment
+  const wantedRoles = ['author']
 
   const query = useQuery(queries.dashboard, {
     fetchPolicy: 'cache-and-network',
+    variables: { wantedRoles },
   })
 
   const [updateTab] = useMutation(mutations.updateTab)
