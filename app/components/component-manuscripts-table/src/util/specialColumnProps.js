@@ -120,7 +120,7 @@ const buildSpecialColumnProps = specialComponentValues => {
     },
     statusCounts: {
       title: 'Reviewer Status',
-      flex: '0 1 6em',
+      flex: '0 1 10em',
       component: ReviewStatusCounts,
     },
     editorLinks: {
