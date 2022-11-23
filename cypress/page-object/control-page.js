@@ -97,7 +97,11 @@ export const ControlPage = {
   },
   getInvitedReviewersList() {
     // TODO: Fix this by reading kanban invited column
-    return []
+    return {
+      its() {
+        return 0
+      },
+    }
     // return cy.get(INVITED_REVIEWERS)
   },
   getNumberOfInvitedReviewers() {
