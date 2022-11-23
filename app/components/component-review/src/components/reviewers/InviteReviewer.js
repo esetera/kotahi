@@ -8,13 +8,7 @@ import {
   Title,
 } from '../../../../shared'
 
-const InviteReviewer = ({
-  handleSubmit,
-  isValid,
-  reviewerUsers,
-  manuscript,
-  addReviewer,
-}) => {
+const InviteReviewer = ({ reviewerUsers, manuscript, addReviewer }) => {
   return (
     <Formik
       displayName="reviewers"
@@ -24,23 +18,20 @@ const InviteReviewer = ({
           variables: {
             userId: values.user.id,
             manuscriptId: manuscript.id,
-            status: 'invited',
           },
         })
       }
     >
-      <SectionContent>
-        <SectionHeader>
-          <Title>Invite Reviewers</Title>
-        </SectionHeader>
-        <SectionRow>
-          <ReviewerForm
-            handleSubmit={handleSubmit}
-            isValid={isValid}
-            reviewerUsers={reviewerUsers}
-          />
-        </SectionRow>
-      </SectionContent>
+      {props => (
+        <SectionContent>
+          <SectionHeader>
+            <Title>Invite Reviewers</Title>
+          </SectionHeader>
+          <SectionRow>
+            <ReviewerForm {...props} reviewerUsers={reviewerUsers} />
+          </SectionRow>
+        </SectionContent>
+      )}
     </Formik>
   )
 }

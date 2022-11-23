@@ -268,7 +268,15 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          {isCurrentVersion && <InviteReviewer addReviewer={addReviewer} />}
+          {isCurrentVersion && (
+            <AdminSection>
+              <InviteReviewer
+                addReviewer={addReviewer}
+                manuscript={version}
+                reviewerUsers={allUsers}
+              />
+            </AdminSection>
+          )}
         </>
       ),
       key: `team_${version.id}`,
