@@ -50,6 +50,7 @@ const sendEmailNotification = require('../../email-notifications')
 const publishToGoogleSpreadSheet = require('../../publishing/google-spreadsheet')
 const validateApiToken = require('../../utils/validateApiToken')
 const { deepMergeObjectsReplacingArrays } = require('../../utils/objectUtils')
+const { tryPublishDocMaps } = require('../../publishing/docmaps')
 
 const {
   populateTemplatedTasksForManuscript,
@@ -1033,6 +1034,17 @@ const resolvers = {
             errorMessage: err.message,
           })
         }
+      }
+
+      try {
+        if (await tryPublishDocMaps(manuscript))
+          steps.push({ stepLabel: 'DOCMAPS', succeeded: true })
+      } catch (err) {
+        steps.push({
+          stepLabel: 'DOCMAPS',
+          succeeded: false,
+          errorMessage: err.message,
+        })
       }
 
       if (!steps.length || steps.some(step => step.succeeded)) {

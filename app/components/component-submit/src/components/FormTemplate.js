@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik } from 'formik'
 import { unescape, get, set, debounce } from 'lodash'
-import { sanitize } from 'dompurify'
+import { sanitize } from 'isomorphic-dompurify'
 import { TextField, RadioGroup, CheckboxGroup } from '@pubsweet/ui'
 import { th, grid } from '@pubsweet/ui-toolkit'
 import {

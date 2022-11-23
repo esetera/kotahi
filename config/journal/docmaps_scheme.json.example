@@ -1,0 +1,24 @@
+[
+  {
+    "participants": [
+      {
+        "actor": {
+          "name": "{{submission.review1author}}",
+          "type": "person",
+          "_relatesToOrganization": "{{submission.review1affiliation}}"
+        },
+        "role": "peer-reviewer"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "review-article",
+        "__contentVenues": [
+          "kotahi",
+          "hypothesis"
+        ],
+        "__content": "{{{submission.review1}}}"
+      }
+    ]
+  }
+]

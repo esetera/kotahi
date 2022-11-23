@@ -2,7 +2,7 @@ import React from 'react'
 import { useQuery } from '@apollo/client'
 import PropTypes from 'prop-types'
 import { get } from 'lodash'
-import { sanitize } from 'dompurify'
+import { sanitize } from 'isomorphic-dompurify'
 
 import { Container } from '../shared'
 import query from './reviewQuery'
