@@ -372,18 +372,7 @@ const resolvers = {
         : emptySubmission
 
       const emptyManuscript = {
-        meta: Object.assign(meta, {
-          notes: [
-            {
-              notesType: 'fundingAcknowledgement',
-              content: '',
-            },
-            {
-              notesType: 'specialInstructions',
-              content: '',
-            },
-          ],
-        }),
+        meta,
         status: 'new',
         submission,
         submitterId: ctx.user,
@@ -1099,16 +1088,6 @@ const resolvers = {
         )
       }
 
-      manuscript.meta.notes = (manuscript.meta || {}).notes || [
-        {
-          notesType: 'fundingAcknowledgement',
-          content: '',
-        },
-        {
-          notesType: 'specialInstructions',
-          content: '',
-        },
-      ]
       manuscript.decision = ''
 
       manuscript.manuscriptVersions = await manuscript.getManuscriptVersions()
@@ -1132,7 +1111,13 @@ const resolvers = {
 
       return repackageForGraphql(manuscript)
     },
-    async manuscriptsUserHasCurrentRoleIn(_, input, ctx) {
+    async manuscriptsUserHasCurrentRoleIn(
+      _,
+      { wantedRoles, sort, offset, limit, filters, timezoneOffsetMinutes },
+      ctx,
+    ) {
+      const submissionForm = await Form.findOneByField('purpose', 'submit')
+
       // Get IDs of the top-level manuscripts
       const topLevelManuscripts = await models.Manuscript.query()
         .distinct(
@@ -1145,7 +1130,7 @@ const resolvers = {
         .where('team_members.user_id', ctx.user)
 
       // Get those top-level manuscripts with all versions, all with teams and members
-      const manuscripts = await models.Manuscript.query()
+      const allManuscriptsWithInfo = await models.Manuscript.query()
         .withGraphFetched(
           '[teams.[members], tasks, manuscriptVersions(orderByCreated).[teams.[members], tasks]]',
         )
@@ -1155,9 +1140,10 @@ const resolvers = {
         )
         .orderBy('created', 'desc')
 
-      const filteredManuscripts = []
+      // Get the latest version of each manuscript, and check the users role in that version
+      const userManuscriptsWithInfo = {}
 
-      manuscripts.forEach(m => {
+      allManuscriptsWithInfo.forEach(m => {
         const latestVersion =
           m.manuscriptVersions && m.manuscriptVersions.length > 0
             ? m.manuscriptVersions[m.manuscriptVersions.length - 1]
@@ -1165,7 +1151,9 @@ const resolvers = {
 
         if (
           latestVersion.teams.some(t =>
-            t.members.some(member => member.userId === ctx.user),
+            t.members.some(member => {
+              return member.userId === ctx.user && wantedRoles.includes(t.role)
+            }),
           )
         ) {
           // eslint-disable-next-line no-param-reassign
@@ -1174,11 +1162,35 @@ const resolvers = {
             ctx.user,
           )
 
-          filteredManuscripts.push(m)
+          userManuscriptsWithInfo[m.id] = m
         }
       })
 
-      return Promise.all(filteredManuscripts.map(m => repackageForGraphql(m)))
+      // Apply filters to the manuscripts, limiting results to those the user has a role in
+      const [rawQuery, rawParams] = buildQueryForManuscriptSearchFilterAndOrder(
+        sort,
+        offset,
+        limit,
+        filters,
+        submissionForm,
+        timezoneOffsetMinutes || 0,
+        Object.keys(userManuscriptsWithInfo),
+      )
+
+      const knex = models.Manuscript.knex()
+      const rawQResult = await knex.raw(rawQuery, rawParams)
+      let totalCount = 0
+      if (rawQResult.rowCount)
+        totalCount = parseInt(rawQResult.rows[0].full_count, 10)
+
+      // Add in searchRank and searchSnippet
+      const result = rawQResult.rows.map(row => ({
+        ...userManuscriptsWithInfo[row.id],
+        searchRank: row.rank,
+        searchSnippet: row.snippet,
+      }))
+
+      return { totalCount, manuscripts: result }
     },
     async manuscripts(_, { where }, ctx) {
       const manuscripts = models.Manuscript.query()
@@ -1281,6 +1293,7 @@ const resolvers = {
 
       return { totalCount, manuscripts: result }
     },
+
     async manuscriptsPublishedSinceDate(_, { startDate, limit }, ctx) {
       const query = models.Manuscript.query()
         .whereNotNull('published')
@@ -1411,9 +1424,9 @@ const typeDefs = `
     manuscript(id: ID!): Manuscript!
     manuscripts: [Manuscript]!
     paginatedManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
+    manuscriptsUserHasCurrentRoleIn(wantedRoles: [String]!, offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
     publishedManuscripts(sort:String, offset: Int, limit: Int): PaginatedManuscripts
     validateDOI(articleURL: String): validateDOIResponse
-    manuscriptsUserHasCurrentRoleIn: [Manuscript]
 
     """ Get published manuscripts with irrelevant fields stripped out. Optionally, you can specify a startDate and/or limit. """
     manuscriptsPublishedSinceDate(startDate: DateTime, limit: Int): [PublishedManuscript]!
@@ -1476,7 +1489,6 @@ const typeDefs = `
     reviews: [Review]
     status: String
     decision: String
-    suggestions: Suggestions
     authors: [Author]
     meta: ManuscriptMeta
     submission: String
@@ -1551,29 +1563,12 @@ const typeDefs = `
     affiliation: String
   }
 
-  type Suggestion {
-    suggested: String
-    opposed: String
-  }
-
-  type Suggestions {
-    reviewers: Suggestion
-    editors: Suggestion
-  }
-
   type ManuscriptMeta {
     title: String!
     source: String
-    articleType: String
-    declarations: Declarations
-    articleSections: [String]
-    articleIds: [ArticleId]
     abstract: String
     subjects: [String]
     history: [MetaDate]
-    publicationDates: [MetaDate]
-    notes: [Note]
-    keywords: String
     manuscriptId: ID
   }
 
@@ -1595,15 +1590,6 @@ const typeDefs = `
   type MetaDate {
     type: String
     date: DateTime
-  }
-
-  type Declarations {
-    openData: String
-    openPeerReview: String
-    preregistered: String
-    previouslySubmitted: String
-    researchNexus: String
-    streamlinedReview: String
   }
 
   type Note {

@@ -1,3 +1,5 @@
+const { URI_SEARCH_PARAM } = require('../../../config/journal/manuscripts')
+
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 const { ensureJsonIsParsed } = require('../../utils/objectUtils')
 const { formatSearchQueryForPostgres } = require('../../utils/searchUtils')
@@ -205,7 +207,7 @@ const applyFilters = (
 ) => {
   filters
     .filter(discardDuplicateFields)
-    .filter(f => f.field !== 'search')
+    .filter(f => f.field !== URI_SEARCH_PARAM)
     .forEach(filter => {
       if (['created', 'updated'].includes(filter.field)) {
         try {
@@ -267,6 +269,7 @@ const applyFilters = (
 }
 
 /** Builds a raw query string and an array of params, based on the requested filtering, sorting, offset and limit.
+ * If manuscriptIDs is specified, then the query is restricted to those IDs.
  * Returns [query, params]
  */
 const buildQueryForManuscriptSearchFilterAndOrder = (
@@ -276,6 +279,7 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
   filters,
   submissionForm,
   timezoneOffsetMinutes,
+  manuscriptIDs = null,
 ) => {
   // These keep track of the various terms we're adding to SELECT, FROM, WHERE and ORDER BY, as well as params.
   const selectItems = { rawFragments: [], params: [] }
@@ -293,7 +297,11 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
   addWhere('parent_id IS NULL')
   addWhere('is_hidden IS NOT TRUE')
 
-  const searchFilter = filters.find(f => f.field === 'search')
+  if (manuscriptIDs) {
+    addWhere('id = ANY(?)', manuscriptIDs)
+  }
+
+  const searchFilter = filters.find(f => f.field === URI_SEARCH_PARAM)
 
   const searchQuery =
     searchFilter && formatSearchQueryForPostgres(searchFilter.value)

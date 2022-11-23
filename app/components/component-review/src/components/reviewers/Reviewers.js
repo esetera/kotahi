@@ -1,20 +1,20 @@
-import React from 'react'
-import styled from 'styled-components'
 import { Action, Checkbox } from '@pubsweet/ui'
 import { grid } from '@pubsweet/ui-toolkit'
-import PropTypes from 'prop-types'
 import config from 'config'
-import InviteReviewer from './InviteReviewer'
-import { AdminSection } from '../style'
+import PropTypes from 'prop-types'
+import React from 'react'
+import styled from 'styled-components'
 import {
-  SectionRow,
-  SectionContent,
-  SectionHeader,
-  Title,
-  StatusBadge,
   Primary,
   Secondary,
+  SectionContent,
+  SectionHeader,
+  SectionRow,
+  StatusBadge,
+  Title,
 } from '../../../../shared'
+import { AdminSection } from '../style'
+import InviteReviewer from './InviteReviewer'
 
 // TODO: Make this a proper shared component?
 import { UserAvatar } from '../../../../component-avatar/src'

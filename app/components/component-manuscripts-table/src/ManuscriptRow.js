@@ -1,34 +1,73 @@
-import React from 'react'
 import PropTypes from 'prop-types'
+import { sanitize } from 'dompurify'
 import 'rc-tooltip/assets/bootstrap_white.css'
-import { ManuscriptsRow, SnippetRow, Cell } from './style'
+import React from 'react'
+import { useHistory } from 'react-router-dom'
 import { getFieldValueAndDisplayValue } from '../../../shared/manuscriptUtils'
+import {
+  Cell,
+  ClickableManuscriptsRow,
+  ManuscriptsRow,
+  SnippetRow,
+} from './style'
 
-const ManuscriptRow = ({ manuscript, columnDefinitions, setFilter }) => {
+const ManuscriptRow = ({
+  manuscript,
+  columnDefinitions,
+  setFilter,
+  getLink,
+}) => {
+  const history = useHistory()
+
+  const columnContent = columnDefinitions.map(column => {
+    const values = getFieldValueAndDisplayValue(column, manuscript)
+    const Renderer = column.component
+    return (
+      <Cell key={column.name} {...column}>
+        <Renderer
+          applyFilter={
+            column.filterOptions && (val => setFilter(column.name, val))
+          }
+          manuscript={manuscript}
+          values={values}
+          {...column.extraProps}
+        />
+      </Cell>
+    )
+  })
+
+  const searchSnippet = (
+    <SnippetRow
+      dangerouslySetInnerHTML={{
+        __html: `... ${manuscript.searchSnippet} ...`,
+      }}
+    />
+  )
+
+  // Whole Row is clickable
+  if (getLink) {
+    const onRowClick = () => history.push(getLink(manuscript))
+
+    return (
+      <div
+        onClick={onRowClick}
+        onKeyDown={e => e.key === 'Enter' && onRowClick()}
+        role="button"
+        tabIndex={0}
+      >
+        <ClickableManuscriptsRow>{columnContent}</ClickableManuscriptsRow>
+        {manuscript.searchSnippet && searchSnippet}
+      </div>
+    )
+  }
+
   return (
     <>
-      <ManuscriptsRow>
-        {columnDefinitions.map(column => {
-          const values = getFieldValueAndDisplayValue(column, manuscript)
-          const Renderer = column.component
-          return (
-            <Cell key={column.name} {...column}>
-              <Renderer
-                applyFilter={
-                  column.filterOptions && (val => setFilter(column.name, val))
-                }
-                manuscript={manuscript}
-                values={values}
-                {...column.extraProps}
-              />
-            </Cell>
-          )
-        })}
-      </ManuscriptsRow>
+      <ManuscriptsRow>{columnContent}</ManuscriptsRow>
       {manuscript.searchSnippet && (
         <SnippetRow
           dangerouslySetInnerHTML={{
-            __html: `... ${manuscript.searchSnippet} ...`,
+            __html: `... ${sanitize(manuscript.searchSnippet)} ...`,
           }}
         />
       )}

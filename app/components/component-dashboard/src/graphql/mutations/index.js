@@ -76,23 +76,9 @@ export default {
         meta {
           manuscriptId
           title
-          declarations {
-            openData
-            openPeerReview
-            preregistered
-            previouslySubmitted
-            researchNexus
-            streamlinedReview
-          }
-          articleSections
-          articleType
           history {
             type
             date
-          }
-          notes {
-            notesType
-            content
           }
         }
       }
@@ -106,6 +92,14 @@ export default {
   removeTaskAlertsForCurrentUserMutation: gql`
     mutation {
       removeTaskAlertsForCurrentUser
+    }
+  `,
+  updateTab: gql`
+    mutation($tab: String) {
+      updateRecentTab(tab: $tab) {
+        id
+        recentTab
+      }
     }
   `,
 }

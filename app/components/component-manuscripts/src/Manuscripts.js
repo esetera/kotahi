@@ -5,10 +5,8 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Checkbox } from '@pubsweet/ui'
 import { grid } from '@pubsweet/ui-toolkit'
-import ManuscriptRow from './ManuscriptRow'
+import { useLocation } from 'react-router-dom'
 import {
-  ManuscriptsTable,
-  ManuscriptsHeaderRow,
   SelectAllField,
   SelectedManuscriptsNumber,
   ControlsContainer,
@@ -29,13 +27,11 @@ import { articleStatuses } from '../../../globals'
 import MessageContainer from '../../component-chat/src/MessageContainer'
 import Modal from '../../component-modal/src'
 import BulkArchiveModal from './BulkArchiveModal'
-import getColumnsProps from './getColumnsProps'
-import getUriQueryParams from './getUriQueryParams'
-import FilterSortHeader from './FilterSortHeader'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
-
-const URI_SEARCH_PARAM = 'search'
+import ManuscriptsTable from '../../component-manuscripts-table/src/ManuscriptsTable'
+import buildColumnDefinitions from '../../component-manuscripts-table/src/util/buildColumnDefinitions'
+import { URI_SEARCH_PARAM } from '../../../../config/journal/manuscripts'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;
@@ -86,40 +82,18 @@ const Manuscripts = ({ history, ...props }) => {
   const [selectedNewManuscripts, setSelectedNewManuscripts] = useState([])
   const [isAdminChatOpen, setIsAdminChatOpen] = useState(true)
 
-  const uriQueryParams = getUriQueryParams(window.location)
-
-  const loadPageWithQuery = query => {
-    let newPath = `${urlFrag}/admin/manuscripts`
-
-    if (query.length > 0) {
-      newPath = `${newPath}?${query
-        .filter(x => x.value)
-        .map(
-          param =>
-            `${encodeURIComponent(param.field)}=${encodeURIComponent(
-              param.value,
-            )}`,
-        )
-        .join('&')}`
-    }
-
-    history.replace(newPath)
-  }
+  const { pathname, search } = useLocation()
+  const uriQueryParams = new URLSearchParams(search)
 
   const setFilter = (fieldName, filterValue) => {
     if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
-    const revisedQuery = [...uriQueryParams].filter(x => x.field !== fieldName)
-    revisedQuery.push({ field: fieldName, value: filterValue })
-    loadPageWithQuery(revisedQuery)
+    uriQueryParams.set(fieldName, filterValue)
+    history.replace({ pathname, search: uriQueryParams.toString() })
   }
 
   const applySearchQuery = query => {
-    const revisedQuery = [...uriQueryParams].filter(
-      x => x.field !== URI_SEARCH_PARAM,
-    )
-
-    revisedQuery.push({ field: URI_SEARCH_PARAM, value: query })
-    loadPageWithQuery(revisedQuery)
+    uriQueryParams.set(URI_SEARCH_PARAM, query)
+    history.replace({ pathname, search: uriQueryParams.toString() })
   }
 
   const toggleNewManuscriptCheck = id => {
@@ -258,25 +232,40 @@ const Manuscripts = ({ history, ...props }) => {
     closeModalBulkArchiveConfirmation()
   }
 
-  const currentSearchQuery = uriQueryParams.find(
-    x => x.field === URI_SEARCH_PARAM,
-  )?.value
+  const currentSearchQuery = uriQueryParams.get(URI_SEARCH_PARAM)
 
-  const columnsProps = getColumnsProps(
-    configuredColumnNames,
-    fieldDefinitions,
-    uriQueryParams,
-    sortName,
-    sortDirection,
+  // Props for instantiating special components
+  const specialComponentValues = {
     deleteManuscript,
+    archiveManuscript,
     isManuscriptBlockedFromPublishing,
     tryPublishManuscript,
     selectedNewManuscripts,
     toggleNewManuscriptCheck,
     setReadyToEvaluateLabel,
     urlFrag,
+  }
+
+  // Props for filtering / sorting
+  const displayProps = {
+    uriQueryParams,
+    sortName,
+    sortDirection,
     currentSearchQuery,
-    archiveManuscript,
+  }
+
+  // TODO: refactor to .env config
+  const adjustedColumnNames = [...configuredColumnNames]
+  adjustedColumnNames.push('actions')
+  if (['ncrc', 'colab'].includes(process.env.INSTANCE_NAME))
+    adjustedColumnNames.splice(0, 0, 'newItemCheckbox')
+
+  // Source of truth for columns
+  const columnsProps = buildColumnDefinitions(
+    adjustedColumnNames,
+    fieldDefinitions,
+    specialComponentValues,
+    displayProps,
   )
 
   const channels = [
@@ -380,34 +369,15 @@ const Manuscripts = ({ history, ...props }) => {
 
           <div>
             <ScrollableContent>
-              <ManuscriptsTable>
-                <ManuscriptsHeaderRow>
-                  {columnsProps.map(info => (
-                    <FilterSortHeader
-                      columnInfo={info}
-                      key={info.name}
-                      setFilter={setFilter}
-                      setSortDirection={setSortDirection}
-                      setSortName={setSortName}
-                      sortDirection={sortDirection}
-                      sortName={sortName}
-                    />
-                  ))}
-                </ManuscriptsHeaderRow>
-                {manuscripts.map((manuscript, key) => {
-                  const latestVersion =
-                    manuscript.manuscriptVersions?.[0] || manuscript
-
-                  return (
-                    <ManuscriptRow
-                      columnDefinitions={columnsProps}
-                      key={latestVersion.id}
-                      manuscript={latestVersion}
-                      setFilter={setFilter}
-                    />
-                  )
-                })}
-              </ManuscriptsTable>
+              <ManuscriptsTable
+                columnsProps={columnsProps}
+                manuscripts={manuscripts}
+                setFilter={setFilter}
+                setSortDirection={setSortDirection}
+                setSortName={setSortName}
+                sortDirection={sortDirection}
+                sortName={sortName}
+              />
             </ScrollableContent>
             <Pagination
               limit={limit}
