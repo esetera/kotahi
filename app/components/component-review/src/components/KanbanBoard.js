@@ -61,7 +61,7 @@ const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.40);
 `
 
-const KanbanBoard = ({versionNumber}) => {
+const KanbanBoard = ({ versionNumber }) => {
     return (
         <AdminSection>
         <SectionContent>
@@ -70,9 +70,8 @@ const KanbanBoard = ({versionNumber}) => {
               <Title>Reviewer Status</Title>
               <Title><VersionNumber>Version {versionNumber}</VersionNumber></Title>
             </ReviewerStatusHeader>
-            {console.log(versionNumber)}
           </SectionHeader>
-          <SectionRow style={{padding: 0}}>
+          <SectionRow style={{ padding: 0 }}>
             <Kanban>
               {statuses.map((status) => <Column key={status.value}><StatusLabel statusColor={status.color}>{status.label}</StatusLabel><CardsWrapper></CardsWrapper></Column>)}
             </Kanban>
