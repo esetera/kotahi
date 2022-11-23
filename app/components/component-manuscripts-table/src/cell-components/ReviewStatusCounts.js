@@ -10,10 +10,10 @@ const Root = styled.div`
   font-family: ${th('fontReviewer')};
   font-size: 0.9em;
   height: 100%;
-  width: 100%;
   margin-bottom: 0.6em;
   margin-top: 0.3em;
   position: relative;
+  width: 100%;
 
   .google-visualization-tooltip {
     pointer-events: none;
@@ -68,11 +68,14 @@ const CenterLabel = styled.div`
 `
 
 const ReviewStatusCounts = ({ manuscript }) => {
-  const statusCounts = getUserFromTeam(manuscript, 'reviewer').reduce((a, b) => {
-    // eslint-disable-next-line no-param-reassign
-    a[b.status] = a[b.status] + 1 || 1
-    return a
-  }, {})
+  const statusCounts = getUserFromTeam(manuscript, 'reviewer').reduce(
+    (a, b) => {
+      // eslint-disable-next-line no-param-reassign
+      a[b.status] = a[b.status] + 1 || 1
+      return a
+    },
+    {},
+  )
 
   // eslint-disable-next-line no-param-reassign
   let totalStatusCount = Object.values(statusCounts).reduce((a, b) => a + b, 0)
@@ -85,9 +88,9 @@ const ReviewStatusCounts = ({ manuscript }) => {
     const count = statusCounts[status]
     const { text } = statusOptions[status]
     // eslint-disable-next-line no-param-reassign
-    a[
-      status
-    ] = `<div style="padding: 5px 15px; font-size: ${th('fontSizeBase')}; color: black; white-space: nowrap;">${text}: ${count}</div>`
+    a[status] = `<div style="padding: 5px 15px; font-size: ${th(
+      'fontSizeBase',
+    )}; color: black; white-space: nowrap;">${text}: ${count}</div>`
     return a
   }, {})
 
@@ -101,7 +104,6 @@ const ReviewStatusCounts = ({ manuscript }) => {
     { type: 'string', role: 'tooltip', p: { html: true } },
   ]
 
-  
   const data = [
     header,
     ...Object.keys(statusCounts).map(status => [
@@ -116,17 +118,14 @@ const ReviewStatusCounts = ({ manuscript }) => {
     colors: statusColors,
   }
 
-  // console.log(manuscript)
-  // console.log('rendering', data, options, Chart)
-
   return (
     <Root>
       <Chart
         chartType="PieChart"
         data={data}
-        height={"100%"}
+        height="100%"
         options={options}
-        width={"100%"}
+        width="100%"
       />
       <CenterLabel>{totalStatusCount}</CenterLabel>
     </Root>
