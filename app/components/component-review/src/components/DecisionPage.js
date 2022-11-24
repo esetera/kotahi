@@ -14,6 +14,7 @@ import {
   updateReviewMutation,
   publishManuscriptMutation,
   setShouldPublishFieldMutation,
+  addReviewerMutation,
 } from './queries'
 
 import {
@@ -130,6 +131,38 @@ const DecisionPage = ({ match }) => {
   const [completeComment] = useMutation(COMPLETE_COMMENT)
   const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
   const [setShouldPublishField] = useMutation(setShouldPublishFieldMutation)
+
+  const [addReviewer] = useMutation(addReviewerMutation, {
+    update: (cache, { data: { addReviewer: revisedReviewersObject } }) => {
+      cache.modify({
+        id: cache.identify({
+          __typename: 'Manuscript',
+          id: revisedReviewersObject.objectId,
+        }),
+        fields: {
+          teams(existingTeamRefs = []) {
+            const newTeamRef = cache.writeFragment({
+              data: revisedReviewersObject,
+              fragment: gql`
+                fragment NewTeam on Team {
+                  id
+                  role
+                  members {
+                    id
+                    user {
+                      id
+                    }
+                  }
+                }
+              `,
+            })
+
+            return [...existingTeamRefs, newTeamRef]
+          },
+        },
+      })
+    },
+  })
 
   const [updateTask] = useMutation(UPDATE_TASK, {
     update(cache, { data: { updateTask: updatedTask } }) {
@@ -304,6 +337,7 @@ const DecisionPage = ({ match }) => {
 
   return (
     <DecisionVersions
+      addReviewer={addReviewer}
       allUsers={users}
       canHideReviews={config.review.hide === 'true'}
       createFile={createFile}
