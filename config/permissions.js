@@ -470,7 +470,6 @@ const permissions = {
     importManuscripts: or(userIsEditor, userIsAdmin),
     loginUser: deny, // Never used
     makeDecision: or(userIsEditor, userIsAdmin),
-    populateTasksForManuscript: or(userIsEditor, userIsAdmin),
     publishManuscript: or(userIsEditor, userIsAdmin),
     removeReviewer: or(userIsEditor, userIsAdmin),
     removeTaskAlertsForCurrentUser: isAuthenticated,

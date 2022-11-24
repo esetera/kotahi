@@ -423,11 +423,3 @@ export const UPDATE_TASK = gql`
     }
   }
 `
-
-export const POPULATE_TASKS = gql`
-  mutation($manuscriptId: ID!) {
-    populateTasksForManuscript(manuscriptId: $manuscriptId) {
-      ${taskFields}
-    }
-  }
-`
