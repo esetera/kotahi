@@ -185,6 +185,7 @@ const ManuscriptsPage = ({ history }) => {
 
   return (
     <Manuscripts
+      applyQueryParams={applyQueryParams}
       archiveManuscriptMutations={archiveManuscriptMutations}
       chatRoomId={chatRoomId}
       configuredColumnNames={configuredColumnNames}

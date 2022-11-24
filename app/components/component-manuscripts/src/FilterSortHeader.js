@@ -9,11 +9,6 @@ import {
   dateToCompactStringLocal,
   compactStringToDateLocal,
 } from '../../../shared/dateUtils'
-import {
-  URI_SORT_PARAM,
-  URI_PAGENUM_PARAM,
-  useQueryParams,
-} from '../../../shared/urlParamUtils'
 
 const SortUp = styled(ArrowUp)`
   height: ${grid(2)};
@@ -73,16 +68,12 @@ const FilterSortHeader = ({
   columnInfo,
   sortName,
   sortDirection,
-  setSortName,
-  setSortDirection,
+  setSort,
+  setFilter,
 }) => {
-  const applyQueryParams = useQueryParams()
-
   if (columnInfo.canFilterByDateRange) {
     const changeSort = () => {
       const priorSortName = sortName
-      if (setSortName) setSortName(columnInfo.name)
-
       let newSortDirection
 
       if (priorSortName !== columnInfo.name) {
@@ -93,23 +84,18 @@ const FilterSortHeader = ({
         newSortDirection = 'ASC'
       }
 
-      if (setSortDirection) setSortDirection(newSortDirection)
-
-      applyQueryParams({
-        [URI_SORT_PARAM]: `${columnInfo.name}_${newSortDirection}`,
-      })
+      setSort(columnInfo.name, newSortDirection)
     }
 
     const filterByDateRange = range => {
       if (range?.length === 2) {
-        applyQueryParams({
-          [columnInfo.name]: `${dateToCompactStringLocal(
-            range[0],
-          )}-${dateToCompactStringLocal(range[1])}`,
-          [URI_PAGENUM_PARAM]: 1,
-        })
-      } else
-        applyQueryParams({ [columnInfo.name]: null, [URI_PAGENUM_PARAM]: 1 })
+        setFilter(
+          columnInfo.name,
+          `${dateToCompactStringLocal(range[0])}-${dateToCompactStringLocal(
+            range[1],
+          )}`,
+        )
+      } else setFilter(columnInfo.name, null)
     }
 
     return (
@@ -180,12 +166,7 @@ const FilterSortHeader = ({
           }}
           data-testid={columnInfo.name}
           label={columnInfo.title}
-          onChange={selected =>
-            applyQueryParams({
-              [columnInfo.name]: selected.value,
-              [URI_PAGENUM_PARAM]: 1,
-            })
-          }
+          onChange={selected => setFilter(columnInfo.name, selected.value)}
           options={options}
           placeholder={columnInfo.title}
           value={columnInfo.filterValue}
@@ -197,8 +178,6 @@ const FilterSortHeader = ({
   if (columnInfo.canSort) {
     const changeSort = () => {
       const priorSortName = sortName
-      if (setSortName) setSortName(columnInfo.name)
-
       let newSortDirection
 
       if (priorSortName !== columnInfo.name) {
@@ -209,12 +188,7 @@ const FilterSortHeader = ({
         newSortDirection = 'ASC'
       }
 
-      if (setSortDirection) setSortDirection(newSortDirection)
-
-      applyQueryParams({
-        [URI_SORT_PARAM]: `${columnInfo.name}_${newSortDirection}`,
-        [URI_PAGENUM_PARAM]: 1,
-      })
+      setSort(columnInfo.name, newSortDirection)
     }
 
     return (

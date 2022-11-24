@@ -33,7 +33,11 @@ import getColumnsProps from './getColumnsProps'
 import FilterSortHeader from './FilterSortHeader'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
-import { URI_SEARCH_PARAM } from '../../../shared/urlParamUtils'
+import {
+  URI_SEARCH_PARAM,
+  URI_PAGENUM_PARAM,
+  URI_SORT_PARAM,
+} from '../../../shared/urlParamUtils'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;
@@ -57,6 +61,7 @@ const FlexRowWithSmallGapAbove = styled(FlexRow)`
 
 const Manuscripts = ({ history, ...props }) => {
   const {
+    applyQueryParams,
     validateDoi,
     setReadyToEvaluateLabels,
     deleteManuscriptMutations,
@@ -275,8 +280,10 @@ const Manuscripts = ({ history, ...props }) => {
       )}
 
       <SearchControl
+        applySearchQuery={newQuery =>
+          applyQueryParams({ [URI_SEARCH_PARAM]: newQuery })
+        }
         currentSearchQuery={currentSearchQuery}
-        URI_SEARCH_PARAM={URI_SEARCH_PARAM}
       />
       {!isAdminChatOpen && (
         <RoundIconButton
@@ -345,6 +352,18 @@ const Manuscripts = ({ history, ...props }) => {
                     <FilterSortHeader
                       columnInfo={info}
                       key={info.name}
+                      setFilter={(name, value) =>
+                        applyQueryParams({
+                          [name]: value,
+                          [URI_PAGENUM_PARAM]: 1,
+                        })
+                      }
+                      setSort={(name, direction) =>
+                        applyQueryParams({
+                          [URI_SORT_PARAM]: `${name}_${direction}`,
+                          [URI_PAGENUM_PARAM]: 1,
+                        })
+                      }
                       sortDirection={sortDirection}
                       sortName={sortName}
                     />
@@ -359,6 +378,12 @@ const Manuscripts = ({ history, ...props }) => {
                       columnDefinitions={columnsProps}
                       key={latestVersion.id}
                       manuscript={latestVersion}
+                      setFilter={(name, value) =>
+                        applyQueryParams({
+                          [name]: value,
+                          [URI_PAGENUM_PARAM]: 1,
+                        })
+                      }
                     />
                   )
                 })}
@@ -368,6 +393,9 @@ const Manuscripts = ({ history, ...props }) => {
               limit={limit}
               page={page}
               PaginationContainer={PaginationContainerShadowed}
+              setPage={newPage =>
+                applyQueryParams({ [URI_PAGENUM_PARAM]: newPage })
+              }
               totalCount={totalCount}
             />
           </div>
