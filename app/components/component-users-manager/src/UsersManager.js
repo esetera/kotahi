@@ -58,10 +58,7 @@ const GET_USERS = gql`
 
 const UsersManager = ({ history, currentUser }) => {
   const SortHeader = ({ thisSortName, children }) => {
-    const applyQueryParams = useQueryParams()
-
     const changeSort = () => {
-      const newSortName = thisSortName
       let newSortDirection
 
       if (sortName !== thisSortName) {
@@ -73,9 +70,7 @@ const UsersManager = ({ history, currentUser }) => {
       }
 
       applyQueryParams({
-        [URI_SORT_PARAM]: newSortName
-          ? `${newSortName}_${newSortDirection}`
-          : '',
+        [URI_SORT_PARAM]: `${thisSortName}_${newSortDirection}`,
         [URI_PAGENUM_PARAM]: 1,
       })
     }
@@ -100,6 +95,8 @@ const UsersManager = ({ history, currentUser }) => {
       </th>
     )
   }
+
+  const applyQueryParams = useQueryParams()
 
   const params = new URLSearchParams(history.location.search)
   const page = params.get(URI_PAGENUM_PARAM) || 1
@@ -148,6 +145,9 @@ const UsersManager = ({ history, currentUser }) => {
           limit={limit}
           page={page}
           PaginationContainer={PaginationContainer}
+          setPage={newPage =>
+            applyQueryParams({ [URI_PAGENUM_PARAM]: newPage })
+          }
           totalCount={totalCount}
         />
       </Content>
