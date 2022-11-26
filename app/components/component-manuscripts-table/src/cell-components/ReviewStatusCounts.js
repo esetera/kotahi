@@ -5,6 +5,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { th } from '@pubsweet/ui-toolkit'
 import { Chart } from 'react-google-charts'
+import { getMembersOfTeam } from '../../../../shared/manuscriptUtils'
 
 const Root = styled.div`
   font-family: ${th('fontReviewer')};
@@ -19,13 +20,6 @@ const Root = styled.div`
     pointer-events: none;
   }
 `
-
-const getUserFromTeam = (version, role) => {
-  if (!version.teams) return []
-
-  const teams = version.teams.filter(team => team.role === role)
-  return teams.length ? teams[0].members : []
-}
 
 const chartOptions = {
   pieHole: 0.4,
@@ -68,7 +62,7 @@ const CenterLabel = styled.div`
 `
 
 const ReviewStatusCounts = ({ manuscript }) => {
-  const statusCounts = getUserFromTeam(manuscript, 'reviewer').reduce(
+  const statusCounts = getMembersOfTeam(manuscript, 'reviewer').reduce(
     (a, b) => {
       // eslint-disable-next-line no-param-reassign
       a[b.status] = a[b.status] + 1 || 1
@@ -77,12 +71,10 @@ const ReviewStatusCounts = ({ manuscript }) => {
     {},
   )
 
-  // eslint-disable-next-line no-param-reassign
-  let totalStatusCount = Object.values(statusCounts).reduce((a, b) => a + b, 0)
-
-  if (totalStatusCount > 9) {
-    totalStatusCount = '9+'
-  }
+  const totalStatusCount = Object.values(statusCounts).reduce(
+    (a, b) => a + b,
+    0,
+  )
 
   const statusTooltips = Object.keys(statusCounts).reduce((a, status) => {
     const count = statusCounts[status]
@@ -127,7 +119,11 @@ const ReviewStatusCounts = ({ manuscript }) => {
         options={options}
         width="100%"
       />
-      <CenterLabel>{totalStatusCount}</CenterLabel>
+      {totalStatusCount > 0 && (
+        <CenterLabel>
+          {totalStatusCount > 9 ? '9+' : totalStatusCount}
+        </CenterLabel>
+      )}
     </Root>
   )
 }

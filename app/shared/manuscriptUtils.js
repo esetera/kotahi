@@ -93,7 +93,7 @@ Get all team members of a manuscript with a specified role
 export const getMembersOfTeam = (version, role) => {
   if (!version.teams) return []
 
-  const teams = version.teams.find(team => team.teamType === role)
+  const teams = version.teams.find(team => team.role === role)
   return teams ? teams.members : []
 }
 
