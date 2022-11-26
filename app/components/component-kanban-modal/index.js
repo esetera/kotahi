@@ -62,6 +62,7 @@ const Title = styled.div`
 
 const Subtitle = styled.div`
   font-size: ${th('fontSizeHeading6')};
+  font-weight: normal;
   color: grey;
 `
 
