@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { v4 as uuid } from 'uuid'
 import moment from 'moment-timezone'
@@ -21,10 +21,12 @@ const TaskList = ({
   // This is treated as temporary and not persisted until it has a title.
   const [tasks, setTasks] = useState(persistedTasks)
 
-  // Disabling overwriting state when new values come in, as optimisticResponse doesn't seem to respect array order, causing jitter with drag-n-drop
-  /* useEffect(() => {
-    setTasks(persistedTasks)
-  }, [persistedTasks]) */
+  useEffect(() => {
+    setTasks(
+      // Reorder required, as optimisticResponse doesn't seem to honour array order, causing jitter with drag-n-drop
+      [...persistedTasks].sort((a, b) => a.sequenceIndex > b.sequenceIndex),
+    )
+  }, [persistedTasks.length]) // Only bother to update from DB if number of tasks changes
 
   const repackageTask = task => ({
     id: task.id,

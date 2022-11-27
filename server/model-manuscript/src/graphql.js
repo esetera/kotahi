@@ -292,7 +292,7 @@ const commonUpdateManuscript = async (id, input, ctx) => {
 
   const ms = await models.Manuscript.query()
     .findById(id)
-    .withGraphFetched('[reviews.user, files]')
+    .withGraphFetched('[reviews.user, files, tasks]')
 
   // If this manuscript is getting its label set for the first time,
   // we will populate its task list from the template tasks
@@ -314,8 +314,8 @@ const commonUpdateManuscript = async (id, input, ctx) => {
     updatedMs.submission.editDate = new Date().toISOString().split('T')[0]
   }
 
-  if (isSettingFirstLabels && !updatedMs.tasks)
-    await populateTemplatedTasksForManuscript(id)
+  if (isSettingFirstLabels && !updatedMs.tasks.length)
+    updatedMs.tasks = await populateTemplatedTasksForManuscript(id)
 
   await uploadAndConvertBase64ImagesInManuscript(updatedMs)
   return updateAndRepackageForGraphql(updatedMs)

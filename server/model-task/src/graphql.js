@@ -114,6 +114,7 @@ const typeDefs = `
     defaultDurationDays: Int
     dueDate: DateTime
     reminderPeriodDays: Int
+    sequenceIndex: Int!
     status: String!
   }
 
