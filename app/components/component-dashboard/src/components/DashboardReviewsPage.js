@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client'
 import config from 'config'
 import React, { useEffect } from 'react'
-import { SectionContent, SectionHeader, Title } from '../../../shared'
+import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../queries/team'
 import mutations from '../graphql/mutations'
 import queries from '../graphql/queries'
 import ReviewerTable from './sections/ReviewerTable'
@@ -30,6 +30,8 @@ const DashboardReviewsPage = () => {
   })
 
   const [updateTab] = useMutation(mutations.updateTab)
+  const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
+  const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
 
   useEffect(() => {
     updateTab({
@@ -40,12 +42,12 @@ const DashboardReviewsPage = () => {
   }, [])
 
   return !['ncrc'].includes(instanceName) ? (
-    <SectionContent>
-      <SectionHeader>
-        <Title>To Review</Title>
-      </SectionHeader>
-      <ReviewerTable query={query} urlFrag={urlFrag} />
-    </SectionContent>
+    <ReviewerTable
+      query={query}
+      reviewerRespond={reviewerRespond}
+      updateMemberStatus={updateMemberStatus}
+      urlFrag={urlFrag}
+    />
   ) : null
 }
 

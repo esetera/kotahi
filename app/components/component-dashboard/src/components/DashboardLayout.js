@@ -16,6 +16,7 @@ import { ControlsContainer } from '../../../component-manuscripts/src/style'
 
 const TabLink = styled(Link)`
   color: ${th('colorText')};
+  text-decoration: none;
 `
 
 const DashboardLayout = ({
