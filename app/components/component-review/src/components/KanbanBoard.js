@@ -14,10 +14,7 @@ import reviewStatus from '../../../../../config/journal/review-status'
 const statuses = reviewStatus
 
 const Kanban = styled.div`
-  margin-top: 15px;
-  margin-left: 7.5px;
-  margin-right: 7.5px;
-  margin-bottom: 15px;
+  margin: 15px 7.5px 15px 7.5px;
 `
 
 const Column = styled.div`
@@ -32,10 +29,7 @@ const StatusLabel = styled.div`
   background-color: ${props => props.statusColor || '#ffffff'};
   font-weight: bold;
   color: rgba(0, 0, 0, 0.60);
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  padding: 4px 10px 4px 10px;
   margin-top: 4px;
   margin-bottom: 4px;
   display: inline-block;
@@ -57,8 +51,7 @@ const ReviewerStatusHeader = styled.div`
   justify-content: space-between;
 `
 const VersionNumber = styled.div`
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.40);
+  color: rgba(0, 0, 0, 0.50);
 `
 
 const KanbanBoard = ({ versionNumber }) => {
