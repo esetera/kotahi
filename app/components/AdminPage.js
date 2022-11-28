@@ -1,35 +1,33 @@
-import React, { useContext, useCallback, useRef } from 'react'
-import { throttle } from 'lodash'
-import styled from 'styled-components'
 import { useQuery } from '@apollo/client'
+import { throttle } from 'lodash'
+import PropTypes from 'prop-types'
+import React, { useCallback, useContext, useRef } from 'react'
+import Modal from 'react-modal'
 import {
-  useHistory,
   matchPath,
+  Redirect,
   Route,
   Switch,
-  Redirect,
+  useHistory,
 } from 'react-router-dom'
-import PropTypes from 'prop-types'
-import Modal from 'react-modal'
+import styled from 'styled-components'
+import { ConfigProvider } from './config/src'
 import { JournalContext } from './xpub-journal/src'
 import { XpubContext } from './xpub-with-context/src'
-import { ConfigProvider } from './config/src'
 
-import UsersManager from './component-users-manager/src/UsersManager'
-import ManuscriptsPage from './component-manuscripts/src/ManuscriptsPage'
-import DashboardPage from './component-dashboard/src/components/DashboardPage'
-import SubmitPage from './component-submit/src/components/SubmitPage'
+import FormBuilderPage from './component-formbuilder/src/components/FormBuilderPage'
 import ManuscriptPage from './component-manuscript/src/components/ManuscriptPage'
-import ReviewersPage from './component-review/src/components/ReviewersPage'
+import ManuscriptsPage from './component-manuscripts/src/ManuscriptsPage'
+import ProductionPage from './component-production/src/components/ProductionPage'
+import { Profile } from './component-profile/src'
+import ReportPage from './component-reporting/src/ReportPage'
+import DecisionPage from './component-review/src/components/DecisionPage'
 import ReviewPage from './component-review/src/components/ReviewPage'
 import ReviewPreviewPage from './component-review/src/components/ReviewPreviewPage'
-import DecisionPage from './component-review/src/components/DecisionPage'
-import FormBuilderPage from './component-formbuilder/src/components/FormBuilderPage'
 import NewSubmissionPage from './component-submit/src/components/NewSubmissionPage'
-import ReportPage from './component-reporting/src/ReportPage'
-import { Profile } from './component-profile/src'
-import ProductionPage from './component-production/src/components/ProductionPage'
+import SubmitPage from './component-submit/src/components/SubmitPage'
 import TasksTemplatePage from './component-task-manager/src/TasksTemplatePage'
+import UsersManager from './component-users-manager/src/UsersManager'
 
 import QUERY from './adminPageQueries'
 
@@ -37,6 +35,10 @@ import Menu from './Menu'
 import { Spinner } from './shared'
 
 import currentRolesVar from '../shared/currentRolesVar'
+import DashboardEditsPage from './component-dashboard/src/components/DashboardEditsPage'
+import DashboardLayout from './component-dashboard/src/components/DashboardLayout'
+import DashboardReviewsPage from './component-dashboard/src/components/DashboardReviewsPage'
+import DashboardSubmissionsPage from './component-dashboard/src/components/DashboardSubmissionsPage'
 import RolesUpdater from './RolesUpdater'
 
 const getParams = ({ routerPath, path }) => {
@@ -145,6 +147,9 @@ const AdminPage = () => {
   const reviewFormBuilderLink = `${urlFrag}/admin/review-form-builder`
   const decisionFormBuilderLink = `${urlFrag}/admin/decision-form-builder`
   const homeLink = `${urlFrag}/dashboard`
+  const dashboardSubmissionsLink = `${urlFrag}/dashboard/submissions`
+  const dashboardReviewsLink = `${urlFrag}/dashboard/reviews`
+  const dashboardEditsLink = `${urlFrag}/dashboard/edits`
   const profileLink = `${urlFrag}/profile`
   const manuscriptsLink = `${urlFrag}/admin/manuscripts`
   const reportsLink = `${urlFrag}/admin/reports`
@@ -207,6 +212,23 @@ const AdminPage = () => {
     })
   }
 
+  const invitationId = window.localStorage.getItem('invitationId')
+    ? window.localStorage.getItem('invitationId')
+    : ''
+
+  const dashboardRedirect = () =>
+    invitationId ? (
+      <Redirect to="/invitation/accepted" />
+    ) : (
+      <Redirect
+        to={
+          currentUser.recentTab
+            ? `${urlFrag}/dashboard/${currentUser.recentTab}`
+            : dashboardSubmissionsLink
+        }
+      />
+    )
+
   // Throttled refetch query `currentUser` once every 2mins
   const throttledRefetch = throttle(refetch, 120000, { trailing: false })
 
@@ -247,14 +269,40 @@ const AdminPage = () => {
             path={`${urlFrag}/profile/:id`}
             redirectLink={redirectLink}
           />
-          <PrivateRoute
-            component={DashboardPage}
-            currentUser={currentUser}
-            exact
-            path={homeLink}
-            redirectLink={redirectLink}
-          />
-
+          <Route exact path={`${urlFrag}/dashboard/:path?`}>
+            <DashboardLayout urlFrag={urlFrag}>
+              <Switch>
+                <PrivateRoute
+                  component={dashboardRedirect}
+                  currentUser={currentUser}
+                  exact
+                  path={homeLink}
+                  redirectLink={redirectLink}
+                />
+                <PrivateRoute
+                  component={DashboardSubmissionsPage}
+                  currentUser={currentUser}
+                  exact
+                  path={dashboardSubmissionsLink}
+                  redirectLink={redirectLink}
+                />
+                <PrivateRoute
+                  component={DashboardReviewsPage}
+                  currentUser={currentUser}
+                  exact
+                  path={dashboardReviewsLink}
+                  redirectLink={redirectLink}
+                />
+                <PrivateRoute
+                  component={DashboardEditsPage}
+                  currentUser={currentUser}
+                  exact
+                  path={dashboardEditsLink}
+                  redirectLink={redirectLink}
+                />
+              </Switch>
+            </DashboardLayout>
+          </Route>
           <PrivateRoute
             component={NewSubmissionPage}
             currentUser={currentUser}
@@ -303,14 +351,6 @@ const AdminPage = () => {
             path={`${urlFrag}/profile/:id`}
             redirectLink={redirectLink}
           />
-          <PrivateRoute
-            component={DashboardPage}
-            currentUser={currentUser}
-            exact
-            path={homeLink}
-            redirectLink={redirectLink}
-          />
-
           <PrivateRoute
             component={NewSubmissionPage}
             currentUser={currentUser}

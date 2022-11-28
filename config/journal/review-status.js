@@ -19,4 +19,9 @@ module.exports = [
     label: 'Completed',
     value: 'completed',
   },
+  {
+    color: '#c23d20',
+    label: 'Declined',
+    value: 'rejected',
+  },
 ]

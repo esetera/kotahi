@@ -14,6 +14,7 @@ import MessageContainer from '../../../component-chat/src/MessageContainer'
 
 const DecisionVersions = ({
   allUsers,
+  addReviewer,
   currentUser,
   decisionForm,
   form,
@@ -82,6 +83,7 @@ const DecisionVersions = ({
           <VersionSwitcher>
             {versions.map((version, index) => (
               <DecisionVersion
+                addReviewer={addReviewer}
                 allUsers={allUsers}
                 canHideReviews={canHideReviews}
                 createFile={createFile}

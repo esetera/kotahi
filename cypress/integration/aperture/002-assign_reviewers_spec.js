@@ -2,7 +2,6 @@
 import { ControlPage } from '../../page-object/control-page'
 import { DashboardPage } from '../../page-object/dashboard-page'
 import { Menu } from '../../page-object/page-component/menu'
-import { ReviewersPage } from '../../page-object/reviewers-page'
 import { dashboard } from '../../support/routes'
 
 describe('Editor assigning reviewers', () => {
@@ -19,13 +18,12 @@ describe('Editor assigning reviewers', () => {
       cy.login(name.role.seniorEditor.name, dashboard)
 
       DashboardPage.clickControlPanel() // Navigate to Control Page
-      ControlPage.clickManageReviewers()
 
       // Invite all the reviewers
       name.role.reviewers.forEach((reviewer, index) => {
-        ReviewersPage.clickInviteReviewerDropdown()
-        ReviewersPage.inviteReviewer(reviewer.username)
-        ReviewersPage.getNumberOfInvitedReviewers().should('eq', index + 1)
+        ControlPage.clickInviteReviewerDropdown()
+        ControlPage.inviteReviewer(reviewer.username)
+        ControlPage.getNumberOfInvitedReviewers().should('eq', index + 1)
       })
 
       // Go to dashboard and verify number of invited reviewer

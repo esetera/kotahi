@@ -19,10 +19,8 @@ import {
 import DecisionAndReviews from '../../../component-submit/src/components/DecisionAndReviews'
 import FormTemplate from '../../../component-submit/src/components/FormTemplate'
 import TaskList from '../../../component-task-manager/src/TaskList'
-import ReviewersPage from './ReviewersPage'
-import Reviewers from './reviewers/Reviewers'
 import KanbanBoard from './KanbanBoard'
-
+import InviteReviewer from './reviewers/InviteReviewer'
 
 const createBlankSubmissionBasedOnForm = form => {
   const allBlankedFields = {}
@@ -33,6 +31,7 @@ const createBlankSubmissionBasedOnForm = form => {
 
 const DecisionVersion = ({
   allUsers,
+  addReviewer,
   decisionForm,
   form,
   currentDecisionData,
@@ -271,9 +270,16 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          <KanbanBoard
-            versionNumber={versionNumber}
-          />
+          <KanbanBoard versionNumber={versionNumber} />
+          {isCurrentVersion && (
+            <AdminSection>
+              <InviteReviewer
+                addReviewer={addReviewer}
+                manuscript={version}
+                reviewerUsers={allUsers}
+              />
+            </AdminSection>
+          )}
         </>
       ),
       key: `team_${version.id}`,
@@ -402,6 +408,7 @@ const DecisionVersion = ({
 }
 
 DecisionVersion.propTypes = {
+  addReviewer: PropTypes.func.isRequired,
   updateManuscript: PropTypes.func.isRequired,
   form: PropTypes.shape({
     children: PropTypes.arrayOf(
@@ -417,14 +424,7 @@ DecisionVersion.propTypes = {
   isCurrentVersion: PropTypes.bool.isRequired,
   version: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    meta: PropTypes.shape({
-      notes: PropTypes.arrayOf(
-        PropTypes.shape({
-          notesType: PropTypes.string.isRequired,
-          content: PropTypes.string.isRequired,
-        }).isRequired,
-      ).isRequired,
-    }).isRequired,
+    meta: PropTypes.shape({}).isRequired,
     files: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
@@ -458,7 +458,7 @@ DecisionVersion.propTypes = {
             user: PropTypes.shape({
               id: PropTypes.string.isRequired,
               defaultIdentity: PropTypes.shape({
-                name: PropTypes.string,
+                name: PropTypes.string.isRequired,
               }),
             }),
           }).isRequired,

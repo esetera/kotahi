@@ -1,5 +1,4 @@
 import React from 'react'
-import { Action } from '@pubsweet/ui'
 import PropTypes from 'prop-types'
 import DecisionReview from './DecisionReview'
 import { SectionHeader, SectionRow, Title } from '../style'
