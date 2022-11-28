@@ -18,7 +18,6 @@ import {
   Primary,
   Secondary,
 } from '../../../../shared'
-import { useParams } from 'react-router-dom'
 
 // TODO: Make this a proper shared component?
 import { UserAvatar } from '../../../../component-avatar/src'
