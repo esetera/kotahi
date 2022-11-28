@@ -6,7 +6,7 @@ const anystylemixedcitation = {
   excludes: 'citationMarks',
   parseDOM: [{ tag: 'span.anystyle-placeholder' }],
   toDOM() {
-    console.log('anystyle placeholder todom fired!')
+    console.log('anystyle mixed citation todom fired!')
     return [
       'span',
       { class: 'anystyle-placeholder', title: 'Anystyle Placeholder' },

@@ -49,14 +49,11 @@ const updateTitle = title => {
   // console.log(`Title changed: ${title}`)
 }
 
-const updateAnystyle = x => {
-  console.log('Sent to Anystyle:', x)
-  // Is there a reason for this?
-  console.log('Returned: ', x)
-  return 'Returned!'
-}
-
-const productionWaxEditorConfig = (readOnlyComments, handleAssetManager) => ({
+const productionWaxEditorConfig = (
+  readOnlyComments,
+  handleAssetManager,
+  updateAnystyle,
+) => ({
   EnableTrackChangeService: {
     enabled: false,
     toggle: true,

@@ -2,11 +2,11 @@ import React, { useContext } from 'react'
 import { decorate, injectable } from 'inversify'
 import { v4 as uuidv4 } from 'uuid'
 import { isEmpty } from 'lodash'
-import { WaxContext } from 'wax-prosemirror-core'
+// import { WaxContext } from 'wax-prosemirror-core'
 import { Commands } from 'wax-prosemirror-utilities'
+import { toggleMark } from 'prosemirror-commands'
 import { Tools } from 'wax-prosemirror-services'
 import AnstyleLeftSideButton from './AnstyleLeftSideButton'
-import anystyleConnector from './anystyleConnector'
 
 class AnyStyle extends Tools {
   title = 'Change to Anystyle'
@@ -18,7 +18,26 @@ class AnyStyle extends Tools {
 
   // eslint-disable-next-line class-methods-use-this
   get run() {
-    return true
+    return (state, dispatch) => {
+      console.log('in run')
+      // console.log()
+      toggleMark(state.config.schema.marks.anystylemixedcitation)(
+        state,
+        dispatch,
+      )
+
+      // Commands.setMarkType(state.config.schema.marks.anystylemixedcitation, {
+      //   level: 1,
+      // })(state, dispatch)
+    }
+  }
+
+  get active() {
+    return state => {
+      return Commands.markActive(
+        state.config.schema.marks.anystylemixedcitation,
+      )(state)
+    }
   }
 
   select = state => {
@@ -31,7 +50,7 @@ class AnyStyle extends Tools {
   get enable() {
     return state => {
       return Commands.canInsert(
-        state.config.schema.nodes.anystylemixedcitation,
+        state.config.schema.marks.anystylemixedcitation,
       )(state)
     }
   }
@@ -44,7 +63,6 @@ class AnyStyle extends Tools {
     return this._isDisplayed ? (
       // this should be memoized?
       <AnstyleLeftSideButton
-        connector={anystyleConnector}
         item={this.toJSON()}
         key={uuidv4()}
         placeholder={this.pmplugins.get('anystylePlaceHolder')}

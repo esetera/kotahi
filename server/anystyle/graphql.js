@@ -2,7 +2,8 @@
 // const path = require('path')
 const axios = require('axios')
 const FormData = require('form-data')
-const anyStyleToHtml = require('./anystyleToHtml')
+const config = require('config')
+const anystyleXmlToHtml = require('./anystyleToHtml')
 
 // this is loading a text file of references for testing
 // TODO: remove this after testing!
@@ -53,7 +54,9 @@ const convertHtmlToText = text => {
   return returnText
 }
 
-const serverUrl = 'http://localhost:4567'
+const { port, protocol, host } = config.anystyle
+
+const serverUrl = `${protocol}://${host}${port ? `:${port}` : ''}`
 
 // 	curl --location --request POST 'http://localhost:4567' \
 // --form 'references="Derrida, J. (1967). L’écriture et la différence (1 éd.). Paris: Éditions du Seuil.
@@ -68,17 +71,18 @@ const parseCitations = async references => {
   return new Promise((resolve, reject) => {
     axios
       .post(serverUrl, form, {
+        method: 'post',
         headers: form.getHeaders(),
       })
       .then(async res => {
         // 2 pass citations to HTML wrapper
         // res.data is Anystyle JSON
         // TODO: take an initial index for the reference IDs so we don't make duplicate IDs
-        const htmledResult = anyStyleToHtml(res.data, 0)
+        const htmledResult = anystyleXmlToHtml(res.data, 0)
         resolve(htmledResult)
       })
       .catch(async err => {
-        console.error('Problem with Anystyle: ', err)
+        console.error('Problem with Anystyle! ', err)
         reject(err)
       })
   })
@@ -87,9 +91,19 @@ const parseCitations = async references => {
 const resolvers = {
   Query: {
     buildCitations: async (_, { textReferences }, ctx) => {
-      const outReferences = await parseCitations(textReferences)
-      // console.log('returned THML: ', outReferences)
-      return { html: outReferences || '' }
+      let outReferences = textReferences
+      let error = ''
+
+      try {
+        outReferences = await parseCitations(textReferences)
+      } catch (e) {
+        error = e
+      }
+
+      return {
+        htmlReferences: outReferences || '',
+        error: error ? JSON.stringify(error) : '',
+      }
     },
   },
 }
@@ -101,6 +115,7 @@ const typeDefs = `
 
 	type BuildCitationsType {
 		htmlReferences: String!
+		error: String
 	}
 `
 
