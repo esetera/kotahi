@@ -405,6 +405,7 @@ assignee {
 defaultDurationDays
 dueDate
 reminderPeriodDays
+sequenceIndex
 status
 `
 
