@@ -493,7 +493,7 @@ const permissions = {
       userIsAdmin,
     ),
     updateTask: or(userIsEditor, userIsAdmin),
-    updateTasks: or(userIsEditor, userIsAuthor),
+    updateTasks: or(userIsEditor, userIsAdmin),
     updateTeam: or(userIsEditor, userIsAdmin),
     updateTeamMember: or(userIsEditor, userIsAdmin),
     updateUser: userIsAdmin,
