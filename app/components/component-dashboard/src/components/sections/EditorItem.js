@@ -3,6 +3,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Action, ActionGroup } from '@pubsweet/ui'
 import PropTypes from 'prop-types'
+import { Users, MessageSquare } from 'react-feather'
 import { Item, StatusBadge } from '../../style'
 import Meta from '../metadata/Meta'
 import MetadataSubmittedDate from '../metadata/MetadataSubmittedDate'
@@ -21,9 +22,7 @@ const VersionTitleLink = styled(ControlPageLink)`
   text-decoration: none;
 `
 
-const StyledActionGroup = styled(ActionGroup)`
-  text-align: right;
-`
+const StyledActionGroup = styled(ActionGroup)``
 
 const getMembersOfTeam = (version, role) => {
   if (!version.teams) return []
@@ -34,14 +33,18 @@ const getMembersOfTeam = (version, role) => {
 
 const EditorItemLinks = ({ version, urlFrag }) => (
   <StyledActionGroup>
-    <Action to={`${urlFrag}/versions/${version.parentId || version.id}/submit`}>
-      Summary Info
+    <Action
+      to={`${urlFrag}/versions/${version.parentId || version.id}/decision`}
+    >
+      <Users />
+      DECISION
     </Action>
     <Action
       data-testid="control-panel"
       to={`${urlFrag}/versions/${version.parentId || version.id}/decision`}
     >
-      Control Panel
+      <MessageSquare />
+      TEAM
     </Action>
   </StyledActionGroup>
 )
