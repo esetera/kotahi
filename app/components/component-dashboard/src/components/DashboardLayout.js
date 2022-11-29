@@ -11,6 +11,8 @@ import {
   TabContainer,
 } from '../../../shared'
 import { Container } from '../style'
+import SearchControl from '../../../component-manuscripts/src/SearchControl'
+import { ControlsContainer } from '../../../component-manuscripts/src/style'
 
 const TabLink = styled(Link)`
   color: ${th('colorText')};
@@ -43,16 +45,21 @@ const DashboardLayout = ({
     <Container>
       <HeadingWithAction>
         <Heading>Dashboard</Heading>
-        <Button
-          onClick={() => history.push(`${urlFrag}/newSubmission`)}
-          primary
-        >
-          + New submission
-        </Button>
-        {createNewTaskAlerts && (
-          <Button onClick={createNewTaskAlerts}>New Alerts</Button>
-        )}
+        <ControlsContainer>
+          {/* TODO: Add Search Bar functionality with URL Params */}
+          <SearchControl applySearchQuery={() => {}} currentSearchQuery="" />
+          <Button
+            onClick={() => history.push(`${urlFrag}/newSubmission`)}
+            primary
+          >
+            + New submission
+          </Button>
+          {createNewTaskAlerts && (
+            <Button onClick={createNewTaskAlerts}>New Alerts</Button>
+          )}
+        </ControlsContainer>
       </HeadingWithAction>
+
       <HiddenTabsContainer sticky={false}>
         <div style={{ display: 'flex' }}>
           {dashboardPages.map(({ href, label }) => (

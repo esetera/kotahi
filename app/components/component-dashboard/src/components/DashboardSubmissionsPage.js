@@ -8,10 +8,18 @@ import OwnerTable from './sections/OwnerTable'
 
 const DashboardSubmissionsPage = () => {
   const instanceName = process.env.INSTANCE_NAME
-
   const urlFrag = config.journal.metadata.toplevel_urlfragment
+  const wantedRoles = ['author']
 
   const query = useQuery(queries.dashboard, {
+    variables: {
+      wantedRoles,
+      sort: null,
+      offset: 0,
+      limit: process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10,
+      filters: [],
+      timezoneOffsetMinutes: new Date().getTimezoneOffset(),
+    },
     fetchPolicy: 'cache-and-network',
   })
 
