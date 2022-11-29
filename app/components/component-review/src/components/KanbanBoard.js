@@ -16,30 +16,30 @@ const Kanban = styled.div`
 `
 
 const Column = styled.div`
-  width: calc(${100 / statuses.length}% - 15px);
+  display: inline-block;
   height: 300px;
   margin-inline: 7.5px;
-  display: inline-block;
+  width: calc(${100 / (statuses.length - 1)}% - 15px);
 `
 
 const StatusLabel = styled.div`
   background-color: ${props => props.statusColor || '#ffffff'};
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.6);
-  padding: 4px 10px 4px 10px;
-  margin-block: 4px;
-  display: inline-block;
   border-radius: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  display: inline-block;
+  font-weight: bold;
+  margin-block: 4px;
+  padding: 4px 10px 4px 10px;
 `
 
 const CardsWrapper = styled.div`
   background-color: #f8f8f9;
+  border-radius: 8px;
   height: 100%;
-  width: 100%;
   margin-top: 8px;
   overflow-x: hidden;
   overflow-y: auto;
-  border-radius: 8px;
+  width: 100%;
 `
 
 const ReviewerStatusHeader = styled.div`
@@ -65,14 +65,16 @@ const KanbanBoard = ({ versionNumber }) => {
         </SectionHeader>
         <SectionRow style={{ padding: 0 }}>
           <Kanban>
-            {statuses.map(status => (
-              <Column key={status.value}>
-                <StatusLabel statusColor={status.color}>
-                  {status.label}
-                </StatusLabel>
-                <CardsWrapper />
-              </Column>
-            ))}
+            {statuses
+              .filter(status => status.label !== 'Declined')
+              .map(status => (
+                <Column key={status.value}>
+                  <StatusLabel statusColor={status.color}>
+                    {status.label}
+                  </StatusLabel>
+                  <CardsWrapper />
+                </Column>
+              ))}
           </Kanban>
         </SectionRow>
       </SectionContent>
