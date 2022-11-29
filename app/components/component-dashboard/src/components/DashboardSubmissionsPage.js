@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import config from 'config'
 import React, { useEffect } from 'react'
-import { SectionContent, SectionHeader, Title } from '../../../shared'
 import mutations from '../graphql/mutations'
 import queries from '../graphql/queries'
 import OwnerTable from './sections/OwnerTable'
@@ -34,12 +33,7 @@ const DashboardSubmissionsPage = () => {
   }, [])
 
   return !['ncrc'].includes(instanceName) ? (
-    <SectionContent>
-      <SectionHeader>
-        <Title>My Submissions</Title>
-      </SectionHeader>
-      <OwnerTable query={query} urlFrag={urlFrag} />
-    </SectionContent>
+    <OwnerTable query={query} urlFrag={urlFrag} />
   ) : null
 }
 

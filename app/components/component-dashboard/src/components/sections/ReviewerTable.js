@@ -1,11 +1,15 @@
-import { useMutation } from '@apollo/client'
 import React, { useMemo, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
-import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../../queries/team'
+
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
-import { CommsErrorBanner, Spinner } from '../../../../shared'
-import mutations from '../../graphql/mutations'
+import {
+  CommsErrorBanner,
+  SectionContent,
+  SectionHeader,
+  Spinner,
+  Title,
+} from '../../../../shared'
 
 import {
   reviewerColumns,
@@ -14,16 +18,18 @@ import {
 import { Placeholder } from '../../style'
 import { getLatestVersion } from '../../utils'
 
-const ReviewerTable = ({ urlFrag, query: { data, loading, error } }) => {
+const ReviewerTable = ({
+  urlFrag,
+  query: { data, loading, error },
+  reviewerRespond,
+  updateMemberStatus,
+}) => {
   const history = useHistory()
   const { search, pathname } = useLocation()
   const uriQueryParams = new URLSearchParams(search)
   const [sortName, setSortName] = useState('created')
   const [sortDirection, setSortDirection] = useState('DESC')
   const [mainActionLink, setActionLink] = useState(null)
-
-  const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
-  const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
 
   const fieldDefinitions = useMemo(() => {
     const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
@@ -80,16 +86,21 @@ const ReviewerTable = ({ urlFrag, query: { data, loading, error } }) => {
   )
 
   return (
-    <ManuscriptsTable
-      columnsProps={columnsProps}
-      getLink={_ => mainActionLink}
-      manuscripts={reviewerLatestVersions}
-      setFilter={setFilter}
-      setSortDirection={setSortDirection}
-      setSortName={setSortName}
-      sortDirection={sortDirection}
-      sortName={sortName}
-    />
+    <SectionContent>
+      <SectionHeader>
+        <Title>To Review</Title>
+      </SectionHeader>
+      <ManuscriptsTable
+        columnsProps={columnsProps}
+        getLink={_ => mainActionLink}
+        manuscripts={reviewerLatestVersions}
+        setFilter={setFilter}
+        setSortDirection={setSortDirection}
+        setSortName={setSortName}
+        sortDirection={sortDirection}
+        sortName={sortName}
+      />
+    </SectionContent>
   )
 }
 
