@@ -12,7 +12,7 @@ import {
   EditorItemLinks,
   ReviewStatusCounts,
   OverdueTooltip,
-  ReviewerBadge
+  ReviewerBadge,
 } from '../cell-components'
 /**
  * @typedef {Object} ComponentValues
@@ -124,7 +124,7 @@ const buildSpecialColumnProps = specialComponentValues => {
       component: ReviewerBadge,
       extraProps: {
         currentUser,
-      }
+      },
     },
     statusCounts: {
       title: 'Reviewer Status',

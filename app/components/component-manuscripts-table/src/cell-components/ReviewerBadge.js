@@ -4,7 +4,7 @@ import reviewStatuses from '../../../../../config/journal/review-status'
 
 const ReviewerBadge = ({ manuscript, currentUser }) => {
   const team =
-  (manuscript.teams || []).find(team_ => team_.role === 'reviewer') || {}
+    (manuscript.teams || []).find(team_ => team_.role === 'reviewer') || {}
 
   const currentMember =
     team.members &&
@@ -16,11 +16,13 @@ const ReviewerBadge = ({ manuscript, currentUser }) => {
   const statusConfig = reviewStatuses.find(item => item.value === status)
 
   return (
-    <ConfigurableStatus lightText={statusConfig.lightText} color={statusConfig.color}>
+    <ConfigurableStatus
+      color={statusConfig.color}
+      lightText={statusConfig.lightText}
+    >
       {statusConfig.label}
     </ConfigurableStatus>
   )
-
 }
 
 export default ReviewerBadge
