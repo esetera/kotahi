@@ -10,7 +10,7 @@ import {
   SubmitChevron,
   ReviewerItemLinks,
   EditorItemLinks,
-  ReviewStatusCounts,
+  ReviewStatusDonut,
   OverdueTooltip,
 } from '../cell-components'
 /**
@@ -121,7 +121,7 @@ const buildSpecialColumnProps = specialComponentValues => {
     statusCounts: {
       title: 'Reviewer Status',
       flex: '0 1 10em',
-      component: ReviewStatusCounts,
+      component: ReviewStatusDonut,
     },
     editorLinks: {
       flex: '0 1 10em',

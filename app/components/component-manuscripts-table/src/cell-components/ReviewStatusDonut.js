@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { th } from '@pubsweet/ui-toolkit'
 import { Chart } from 'react-google-charts'
 import { getMembersOfTeam } from '../../../../shared/manuscriptUtils'
+import reviewStatuses from '../../../../../config/journal/review-status'
 
 const Root = styled.div`
   font-family: ${th('fontReviewer')};
@@ -32,25 +33,6 @@ const chartOptions = {
   is3D: false,
 }
 
-const statusOptions = {
-  invited: {
-    text: 'Invited',
-    color: '#0E6817',
-  },
-  accepted: {
-    text: 'Accepted',
-    color: '#FAECCA',
-  },
-  rejected: {
-    text: 'Rejected',
-    color: '#B6D2B9',
-  },
-  completed: {
-    text: 'Completed',
-    color: '#F8C64A',
-  },
-}
-
 const CenterLabel = styled.div`
   font-size: ${th('fontSizeBase')};
   left: 50%;
@@ -61,7 +43,13 @@ const CenterLabel = styled.div`
   transform: translate(-50%, -50%);
 `
 
-const ReviewStatusCounts = ({ manuscript }) => {
+const ReviewStatusDonut = ({ manuscript }) => {
+  const statusOptions = reviewStatuses.reduce((obj, item) => {
+    // eslint-disable-next-line no-param-reassign
+    obj[item.value] = { text: item.label, color: item.color }
+    return obj
+  }, {})
+
   const statusCounts = getMembersOfTeam(manuscript, 'reviewer').reduce(
     (a, b) => {
       // eslint-disable-next-line no-param-reassign
@@ -128,4 +116,4 @@ const ReviewStatusCounts = ({ manuscript }) => {
   )
 }
 
-export default ReviewStatusCounts
+export default ReviewStatusDonut

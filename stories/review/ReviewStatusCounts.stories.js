@@ -1,5 +1,5 @@
 import React from 'react'
-import ReviewStatusCounts from '../../app/components/component-manuscripts-table/src/cell-components/ReviewStatusCounts'
+import ReviewStatusDonut from '../../app/components/component-manuscripts-table/src/cell-components/ReviewStatusDonut'
 import {
   manuscriptWithoutTeams,
   manuscriptWithSeveralReviewers,
@@ -7,11 +7,11 @@ import {
 } from '../common/fixtures'
 
 export default {
-  component: ReviewStatusCounts,
+  component: ReviewStatusDonut,
   title: 'Review Status Counts',
 }
 
-const Template = args => <ReviewStatusCounts {...args} />
+const Template = args => <ReviewStatusDonut {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
