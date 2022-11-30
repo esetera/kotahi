@@ -2,25 +2,38 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Action, ActionGroup } from '@pubsweet/ui'
 import styled from 'styled-components'
+import { Users, MessageSquare } from 'react-feather'
 
 const StyledActionGroup = styled(ActionGroup)`
   text-align: right;
 `
+// const StyledAction = styled(Action)`
+//   word-spacing: 10px;
+// `
 
 const EditorItemLinks = ({ manuscript, urlFrag }) => (
   <StyledActionGroup>
     <Action
-      to={`${urlFrag}/versions/${manuscript.parentId || manuscript.id}/submit`}
+      to={{
+        pathname: `${urlFrag}/versions/${
+          manuscript.parentId || manuscript.id
+        }/decision`,
+        state: { label: 'Decision' },
+      }}
     >
-      Summary Info
+      <MessageSquare />
+      &nbsp;DECISION
     </Action>
     <Action
-      data-testid="control-panel"
-      to={`${urlFrag}/versions/${
-        manuscript.parentId || manuscript.id
-      }/decision`}
+      to={{
+        pathname: `${urlFrag}/versions/${
+          manuscript.parentId || manuscript.id
+        }/decision`,
+        state: { label: 'Team' },
+      }}
     >
-      Control Panel
+      <Users />
+      &nbsp;TEAM
     </Action>
   </StyledActionGroup>
 )

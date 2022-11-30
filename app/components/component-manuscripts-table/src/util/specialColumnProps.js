@@ -123,7 +123,12 @@ const buildSpecialColumnProps = specialComponentValues => {
       flex: '0 1 10em',
       component: ReviewStatusDonut,
     },
+    // actionTab: {
+    //   title: 'Actions',
+    //   component: EditorItemLinks,
+    // },
     editorLinks: {
+      title: 'Actions',
       flex: '0 1 10em',
       component: EditorItemLinks,
       extraProps: {
