@@ -23,8 +23,6 @@ const reviewerColumns = [
   'shortId',
   'meta.title',
   'status',
-  'created',
-  'updated',
   'reviewerLinks',
 ]
 
