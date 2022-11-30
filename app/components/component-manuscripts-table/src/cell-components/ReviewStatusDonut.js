@@ -61,7 +61,7 @@ const CenterLabel = styled.div`
   transform: translate(-50%, -50%);
 `
 
-const ReviewStatusCounts = ({ manuscript }) => {
+const ReviewStatusDonut = ({ manuscript }) => {
   const statusCounts = getMembersOfTeam(manuscript, 'reviewer').reduce(
     (a, b) => {
       // eslint-disable-next-line no-param-reassign
@@ -128,4 +128,4 @@ const ReviewStatusCounts = ({ manuscript }) => {
   )
 }
 
-export default ReviewStatusCounts
+export default ReviewStatusDonut
