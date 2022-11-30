@@ -1,7 +1,7 @@
 import React from 'react'
 import { get } from 'lodash'
 import { validateFormField } from './formValidation'
-import { convertTimestampToDateString } from './dateUtils'
+import { convertTimestampToRelativeDateString } from './dateUtils'
 import { StatusBadge } from '../components/shared'
 
 /** Validate just manuscript.submission, based on the supplied array of field definitions */
@@ -43,14 +43,14 @@ export const getFieldValueAndDisplayValue = (column, manuscript) => {
     return [
       {
         value: manuscript.created,
-        displayValue: convertTimestampToDateString(manuscript.created),
+        displayValue: convertTimestampToRelativeDateString(manuscript.created),
       },
     ]
   if (column.name === 'updated')
     return [
       {
         value: manuscript.updated,
-        displayValue: convertTimestampToDateString(manuscript.updated),
+        displayValue: convertTimestampToRelativeDateString(manuscript.updated),
       },
     ]
   if (column.name === 'status')
