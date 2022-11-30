@@ -7,6 +7,7 @@ import { th } from '@pubsweet/ui-toolkit'
 import { Chart } from 'react-google-charts'
 import { getMembersOfTeam } from '../../../../shared/manuscriptUtils'
 import reviewStatuses from '../../../../../config/journal/review-status'
+
 const Root = styled.div`
   font-family: ${th('fontReviewer')};
   font-size: 0.9em;
