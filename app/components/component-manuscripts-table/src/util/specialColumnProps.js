@@ -89,6 +89,10 @@ const buildSpecialColumnProps = specialComponentValues => {
       flex: '0 1 10em',
       component: FilterableStatusBadge,
     },
+    manuscriptVersions: {
+      title: 'Version',
+      flex: '0 1 6em'
+    },
     author: { title: 'Author', flex: '0 1 16em', component: Submitter },
     editor: { title: 'Editor', flex: '0 1 12em', component: Editors },
     actions: {

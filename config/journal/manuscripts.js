@@ -6,6 +6,7 @@ const editorColumns = [
   'overdueTooltip',
   'meta.title',
   'status',
+  'manuscriptVersions',
   'statusCounts',
   'editorLinks',
 ]
@@ -19,12 +20,7 @@ const ownerColumns = [
   'submitChevron',
 ]
 
-const reviewerColumns = [
-  'shortId',
-  'meta.title',
-  'status',
-  'reviewerLinks',
-]
+const reviewerColumns = ['shortId', 'meta.title', 'status', 'reviewerLinks']
 
 const URI_SEARCH_PARAM = 'search'
 
