@@ -45,6 +45,7 @@ const DecisionVersions = ({
   selectedEmail,
   setSelectedEmail,
   setShouldPublishField,
+  teams,
   isEmailAddressOptedOut,
   updateTask,
   updateTasks,
@@ -112,6 +113,7 @@ const DecisionVersions = ({
                 setSelectedEmail={setSelectedEmail}
                 setShouldPublishField={setShouldPublishField}
                 teamLabels={teamLabels}
+                teams={teams}
                 threadedDiscussionProps={threadedDiscussionProps}
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}

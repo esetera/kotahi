@@ -10,6 +10,7 @@ import {
 } from '../../../shared'
 
 import statuses from '../../../../../config/journal/review-status'
+import KanbanCard from './reviewers/KanbanCard'
 
 const Kanban = styled.div`
   margin: 15px 7.5px;
@@ -50,8 +51,10 @@ const ReviewerStatusHeader = styled.div`
 const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.5);
 `
+const KanbanBoard = ({ versionNumber, teams }) => {
+  const reviewersTeam = teams.find(team => team.role === 'reviewer') || {}
+  const reviewers = reviewersTeam.members || []
 
-const KanbanBoard = ({ versionNumber }) => {
   return (
     <AdminSection>
       <SectionContent>
@@ -66,13 +69,23 @@ const KanbanBoard = ({ versionNumber }) => {
         <SectionRow style={{ padding: 0 }}>
           <Kanban>
             {statuses
-              .filter(status => status.label !== 'Declined')
+              .filter(status => status.value !== 'rejected')
               .map(status => (
                 <Column key={status.value}>
                   <StatusLabel statusColor={status.color}>
                     {status.label}
                   </StatusLabel>
-                  <CardsWrapper />
+                  <CardsWrapper>
+                    {reviewers
+                      .filter(reviewer => reviewer.status === status.value)
+                      .map(reviewer => (
+                        <KanbanCard
+                          key={status.value}
+                          reviewer={reviewer}
+                          onClickAction={() => {}}
+                        />
+                      ))}
+                  </CardsWrapper>
                 </Column>
               ))}
           </Kanban>
