@@ -51,6 +51,7 @@ const ReviewerStatusHeader = styled.div`
 const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.5);
 `
+
 const KanbanBoard = ({ versionNumber, teams }) => {
   const reviewersTeam = teams.find(team => team.role === 'reviewer') || {}
   const reviewers = reviewersTeam.members || []
@@ -81,8 +82,8 @@ const KanbanBoard = ({ versionNumber, teams }) => {
                       .map(reviewer => (
                         <KanbanCard
                           key={status.value}
-                          reviewer={reviewer}
                           onClickAction={() => {}}
+                          reviewer={reviewer}
                         />
                       ))}
                   </CardsWrapper>
