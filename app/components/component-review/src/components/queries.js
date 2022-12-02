@@ -60,6 +60,7 @@ const manuscriptFields = `
       }
       status
       isShared
+      updated
     }
   }
   status
