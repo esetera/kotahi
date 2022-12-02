@@ -22,7 +22,7 @@ const ownerColumns = [
 const reviewerColumns = [
   'shortId',
   'meta.title',
-  'status',
+  'reviewerBadge',
   'created',
   'updated',
   'reviewerLinks',
