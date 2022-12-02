@@ -5,15 +5,18 @@ import styled from 'styled-components'
 import { Users, MessageSquare } from 'react-feather'
 
 const StyledActionGroup = styled(ActionGroup)`
-  text-align: right;
+  text-align: left;
 `
-// const StyledAction = styled(Action)`
-//   word-spacing: 10px;
-// `
+
+const StyledAction = styled(Action)`
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+`
 
 const EditorItemLinks = ({ manuscript, urlFrag }) => (
   <StyledActionGroup>
-    <Action
+    <StyledAction
       to={{
         pathname: `${urlFrag}/versions/${
           manuscript.parentId || manuscript.id
@@ -23,8 +26,8 @@ const EditorItemLinks = ({ manuscript, urlFrag }) => (
     >
       <MessageSquare />
       &nbsp;DECISION
-    </Action>
-    <Action
+    </StyledAction>
+    <StyledAction
       to={{
         pathname: `${urlFrag}/versions/${
           manuscript.parentId || manuscript.id
@@ -34,7 +37,7 @@ const EditorItemLinks = ({ manuscript, urlFrag }) => (
     >
       <Users />
       &nbsp;TEAM
-    </Action>
+    </StyledAction>
   </StyledActionGroup>
 )
 
