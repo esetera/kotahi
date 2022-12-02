@@ -21,7 +21,7 @@ const ownerColumns = [
   'submitChevron',
 ]
 
-const reviewerColumns = ['shortId', 'meta.title', 'status', 'reviewerLinks']
+const reviewerColumns = ['shortId', 'meta.title', 'reviewerBadge', 'status', 'reviewerLinks']
 
 const URI_SEARCH_PARAM = 'search'
 

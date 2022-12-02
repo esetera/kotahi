@@ -53,6 +53,13 @@ export const NormalStatus = styled(Status)`
         `}
 `
 
+export const ConfigurableStatus = styled(Status)`
+  ${props => css`
+    color: ${props.lightText ? 'white' : 'black'};
+    background-color: ${props.color};
+  `}
+`
+
 const label = (status, published) => {
   const isPublished = !!published
 
