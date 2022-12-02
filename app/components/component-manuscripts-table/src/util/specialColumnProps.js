@@ -120,7 +120,10 @@ const buildSpecialColumnProps = specialComponentValues => {
     //   },
     // },
     reviewerBadge: {
+      title: 'Your Status',
       flex: '0 1 10em',
+      canSort: true,
+      defaultSortDirection: 'DESC',
       component: ReviewerBadge,
       extraProps: {
         currentUser,
