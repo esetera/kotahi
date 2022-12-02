@@ -59,12 +59,16 @@ export const ManuscriptsRow = styled.div`
   display: flex;
   flex-direction: row;
   line-height: 1.4em;
-  padding: ${grid(0.5)} ${grid(2)};
   text-align: left;
   width: 100%;
 
   &:first-child {
     border-top: none;
+    padding: ${grid(0.5)} ${grid(2)};
+  }
+
+  &:not(:first-child) {
+    padding: ${grid(1.5)} ${grid(2)};
   }
 `
 
