@@ -12,6 +12,7 @@ import {
   EditorItemLinks,
   ReviewStatusDonut,
   OverdueTooltip,
+  LastUpdated,
 } from '../cell-components'
 /**
  * @typedef {Object} ComponentValues
@@ -66,6 +67,11 @@ const buildSpecialColumnProps = specialComponentValues => {
       canFilterByDateRange: true,
       defaultSortDirection: 'DESC',
       flex: '0 1 7em',
+    },
+    lastUpdated: {
+      title: 'Last Status Update',
+      component: LastUpdated,
+      flex: '0 1 8em',
     },
     status: {
       title: 'Status',

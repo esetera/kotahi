@@ -8,6 +8,7 @@ const editorColumns = [
   'status',
   'manuscriptVersions',
   'statusCounts',
+  'lastUpdated',
   'editorLinks',
 ]
 
