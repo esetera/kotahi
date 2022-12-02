@@ -9,6 +9,7 @@ import {
   URI_SEARCH_PARAM,
   editorColumns,
 } from '../../../../../../config/journal/manuscripts'
+import InviteDeclineModal from '../../../../component-review/src/components/InviteDeclineModal'
 
 const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
   const { search, pathname } = useLocation()
@@ -71,15 +72,18 @@ const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
   )
 
   return (
-    <ManuscriptsTable
-      columnsProps={columnsProps}
-      manuscripts={editorLatestVersions}
-      setFilter={setFilter}
-      setSortDirection={setSortDirection}
-      setSortName={setSortName}
-      sortDirection={sortDirection}
-      sortName={sortName}
-    />
+    <>
+      <InviteDeclineModal />
+      <ManuscriptsTable
+        columnsProps={columnsProps}
+        manuscripts={editorLatestVersions}
+        setFilter={setFilter}
+        setSortDirection={setSortDirection}
+        setSortName={setSortName}
+        sortDirection={sortDirection}
+        sortName={sortName}
+      />
+    </>
   )
 }
 
