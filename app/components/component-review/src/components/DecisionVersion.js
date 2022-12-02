@@ -270,7 +270,7 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          <KanbanBoard versionNumber={versionNumber} />
+          <KanbanBoard version={version} versionNumber={versionNumber} />
           {isCurrentVersion && (
             <AdminSection>
               <InviteReviewer

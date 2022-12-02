@@ -8,8 +8,9 @@ import {
   SectionRow,
   Title,
 } from '../../../shared'
-
+import { getMembersOfTeam } from '../../../../shared/manuscriptUtils'
 import statuses from '../../../../../config/journal/review-status'
+import KanbanCard from './reviewers/KanbanCard'
 
 const Kanban = styled.div`
   margin: 15px 7.5px;
@@ -51,7 +52,9 @@ const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.5);
 `
 
-const KanbanBoard = ({ versionNumber }) => {
+const KanbanBoard = ({ version, versionNumber }) => {
+  const reviewers = getMembersOfTeam(version, 'reviewer')
+
   return (
     <AdminSection>
       <SectionContent>
@@ -66,13 +69,23 @@ const KanbanBoard = ({ versionNumber }) => {
         <SectionRow style={{ padding: 0 }}>
           <Kanban>
             {statuses
-              .filter(status => status.label !== 'Declined')
+              .filter(status => status.value !== 'rejected')
               .map(status => (
                 <Column key={status.value}>
                   <StatusLabel statusColor={status.color}>
                     {status.label}
                   </StatusLabel>
-                  <CardsWrapper />
+                  <CardsWrapper>
+                    {reviewers
+                      .filter(reviewer => reviewer.status === status.value)
+                      .map(reviewer => (
+                        <KanbanCard
+                          key={status.value}
+                          onClickAction={() => {}}
+                          reviewer={reviewer}
+                        />
+                      ))}
+                  </CardsWrapper>
                 </Column>
               ))}
           </Kanban>
