@@ -52,7 +52,6 @@ const DecisionVersion = ({
   reviewForm,
   reviewers,
   teamLabels,
-  teams,
   canHideReviews,
   urlFrag,
   displayShortIdAsIdentifier,
@@ -271,7 +270,7 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          <KanbanBoard teams={teams} versionNumber={versionNumber} />
+          <KanbanBoard version={version} versionNumber={versionNumber} />
           {isCurrentVersion && (
             <AdminSection>
               <InviteReviewer

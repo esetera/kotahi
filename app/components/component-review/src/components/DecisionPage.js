@@ -367,7 +367,6 @@ const DecisionPage = ({ match }) => {
       setSelectedEmail={setSelectedEmail}
       setShouldPublishField={setShouldPublishField}
       teamLabels={config.teams}
-      teams={manuscript.teams}
       threadedDiscussionProps={threadedDiscussionProps}
       updateManuscript={updateManuscript}
       updateReview={updateReview}

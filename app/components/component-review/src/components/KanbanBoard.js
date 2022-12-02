@@ -8,7 +8,7 @@ import {
   SectionRow,
   Title,
 } from '../../../shared'
-
+import { getMembersOfTeam } from '../../../../shared/manuscriptUtils'
 import statuses from '../../../../../config/journal/review-status'
 import KanbanCard from './reviewers/KanbanCard'
 
@@ -52,9 +52,8 @@ const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.5);
 `
 
-const KanbanBoard = ({ versionNumber, teams }) => {
-  const reviewersTeam = teams.find(team => team.role === 'reviewer') || {}
-  const reviewers = reviewersTeam.members || []
+const KanbanBoard = ({ version, versionNumber }) => {
+  const reviewers = getMembersOfTeam(version, 'reviewer')
 
   return (
     <AdminSection>
