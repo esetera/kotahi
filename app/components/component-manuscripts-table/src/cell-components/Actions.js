@@ -1,29 +1,7 @@
 import React, { useState } from 'react'
 import { UserAction as Action } from '../style'
-// import { Action, ActionGroup } from '@pubsweet/ui'
 import { articleStatuses } from '../../../../globals'
 import { ConfirmationModal } from '../../../component-modal/src'
-
-// const EditorItemLinks = ({ version, urlFrag }) => (
-//   <StyledActionGroup>
-//     <Action to={`${urlFrag}/versions/${version.parentId || version.id}/submit`}>
-//       Summary Info
-//     <Action
-//       to={`${urlFrag}/versions/${version.parentId || version.id}/decision`}
-//     >
-//       <Users />
-//       DECISION
-//     </Action>
-//     <Action
-//       data-testid="control-panel"
-//       to={`${urlFrag}/versions/${version.parentId || version.id}/decision`}
-//     >
-//       Control Panel
-//       <MessageSquare />
-//       TEAM
-//     </Action>
-//   </StyledActionGroup>
-// )
 
 const Actions = ({
   manuscript,

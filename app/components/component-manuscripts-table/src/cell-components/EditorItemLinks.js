@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Action, ActionGroup } from '@pubsweet/ui'
-import styled from 'styled-components'
 import { Users, MessageSquare } from 'react-feather'
+import styled from 'styled-components'
 
 const StyledActionGroup = styled(ActionGroup)`
   text-align: left;
