@@ -21,7 +21,7 @@ const EditorItemLinks = ({ manuscript, urlFrag }) => (
         pathname: `${urlFrag}/versions/${
           manuscript.parentId || manuscript.id
         }/decision`,
-        state: { label: 'Decision' },
+        state: { tab: 'Decision' },
       }}
     >
       <MessageSquare />
@@ -32,7 +32,7 @@ const EditorItemLinks = ({ manuscript, urlFrag }) => (
         pathname: `${urlFrag}/versions/${
           manuscript.parentId || manuscript.id
         }/decision`,
-        state: { label: 'Team' },
+        state: { tab: 'Team' },
       }}
     >
       <Users />

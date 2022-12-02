@@ -397,7 +397,7 @@ const DecisionVersion = ({
   }
 
   const locationState =
-    location.state.label === 'Decision'
+    location.state.tab === 'Decision'
       ? `decision_${version.id}`
       : `team_${version.id}`
 
