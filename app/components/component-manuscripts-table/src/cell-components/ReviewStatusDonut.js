@@ -11,11 +11,9 @@ import reviewStatuses from '../../../../../config/journal/review-status'
 const Root = styled.div`
   font-family: ${th('fontReviewer')};
   font-size: 0.9em;
-  height: 100%;
-  margin-bottom: 0.6em;
-  margin-top: 0.3em;
+  height: 8em;
   position: relative;
-  width: 100%;
+  width: 8em;
 
   .google-visualization-tooltip {
     pointer-events: none;
@@ -23,7 +21,7 @@ const Root = styled.div`
 `
 
 const chartOptions = {
-  pieHole: 0.4,
+  pieHole: 0.5,
   pieSliceText: 'none',
   legend: 'none',
   tooltip: {
@@ -31,6 +29,8 @@ const chartOptions = {
     ignoreBounds: true,
   },
   is3D: false,
+  width: '100%',
+  height: '100%',
 }
 
 const CenterLabel = styled.div`
@@ -100,13 +100,7 @@ const ReviewStatusDonut = ({ manuscript }) => {
 
   return (
     <Root>
-      <Chart
-        chartType="PieChart"
-        data={data}
-        height="100%"
-        options={options}
-        width="100%"
-      />
+      <Chart chartType="PieChart" data={data} options={options} />
       {totalStatusCount > 0 && (
         <CenterLabel>
           {totalStatusCount > 9 ? '9+' : totalStatusCount}
