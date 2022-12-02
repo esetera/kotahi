@@ -14,6 +14,7 @@ import {
   OverdueTooltip,
   ReviewerBadge,
 } from '../cell-components'
+import reviewFilterOptions from '../../../../../config/journal/review-status'
 /**
  * @typedef {Object} ComponentValues
  * @param {string} urlFrag Action Button: The top level urlFrag, e.g. 'kotahi'
@@ -124,6 +125,7 @@ const buildSpecialColumnProps = specialComponentValues => {
       flex: '0 1 10em',
       canSort: true,
       defaultSortDirection: 'DESC',
+      filterOptions: reviewFilterOptions,
       component: ReviewerBadge,
       extraProps: {
         currentUser,
