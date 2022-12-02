@@ -19,6 +19,7 @@ import {
 import DecisionAndReviews from '../../../component-submit/src/components/DecisionAndReviews'
 import FormTemplate from '../../../component-submit/src/components/FormTemplate'
 import TaskList from '../../../component-task-manager/src/TaskList'
+import KanbanBoard from './KanbanBoard'
 import InviteReviewer from './reviewers/InviteReviewer'
 
 const createBlankSubmissionBasedOnForm = form => {
@@ -36,6 +37,7 @@ const DecisionVersion = ({
   currentDecisionData,
   currentUser,
   version,
+  versionNumber,
   isCurrentVersion,
   parent,
   updateManuscript, // To handle manuscript editing
@@ -268,6 +270,7 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
+          <KanbanBoard versionNumber={versionNumber} />
           {isCurrentVersion && (
             <AdminSection>
               <InviteReviewer
@@ -444,6 +447,7 @@ DecisionVersion.propTypes = {
       }).isRequired,
     ).isRequired,
   }).isRequired,
+  versionNumber: PropTypes.number.isRequired,
   parent: PropTypes.shape({
     id: PropTypes.string.isRequired,
     teams: PropTypes.arrayOf(

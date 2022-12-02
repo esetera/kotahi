@@ -2,7 +2,13 @@ import React, { useMemo, useState } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
-import { CommsErrorBanner, Spinner } from '../../../../shared'
+import {
+  CommsErrorBanner,
+  SectionContent,
+  SectionHeader,
+  Spinner,
+  Title,
+} from '../../../../shared'
 import { Placeholder } from '../../style'
 import { getLatestVersion } from '../../utils'
 import {
@@ -74,15 +80,20 @@ const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
   return (
     <>
       <InviteDeclineModal />
-      <ManuscriptsTable
-        columnsProps={columnsProps}
-        manuscripts={editorLatestVersions}
-        setFilter={setFilter}
-        setSortDirection={setSortDirection}
-        setSortName={setSortName}
-        sortDirection={sortDirection}
-        sortName={sortName}
-      />
+      <SectionContent>
+        <SectionHeader>
+          <Title>Manuscripts I&apos;m editor of</Title>
+        </SectionHeader>
+        <ManuscriptsTable
+          columnsProps={columnsProps}
+          manuscripts={editorLatestVersions}
+          setFilter={setFilter}
+          setSortDirection={setSortDirection}
+          setSortName={setSortName}
+          sortDirection={sortDirection}
+          sortName={sortName}
+        />
+      </SectionContent>
     </>
   )
 }

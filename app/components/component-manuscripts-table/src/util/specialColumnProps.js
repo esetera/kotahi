@@ -10,8 +10,7 @@ import {
   SubmitChevron,
   ReviewerItemLinks,
   EditorItemLinks,
-  ReviewStatusCounts,
-  RoleText,
+  ReviewStatusDonut,
   OverdueTooltip,
 } from '../cell-components'
 /**
@@ -110,18 +109,19 @@ const buildSpecialColumnProps = specialComponentValues => {
         urlFrag,
       },
     },
-    roles: {
-      title: 'Your roles',
-      flex: '0 1 6em',
-      component: RoleText,
-      extraProps: {
-        currentUser,
-      },
-    },
+    // TODO: Confirm our removal of this
+    // roles: {
+    //   title: 'Your roles',
+    //   flex: '0 1 6em',
+    //   component: RoleText,
+    //   extraProps: {
+    //     currentUser,
+    //   },
+    // },
     statusCounts: {
       title: 'Reviewer Status',
       flex: '0 1 10em',
-      component: ReviewStatusCounts,
+      component: ReviewStatusDonut,
     },
     editorLinks: {
       flex: '0 1 10em',

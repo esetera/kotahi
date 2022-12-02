@@ -28,56 +28,58 @@ const styles = {
 }
 
 const MainHeader = styled.div`
+  align-items: center;
+  border-bottom-width: 1.5px;
+  border-color: #d3d3d3;
+  border-style: solid;
   display: flex;
   justify-content: space-between;
   line-height: 22px;
-  align-items: center;
-  z-index: 10000;
   padding: ${grid(2)} ${grid(3)};
-  border-color: #d3d3d3;
-  border-style: solid;
-  border-bottom-width: 1.5px;
+  z-index: 10000;
 `
 
 const RowHeaderContainer = styled.div`
-  display: flex;
   align-items: center;
-  gap: 16px;
+  display: flex;
   font-family: ${th('fontHeading')};
+  gap: 16px;
 `
 
 const StackedHeaderContainer = styled.div`
-  display: flex;
-  flex-direction: column;
   align-items: flex-start;
   column-gap: 180px;
+  display: flex;
+  flex-direction: column;
   font-family: ${th('fontHeading')};
   font-weight: 600;
 `
 
 const Title = styled.div`
-  font-weight: 500;
   font-size: ${th('fontSizeHeading5')};
+  font-weight: 500;
 `
 
 const Subtitle = styled.div`
+  color: grey;
   font-size: ${th('fontSizeHeading6')};
   font-weight: normal;
-  color: grey;
 `
 
 const CloseButton = styled(Button)`
-  display: flex;
   align-items: center;
-  justify-content: center;
   background-color: #ffffff;
   border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  height: 30px;
+  justify-content: center;
   min-width: unset;
   width: 30px;
-  height: 30px;
-  cursor: pointer;
+
   &:hover {
     background-color: #d7efd4;
+
     svg {
       stroke: white;
     }
@@ -85,10 +87,10 @@ const CloseButton = styled(Button)`
 `
 
 const ButtonPanel = styled.div`
-  display: flex;
   align-items: center;
-  justify-content: space-between;
+  display: flex;
   flex-direction: row;
+  justify-content: space-between;
   padding: 1rem ${grid(1.5)};
   width: 100%;
   z-index: 10001;
@@ -99,37 +101,37 @@ const ButtonContainer = styled.div`
 `
 
 const PrimaryActionButton = styled(ActionButton)`
-  color: white;
   background-color: ${th('colorPrimary')};
   border-radius: 6px;
+  color: white;
   cursor: pointer;
   margin: 0px 5px;
 `
 
 const SecondaryActionButton = styled(ActionButton)`
-  color: white;
   background-color: grey;
   border-radius: 6px;
+  color: white;
   cursor: pointer;
   margin: 0px 5px;
 `
 
 const CheckBoxContainer = styled.div`
-  display: flex;
   align-items: center;
-  margin: 10px 5px;
   cursor: pointer;
+  display: flex;
+  margin: 10px 5px;
 `
 
 const ModalContainer = styled.div`
   background-color: ${th('colorBackground')};
-  padding: ${grid(2.5)} ${grid(3)};
-  z-index: 10000;
-  overflow-y: auto;
   border-radius: 0;
   margin: 0;
-  width: 100%;
   max-height: calc(80vh - 10em);
+  overflow-y: auto;
+  padding: ${grid(2.5)} ${grid(3)};
+  width: 100%;
+  z-index: 10000;
 `
 
 export const PrimaryButton = ({ onClick, children }) => {

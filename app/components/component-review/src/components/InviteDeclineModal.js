@@ -24,6 +24,19 @@ const ModalBodyRow = styled.div`
   gap: 10px;
 `
 
+const StyledH4 = styled.h4`
+  font-weight: 600;
+`
+
+const DeclinedBadge = styled(ErrorStatus)`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: #c23d20;
+  width: 125px;
+`
+
 const InviteDeclineModal = () => {
   const invitation = {
     responseDate: 'May 17, 2021',
@@ -48,15 +61,15 @@ const InviteDeclineModal = () => {
             style={{ marginRight: '15px' }}
             user={invitation.user}
           />
-          <h4 style={{ fontWeight: 600, marginRight: '5px' }}>Reviewer: </h4>
+          <StyledH4 style={{ marginRight: '5px' }}>Reviewer: </StyledH4>
           <p>{invitation.invitedPersonName}</p>
         </ModalBodyRow>
         <ModalBodyRow>
-          <h4 style={{ fontWeight: 600 }}>Status</h4>
-          <ErrorStatus>Declined</ErrorStatus>
+          <StyledH4>Status</StyledH4>
+          <DeclinedBadge>Declined</DeclinedBadge>
         </ModalBodyRow>
         <DeclinedReasonRow>
-          <h4 style={{ fontWeight: 600 }}>Declined Reason</h4>
+          <StyledH4>Declined Reason</StyledH4>
           <p>{invitation.declinedReason}</p>
         </DeclinedReasonRow>
       </ModalBody>

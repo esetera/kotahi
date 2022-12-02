@@ -6,7 +6,13 @@ import {
 } from '../../../../../../config/journal/manuscripts'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
-import { CommsErrorBanner, Spinner } from '../../../../shared'
+import {
+  CommsErrorBanner,
+  SectionContent,
+  SectionHeader,
+  Spinner,
+  Title,
+} from '../../../../shared'
 import { Placeholder } from '../../style'
 import { getLatestVersion } from '../../utils'
 
@@ -64,18 +70,23 @@ const OwnerTable = ({ urlFrag, query: { data, loading, error } }) => {
   )
 
   return (
-    <ManuscriptsTable
-      columnsProps={columnsProps}
-      getLink={manuscript =>
-        `${urlFrag}/versions/${manuscript.parentId || manuscript.id}/submit`
-      }
-      manuscripts={authorLatestVersions}
-      setFilter={setFilter}
-      setSortDirection={setSortDirection}
-      setSortName={setSortName}
-      sortDirection={sortDirection}
-      sortName={sortName}
-    />
+    <SectionContent>
+      <SectionHeader>
+        <Title>My Submissions</Title>
+      </SectionHeader>
+      <ManuscriptsTable
+        columnsProps={columnsProps}
+        getLink={manuscript =>
+          `${urlFrag}/versions/${manuscript.parentId || manuscript.id}/submit`
+        }
+        manuscripts={authorLatestVersions}
+        setFilter={setFilter}
+        setSortDirection={setSortDirection}
+        setSortName={setSortName}
+        sortDirection={sortDirection}
+        sortName={sortName}
+      />
+    </SectionContent>
   )
 }
 

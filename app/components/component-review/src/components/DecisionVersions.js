@@ -129,6 +129,7 @@ const DecisionVersions = ({
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}
                 version={version.manuscript}
+                versionNumber={versions.length - index}
               />
             ))}
           </VersionSwitcher>

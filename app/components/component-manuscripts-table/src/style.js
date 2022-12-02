@@ -146,8 +146,8 @@ export const SortArrow = styled.span`
 `
 
 export const StyledAlertCircle = styled(AlertCircle)`
-  height: 20px;
-  width: 20px;
   color: white;
   fill: red;
+  height: 20px;
+  width: 20px;
 `
