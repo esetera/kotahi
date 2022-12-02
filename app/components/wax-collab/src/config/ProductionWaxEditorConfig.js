@@ -42,7 +42,7 @@ import {
 import JatsTagsService from '../JatsTags'
 import CharactersList from './CharactersList'
 import KotahiSchema from './KotahiSchema'
-import AnystyleService from '../CustomWaxToolGroups/AnystyleService'
+import AnyStyleService from '../CustomWaxToolGroups/AnyStyleService/AnyStyleService'
 
 const updateTitle = title => {
   // this gets fired when the title is changed in original version of this—not called now, but might still be needed
@@ -128,7 +128,7 @@ const productionWaxEditorConfig = (
   SpecialCharactersService: CharactersList,
 
   TitleService: { updateTitle },
-  AnystyleService: { updateAnystyle },
+  AnyStyleService: { AnyStyleTransformation: updateAnystyle },
   ImageService: handleAssetManager ? { handleAssetManager } : {},
   services: [
     new AnnotationToolGroupService(),
@@ -171,7 +171,7 @@ const productionWaxEditorConfig = (
     new JatsTagsService(),
     new JatsSideMenuToolGroupService(),
     new JatsAnnotationListTooolGroupService(),
-    new AnystyleService(),
+    new AnyStyleService(),
   ],
 })
 

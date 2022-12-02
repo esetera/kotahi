@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { Plugin, PluginKey } from 'prosemirror-state'
 import { Decoration, DecorationSet } from 'prosemirror-view'
 
@@ -15,17 +16,20 @@ export default key =>
         const action = tr.getMeta(this)
 
         if (action && action.add) {
-          const widget = document.createElement('placeholder')
+          const widget = document.createElement('placeholder-any-style')
 
           const deco = Decoration.widget(action.add.pos, widget, {
             id: action.add.id,
           })
 
+          // const deco = Decoration.inline(action.add.posFrom, action.add.posTo, {
+          //   class: 'any-style',
+          // });
           set = set.add(tr.doc, [deco])
         } else if (action && action.remove) {
-          // set = set.remove(
-          //   set.find(null, null, spec => spec.id === action.remove.id),
-          // );
+          set = set.remove(
+            set.find(null, null, spec => spec.id === action.remove.id),
+          )
         }
 
         return set
