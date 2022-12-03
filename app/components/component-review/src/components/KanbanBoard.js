@@ -26,7 +26,7 @@ const Column = styled.div`
 const StatusLabel = styled.div`
   background-color: ${props => props.statusColor || '#ffffff'};
   border-radius: 12px;
-  color: ${props => props.textColor};
+  color: ${props => (props.lightText ? '#ffffff' : '#000000')};
   display: inline-block;
   font-weight: bold;
   margin-block: 4px;
@@ -73,8 +73,8 @@ const KanbanBoard = ({ version, versionNumber }) => {
               .map(status => (
                 <Column key={status.value}>
                   <StatusLabel
+                    lightText={status.lightText}
                     statusColor={status.color}
-                    textColor={status.lightText ? '#ffffff' : '#000000'}
                   >
                     {status.label}
                   </StatusLabel>
