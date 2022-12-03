@@ -69,6 +69,7 @@ const DecisionVersion = ({
   isEmailAddressOptedOut,
   updateTask,
   updateTasks,
+  teams,
 }) => {
   // Hooks from the old world
   const addEditor = (manuscript, label, isCurrent, user) => {
