@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { set, debounce } from 'lodash'
+import { useLocation } from 'react-router-dom'
 import DecisionReviews from './decision/DecisionReviews'
 import AssignEditorsReviewers from './assignEditors/AssignEditorsReviewers'
 import AssignEditor from './assignEditors/AssignEditor'
@@ -72,6 +73,8 @@ const DecisionVersion = ({
   teams,
 }) => {
   // Hooks from the old world
+  const location = useLocation()
+
   const addEditor = (manuscript, label, isCurrent, user) => {
     const isThisReadOnly = !isCurrent
 
@@ -394,9 +397,14 @@ const DecisionVersion = ({
     }
   }
 
+  const locationState =
+    location.state !== undefined && location.state.tab === 'Decision'
+      ? `decision_${version.id}`
+      : `team_${version.id}`
+
   return (
     <HiddenTabs
-      defaultActiveKey={`team_${version.id}`}
+      defaultActiveKey={locationState}
       sections={[
         teamSection(),
         decisionSection(),
