@@ -8,6 +8,7 @@ import {
   SectionRow,
   Title,
 } from '../../../shared'
+import ReviewersDeclined from './ReviewersDeclined'
 import { getMembersOfTeam } from '../../../../shared/manuscriptUtils'
 import statuses from '../../../../../config/journal/review-status'
 import KanbanCard from './reviewers/KanbanCard'
@@ -89,6 +90,7 @@ const KanbanBoard = ({ version, versionNumber }) => {
                 </Column>
               ))}
           </Kanban>
+          <ReviewersDeclined reviewers={reviewers} />
         </SectionRow>
       </SectionContent>
     </AdminSection>
