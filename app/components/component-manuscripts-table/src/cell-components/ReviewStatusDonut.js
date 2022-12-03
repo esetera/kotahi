@@ -11,9 +11,9 @@ import reviewStatuses from '../../../../../config/journal/review-status'
 const Root = styled.div`
   font-family: ${th('fontReviewer')};
   font-size: 0.9em;
-  height: 8em;
+  height: 6em;
   position: relative;
-  width: 8em;
+  width: 6em;
 
   .google-visualization-tooltip {
     pointer-events: none;
@@ -24,13 +24,17 @@ const chartOptions = {
   pieHole: 0.5,
   pieSliceText: 'none',
   legend: 'none',
+  chartArea: {
+    width: '100%',
+    height: '80%',
+  },
   tooltip: {
     isHtml: true,
     ignoreBounds: true,
   },
   is3D: false,
   width: '100%',
-  height: '100%',
+  height: '100%'
 }
 
 const CenterLabel = styled.div`
@@ -68,9 +72,9 @@ const ReviewStatusDonut = ({ manuscript }) => {
     const count = statusCounts[status]
     const { text } = statusOptions[status]
     // eslint-disable-next-line no-param-reassign
-    a[status] = `<div style="padding: 5px 15px; font-size: ${th(
+    a[status] = `<div style="min-width: 10em; padding: 5px 15px; font-size: ${th(
       'fontSizeBase',
-    )}; color: black; white-space: nowrap;">${text}: ${count}</div>`
+    )}; color: black;">${text}: ${count}</div>`
     return a
   }, {})
 

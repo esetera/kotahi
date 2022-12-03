@@ -138,10 +138,15 @@ const FilterSortHeader = ({
     )
 
     return (
-      <Cell {...columnInfo} style={{ overflow: 'visible' }}>
+      <Cell {...columnInfo}>
         <Select
           aria-label={columnInfo.title}
           customStyles={{
+            container: provided => ({
+              ...provided,
+              width: '100%',
+              overflow: 'visible',
+            }),
             control: provided => ({
               ...provided,
               minHeight: 'unset',

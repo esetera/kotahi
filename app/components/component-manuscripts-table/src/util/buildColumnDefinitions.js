@@ -42,10 +42,11 @@ const buildColumnDefinition = (
   const canSort =
     !currentSearchQuery && (presetProps.canSort || fieldCanBeSorted(field))
 
-  const filterOptions = presetProps.filterOptions || field?.options
+    const filterOptions = presetProps.filterOptions || field?.options
 
   const defaultProps = {
     name: columnName,
+    centered: field?.centered || false,
     title: field?.shortDescription ?? field?.title ?? '',
     defaultSortDirection: canSort ? 'ASC' : null,
     component: DefaultField,

@@ -13,7 +13,7 @@ import {
   ReviewStatusDonut,
   OverdueTooltip,
   LastUpdated,
-  ReviewerBadge
+  ReviewerStatusBadge,
 } from '../cell-components'
 import reviewFilterOptions from '../../../../../config/journal/review-status'
 /**
@@ -96,10 +96,12 @@ const buildSpecialColumnProps = specialComponentValues => {
             ],
       flex: '0 1 10em',
       component: FilterableStatusBadge,
+      centered: true,
     },
     manuscriptVersions: {
       title: 'Version',
       flex: '0 1 6em',
+      centered: true,
     },
     author: { title: 'Author', flex: '0 1 16em', component: Submitter },
     editor: { title: 'Editor', flex: '0 1 12em', component: Editors },
@@ -130,13 +132,14 @@ const buildSpecialColumnProps = specialComponentValues => {
     //     currentUser,
     //   },
     // },
-    reviewerBadge: {
+    reviewerStatusBadge: {
       title: 'Your Status',
       flex: '0 1 10em',
       canSort: true,
       defaultSortDirection: 'DESC',
       filterOptions: reviewFilterOptions,
-      component: ReviewerBadge,
+      component: ReviewerStatusBadge,
+      centered: true,
       extraProps: {
         currentUser,
       },
@@ -144,6 +147,7 @@ const buildSpecialColumnProps = specialComponentValues => {
     statusCounts: {
       title: 'Reviewer Status',
       flex: '0 1 10em',
+      centered: true,
       component: ReviewStatusDonut,
     },
     editorLinks: {
