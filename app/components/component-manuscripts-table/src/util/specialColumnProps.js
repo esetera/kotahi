@@ -12,7 +12,9 @@ import {
   EditorItemLinks,
   ReviewStatusDonut,
   OverdueTooltip,
+  ReviewerBadge,
 } from '../cell-components'
+import reviewFilterOptions from '../../../../../config/journal/review-status'
 /**
  * @typedef {Object} ComponentValues
  * @param {string} urlFrag Action Button: The top level urlFrag, e.g. 'kotahi'
@@ -118,6 +120,17 @@ const buildSpecialColumnProps = specialComponentValues => {
     //     currentUser,
     //   },
     // },
+    reviewerBadge: {
+      title: 'Your Status',
+      flex: '0 1 10em',
+      canSort: true,
+      defaultSortDirection: 'DESC',
+      filterOptions: reviewFilterOptions,
+      component: ReviewerBadge,
+      extraProps: {
+        currentUser,
+      },
+    },
     statusCounts: {
       title: 'Reviewer Status',
       flex: '0 1 10em',

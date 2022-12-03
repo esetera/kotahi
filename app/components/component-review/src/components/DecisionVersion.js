@@ -69,6 +69,7 @@ const DecisionVersion = ({
   isEmailAddressOptedOut,
   updateTask,
   updateTasks,
+  teams,
 }) => {
   // Hooks from the old world
   const addEditor = (manuscript, label, isCurrent, user) => {
@@ -270,7 +271,7 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          <KanbanBoard versionNumber={versionNumber} />
+          <KanbanBoard version={version} versionNumber={versionNumber} />
           {isCurrentVersion && (
             <AdminSection>
               <InviteReviewer
