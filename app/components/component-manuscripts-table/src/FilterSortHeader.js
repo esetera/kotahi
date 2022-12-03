@@ -144,7 +144,7 @@ const FilterSortHeader = ({
           customStyles={{
             container: provided => ({
               ...provided,
-              width: '100%',
+              width: 'min(100%, 10em)',
               overflow: 'visible',
             }),
             control: provided => ({
