@@ -107,10 +107,11 @@ export const Cell = styled.div`
     css`
       cursor: pointer;
     `}
-  ${props => props.centered && 
+  ${props =>
+    props.centered &&
     css`
-  justify-content: center;
-  `}
+      justify-content: center;
+    `}
   overflow-wrap: anywhere;
 `
 

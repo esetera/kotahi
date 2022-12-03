@@ -42,7 +42,7 @@ const buildColumnDefinition = (
   const canSort =
     !currentSearchQuery && (presetProps.canSort || fieldCanBeSorted(field))
 
-    const filterOptions = presetProps.filterOptions || field?.options
+  const filterOptions = presetProps.filterOptions || field?.options
 
   const defaultProps = {
     name: columnName,

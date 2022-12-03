@@ -34,7 +34,7 @@ const chartOptions = {
   },
   is3D: false,
   width: '100%',
-  height: '100%'
+  height: '100%',
 }
 
 const CenterLabel = styled.div`
@@ -72,7 +72,9 @@ const ReviewStatusDonut = ({ manuscript }) => {
     const count = statusCounts[status]
     const { text } = statusOptions[status]
     // eslint-disable-next-line no-param-reassign
-    a[status] = `<div style="min-width: 10em; padding: 5px 15px; font-size: ${th(
+    a[
+      status
+    ] = `<div style="min-width: 10em; padding: 5px 15px; font-size: ${th(
       'fontSizeBase',
     )}; color: black;">${text}: ${count}</div>`
     return a
