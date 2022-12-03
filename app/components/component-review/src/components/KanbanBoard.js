@@ -27,7 +27,7 @@ const Column = styled.div`
 const StatusLabel = styled.div`
   background-color: ${props => props.statusColor || '#ffffff'};
   border-radius: 12px;
-  color: rgba(0, 0, 0, 0.6);
+  color: ${props => (props.lightText ? '#ffffff' : '#000000')};
   display: inline-block;
   font-weight: bold;
   margin-block: 4px;
@@ -73,7 +73,10 @@ const KanbanBoard = ({ version, versionNumber }) => {
               .filter(status => status.value !== 'rejected')
               .map(status => (
                 <Column key={status.value}>
-                  <StatusLabel statusColor={status.color}>
+                  <StatusLabel
+                    lightText={status.lightText}
+                    statusColor={status.color}
+                  >
                     {status.label}
                   </StatusLabel>
                   <CardsWrapper>

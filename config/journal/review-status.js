@@ -21,7 +21,7 @@ module.exports = [
     color: '#56b984',
     label: 'Completed',
     value: 'completed',
-    lightText: true,
+    lightText: false,
   },
   {
     color: '#c23d20',
