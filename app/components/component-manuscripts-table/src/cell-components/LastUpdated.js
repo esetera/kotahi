@@ -17,7 +17,7 @@ const LastUpdated = ({ manuscript }) => {
 
   if (updatedTimes.length > 0) {
     timestamp = convertTimestampToRelativeDateString(
-      updatedTimes.reduce((min, b) => (new Date(b) < new Date(min) ? b : min)),
+      updatedTimes.reduce((max, b) => (new Date(b) > new Date(max) ? b : max)),
     )
   }
 
