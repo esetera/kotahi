@@ -194,7 +194,7 @@ export const DELETE_MANUSCRIPTS = gql`
   mutation($ids: [ID]!) {
     deleteManuscripts(ids: $ids)
   }
-}`
+`
 
 export const GET_MANUSCRIPTS_AND_FORM = gql`
   query Manuscripts(
