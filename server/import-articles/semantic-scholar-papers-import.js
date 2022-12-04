@@ -37,15 +37,17 @@ const getData = async ctx => {
 
   const lastImportDate = await getLastImportDate(sourceId)
 
-  const manuscripts = await models.Manuscript.query()
+  const manuscripts = await models.Manuscript.query().orderBy('created', 'desc')
 
   const selectedManuscripts = manuscripts.filter(
     manuscript => manuscript.submission.labels,
   )
 
-  if (selectedManuscripts.length > 0) {
+  const latestLimitedSelectedManuscripts = selectedManuscripts.slice(0, 100)
+
+  if (latestLimitedSelectedManuscripts.length > 0) {
     const importDOIParams = []
-    selectedManuscripts.map(manuscript => {
+    latestLimitedSelectedManuscripts.map(manuscript => {
       const DOI = encodeURI(manuscript.submission.doi.split('.org/')[1])
       return importDOIParams.push(`DOI:${DOI}`)
     })
@@ -234,24 +236,29 @@ async function fetchPublicationDatesFromEuropePmc(importsOnlyWithDOI) {
 
       let firstPublicationDate, preprintServer
 
-      const response = await axios.get(
-        `https://www.ebi.ac.uk/europepmc/webservices/rest/search`,
-        {
-          params,
-        },
-      )
+      try {
+        const response = await axios.get(
+          `https://www.ebi.ac.uk/europepmc/webservices/rest/search`,
+          {
+            params,
+          },
+        )
 
-      if (
-        response.data.resultList.result[0] &&
-        response.data.resultList.result[0].bookOrReportDetails
-      ) {
-        firstPublicationDate =
-          response.data.resultList.result[0].firstPublicationDate
-        preprintServer =
-          response.data.resultList.result[0].bookOrReportDetails.publisher
+        if (
+          response.data.resultList &&
+          response.data.resultList.result[0] &&
+          response.data.resultList.result[0].bookOrReportDetails
+        ) {
+          firstPublicationDate =
+            response.data.resultList.result[0].firstPublicationDate
+          preprintServer =
+            response.data.resultList.result[0].bookOrReportDetails.publisher
+        }
+
+        return Object.assign(preprint, { firstPublicationDate, preprintServer })
+      } catch (e) {
+        console.error(e.message)
       }
-
-      return Object.assign(preprint, { firstPublicationDate, preprintServer })
     }),
   )
 }

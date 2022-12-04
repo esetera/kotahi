@@ -68,6 +68,7 @@ const DecisionVersion = ({
   setSelectedEmail,
   setShouldPublishField,
   isEmailAddressOptedOut,
+  updateSharedStatusForInvitedReviewer,
   updateTask,
   updateTasks,
   teams,

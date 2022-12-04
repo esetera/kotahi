@@ -20,6 +20,7 @@ import {
 import {
   CREATE_MESSAGE,
   GET_BLACKLIST_INFORMATION,
+  UPDATE_SHARED_STATUS_FOR_INVITED_REVIEWER_MUTATION,
   UPDATE_TASK,
   UPDATE_TASKS,
 } from '../../../../queries'
@@ -103,7 +104,6 @@ const DecisionPage = ({ match }) => {
     variables: {
       id: match.params.version,
     },
-    fetchPolicy: 'cache-and-network',
   })
 
   const [selectedEmail, setSelectedEmail] = useState('')
@@ -131,6 +131,10 @@ const DecisionPage = ({ match }) => {
   const [completeComment] = useMutation(COMPLETE_COMMENT)
   const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
   const [setShouldPublishField] = useMutation(setShouldPublishFieldMutation)
+
+  const [updateSharedStatusForInvitedReviewer] = useMutation(
+    UPDATE_SHARED_STATUS_FOR_INVITED_REVIEWER_MUTATION,
+  )
 
   const [addReviewer] = useMutation(addReviewerMutation, {
     update: (cache, { data: { addReviewer: revisedReviewersObject } }) => {
@@ -372,6 +376,9 @@ const DecisionPage = ({ match }) => {
       updateManuscript={updateManuscript}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
+      updateSharedStatusForInvitedReviewer={
+        updateSharedStatusForInvitedReviewer
+      }
       updateTask={updateTask}
       updateTasks={updateTasks}
       updateTeam={updateTeam}

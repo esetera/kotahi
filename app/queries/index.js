@@ -66,6 +66,80 @@ export const GET_BLACKLIST_INFORMATION = gql`
   }
 `
 
+// TODO: Move initation queries to invitation/index.js
+export const UPDATE_INVITATION_RESPONSE = gql`
+  mutation($id: ID!, $responseComment: String, $declinedReason: String!) {
+    updateInvitationResponse(
+      id: $id
+      responseComment: $responseComment
+      declinedReason: $declinedReason
+    ) {
+      responseComment
+      declinedReason
+      toEmail
+    }
+  }
+`
+export const GET_INVITATION_MANUSCRIPT_ID = gql`
+  query invitationManuscriptId($id: ID) {
+    invitationManuscriptId(id: $id) {
+      manuscriptId
+      invitedPersonType
+      isShared
+    }
+  }
+`
+export const GET_EMAIL_INVITED_REVIEWERS = gql`
+  query getEmailInvitedReviewers($manuscriptId: ID!) {
+    getEmailInvitedReviewers(manuscriptId: $manuscriptId) {
+      id
+      invitedPersonName
+      isShared
+      status
+    }
+  }
+`
+
+export const GET_INVITATION_STATUS = gql`
+  query invitationStatus($id: ID) {
+    invitationStatus(id: $id) {
+      status
+    }
+  }
+`
+
+export const GET_INVITATIONS_FOR_MANUSCRIPT = gql`
+  query getInvitationsForManuscript($id: ID) {
+    getInvitationsForManuscript(id: $id) {
+      id
+      declinedReason
+      responseComment
+      responseDate
+      invitedPersonName
+      status
+      invitedPersonType
+      userId
+      user {
+        id
+        username
+        profilePicture
+        isOnline
+      }
+    }
+  }
+`
+
+export const UPDATE_SHARED_STATUS_FOR_INVITED_REVIEWER_MUTATION = gql`
+  mutation($invitationId: ID!, $isShared: Boolean!) {
+    updateSharedStatusForInvitedReviewer(
+      invitationId: $invitationId
+      isShared: $isShared
+    ) {
+      id
+      isShared
+    }
+  }
+`
 export const ADD_EMAIL_TO_BLACKLIST = gql`
   mutation($email: String!) {
     addEmailToBlacklist(email: $email) {
@@ -120,7 +194,7 @@ export const DELETE_MANUSCRIPTS = gql`
   mutation($ids: [ID]!) {
     deleteManuscripts(ids: $ids)
   }
-`
+}`
 
 export const GET_MANUSCRIPTS_AND_FORM = gql`
   query Manuscripts(

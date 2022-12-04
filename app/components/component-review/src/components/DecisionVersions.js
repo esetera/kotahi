@@ -46,6 +46,7 @@ const DecisionVersions = ({
   setSelectedEmail,
   setShouldPublishField,
   isEmailAddressOptedOut,
+  updateSharedStatusForInvitedReviewer,
   updateTask,
   updateTasks,
   teams,
@@ -124,6 +125,9 @@ const DecisionVersions = ({
                     path,
                     version.manuscript.id,
                   )
+                }
+                updateSharedStatusForInvitedReviewer={
+                  updateSharedStatusForInvitedReviewer
                 }
                 updateTask={index === 0 ? updateTask : null}
                 updateTasks={index === 0 ? updateTasks : null}
