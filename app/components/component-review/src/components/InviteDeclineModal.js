@@ -48,7 +48,7 @@ const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
       )}`}
       title={`${invitation.invitedPersonName}'s Invitation Decline`}
     >
-      <ModalBody style={{ width: '550px' }}>
+      <ModalBody style={{ width: '600px' }}>
         <ModalBodyRow style={{ gap: '0px' }}>
           <UserAvatar
             size={56}
