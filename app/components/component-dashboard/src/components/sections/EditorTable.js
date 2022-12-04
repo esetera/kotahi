@@ -15,7 +15,6 @@ import {
   URI_SEARCH_PARAM,
   editorColumns,
 } from '../../../../../../config/journal/manuscripts'
-import InviteDeclineModal from '../../../../component-review/src/components/InviteDeclineModal'
 
 const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
   const { search, pathname } = useLocation()
@@ -79,7 +78,6 @@ const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
 
   return (
     <>
-      <InviteDeclineModal />
       <SectionContent>
         <SectionHeader>
           <Title>Manuscripts I&apos;m editor of</Title>
