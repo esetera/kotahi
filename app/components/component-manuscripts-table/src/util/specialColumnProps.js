@@ -151,6 +151,7 @@ const buildSpecialColumnProps = specialComponentValues => {
       component: ReviewStatusDonut,
     },
     editorLinks: {
+      title: 'Actions',
       flex: '0 1 10em',
       component: EditorItemLinks,
       extraProps: {

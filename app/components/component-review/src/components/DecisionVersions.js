@@ -48,6 +48,7 @@ const DecisionVersions = ({
   isEmailAddressOptedOut,
   updateTask,
   updateTasks,
+  teams,
 }) => {
   const [initialValue, setInitialValue] = useState(null)
 
@@ -112,6 +113,7 @@ const DecisionVersions = ({
                 setSelectedEmail={setSelectedEmail}
                 setShouldPublishField={setShouldPublishField}
                 teamLabels={teamLabels}
+                teams={teams}
                 threadedDiscussionProps={threadedDiscussionProps}
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}
