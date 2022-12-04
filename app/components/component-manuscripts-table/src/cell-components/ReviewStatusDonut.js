@@ -11,11 +11,9 @@ import reviewStatuses from '../../../../../config/journal/review-status'
 const Root = styled.div`
   font-family: ${th('fontReviewer')};
   font-size: 0.9em;
-  height: 100%;
-  margin-bottom: 0.6em;
-  margin-top: 0.3em;
+  height: 6em;
   position: relative;
-  width: 100%;
+  width: 6em;
 
   .google-visualization-tooltip {
     pointer-events: none;
@@ -23,14 +21,20 @@ const Root = styled.div`
 `
 
 const chartOptions = {
-  pieHole: 0.4,
+  pieHole: 0.5,
   pieSliceText: 'none',
   legend: 'none',
+  chartArea: {
+    width: '100%',
+    height: '80%',
+  },
   tooltip: {
     isHtml: true,
     ignoreBounds: true,
   },
   is3D: false,
+  width: '100%',
+  height: '100%',
 }
 
 const CenterLabel = styled.div`
@@ -68,9 +72,11 @@ const ReviewStatusDonut = ({ manuscript }) => {
     const count = statusCounts[status]
     const { text } = statusOptions[status]
     // eslint-disable-next-line no-param-reassign
-    a[status] = `<div style="padding: 5px 15px; font-size: ${th(
+    a[
+      status
+    ] = `<div style="min-width: 10em; padding: 5px 15px; font-size: ${th(
       'fontSizeBase',
-    )}; color: black; white-space: nowrap;">${text}: ${count}</div>`
+    )}; color: black;">${text}: ${count}</div>`
     return a
   }, {})
 
@@ -100,13 +106,7 @@ const ReviewStatusDonut = ({ manuscript }) => {
 
   return (
     <Root>
-      <Chart
-        chartType="PieChart"
-        data={data}
-        height="100%"
-        options={options}
-        width="100%"
-      />
+      <Chart chartType="PieChart" data={data} options={options} />
       {totalStatusCount > 0 && (
         <CenterLabel>
           {totalStatusCount > 9 ? '9+' : totalStatusCount}

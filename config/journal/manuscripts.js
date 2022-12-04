@@ -6,7 +6,9 @@ const editorColumns = [
   'overdueTooltip',
   'meta.title',
   'status',
+  'manuscriptVersions',
   'statusCounts',
+  'lastUpdated',
   'editorLinks',
 ]
 
@@ -22,9 +24,7 @@ const ownerColumns = [
 const reviewerColumns = [
   'shortId',
   'meta.title',
-  'reviewerBadge',
-  'created',
-  'updated',
+  'reviewerStatusBadge',
   'reviewerLinks',
 ]
 
