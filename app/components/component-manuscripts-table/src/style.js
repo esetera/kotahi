@@ -102,7 +102,7 @@ export const ManuscriptsHeaderRow = styled(ManuscriptsRow)`
 export const Cell = styled.div`
   display: flex;
   flex: ${({ flex }) => flex ?? '0 1 12em'};
-  flex-direction: column;
+  flex-direction: row;
   ${props =>
     props.onClick &&
     css`

@@ -106,7 +106,7 @@ const buildSpecialColumnProps = specialComponentValues => {
     author: { title: 'Author', flex: '0 1 16em', component: Submitter },
     editor: { title: 'Editor', flex: '0 1 12em', component: Editors },
     actions: {
-      flex: '0 1 6em',
+      flex: '0 1 8em',
       component: Actions,
       extraProps: {
         deleteManuscript,
