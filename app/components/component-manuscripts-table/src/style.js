@@ -106,13 +106,13 @@ export const Cell = styled.div`
   ${props =>
     props.onClick &&
     css`
-    cursor: pointer;
+      cursor: pointer;
     `}
-    ${props =>
-      props.centered &&
-      css`
+  ${props =>
+    props.centered &&
+    css`
       justify-content: center;
-      `}
+    `}
   overflow-wrap: anywhere;
 `
 
