@@ -69,7 +69,7 @@ export const getFieldValueAndDisplayValue = (column, manuscript) => {
     return [
       {
         value: manuscript.manuscriptVersions,
-        displayValue: `${manuscript.manuscriptVersions.length + 1}`,
+        displayValue: `${(manuscript.manuscriptVersions?.length ?? 0) + 1}`,
       },
     ]
   // if (column.name === 'shortId')
