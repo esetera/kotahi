@@ -37,20 +37,10 @@ const DeclinedBadge = styled(ErrorStatus)`
   width: 125px;
 `
 
-const InviteDeclineModal = () => {
-  const invitation = {
-    responseDate: 'May 17, 2021',
-    declinedReason:
-      'I am too busy with CS374. I don’t have time to deal with reviewing this manuscript. I will be able to review it in the future. Thank you. No worries lol. ',
-    invitedPersonName: 'Aditya Jain',
-    user: {
-      profilePicture: null,
-    },
-  }
-
+const InviteDeclineModal = (invitation, isOpen) => {
   return (
     <Modal
-      isOpen
+      isOpen={isOpen}
       subtitle={`Declined: ${invitation.responseDate}`}
       title={`${invitation.invitedPersonName}'s Invitation Decline`}
     >

@@ -5,6 +5,7 @@ import { th } from '@pubsweet/ui-toolkit'
 import { Primary, Secondary, SectionHeader } from '../../../shared'
 import { convertTimestampToRelativeDateString } from '../../../../shared/dateUtils'
 import { UserAction } from '../../../component-manuscripts-table/src/style'
+import InviteDeclineModal from './InviteDeclineModal'
 
 const DropdownTitleContainer = styled.div`
   align-content: center;
@@ -63,43 +64,59 @@ const Box = styled.div`
   display: flex;
 `
 
-const Container = styled.div``
-
-const ReviewersDeclined = ({ reviewers }) => {
+const ReviewersDeclined = ({ invitations, reviewers }) => {
   const [open, setOpen] = useState(false)
 
+  const declinations = invitations ? [...invitations, ...reviewers] : reviewers
+  declinations.sort((a, b) => {
+    const aDate = Object.prototype.hasOwnProperty.call(a, 'declinedReason')
+      ? a.responseDate
+      : a.updated
+
+    const bDate = Object.prototype.hasOwnProperty.call(b, 'declinedReason')
+      ? b.responseDate
+      : b.updated
+
+    return aDate - bDate
+  })
+
   return (
-    <Container onClick={() => setOpen(!open)}>
+    <>
       {open ? (
         <>
-          <SectionHeader>
+          <SectionHeader onClick={() => setOpen(!open)}>
             <DropdownTitleContainer>
               <UserAction>Hide Declined</UserAction>
               <Icon color={th('colorSecondary')}>chevron-up</Icon>
             </DropdownTitleContainer>
           </SectionHeader>
           <DeclinedReviewerContainer>
-            {reviewers.slice().map(
-              reviewer =>
-                reviewer.status === 'rejected' && (
+            {declinations.map(
+              declined =>
+                declined.status === 'rejected' && (
                   <AllRejectedReviewers>
                     <DeclinedReviewer>
                       <Box>
                         <UserName>
-                          <Primary>{reviewer.user.username}</Primary>
+                          <Primary>{declined.user.username}</Primary>
                         </UserName>
                         <Date>
                           <Secondary>
                             <TextChange>
                               Declined{' '}
                               {convertTimestampToRelativeDateString(
-                                reviewer.updated,
+                                Object.prototype.hasOwnProperty.call(
+                                  declined,
+                                  'declinedReason',
+                                )
+                                  ? declined.responseDate
+                                  : declined.updated,
                               )}
                             </TextChange>
                           </Secondary>
                         </Date>
                       </Box>
-                      <Secondary>View Details</Secondary>
+                      {/* <Secondary>View Details</Secondary> */}
                     </DeclinedReviewer>
                   </AllRejectedReviewers>
                 ),
@@ -107,14 +124,14 @@ const ReviewersDeclined = ({ reviewers }) => {
           </DeclinedReviewerContainer>
         </>
       ) : (
-        <SectionHeader>
+        <SectionHeader onClick={() => setOpen(!open)}>
           <DropdownTitleContainer>
             <UserAction>See Declined</UserAction>
             <Icon color={th('colorSecondary')}>chevron-down</Icon>
           </DropdownTitleContainer>
         </SectionHeader>
       )}
-    </Container>
+    </>
   )
 }
 

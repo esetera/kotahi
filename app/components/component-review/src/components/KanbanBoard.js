@@ -53,9 +53,8 @@ const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.5);
 `
 
-const KanbanBoard = ({ version, versionNumber }) => {
+const KanbanBoard = ({ invitations, version, versionNumber }) => {
   const reviewers = getMembersOfTeam(version, 'reviewer')
-
   return (
     <AdminSection>
       <SectionContent>
@@ -93,7 +92,7 @@ const KanbanBoard = ({ version, versionNumber }) => {
                 </Column>
               ))}
           </Kanban>
-          <ReviewersDeclined reviewers={reviewers} />
+          <ReviewersDeclined invitations={invitations} reviewers={reviewers} />
         </SectionRow>
       </SectionContent>
     </AdminSection>
