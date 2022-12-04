@@ -85,6 +85,7 @@ const KanbanBoard = ({ version, versionNumber }) => {
                       .map(reviewer => (
                         <KanbanCard
                           key={status.value}
+                          manuscript={version}
                           onClickAction={() => {}}
                           reviewer={reviewer}
                         />

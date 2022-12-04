@@ -56,6 +56,7 @@ const manuscriptFields = `
         defaultIdentity {
           id
           name
+          identifier
         }
       }
       status
