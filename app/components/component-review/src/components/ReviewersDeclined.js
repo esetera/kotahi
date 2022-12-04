@@ -64,30 +64,9 @@ const Box = styled.div`
   display: flex;
 `
 
-const ReviewersDeclined = ({ reviewers }) => {
-  const invitations = [
-    {
-      id: 'asjdkflfjasd',
-      declinedReason: 'fuck my head hurts fuck',
-      responseComment: 'comment comment comment',
-      responseDate: '2022-12-04T02:05:08.758Z',
-      invitedPersonName: 'esther',
-      status: 'rejected',
-      invitedPersonType: 'what????',
-      userId: 'yes',
-      user: {
-        id: 'what',
-        username: 'esther',
-        profilePicture:
-          'https://rukminim1.flixcart.com/image/416/416/kk1h5e80/mousepad/i/t/w/animals-doge-motivational-inspirational-sky-dot-original-imafzh8uaa8mbrtj.jpeg?q=70',
-      },
-    },
-  ]
-
+const ReviewersDeclined = ({ invitations, reviewers }) => {
   const [open, setOpen] = useState(false)
   const [modalInvitation, setModalInvitation] = useState(null)
-
-  console.log(modalInvitation)
 
   const declinations = invitations ? [...invitations, ...reviewers] : reviewers
   declinations.sort((a, b) => {

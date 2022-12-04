@@ -39,7 +39,6 @@ const DeclinedBadge = styled(ErrorStatus)`
 `
 
 const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
-  console.log(isOpen)
   return invitation ? (
     <Modal
       isOpen={isOpen}
