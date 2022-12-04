@@ -104,15 +104,15 @@ const ReviewStatusDonut = ({ manuscript }) => {
     colors: statusColors,
   }
 
-  return (
+  return totalStatusCount > 0 ? (
     <Root>
       <Chart chartType="PieChart" data={data} options={options} />
-      {totalStatusCount > 0 && (
-        <CenterLabel>
-          {totalStatusCount > 9 ? '9+' : totalStatusCount}
-        </CenterLabel>
-      )}
+      <CenterLabel>
+        {totalStatusCount > 9 ? '9+' : totalStatusCount}
+      </CenterLabel>
     </Root>
+  ) : (
+    'N/A'
   )
 }
 

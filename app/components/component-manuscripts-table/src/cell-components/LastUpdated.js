@@ -9,15 +9,19 @@ const DateDisplay = styled.div`
 `
 
 const LastUpdated = ({ manuscript }) => {
-  return (
-    <DateDisplay>
-      {convertTimestampToRelativeDateString(
-        getMembersOfTeam(manuscript, 'reviewer')
-          .map(reviewer => reviewer.updated)
-          .reduce((min, b) => (new Date(b) < new Date(min) ? b : min)),
-      )}
-    </DateDisplay>
+  const updatedTimes = getMembersOfTeam(manuscript, 'reviewer').map(
+    reviewer => reviewer.updated,
   )
+
+  let timestamp = 'N/A'
+
+  if (updatedTimes.length > 0) {
+    timestamp = convertTimestampToRelativeDateString(
+      updatedTimes.reduce((max, b) => (new Date(b) > new Date(max) ? b : max)),
+    )
+  }
+
+  return <DateDisplay>{timestamp}</DateDisplay>
 }
 
 export default LastUpdated
