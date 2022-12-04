@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { convertTimestampToDateString } from '../../../../shared/dateUtils'
 import { UserAvatar } from '../../../component-avatar/src'
 import Modal from '../../../component-kanban-modal'
 import { ErrorStatus } from '../../../shared'
@@ -37,14 +38,18 @@ const DeclinedBadge = styled(ErrorStatus)`
   width: 125px;
 `
 
-const InviteDeclineModal = (invitation, isOpen) => {
-  return (
+const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
+  console.log(isOpen)
+  return invitation ? (
     <Modal
       isOpen={isOpen}
-      subtitle={`Declined: ${invitation.responseDate}`}
+      onClose={onClose}
+      subtitle={`Declined: ${convertTimestampToDateString(
+        invitation.responseDate,
+      )}`}
       title={`${invitation.invitedPersonName}'s Invitation Decline`}
     >
-      <ModalBody>
+      <ModalBody style={{ width: '550px' }}>
         <ModalBodyRow style={{ gap: '0px' }}>
           <UserAvatar
             size={56}
@@ -64,7 +69,7 @@ const InviteDeclineModal = (invitation, isOpen) => {
         </DeclinedReasonRow>
       </ModalBody>
     </Modal>
-  )
+  ) : null
 }
 
 export default InviteDeclineModal
