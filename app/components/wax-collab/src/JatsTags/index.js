@@ -1,4 +1,7 @@
 import { Service } from 'wax-prosemirror-services'
+// import { DocumentHelpers } from 'wax-prosemirror-utilities'
+// import { useContext } from 'react'
+// import { WaxContext } from 'wax-prosemirror-core'
 import Appendix from './Appendix'
 import FrontMatter from './FrontMatter'
 import Abstract from './Abstract'
@@ -24,7 +27,15 @@ import Keyword from './keywords/Keyword'
 import GlossarySection from './glossary/GlossarySection'
 import GlossaryTerm from './glossary/GlossaryTerm'
 
-// copied from here: https://gitlab.coko.foundation/wax/wax-prosemirror/-/blob/master/wax-prosemirror-services/src/DisplayBlockLevel/HeadingService/HeadingService.js
+// const getMixedCitations = main => {
+//   const citations = DocumentHelpers.findChildrenByType(
+//     main.state.doc,
+//     main.state.schema.nodes.mixedCitationSpan,
+//     true,
+//   )
+//
+// return citations
+// }
 
 // Note that toDOM for a lot of the Wax marks looks like this:
 
@@ -364,10 +375,21 @@ class JatsTagsService extends Service {
         excludes: 'mixedCitationSpan', // so we can't embed it inside itself
         parseDOM: [{ tag: 'span.mixed-citation' }],
         toDOM() {
+          // const {
+          //   pmViews: { main },
+          // } = useContext(WaxContext)
+
+          // const citationCount = getMixedCitations()
+          // console.log('Citation count: ', citationCount)
           // TODO: This should send this to Crossref to get back content!
+          // TODO: count how many mixed-citations are in the document and add a number to the end of the ID
           return [
             'span',
-            { class: 'mixed-citation', title: 'Mixed Citation' },
+            {
+              class: 'mixed-citation',
+              title: 'Mixed Citation',
+              // id: `mixed-citation-${citationCount}`, // can we have a function in here
+            },
             0,
           ]
         },

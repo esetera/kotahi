@@ -1,5 +1,5 @@
 // import { v4 as uuidv4 } from 'uuid'
-import { DOMParser } from 'prosemirror-model'
+import { DOMParser, Fragment } from 'prosemirror-model'
 
 const findPlaceholder = (state, id, placeholderPlugin) => {
   const decos = placeholderPlugin.getState(state)
@@ -48,11 +48,14 @@ export default (
       )
 
       const parsedContent = parser.parse(elementFromString(text))
+      // This is coming back as a node. We want it to be a mark
+      const myFragment = new Fragment.from(parsedContent)
+
       // Otherwise, insert it at the placeholder's position, and remove
       // the placeholder
       context.pmViews[context.activeViewId].dispatch(
         context.pmViews[context.activeViewId].state.tr
-          .replaceWith(pos, pos, parsedContent)
+          .replaceWith(pos > 0 ? pos - 1 : 0, pos, myFragment)
           .setMeta(placeholderPlugin, { remove: { id } }),
       )
     },
