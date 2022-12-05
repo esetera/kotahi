@@ -78,7 +78,7 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
   // maybe we could inject content from the JSON into the HTML if this can be done.
   const dom = htmlparser2.parseDocument(anystyleXml)
   const $ = cheerio.load(dom, { xmlMode: true })
-  let outText = ''
+  const outText = []
 
   const sequences = $('sequence')
 
@@ -88,12 +88,16 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
     let isGarbage = false
 
     // Sometimes Anystyle sends back garbage citations that are just citation numbers. Get rid of them.
-
+    // Sometimes this is an <author> ? Maybe the test should be if it has a single tag which has the same content as the whole
     if (
-      $(thisCitation).find('citation-number').length &&
-      $(thisCitation).text() === $(thisCitation).find('citation-number').text()
+      ($(thisCitation).find('citation-number').length &&
+        $(thisCitation).text() ===
+          $(thisCitation).find('citation-number').text()) ||
+      ($(thisCitation).find('author').length &&
+        $(thisCitation).text() === $(thisCitation).find('author').text())
     ) {
       console.error('Garbage data from Anystyle: ', $(thisCitation).text())
+      console.log($(thisCitation).children.length)
       isGarbage = true
     }
 
@@ -231,13 +235,19 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
         )
       }
 
-      outText += `<span class="mixed-citation" id="ref=${citationNumber}">`
-      outText += theText
-      outText += `</span>`
+      outText.push(
+        `<span class="mixed-citation" id="ref=${citationNumber}">${theText}</span>`,
+      )
     }
   }
 
-  return outText
+  if (outText.length > 1) {
+    console.log('Multiple citations!')
+    // TODO: what if we have more than one citation? Should we put in a block-level element here?
+    return outText.map(x => `<p class="paragraph">${x}</p>`).join('')
+  }
+
+  return outText[0] || ''
 }
 
 // This is designed for testing anystyle's conversion. To run:

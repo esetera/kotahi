@@ -26,10 +26,19 @@ const AnyStyleButton = ({ view = {}, item, anyStyle }) => {
 
     if (from < to) {
       // this protects against no selection
+
       const textSelection = new TextSelection($from, $to)
 
       const content = textSelection.content()
-      const { textContent } = content.content.content[0]
+
+      // This gets all the text out. It's separating the text with a newline;
+      // Anystyle understands this. However: we're not really handling it on the return.
+
+      const textContent = content.content.content
+        .map(x => x.textContent)
+        .join('\n')
+
+      // TODO: This fails if it is in a footnote
 
       anyStyle({ content: textContent })
     }
@@ -53,7 +62,7 @@ const AnyStyleButton = ({ view = {}, item, anyStyle }) => {
         disabled={isDisabled}
         iconName={icon}
         label={label}
-        onMouseDown={e => handleMouseDown(e, view.state, view.dispatch)}
+        onMouseDown={e => handleMouseDown(e, activeView.state, view.dispatch)}
         title={title}
       />
     ),

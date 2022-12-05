@@ -78,7 +78,9 @@ const parseCitations = async (references, startNumber = 0) => {
         // 2 pass citations to HTML wrapper
         // res.data is Anystyle XML as a string
         // TODO: take an initial index for the reference IDs so we don't make duplicate IDs
-        const htmledResult = anystyleXmlToHtml(res.data, startNumber)
+        const htmledResult =
+          anystyleXmlToHtml(res.data, startNumber) || references
+
         resolve(htmledResult)
       })
       .catch(async err => {

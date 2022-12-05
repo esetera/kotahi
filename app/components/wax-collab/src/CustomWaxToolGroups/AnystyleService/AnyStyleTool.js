@@ -32,8 +32,10 @@ class AnyStyleTool extends Tools {
     if (isEmpty(view)) return null
     const context = useContext(WaxContext)
 
+    // TODO: make sure this is not inserting a blank line
+
     const anyStyle = replaceText(
-      view,
+      context.activeView, // view,
       this.config.get('config.AnyStyleService').AnyStyleTransformation,
       this.pmplugins.get('anyStylePlaceHolder'),
       context,
