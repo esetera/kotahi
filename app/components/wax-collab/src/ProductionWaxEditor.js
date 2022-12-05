@@ -72,15 +72,19 @@ const ProductionWaxEditor = ({
   }, [])
 
   const updateAnystyle = async text => {
+    const { content } = text
+    console.log('Coming in: ', content)
     return client
       .query({
         query: getAnystyleQuery,
         variables: {
-          textReferences: text,
+          textReferences: content,
         },
         fetchPolicy: 'network-only',
       })
       .then(result => {
+        console.log('Result:', result?.data?.buildCitations?.htmlReferences)
+
         if (
           result?.data?.buildCitations?.htmlReferences &&
           !result?.data?.buildCitations?.error

@@ -2,6 +2,7 @@
 import React, { useContext, useMemo, useEffect } from 'react'
 import { WaxContext /*, DocumentHelpers */ } from 'wax-prosemirror-core'
 import { MenuButton } from 'wax-prosemirror-components'
+import { TextSelection } from 'prosemirror-state'
 
 const AnyStyleButton = ({ view = {}, item, anyStyle }) => {
   const { active, icon, label, run, select, title } = item
@@ -14,15 +15,24 @@ const AnyStyleButton = ({ view = {}, item, anyStyle }) => {
   } = useContext(WaxContext)
 
   const { dispatch, state } = view
-  const serviceConfig = app.config.get('config.AnyStyleService')
+  // const serviceConfig = app.config.get('config.AnyStyleService')
 
   const handleMouseDown = (e, editorState) => {
+    e.preventDefault()
+
     const {
-      selection: { from, to },
+      selection: { from, to, $from, $to },
     } = editorState
 
-    /* this is the content that we have to get from the selection */
-    anyStyle({ content: 'some dummy one' })
+    if (from < to) {
+      // this protects against no selection
+      const textSelection = new TextSelection($from, $to)
+
+      const content = textSelection.content()
+      const { textContent } = content.content.content[0]
+
+      anyStyle({ content: textContent })
+    }
   }
 
   useEffect(() => {}, [])

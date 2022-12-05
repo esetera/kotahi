@@ -22,7 +22,7 @@ class CitationGroup extends ToolGroup {
     @inject('CitationLabel') citationLabel,
     @inject('Issue') issue,
     @inject('Year') year,
-    @inject('Anystyle') anystyle,
+    @inject('AnyStyleTool') anystyle,
   ) {
     super()
     this.tools = [
