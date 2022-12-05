@@ -85,147 +85,157 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
   for (let i = 0; i < sequences.length; i += 1) {
     const thisCitation = sequences[i]
     let citationNumber = i + startCount
+    let isGarbage = false
 
-    // First, we get a normalized version of just the text in the citation (which can be wrapped with tags as needed)
+    // Sometimes Anystyle sends back garbage citations that are just citation numbers. Get rid of them.
 
-    let theText = $(thisCitation).text().trim().replace(/\s\s+/g, ' ')
-
-    // check if there's a citation-number tag, if so, use that as the reference ID
-
-    if ($(thisCitation).find('citation-number').length) {
-      citationNumber = makeStringSafeId(
-        $(thisCitation).find('citation-number').text(),
-        10,
-      )
-
-      console.error(`\n\n\nInternal citation number found: `, citationNumber)
-    } else {
-      console.error(
-        '\n\n\nNo internal citation number, reference ID: ',
-        citationNumber,
-      )
+    if (
+      $(thisCitation).find('citation-number').length &&
+      $(thisCitation).text() === $(thisCitation).find('citation-number').text()
+    ) {
+      console.error('Garbage data from Anystyle: ', $(thisCitation).text())
+      isGarbage = true
     }
 
-    console.error('Raw text: ', theText)
-    console.error('XML from Anystyle: ', $(thisCitation).html())
+    if (!isGarbage) {
+      // First, we get a normalized version of just the text in the citation (which can be wrapped with tags as needed)
 
-    // check for author name
+      let theText = $(thisCitation).text().trim().replace(/\s\s+/g, ' ')
+      // check if there's a citation-number tag, if so, use that as the reference ID
 
-    if ($(thisCitation).find('author').length) {
-      const authorName = $(thisCitation).find('author').text()
-      console.error('Author name found: ', authorName)
-      // TODO: can we split this?
-      theText = theText.replace(
-        authorName,
-        `<span class="author-group">${authorName}</span>`,
-      )
-    }
+      if ($(thisCitation).find('citation-number').length) {
+        citationNumber = makeStringSafeId(
+          $(thisCitation).find('citation-number').text(),
+          10,
+        )
 
-    // check for journals
-
-    if ($(thisCitation).find('journal').length) {
-      const journalName = $(thisCitation).find('journal').text()
-      console.error('Journal found: ', journalName)
-      theText = theText.replace(
-        journalName,
-        `<span class="journal-title">${journalName}</span>`,
-      )
-    }
-
-    // check for article titles
-
-    if ($(thisCitation).find('title').length) {
-      const articleName = $(thisCitation).find('title').text()
-      console.error('Article title found: ', articleName)
-      theText = theText.replace(
-        articleName,
-        `<span class="article-title">${articleName}</span>`,
-      )
-    }
-
-    // check for date
-
-    if ($(thisCitation).find('date').length) {
-      const thisDate = $(thisCitation).find('date').text()
-      console.error('Date found: ', thisDate)
-      theText = theText.replace(
-        thisDate,
-        `<span class="year">${thisDate}</span>`,
-      )
-    }
-
-    // check for volume
-
-    if ($(thisCitation).find('volume').length) {
-      const thisVolume = $(thisCitation).find('volume').text()
-      console.error('Volume found: ', thisVolume)
-      theText = theText.replace(
-        thisVolume,
-        `<span class="volume">${thisVolume}</span>`,
-      )
-    }
-
-    // check for issue
-
-    if ($(thisCitation).find('issue').length) {
-      const thisIssue = $(thisCitation).find('issue').text()
-      console.error('Issue found: ', thisIssue)
-      theText = theText.replace(
-        thisIssue,
-        `<span class="issue">${thisIssue}</span>`,
-      )
-    }
-
-    // check for pages – split into first-page, last-name if possible
-
-    if ($(thisCitation).find('pages').length) {
-      const thisPages = $(thisCitation).find('pages').text()
-      console.error('Pages found: ', thisPages)
-
-      if (thisPages.includes('-') || thisPages.includes('–')) {
-        console.error('--> Page range found, splitting!')
-        const pageSplit = thisPages.split(/-|–/)
+        console.error(`\n\n\nInternal citation number found: `, citationNumber)
+        // TODO: wrap <citation-number> in a span with class="citation-number" and remove it from theText
+        const theCitationNumber = $(thisCitation).find('citation-number').text()
         theText = theText.replace(
-          thisPages,
-          `<span class="first-page">${pageSplit[0]}</span>-<span class="last-page">${pageSplit[1]}</span>`,
+          theCitationNumber,
+          `<span class="citation-label">${theCitationNumber}</span>`,
         )
       } else {
-        theText = theText.replace(
-          thisPages,
-          `<span class="first-page">${thisPages}</span>`,
+        console.error(
+          '\n\n\nNo internal citation number, reference ID: ',
+          citationNumber,
         )
       }
-    }
 
-    // check for URLs–-if it's a DOI, call it a DOI
+      console.error('Raw text: ', theText)
+      console.error('XML from Anystyle: ', $(thisCitation).html())
 
-    if ($(thisCitation).find('url').length) {
-      const theUrl = $(thisCitation).find('url').text()
-      console.error('URL found: ', theUrl)
-      const isDOI = theUrl.includes('doi.org')
+      // check for author name
 
-      if (isDOI) {
-        console.error('--> DOI found, calling it a DOI')
+      if ($(thisCitation).find('author').length) {
+        const authorName = $(thisCitation).find('author').text()
+        console.error('Author name found: ', authorName)
+        // TODO: can we split this?
+        theText = theText.replace(
+          authorName,
+          `<span class="author-group">${authorName}</span>`,
+        )
       }
 
-      theText = theText.replace(
-        theUrl,
-        `<a ${isDOI ? 'class="doi"' : ''}>${theUrl}</a>`,
-      )
+      // check for journals
+
+      if ($(thisCitation).find('journal').length) {
+        const journalName = $(thisCitation).find('journal').text()
+        console.error('Journal found: ', journalName)
+        theText = theText.replace(
+          journalName,
+          `<span class="journal-title">${journalName}</span>`,
+        )
+      }
+
+      // check for article titles
+
+      if ($(thisCitation).find('title').length) {
+        const articleName = $(thisCitation).find('title').text()
+        console.error('Article title found: ', articleName)
+        theText = theText.replace(
+          articleName,
+          `<span class="article-title">${articleName}</span>`,
+        )
+      }
+
+      // check for date
+
+      if ($(thisCitation).find('date').length) {
+        const thisDate = $(thisCitation).find('date').text()
+        console.error('Date found: ', thisDate)
+        theText = theText.replace(
+          thisDate,
+          `<span class="year">${thisDate}</span>`,
+        )
+      }
+
+      // check for volume
+
+      if ($(thisCitation).find('volume').length) {
+        const thisVolume = $(thisCitation).find('volume').text()
+        console.error('Volume found: ', thisVolume)
+        theText = theText.replace(
+          thisVolume,
+          `<span class="volume">${thisVolume}</span>`,
+        )
+      }
+
+      // check for issue
+
+      if ($(thisCitation).find('issue').length) {
+        const thisIssue = $(thisCitation).find('issue').text()
+        console.error('Issue found: ', thisIssue)
+        theText = theText.replace(
+          thisIssue,
+          `<span class="issue">${thisIssue}</span>`,
+        )
+      }
+
+      // check for pages – split into first-page, last-name if possible
+
+      if ($(thisCitation).find('pages').length) {
+        const thisPages = $(thisCitation).find('pages').text()
+        console.error('Pages found: ', thisPages)
+
+        if (thisPages.includes('-') || thisPages.includes('–')) {
+          console.error('--> Page range found, splitting!')
+          const pageSplit = thisPages.split(/-|–/)
+          theText = theText.replace(
+            thisPages,
+            `<span class="first-page">${pageSplit[0]}</span>-<span class="last-page">${pageSplit[1]}</span>`,
+          )
+        } else {
+          theText = theText.replace(
+            thisPages,
+            `<span class="first-page">${thisPages}</span>`,
+          )
+        }
+      }
+
+      // check for URLs–-if it's a DOI, call it a DOI
+
+      if ($(thisCitation).find('url').length) {
+        const theUrl = $(thisCitation).find('url').text()
+        console.error('URL found: ', theUrl)
+        const isDOI = theUrl.includes('doi.org')
+
+        if (isDOI) {
+          console.error('--> DOI found, calling it a DOI')
+        }
+
+        theText = theText.replace(
+          theUrl,
+          `<a ${isDOI ? 'class="doi"' : ''}>${theUrl}</a>`,
+        )
+      }
+
+      outText += `<span class="mixed-citation" id="ref=${citationNumber}">`
+      outText += theText
+      outText += `</span>`
     }
-
-    outText += `<span class="mixed-citation" id="ref=${citationNumber}">`
-    outText += theText
-    outText += `</span>`
   }
-
-  // 1. replace <sequence> with <span class="mixed-citation" id="ref=###">
-  // 1.5. id is coming from <citation-number> if that exists, delete <citation-number>
-
-  // 2. replace <author> with <span class="authorgroup">
-  // 3. replace <title> with <title>
-
-  // 4. strip out all unknown tags, log them
 
   return outText
 }

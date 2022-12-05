@@ -62,11 +62,11 @@ const serverUrl = `${protocol}://${host}${port ? `:${port}` : ''}`
 // --form 'references="Derrida, J. (1967). L’écriture et la différence (1 éd.). Paris: Éditions du Seuil.
 // Vassy, J.L.; Christensen, K.D.; Schonman, E.F.; Blout, C.L.; Robinson, J.O.; Krier, J.B.; Diamond, P.M.; Lebo, M.; Machini, K.; Azzariti, D.R.; et al. The Impact of Whole-Genome Sequencing on the Primary Care and Outcomes of Healthy Adult Patients. Ann. Intern. Med. 2017, 167, 159–169, https://doi.org/10.7326/M17-018."'
 
-const parseCitations = async references => {
+const parseCitations = async (references, startNumber = 0) => {
   // 1 pass references to anystyle
   const form = new FormData()
   // clean any HTML out of what's coming in to Anystyle so it isn't confused
-  form.append('references', convertHtmlToText(references))
+  form.append('references', ` ${convertHtmlToText(references)} `)
 
   return new Promise((resolve, reject) => {
     axios
@@ -76,9 +76,9 @@ const parseCitations = async references => {
       })
       .then(async res => {
         // 2 pass citations to HTML wrapper
-        // res.data is Anystyle JSON
+        // res.data is Anystyle XML as a string
         // TODO: take an initial index for the reference IDs so we don't make duplicate IDs
-        const htmledResult = anystyleXmlToHtml(res.data, 0)
+        const htmledResult = anystyleXmlToHtml(res.data, startNumber)
         resolve(htmledResult)
       })
       .catch(async err => {
