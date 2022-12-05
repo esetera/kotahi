@@ -79,6 +79,11 @@ const cleanCitation = (html, id) => {
         ).text()}</person-group>`,
       )
     }
+
+    if (el.attribs.class && el.attribs.class.indexOf('citation-label') > -1) {
+      // we have already dealt with this, so delete it in the interior
+      $(el).replaceWith(``)
+    }
   })
   $('a').each((index, el) => {
     // console.log('cleanCitation a: ', index, el.attribs.class, $(el).text())
