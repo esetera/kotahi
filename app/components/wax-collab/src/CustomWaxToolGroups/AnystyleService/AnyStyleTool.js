@@ -12,7 +12,7 @@ import replaceText from './replaceText'
 class AnyStyleTool extends Tools {
   name = 'AnyStyle'
   title = 'Convert with Anystyle'
-  label = 'Automatic citation parser'
+  label = 'Automatic parser'
 
   get run() {
     return true

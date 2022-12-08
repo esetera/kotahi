@@ -87,17 +87,16 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
     let citationNumber = i + startCount
     let isGarbage = false
 
-    // Sometimes Anystyle sends back garbage citations that are just citation numbers. Get rid of them.
-    // Sometimes this is an <author> ? Maybe the test should be if it has a single tag which has the same content as the whole
-    if (
-      ($(thisCitation).find('citation-number').length &&
-        $(thisCitation).text() ===
-          $(thisCitation).find('citation-number').text()) ||
-      ($(thisCitation).find('author').length &&
-        $(thisCitation).text() === $(thisCitation).find('author').text())
-    ) {
+    // Sometimes Anystyle sends back garbage citations that are just citation numbers or author tags; these come before or after a regular citation. Get rid of them.
+    // Test is to see if there is more than one sequence returned – if so, we're in a situation where there might be garbage data; and then
+    // check if there is only one child in the returned text. If so, it's (probably) garbage.
+    //
+    // This does not work perfectly! If you select, for example, one citation and then a paragraph after it which is not a citation,
+    // the second paragraph won't come back. The user can control/command-Z to undo this. If we could test against the original text, we could
+    // maybe prevent this? But it would be better if we didn't get garbage back from Anystyle.
+
+    if (sequences.length > 1 && $(thisCitation).children().length === 1) {
       console.error('Garbage data from Anystyle: ', $(thisCitation).text())
-      console.log($(thisCitation).children.length)
       isGarbage = true
     }
 
@@ -242,7 +241,7 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
   }
 
   if (outText.length > 1) {
-    console.log('Multiple citations!')
+    console.error('Multiple citations!')
     // TODO: what if we have more than one citation? Should we put in a block-level element here?
     return outText.map(x => `<p class="paragraph">${x}</p>`).join('')
   }

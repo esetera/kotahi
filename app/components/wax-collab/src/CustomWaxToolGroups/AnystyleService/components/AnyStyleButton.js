@@ -1,8 +1,36 @@
 /* eslint react/prop-types: 0 */
 import React, { useContext, useMemo, useEffect } from 'react'
+import styled from 'styled-components'
 import { WaxContext /*, DocumentHelpers */ } from 'wax-prosemirror-core'
 import { MenuButton } from 'wax-prosemirror-components'
 import { TextSelection } from 'prosemirror-state'
+
+const AnyStyleDiv = styled(MenuButton)`
+  margin-top: 8px;
+  outline: 1px solid #ccc;
+  &:after {
+    z-index: 1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    transition: 0.25s;
+    border-radius: 4px;
+  }
+  & span {
+    z-index: 2;
+  }
+
+  &:hover {
+    &:after {
+      background: #f1f5ff;
+    }
+    & span {
+      border-bottom-color: transparent !important;
+    }
+  }
+`
 
 const AnyStyleButton = ({ view = {}, item, anyStyle }) => {
   const { active, icon, label, run, select, title } = item
@@ -57,7 +85,7 @@ const AnyStyleButton = ({ view = {}, item, anyStyle }) => {
 
   const AnyStyleButtonComponent = useMemo(
     () => (
-      <MenuButton
+      <AnyStyleDiv
         active={isActive || false}
         disabled={isDisabled}
         iconName={icon}
