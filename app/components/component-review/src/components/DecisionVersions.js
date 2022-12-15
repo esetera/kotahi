@@ -39,6 +39,7 @@ const DecisionVersions = ({
   createFile,
   threadedDiscussionProps,
   validateDoi,
+  validateSuffix,
   invitations,
   setExternalEmail,
   externalEmail,
@@ -47,6 +48,8 @@ const DecisionVersions = ({
   setShouldPublishField,
   isEmailAddressOptedOut,
   updateSharedStatusForInvitedReviewer,
+  dois,
+  refetch,
   updateTask,
   updateTasks,
   teams,
@@ -95,6 +98,7 @@ const DecisionVersions = ({
                 decisionForm={decisionForm}
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
+                dois={dois}
                 externalEmail={externalEmail}
                 form={form}
                 invitations={invitations}
@@ -105,6 +109,7 @@ const DecisionVersions = ({
                 onChange={handleChange}
                 parent={manuscript}
                 publishManuscript={publishManuscript}
+                refetch={refetch}
                 reviewers={reviewers}
                 reviewForm={reviewForm}
                 selectedEmail={selectedEmail}
@@ -134,6 +139,7 @@ const DecisionVersions = ({
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}
+                validateSuffix={validateSuffix}
                 version={version.manuscript}
                 versionNumber={versions.length - index}
               />
