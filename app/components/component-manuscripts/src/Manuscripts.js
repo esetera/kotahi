@@ -5,7 +5,6 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Checkbox } from '@pubsweet/ui'
 import { grid } from '@pubsweet/ui-toolkit'
-import { useLocation } from 'react-router-dom'
 import {
   SelectAllField,
   SelectedManuscriptsNumber,
@@ -27,14 +26,11 @@ import { articleStatuses } from '../../../globals'
 import MessageContainer from '../../component-chat/src/MessageContainer'
 import Modal from '../../component-modal/src'
 import BulkArchiveModal from './BulkArchiveModal'
-import getColumnsProps from './getColumnsProps'
-import FilterSortHeader from './FilterSortHeader'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
 import {
   URI_SEARCH_PARAM,
   URI_PAGENUM_PARAM,
-  URI_SORT_PARAM,
 } from '../../../shared/urlParamUtils'
 import ManuscriptsTable from '../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../component-manuscripts-table/src/util/buildColumnDefinitions'
@@ -79,15 +75,13 @@ const Manuscripts = ({ history, ...props }) => {
     shouldAllowBulkImport,
     archiveManuscriptMutations,
     confirmBulkArchive,
+    uriQueryParams,
   } = props
 
   const [isOpenBulkArchiveModal, setIsOpenBulkArchiveModal] = useState(false)
 
   const [selectedNewManuscripts, setSelectedNewManuscripts] = useState([])
   const [isAdminChatOpen, setIsAdminChatOpen] = useState(true)
-
-  const params = new URLSearchParams(history.location.search)
-  const { pathname, search } = useLocation()
 
   const toggleNewManuscriptCheck = id => {
     setSelectedNewManuscripts(s => {
@@ -225,7 +219,7 @@ const Manuscripts = ({ history, ...props }) => {
     closeModalBulkArchiveConfirmation()
   }
 
-  const currentSearchQuery = params.get(URI_SEARCH_PARAM)
+  const currentSearchQuery = uriQueryParams.get(URI_SEARCH_PARAM)
 
   // Props for instantiating special components
   const specialComponentValues = {
@@ -365,11 +359,9 @@ const Manuscripts = ({ history, ...props }) => {
           <div>
             <ScrollableContent>
               <ManuscriptsTable
+                applyQueryParams={applyQueryParams}
                 columnsProps={columnsProps}
                 manuscripts={manuscripts}
-                setFilter={setFilter}
-                setSortDirection={setSortDirection}
-                setSortName={setSortName}
                 sortDirection={sortDirection}
                 sortName={sortName}
               />

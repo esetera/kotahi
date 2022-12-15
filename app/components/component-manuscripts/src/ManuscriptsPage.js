@@ -40,11 +40,11 @@ const ManuscriptsPage = ({ history }) => {
   const [isImporting, setIsImporting] = useState(false)
   const applyQueryParams = useQueryParams()
 
-  const params = new URLSearchParams(history.location.search)
-  const page = params.get(URI_PAGENUM_PARAM) || 1
-  const sortName = extractSortData(params).name
-  const sortDirection = extractSortData(params).direction
-  const filters = extractFilters(params)
+  const uriQueryParams = new URLSearchParams(history.location.search)
+  const page = uriQueryParams.get(URI_PAGENUM_PARAM) || 1
+  const sortName = extractSortData(uriQueryParams).name
+  const sortDirection = extractSortData(uriQueryParams).direction
+  const filters = extractFilters(uriQueryParams)
 
   const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
 
@@ -187,6 +187,7 @@ const ManuscriptsPage = ({ history }) => {
       sortDirection={sortDirection}
       sortName={sortName}
       systemWideDiscussionChannel={systemWideDiscussionChannel}
+      uriQueryParams={uriQueryParams}
       urlFrag={urlFrag}
       validateDoi={validateDoi(client)}
     />
