@@ -68,22 +68,23 @@ const FilterSortHeader = ({
   columnInfo,
   sortName,
   sortDirection,
-  setSortName,
-  setSortDirection,
+  setSort,
   setFilter,
 }) => {
   if (columnInfo.canFilterByDateRange) {
     const changeSort = () => {
       const priorSortName = sortName
-      setSortName(columnInfo.name)
+      let newSortDirection
 
       if (priorSortName !== columnInfo.name) {
-        setSortDirection(columnInfo.defaultSortDirection)
+        newSortDirection = columnInfo.defaultSortDirection
       } else if (sortDirection === 'ASC') {
-        setSortDirection('DESC')
+        newSortDirection = 'DESC'
       } else if (sortDirection === 'DESC') {
-        setSortDirection('ASC')
+        newSortDirection = 'ASC'
       }
+
+      setSort(columnInfo.name, newSortDirection)
     }
 
     const filterByDateRange = range => {
@@ -182,15 +183,17 @@ const FilterSortHeader = ({
   if (columnInfo.canSort) {
     const changeSort = () => {
       const priorSortName = sortName
-      setSortName(columnInfo.name)
+      let newSortDirection
 
       if (priorSortName !== columnInfo.name) {
-        setSortDirection(columnInfo.defaultSortDirection)
+        newSortDirection = columnInfo.defaultSortDirection
       } else if (sortDirection === 'ASC') {
-        setSortDirection('DESC')
+        newSortDirection = 'DESC'
       } else if (sortDirection === 'DESC') {
-        setSortDirection('ASC')
+        newSortDirection = 'ASC'
       }
+
+      setSort(columnInfo.name, newSortDirection)
     }
 
     return (
