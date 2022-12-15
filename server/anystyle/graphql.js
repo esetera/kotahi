@@ -6,7 +6,7 @@ const config = require('config')
 const anystyleXmlToHtml = require('./anystyleToHtml')
 
 // this is loading a text file of references for testing
-// TODO: remove this after testing!
+// Uncomment this (and imports above) for testing without frontend data
 
 // const sampleReferences = fs.readFileSync(
 //   path.resolve(__dirname, 'data/sampleReferences.txt'),
@@ -123,7 +123,7 @@ const typeDefs = `
 
 module.exports = { resolvers, typeDefs }
 
-// TODO: REMOVE AFTER TESTING:
+// UNCOMMENT THIS FOR TESTING WITHOUT FRONTEND:
 
 // const output = parseCitations(sampleReferences)
 

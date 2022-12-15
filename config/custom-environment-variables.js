@@ -93,6 +93,8 @@ module.exports = {
     port: 'SERVICE_PAGEDJS_PORT',
   },
   anystyle: {
+    clientId: 'SERVICE_ANYSTYLE_CLIENT_ID',
+    clientSecret: 'SERVICE_ANYSTYLE_SECRET',
     protocol: 'SERVICE_ANYSTYLE_PROTOCOL',
     host: 'SERVICE_ANYSTYLE_HOST',
     port: 'SERVICE_ANYSTYLE_PORT',

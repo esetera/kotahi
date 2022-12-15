@@ -113,7 +113,6 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
         )
 
         console.error(`\n\n\nInternal citation number found: `, citationNumber)
-        // TODO: wrap <citation-number> in a span with class="citation-number" and remove it from theText
         const theCitationNumber = $(thisCitation).find('citation-number').text()
         theText = theText.replace(
           theCitationNumber,
@@ -242,7 +241,6 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
 
   if (outText.length > 1) {
     console.error('Multiple citations!')
-    // TODO: what if we have more than one citation? Should we put in a block-level element here?
     return outText.map(x => `<p class="paragraph">${x}</p>`).join('')
   }
 
