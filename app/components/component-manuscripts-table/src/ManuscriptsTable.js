@@ -2,17 +2,31 @@ import React from 'react'
 import { ManuscriptsHeaderRow, ManuscriptsTableStyled } from './style'
 import FilterSortHeader from './FilterSortHeader'
 import ManuscriptRow from './ManuscriptRow'
+import {
+  URI_PAGENUM_PARAM,
+  URI_SORT_PARAM,
+} from '../../../shared/urlParamUtils'
 
 const ManuscriptsTable = ({
+  applyQueryParams,
   manuscripts,
   columnsProps,
-  setFilter,
-  setSortName,
-  setSortDirection,
   sortDirection,
   sortName,
   getLink,
 }) => {
+  const setFilter = (name, value) =>
+    applyQueryParams({
+      [name]: value,
+      [URI_PAGENUM_PARAM]: 1,
+    })
+
+  const setSort = (name, direction) =>
+    applyQueryParams({
+      [URI_SORT_PARAM]: `${name}_${direction}`,
+      [URI_PAGENUM_PARAM]: 1,
+    })
+
   return (
     <ManuscriptsTableStyled>
       <ManuscriptsHeaderRow>
@@ -21,8 +35,7 @@ const ManuscriptsTable = ({
             columnInfo={info}
             key={info.name}
             setFilter={setFilter}
-            setSortDirection={setSortDirection}
-            setSortName={setSortName}
+            setSort={setSort}
             sortDirection={sortDirection}
             sortName={sortName}
           />
