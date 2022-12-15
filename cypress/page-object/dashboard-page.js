@@ -28,7 +28,8 @@ const ACCEPT_REVIEW_BUTTON = 'accept-review'
 const REJECT_REVIEW_BUTTON = 'reject-review'
 
 // 'Manuscripts I'm editor of' section
-const CONTROL_PANEL_BUTTON = 'control-panel'
+const CONTROL_PANEL_DECISION_BUTTON = 'control-panel-decision'
+const CONTROL_PANEL_TEAM_BUTTON = 'control-panel-team'
 const MANUSCRIPT_NAV_BUTTON = '[href="/kotahi/admin/manuscripts"]'
 const INVITED_REVIEWS_STATUS = 'invited'
 const COMPLETED_REVIEWS_STATUS = 'completed'
@@ -87,11 +88,17 @@ export const DashboardPage = {
   getDecisionField(nth) {
     return cy.get(DECISION_FIELDS).eq(nth)
   },
-  getControlPanelButton() {
-    return cy.getByDataTestId(CONTROL_PANEL_BUTTON)
+  getControlPanelDecisionButton() {
+    return cy.getByDataTestId(CONTROL_PANEL_DECISION_BUTTON)
   },
-  clickControlPanel() {
-    this.getControlPanelButton().click()
+  getControlPanelTeamButton() {
+    return cy.getByDataTestId(CONTROL_PANEL_TEAM_BUTTON)
+  },
+  clickControlPanelTeam() {
+    this.getControlPanelTeamButton().click()
+  },
+  clickControlPanelDecision() {
+    this.getControlPanelDecisionButton().click()
   },
   getManuscriptNavButton() {
     return cy.get(MANUSCRIPT_NAV_BUTTON)

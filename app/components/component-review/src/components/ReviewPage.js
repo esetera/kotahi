@@ -347,7 +347,7 @@ const ReviewPage = ({ match, ...props }) => {
       manuscriptId: latestVersion.id,
       userId: currentUser.id,
     }
-
+    console.log(existingReview)
     return updateReviewMutation({
       variables: { id: existingReview.id, input: reviewPayload },
       update: (cache, { data: { updateReview: updateReviewTemp } }) => {
