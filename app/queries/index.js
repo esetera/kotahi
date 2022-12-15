@@ -58,50 +58,6 @@ export const CREATE_MESSAGE = gql`
   }
 `
 
-const teamFields = `
-  id
-  name
-  role
-  objectId
-  objectType
-  members {
-    id
-    user {
-      id
-      username
-    }
-  }
-`
-
-export const CREATE_TEAM_MUTATION = gql`
-  mutation($input: TeamInput!) {
-    createTeam(input: $input) {
-      ${teamFields}
-    }
-  }
-`
-
-export const UPDATE_TEAM_MUTATION = gql`
-  mutation($id: ID!, $input: TeamInput) {
-    updateTeam(id: $id, input: $input) {
-      ${teamFields}
-    }
-  }
-`
-
-export const UPDATE_INVITATION_STATUS = gql`
-  mutation($id: ID!, $status: String, $userId: ID, $responseDate: DateTime) {
-    updateInvitationStatus(
-      id: $id
-      status: $status
-      userId: $userId
-      responseDate: $responseDate
-    ) {
-      status
-      responseDate
-    }
-  }
-`
 export const GET_BLACKLIST_INFORMATION = gql`
   query getBlacklistInformation($email: String) {
     getBlacklistInformation(email: $email) {
@@ -109,6 +65,8 @@ export const GET_BLACKLIST_INFORMATION = gql`
     }
   }
 `
+
+// TODO: Move initation queries to invitation/index.js
 export const UPDATE_INVITATION_RESPONSE = gql`
   mutation($id: ID!, $responseComment: String, $declinedReason: String!) {
     updateInvitationResponse(
@@ -127,6 +85,17 @@ export const GET_INVITATION_MANUSCRIPT_ID = gql`
     invitationManuscriptId(id: $id) {
       manuscriptId
       invitedPersonType
+      isShared
+    }
+  }
+`
+export const GET_EMAIL_INVITED_REVIEWERS = gql`
+  query getEmailInvitedReviewers($manuscriptId: ID!) {
+    getEmailInvitedReviewers(manuscriptId: $manuscriptId) {
+      id
+      invitedPersonName
+      isShared
+      status
     }
   }
 `
@@ -156,6 +125,18 @@ export const GET_INVITATIONS_FOR_MANUSCRIPT = gql`
         profilePicture
         isOnline
       }
+    }
+  }
+`
+
+export const UPDATE_SHARED_STATUS_FOR_INVITED_REVIEWER_MUTATION = gql`
+  mutation($invitationId: ID!, $isShared: Boolean!) {
+    updateSharedStatusForInvitedReviewer(
+      invitationId: $invitationId
+      isShared: $isShared
+    ) {
+      id
+      isShared
     }
   }
 `
@@ -214,19 +195,6 @@ export const DELETE_MANUSCRIPTS = gql`
     deleteManuscripts(ids: $ids)
   }
 `
-export const ASSIGN_USER_AS_AUTHOR = gql`
-mutation($manuscriptId: ID!, $userId: ID!) {
-  assignUserAsAuthor(manuscriptId: $manuscriptId, userId: $userId ) {
-    ${teamFields}
-  }
-}`
-
-export const ASSIGN_USER_AS_REVIEWER = gql`
-mutation($manuscriptId: ID!, $userId: ID!, $invitationId: ID) {
-  addReviewer(manuscriptId: $manuscriptId, userId: $userId, invitationId: $invitationId ) {
-    ${teamFields}
-  }
-}`
 
 export const GET_MANUSCRIPTS_AND_FORM = gql`
   query Manuscripts(
@@ -353,20 +321,66 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
     }
   }
 `
+
 export const IMPORT_MANUSCRIPTS = gql`
   mutation {
     importManuscripts
   }
 `
+
 export const IMPORTED_MANUSCRIPTS_SUBSCRIPTION = gql`
   subscription manuscriptsImportStatus {
     manuscriptsImportStatus
   }
 `
+
 export const GET_SYSTEM_WIDE_DISCUSSION_CHANNEL = gql`
   query {
     systemWideDiscussionChannel {
       id
+    }
+  }
+`
+
+const taskFields = `
+id
+created
+updated
+manuscriptId
+title
+assigneeUserId
+assignee {
+  id
+  username
+  email
+  profilePicture
+}
+defaultDurationDays
+dueDate
+reminderPeriodDays
+status
+`
+
+export const UPDATE_TASKS = gql`
+  mutation($manuscriptId: ID, $tasks: [TaskInput!]!) {
+    updateTasks(manuscriptId: $manuscriptId, tasks: $tasks) {
+      ${taskFields}
+    }
+  }
+`
+
+export const UPDATE_TASK = gql`
+  mutation($task: TaskInput!) {
+    updateTask(task: $task) {
+      ${taskFields}
+    }
+  }
+`
+
+export const POPULATE_TASKS = gql`
+  mutation($manuscriptId: ID!) {
+    populateTasksForManuscript(manuscriptId: $manuscriptId) {
+      ${taskFields}
     }
   }
 `

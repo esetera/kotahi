@@ -3,6 +3,11 @@ const omit = require('lodash/omit')
 const cloneDeep = require('lodash/cloneDeep')
 const sortBy = require('lodash/sortBy')
 
+const {
+  populateTemplatedTasksForManuscript,
+  deleteAlertsForManuscript,
+} = require('../../model-task/src/taskCommsUtils')
+
 class Manuscript extends BaseModel {
   static get tableName() {
     return 'manuscripts'
@@ -83,11 +88,15 @@ class Manuscript extends BaseModel {
 
     const manuscripts = await Manuscript.query()
       .where('parent_id', id)
-      .withGraphFetched('[teams.members, reviews.user, files]')
+      .withGraphFetched(
+        '[teams.members, reviews.user, files, tasks(orderBySequence).assignee]',
+      )
 
     const firstManuscript = await Manuscript.query()
       .findById(id)
-      .withGraphFetched('[teams.members, reviews.user, files]')
+      .withGraphFetched(
+        '[teams.members, reviews.user, files, tasks(orderBySequence).assignee]',
+      )
 
     manuscripts.push(firstManuscript)
 
@@ -143,6 +152,9 @@ class Manuscript extends BaseModel {
       omit(cloneDeep(newVersion), ['id', 'created', 'updated', 'decision']),
     )
 
+    await populateTemplatedTasksForManuscript(manuscript.id)
+    await deleteAlertsForManuscript(this.id)
+
     return manuscript
   }
 
@@ -153,6 +165,8 @@ class Manuscript extends BaseModel {
     const File = require('@coko/server/src/models/file/file.model')
     /* eslint-disable-next-line global-require */
     const Team = require('../../model-team/src/team')
+    /* eslint-disable-next-line global-require */
+    const Task = require('../../model-task/src/task')
 
     return {
       submitter: {
@@ -169,6 +183,14 @@ class Manuscript extends BaseModel {
         join: {
           from: 'manuscripts.id',
           to: 'channels.manuscriptId',
+        },
+      },
+      tasks: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: Task,
+        join: {
+          from: 'manuscripts.id',
+          to: 'tasks.manuscriptId',
         },
       },
       teams: {
@@ -234,19 +256,6 @@ class Manuscript extends BaseModel {
         },
         status: { type: ['string', 'null'] },
         decision: { type: ['string', 'null'] },
-        suggestions: {
-          type: ['object', 'null'],
-          properties: {
-            reviewers: {
-              suggested: { type: ['string', 'null'] },
-              opposed: { type: ['string', 'null'] },
-            },
-            editors: {
-              suggested: { type: ['string', 'null'] },
-              opposed: { type: ['string', 'null'] },
-            },
-          },
-        },
         authors: {
           items: { type: 'object' },
           type: ['array', 'null'],
@@ -257,39 +266,10 @@ class Manuscript extends BaseModel {
             title: { type: 'string' },
             abstract: { type: ['string', 'null'] },
             source: { type: 'string' },
-            articleType: { type: 'string' },
-            declarations: {
-              type: 'object',
-              properties: {
-                openData: { type: ['string', 'null'] },
-                openPeerReview: { type: ['string', 'null'] },
-                preregistered: { type: ['string', 'null'] },
-                previouslySubmitted: { type: ['string', 'null'] },
-                researchNexus: { type: ['string', 'null'] },
-                streamlinedReview: { type: ['string', 'null'] },
-              },
-            },
-            articleSections: {
-              items: { type: 'string' },
-              type: ['array', 'null'],
-            },
-            articleIds: {
-              items: { type: 'object' },
-              type: ['array', 'null'],
-            },
             history: {
               items: { type: 'object' },
               type: ['array', 'null'],
             },
-            publicationDates: {
-              items: { type: 'object' },
-              type: ['array', 'null'],
-            },
-            notes: {
-              items: { type: 'object' },
-              type: ['array', 'null'],
-            },
-            keywords: { type: ['string', 'null'] },
           },
         },
         submission: {},

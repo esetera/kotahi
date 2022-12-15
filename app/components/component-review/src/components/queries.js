@@ -51,12 +51,16 @@ const manuscriptFields = `
       user {
         id
         username
+        profilePicture
+        isOnline
         defaultIdentity {
           id
           name
         }
       }
       status
+      isShared
+      updated
     }
   }
   status
@@ -65,41 +69,34 @@ const manuscriptFields = `
     title
     source
     abstract
-    declarations {
-      openData
-      openPeerReview
-      preregistered
-      previouslySubmitted
-      researchNexus
-      streamlinedReview
-    }
-    articleSections
-    articleType
     history {
       type
       date
     }
-    notes {
-      notesType
-      content
-    }
-    keywords
   }
   submission
-  suggestions {
-    reviewers {
-      opposed
-      suggested
-    }
-    editors {
-      opposed
-      suggested
-    }
-  }
   published
   formFieldsToPublish {
     objectId
     fieldsToPublish
+  }
+  tasks {
+    id
+    created
+    updated
+    manuscriptId
+    title
+    assigneeUserId
+    assignee {
+      id
+      username
+      email
+      profilePicture
+    }
+    defaultDurationDays
+    dueDate
+    reminderPeriodDays
+    status
   }
 `
 
@@ -119,7 +116,6 @@ const formFields = `
       description
       doiValidation
       placeholder
-      includeInReviewerPreview
       permitPublishing
       parse
       format
@@ -140,6 +136,30 @@ const formFields = `
         minSize
       }
     }
+  }
+`
+
+const teamFields = `
+  id
+  role
+  name
+  objectId
+  objectType
+  members {
+    updated
+    id
+    user {
+      id
+      username
+      profilePicture
+      isOnline
+      defaultIdentity {
+        id
+        identifier
+      }
+    }
+    status
+    isShared
   }
 `
 
@@ -212,6 +232,8 @@ export const query = gql`
     users {
       id
       username
+      profilePicture
+      isOnline
       email
       admin
       defaultIdentity {
@@ -219,6 +241,14 @@ export const query = gql`
       }
     }
   }
+`
+
+export const addReviewerMutation = gql`
+mutation($manuscriptId: ID!, $userId: ID!) {
+  addReviewer(manuscriptId: $manuscriptId, userId: $userId) {
+    ${teamFields}
+  }
+}
 `
 
 export const updateReviewMutation = gql`

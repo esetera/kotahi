@@ -7,7 +7,7 @@ import { Select } from '../../../../shared'
 import {
   CREATE_TEAM_MUTATION,
   UPDATE_TEAM_MUTATION,
-} from '../../../../../queries'
+} from '../../../../../queries/team'
 
 const editorOption = user => ({
   label: user.defaultIdentity?.name || user.email || user.username,
@@ -55,6 +55,7 @@ const AssignEditor = ({ teamRole, manuscript }) => {
 
   useEffect(() => {
     if (selectedEditor) {
+      // TODO most of this logic should be in the server. We should call an 'assignEditor' mutation rather than 'updateTeam' or 'createTeam'
       if (teams.find(t => t.role === teamRole)) {
         updateTeam({
           variables: {

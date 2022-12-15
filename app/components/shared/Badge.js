@@ -53,6 +53,13 @@ export const NormalStatus = styled(Status)`
         `}
 `
 
+export const ConfigurableStatus = styled(Status)`
+  ${props => css`
+    color: ${props.lightText ? 'white' : 'black'};
+    background-color: ${props.color};
+  `}
+`
+
 const label = (status, published) => {
   const isPublished = !!published
 
@@ -66,7 +73,9 @@ const label = (status, published) => {
     revise: 'Revise',
     revising: 'Revising',
     invited: 'Invited', // reviewer status
+    inProgress: 'In Progress', // reviewer status
     completed: 'Completed', // reviewer status
+    unanswered: 'Invited',
     evaluated: 'evaluated',
     published: 'published',
   }

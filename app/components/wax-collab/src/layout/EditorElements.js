@@ -2,6 +2,7 @@
 import { css } from 'styled-components'
 import { darken, grid, th } from '@pubsweet/ui-toolkit'
 import lightenBy from '../../../../shared/lightenBy'
+import theme from '../../../../theme'
 
 // This should only include styles specific to the editor */
 /* Styles that are purely presentational for text should be in textStyles.css */
@@ -11,6 +12,7 @@ const EditorStyles = css`
   ${props => props.theme.textStyles}
 
   .ProseMirror {
+    background: ${theme.colors.neutral.gray99};
     counter-reset: footnote;
     font-family: ${props => props.theme.fontReading};
     white-space: pre-wrap;
@@ -38,10 +40,10 @@ const EditorStyles = css`
     }
 
     ::after {
+      bottom: 0;
       content: counter(footnote);
       counter-increment: footnote;
       font-size: ${grid(3)};
-      bottom: 0;
     }
   }
 
@@ -355,21 +357,21 @@ const EditorStyles = css`
   section.frontmatter {
     background-color: #eee;
     border: 1px solid #ccc;
-    margin: 16px 0;
     border-radius: 0 4px 4px 0;
+    margin: 16px 0;
     padding: 4px 8px;
     position: relative;
 
     &:before {
       background-color: ${th('colorFrontMatter')};
       border: 1px solid #ccc;
+      border-radius: 4px;
       content: '';
+      height: calc(100% + 2px);
       left: -4px;
-      width: 8px;
       position: absolute;
       top: -1px;
-      height: calc(100% + 2px);
-      border-radius: 4px;
+      width: 8px;
     }
 
     & > :last-child {
@@ -380,21 +382,21 @@ const EditorStyles = css`
   section.abstractSection {
     background-color: #eee;
     border: 1px solid #ccc;
-    margin: 16px 0;
     border-radius: 0 4px 4px 0;
+    margin: 16px 0;
     padding: 4px 8px;
     position: relative;
 
     &:before {
       background-color: ${th('colorAbstract')};
       border: 1px solid #ccc;
+      border-radius: 4px;
       content: '';
+      height: calc(100% + 2px);
       left: -4px;
-      width: 8px;
       position: absolute;
       top: -1px;
-      height: calc(100% + 2px);
-      border-radius: 4px;
+      width: 8px;
     }
 
     & > :last-child {
@@ -405,21 +407,21 @@ const EditorStyles = css`
   section.reflist {
     background-color: #eee;
     border: 1px solid #ccc;
-    margin: 16px 0;
     border-radius: 0 4px 4px 0;
+    margin: 16px 0;
     padding: 4px 8px;
     position: relative;
 
     &:before {
       background-color: ${th('colorCitation')};
       border: 1px solid #ccc;
+      border-radius: 4px;
       content: '';
+      height: calc(100% + 2px);
       left: -4px;
-      width: 8px;
       position: absolute;
       top: -1px;
-      height: calc(100% + 2px);
-      border-radius: 4px;
+      width: 8px;
     }
 
     & > :last-child {
@@ -439,29 +441,29 @@ const EditorStyles = css`
   .reflist h4,
   .reflist h5,
   .reflist h6 {
-    margin: 0 0 8px 0;
     font-size: 18px;
     font-weight: bold;
+    margin: 0 0 8px 0;
   }
 
   section.acknowledgementsSection {
     background-color: #eee;
     border: 1px solid #ccc;
-    margin: 16px 0;
     border-radius: 0 4px 4px 0;
+    margin: 16px 0;
     padding: 4px 8px;
     position: relative;
 
     &:before {
       background-color: ${th('colorAcknowledgements')};
       border: 1px solid #ccc;
+      border-radius: 4px;
       content: '';
+      height: calc(100% + 2px);
       left: -4px;
-      width: 8px;
       position: absolute;
       top: -1px;
-      height: calc(100% + 2px);
-      border-radius: 4px;
+      width: 8px;
     }
 
     & > :last-child {
@@ -472,21 +474,21 @@ const EditorStyles = css`
   section.appendix {
     background-color: #eee;
     border: 1px solid #ccc;
-    margin: 16px 0;
     border-radius: 0 4px 4px 0;
+    margin: 16px 0;
     padding: 4px 8px;
     position: relative;
 
     &:before {
       background-color: ${th('colorAppendix')};
       border: 1px solid #ccc;
+      border-radius: 4px;
       content: '';
+      height: calc(100% + 2px);
       left: -4px;
-      width: 8px;
       position: absolute;
       top: -1px;
-      height: calc(100% + 2px);
-      border-radius: 4px;
+      width: 8px;
     }
 
     & > :last-child {
@@ -500,9 +502,9 @@ const EditorStyles = css`
   .appendix h4,
   .appendix h5,
   .appendix h6 {
-    margin: 0 0 8px 0;
     font-size: 18px;
     font-weight: bold;
+    margin: 0 0 8px 0;
   }
 
   /* added for figure weirdness */
@@ -554,14 +556,15 @@ const EditorStyles = css`
   .awardid {
     --fundingColorValues: ${th('colorFunding')};
     --fundingOffset: 2px;
+    border-radius: 2px;
     outline: ${th('colorFunding')} 1px solid;
     outline-offset: var(--fundingOffset);
-    border-radius: 2px;
     transition: 0.25;
   }
 
   .fundingsource {
     --fundingColorValues: ${th('colorFundingSource')};
+
     &:hover {
       outline-color: var(--fundingColorValues);
     }
@@ -569,12 +572,15 @@ const EditorStyles = css`
 
   .fundingstatement {
     --fundingColorValues: ${th('colorFundingStatement')};
+
     &:hover {
       outline-color: var(--fundingColorValues);
     }
   }
+
   .awardid {
     --fundingColorValues: ${th('colorAwardId')};
+
     &:hover {
       outline-color: var(--fundingColorValues);
     }
@@ -598,32 +604,34 @@ const EditorStyles = css`
     --citationColorValues: ${th('colorCitation')};
     --citationTextColor: black;
     --citationOffset: 2px;
+    border-radius: 2px;
     outline: var(--citationColorValues) 1px solid;
     outline-offset: var(--citationOffset);
     position: relative;
-    border-radius: 2px;
     transition: 0.25;
+
     &:hover {
       &:before {
-        content: 'Mixed Citation';
-        white-space: nowrap;
-        position: absolute;
         background-color: var(--citationColorValues);
-        color: var(--citationTextColor);
-        top: -16px;
-        left: 16px;
-        padding: 0 4px;
         border-radius: 4px;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        color: var(--citationTextColor);
+        content: 'Mixed Citation';
         display: none;
+        font-size: 12px;
+        left: 16px;
+        letter-spacing: 0.5px;
+        padding: 0 4px;
+        position: absolute;
+        text-transform: uppercase;
+        top: -16px;
+        white-space: nowrap;
       }
     }
   }
 
   span.article-title,
   span.journal-title,
+  span.citation-label,
   span.author-group,
   span.author-name,
   span.volume,
@@ -635,24 +643,30 @@ const EditorStyles = css`
     --citationColorValues: transparent;
     --citationTextColor: black;
     --citationOffset: 2px;
+    border-radius: 2px;
     outline: ${th('colorCitation')} 1px solid;
     outline-offset: var(--citationOffset);
     position: relative;
-    border-radius: 2px;
+
     &:before {
-      position: absolute;
-      left: -2px;
-      top: -2px;
-      content: '';
-      width: 4px;
-      height: 4px;
       background-color: var(--citationColorValues);
       border-radius: 100%;
+      content: '';
       display: none;
+      height: 4px;
+      left: -2px;
+      position: absolute;
+      top: -2px;
+      width: 4px;
     }
     &:hover {
       outline-color: var(--citationColorValues);
     }
+  }
+
+  span.citation-label {
+    --citationColorValues: ${th('colorCitationLabel')};
+    --citationTextColor: white;
   }
 
   span.article-title {
@@ -721,6 +735,10 @@ const EditorStyles = css`
     outline: var(--citationColorValues) 2px solid;
   }
 
+  .show-citation-label .citation-label {
+    outline: var(--citationColorValues) 2px solid;
+  }
+
   .show-author-group .author-group {
     outline: var(--citationColorValues) 2px solid;
   }
@@ -784,9 +802,9 @@ const EditorStyles = css`
       border-radius: 100%;
       display: none;
     }
-    // &:hover {
-    //   outline-color: var(--keywordColorValues);
-    // }
+    /* &:hover {
+       outline-color: var(--keywordColorValues);
+    } */
   }
 
   /* glossary */
@@ -825,9 +843,6 @@ const EditorStyles = css`
     margin: 0 0 8px 0;
     font-size: 18px;
     font-weight: bold;
-  }
-
-  .glossary-item {
   }
 
   .glossary-term {

@@ -14,12 +14,12 @@ import fnv from 'fnv-plus'
 import {
   GET_MANUSCRIPTS_AND_FORM,
   DELETE_MANUSCRIPT,
-  DELETE_MANUSCRIPTS,
   IMPORT_MANUSCRIPTS,
   IMPORTED_MANUSCRIPTS_SUBSCRIPTION,
   GET_SYSTEM_WIDE_DISCUSSION_CHANNEL,
   ARCHIVE_MANUSCRIPT,
   ARCHIVE_MANUSCRIPTS,
+  POPULATE_TASKS,
 } from '../../../queries'
 import configuredColumnNames from './configuredColumnNames'
 import { updateMutation } from '../../component-submit/src/components/SubmitPage'
@@ -85,6 +85,7 @@ const ManuscriptsPage = ({ history }) => {
   })
 
   const [importManuscripts] = useMutation(IMPORT_MANUSCRIPTS)
+  const [populateTemplatedTasksForManuscript] = useMutation(POPULATE_TASKS)
 
   const importManuscriptsAndRefetch = () => {
     setIsImporting(true)
@@ -132,18 +133,6 @@ const ManuscriptsPage = ({ history }) => {
     deleteManuscriptMutation({ variables: { id } })
   }
 
-  const [deleteManuscripts] = useMutation(DELETE_MANUSCRIPTS, {
-    // eslint-disable-next-line no-shadow
-    update(cache, { data: { ids } }) {
-      const cacheIds = cache.identify({
-        __typename: 'Manuscript',
-        id: ids,
-      })
-
-      cache.evict({ cacheIds })
-    },
-  })
-
   const setReadyToEvaluateLabels = id => {
     update({
       variables: {
@@ -155,12 +144,8 @@ const ManuscriptsPage = ({ history }) => {
         }),
       },
     })
-  }
-
-  const confrimBulkDelete = selectedNewManuscript => {
-    deleteManuscripts({
-      variables: { ids: selectedNewManuscript }, // TODO These may not be parent IDs. Will this cause issues?
-    })
+    // Tasks are populated when the manuscript is selected.
+    populateTemplatedTasksForManuscript({ variables: { manuscriptId: id } })
   }
 
   const confirmBulkArchive = selectedNewManuscript => {
@@ -190,7 +175,6 @@ const ManuscriptsPage = ({ history }) => {
       chatRoomId={chatRoomId}
       configuredColumnNames={configuredColumnNames}
       confirmBulkArchive={confirmBulkArchive}
-      confrimBulkDelete={confrimBulkDelete}
       deleteManuscriptMutations={deleteManuscriptMutations}
       history={history}
       importManuscripts={importManuscriptsAndRefetch}

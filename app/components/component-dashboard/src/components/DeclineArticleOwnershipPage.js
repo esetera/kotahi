@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { Checkbox, TextArea } from '@pubsweet/ui/dist/atoms'
 import { Button } from '@pubsweet/ui'
 import { useMutation, useQuery } from '@apollo/client'
+import { ADD_EMAIL_TO_BLACKLIST } from '../../../../queries/index'
 import {
   UPDATE_INVITATION_RESPONSE,
   UPDATE_INVITATION_STATUS,
-  ADD_EMAIL_TO_BLACKLIST,
   GET_INVITATION_STATUS,
-} from '../../../../queries/index'
+} from '../../../../queries/invitation'
 import brandConfig from '../../../../brandConfig.json'
 import {
   ButtonWrapper,
@@ -45,6 +45,7 @@ const DeclineArticleOwnershipPage = ({ match }) => {
 
   const [updateInvitationResponse] = useMutation(UPDATE_INVITATION_RESPONSE, {
     onCompleted: blacklistData => {
+      // TODO It would be cleaner and safer to have this logic in the server, rather than allowing the client to initiate these actions.
       if (
         blacklistData.updateInvitationResponse.declinedReason ===
         'DO_NOT_CONTACT'

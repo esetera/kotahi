@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { set, debounce } from 'lodash'
+import { useLocation } from 'react-router-dom'
 import DecisionReviews from './decision/DecisionReviews'
 import AssignEditorsReviewers from './assignEditors/AssignEditorsReviewers'
 import AssignEditor from './assignEditors/AssignEditor'
@@ -18,6 +19,9 @@ import {
 } from '../../../shared'
 import DecisionAndReviews from '../../../component-submit/src/components/DecisionAndReviews'
 import FormTemplate from '../../../component-submit/src/components/FormTemplate'
+import TaskList from '../../../component-task-manager/src/TaskList'
+import KanbanBoard from './KanbanBoard'
+import InviteReviewer from './reviewers/InviteReviewer'
 
 const createBlankSubmissionBasedOnForm = form => {
   const allBlankedFields = {}
@@ -28,12 +32,14 @@ const createBlankSubmissionBasedOnForm = form => {
 
 const DecisionVersion = ({
   allUsers,
+  addReviewer,
   decisionForm,
   form,
-  current,
   currentDecisionData,
   currentUser,
   version,
+  versionNumber,
+  isCurrentVersion,
   parent,
   updateManuscript, // To handle manuscript editing
   onChange, // To handle form editing
@@ -62,8 +68,14 @@ const DecisionVersion = ({
   setSelectedEmail,
   setShouldPublishField,
   isEmailAddressOptedOut,
+  updateSharedStatusForInvitedReviewer,
+  updateTask,
+  updateTasks,
+  teams,
 }) => {
   // Hooks from the old world
+  const location = useLocation()
+
   const addEditor = (manuscript, label, isCurrent, user) => {
     const isThisReadOnly = !isCurrent
 
@@ -103,12 +115,12 @@ const DecisionVersion = ({
   const editorSection = addEditor(
     version,
     'Manuscript text',
-    current,
+    isCurrentVersion,
     currentUser,
   )
 
   const metadataSection = () => {
-    const submissionValues = current
+    const submissionValues = isCurrentVersion
       ? createBlankSubmissionBasedOnForm(form)
       : {}
 
@@ -124,7 +136,7 @@ const DecisionVersion = ({
     return {
       content: (
         <>
-          {!current ? (
+          {!isCurrentVersion ? (
             <ReadonlyFormTemplate
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
               form={form}
@@ -132,7 +144,6 @@ const DecisionVersion = ({
                 ...version,
                 submission: JSON.parse(version.submission),
               }}
-              listManuscriptFiles
               manuscript={version}
               showEditorOnlyFields
               threadedDiscussionProps={threadedDiscussionProps}
@@ -184,48 +195,62 @@ const DecisionVersion = ({
     }
   }
 
-  const decisionSection = () => {
+  const tasksAndNotificationsSection = () => {
     return {
       content: (
         <>
-          {!current && (
-            <SectionContent>
-              <SectionHeader>
-                <Title>Archived version</Title>
-              </SectionHeader>
-              <SectionRow>
-                This is not the current, but an archived read-only version of
-                the manuscript.
-              </SectionRow>
-            </SectionContent>
-          )}
-          {current && (
-            <>
-              {['aperture', 'colab'].includes(process.env.INSTANCE_NAME) && (
-                <EmailNotifications
-                  allUsers={allUsers}
-                  currentUser={currentUser}
-                  externalEmail={externalEmail}
-                  isEmailAddressOptedOut={isEmailAddressOptedOut}
-                  manuscript={version}
-                  selectedEmail={selectedEmail}
-                  sendChannelMessageCb={sendChannelMessageCb}
-                  sendNotifyEmail={sendNotifyEmail}
-                  setExternalEmail={setExternalEmail}
-                  setSelectedEmail={setSelectedEmail}
-                />
-              )}
-              <AssignEditorsReviewers
+          {isCurrentVersion &&
+            ['aperture', 'colab'].includes(process.env.INSTANCE_NAME) && (
+              <EmailNotifications
                 allUsers={allUsers}
-                AssignEditor={AssignEditor}
-                createTeam={createTeam}
-                manuscript={parent}
-                teamLabels={teamLabels}
-                updateTeam={updateTeam}
+                currentUser={currentUser}
+                externalEmail={externalEmail}
+                isEmailAddressOptedOut={isEmailAddressOptedOut}
+                manuscript={version}
+                selectedEmail={selectedEmail}
+                sendChannelMessageCb={sendChannelMessageCb}
+                sendNotifyEmail={sendNotifyEmail}
+                setExternalEmail={setExternalEmail}
+                setSelectedEmail={setSelectedEmail}
               />
-            </>
+            )}
+          <SectionContent>
+            <SectionHeader>
+              <Title>Tasks</Title>
+            </SectionHeader>
+            <SectionRow>
+              <TaskList
+                isReadOnly={!isCurrentVersion}
+                manuscriptId={version.id}
+                tasks={version.tasks}
+                updateTask={updateTask}
+                updateTasks={updateTasks}
+                users={allUsers}
+              />
+            </SectionRow>
+          </SectionContent>
+        </>
+      ),
+      key: `tasks_${version.id}`,
+      label: 'Tasks & Notifications',
+    }
+  }
+
+  const teamSection = () => {
+    return {
+      content: (
+        <>
+          {isCurrentVersion && (
+            <AssignEditorsReviewers
+              allUsers={allUsers}
+              AssignEditor={AssignEditor}
+              createTeam={createTeam}
+              manuscript={parent}
+              teamLabels={teamLabels}
+              updateTeam={updateTeam}
+            />
           )}
-          {!current && (
+          {!isCurrentVersion && (
             <SectionContent>
               <SectionHeader>
                 <Title>Assigned editors</Title>
@@ -250,7 +275,39 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          {!current && (
+          <KanbanBoard version={version} versionNumber={versionNumber} />
+          {isCurrentVersion && (
+            <AdminSection>
+              <InviteReviewer
+                addReviewer={addReviewer}
+                manuscript={version}
+                reviewerUsers={allUsers}
+              />
+            </AdminSection>
+          )}
+        </>
+      ),
+      key: `team_${version.id}`,
+      label: 'Team',
+    }
+  }
+
+  const decisionSection = () => {
+    return {
+      content: (
+        <>
+          {!isCurrentVersion && (
+            <SectionContent>
+              <SectionHeader>
+                <Title>Archived version</Title>
+              </SectionHeader>
+              <SectionRow>
+                This is not the current, but an archived read-only version of
+                the manuscript.
+              </SectionRow>
+            </SectionContent>
+          )}
+          {!isCurrentVersion && (
             <DecisionAndReviews
               decisionForm={decisionForm}
               isControlPage
@@ -260,21 +317,19 @@ const DecisionVersion = ({
               threadedDiscussionProps={threadedDiscussionProps}
             />
           )}
-          {current && (
-            <AdminSection key="decision-review">
-              <DecisionReviews
-                canHideReviews={canHideReviews}
-                invitations={invitations}
-                manuscript={version}
-                reviewers={reviewers}
-                reviewForm={reviewForm}
-                threadedDiscussionProps={threadedDiscussionProps}
-                updateReview={updateReview}
-                urlFrag={urlFrag}
-              />
-            </AdminSection>
+          {isCurrentVersion && (
+            <DecisionReviews
+              canHideReviews={canHideReviews}
+              invitations={invitations}
+              manuscript={version}
+              reviewers={reviewers}
+              reviewForm={reviewForm}
+              threadedDiscussionProps={threadedDiscussionProps}
+              updateReview={updateReview}
+              urlFrag={urlFrag}
+            />
           )}
-          {current && (
+          {isCurrentVersion && (
             <AdminSection key="decision-form">
               <SectionContent>
                 <FormTemplate
@@ -289,7 +344,7 @@ const DecisionVersion = ({
                   initialValues={
                     currentDecisionData?.jsonData
                       ? JSON.parse(currentDecisionData?.jsonData)
-                      : { comment: '', verdict: '', discussion: '' }
+                      : { comment: '', verdict: '', discussion: '' } // TODO this should just be {}, but needs testing.
                   }
                   isSubmission={false}
                   manuscriptId={version.id}
@@ -328,7 +383,7 @@ const DecisionVersion = ({
               </SectionContent>
             </AdminSection>
           )}
-          {current && (
+          {isCurrentVersion && (
             <AdminSection>
               <Publish
                 manuscript={version}
@@ -338,20 +393,32 @@ const DecisionVersion = ({
           )}
         </>
       ),
-      key: version.id,
-      label: 'Workflow',
+      key: `decision_${version.id}`,
+      label: 'Decision',
     }
   }
 
+  const locationState =
+    location.state !== undefined && location.state.tab === 'Decision'
+      ? `decision_${version.id}`
+      : `team_${version.id}`
+
   return (
     <HiddenTabs
-      defaultActiveKey={version.id}
-      sections={[decisionSection(), editorSection, metadataSection()]}
+      defaultActiveKey={locationState}
+      sections={[
+        teamSection(),
+        decisionSection(),
+        editorSection,
+        metadataSection(),
+        tasksAndNotificationsSection(),
+      ]}
     />
   )
 }
 
 DecisionVersion.propTypes = {
+  addReviewer: PropTypes.func.isRequired,
   updateManuscript: PropTypes.func.isRequired,
   form: PropTypes.shape({
     children: PropTypes.arrayOf(
@@ -364,17 +431,10 @@ DecisionVersion.propTypes = {
     ).isRequired,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  current: PropTypes.bool.isRequired,
+  isCurrentVersion: PropTypes.bool.isRequired,
   version: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    meta: PropTypes.shape({
-      notes: PropTypes.arrayOf(
-        PropTypes.shape({
-          notesType: PropTypes.string.isRequired,
-          content: PropTypes.string.isRequired,
-        }).isRequired,
-      ).isRequired,
-    }).isRequired,
+    meta: PropTypes.shape({}).isRequired,
     files: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
@@ -397,6 +457,7 @@ DecisionVersion.propTypes = {
       }).isRequired,
     ).isRequired,
   }).isRequired,
+  versionNumber: PropTypes.number.isRequired,
   parent: PropTypes.shape({
     id: PropTypes.string.isRequired,
     teams: PropTypes.arrayOf(
@@ -407,7 +468,7 @@ DecisionVersion.propTypes = {
             user: PropTypes.shape({
               id: PropTypes.string.isRequired,
               defaultIdentity: PropTypes.shape({
-                name: PropTypes.string,
+                name: PropTypes.string.isRequired,
               }),
             }),
           }).isRequired,

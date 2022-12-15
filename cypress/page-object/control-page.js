@@ -21,14 +21,17 @@ const ASSIGN_SENIOR_EDITOR_DROPDOWN = 'Assign seniorEditor'
 const ASSIGN_HANDLING_EDITOR_DROPDOWN = 'Assign handlingEditor'
 const ASSIGN_EDITOR_DROPDOWN = 'Assign editor'
 
-// Reviews
-const MANAGE_REVIEWERS_BUTTON = '[class*=General__SectionRow] > a'
-const DECISION_FIELD = '[contenteditable="true"]'
+// Reviews + Invitations
+const INVITE_REVIEWER_DROPDOWN = 'Invite reviewers'
+const INVITE_REVIEWER_OPTION_LIST = 'react-select'
+const INVITE_REVIEWER_SUBMIT_BUTTON = 'button[type="submit"]'
+// TODO: Add invited reviewers here after kanban is done
 
-// Publishing
+// Decision + Publishing
 const PUBLISH_BUTTON =
   '[class*=General__SectionAction-sc-1chiust-11] > .sc-bkzZxe'
 const PUBLISH_INFO_MESSAGE = 'General__SectionActionInfo-sc-1chiust-12'
+const DECISION_FIELD = '[contenteditable="true"]'
 
 // Review
 const REVIEW_MESSAGE =
@@ -57,9 +60,9 @@ const SHOW_BUTTON = '[class*=DecisionReview__Controls]>[type*=button]'
 const DECISION_TEXT_INPUT =
   ':nth-child(1) > :nth-child(2) > :nth-child(1) > :nth-child(1) > .EditorStyles__SimpleGrid-k4rcxo-9 > .EditorStyles__SimpleEditorDiv-k4rcxo-11'
 
-const ACCEPT_RADIO_BUTTON = '.cLexBK > .sc-dmlrTW'
-const REVISE_RADIO_BUTTON = '.cABLOw > .sc-dmlrTW'
-const REJECT_RADIO_BUTTON = '.hgPkBe > .sc-dmlrTW'
+const ACCEPT_RADIO_BUTTON = '.fgnKvm > .sc-dmlrTW'
+const REVISE_RADIO_BUTTON = '.izJvPI > .sc-dmlrTW'
+const REJECT_RADIO_BUTTON = '.dPWuRK > .sc-dmlrTW'
 const DECISION_SUBMIT_BUTTON = 'decision-action-btn'
 const DECISION_FILE_INPUT = 'input[type=file]'
 
@@ -67,11 +70,42 @@ const CHECK_SVG = 'check-svg'
 
 // eslint-disable-next-line import/prefer-default-export
 export const ControlPage = {
-  getManageReviewersButton() {
-    return cy.get(MANAGE_REVIEWERS_BUTTON)
+  getInviteReviewerDropdown() {
+    return cy.getByContainsAriaLabel(INVITE_REVIEWER_DROPDOWN)
   },
-  clickManageReviewers() {
-    this.getManageReviewersButton().click()
+  clickInviteReviewerDropdown() {
+    this.getInviteReviewerDropdown().click({ force: true })
+  },
+  inviteReviewer(name) {
+    this.clickInviteReviewerDropdown()
+    this.selectReviewerNamed(name)
+    this.clickInviteReviewerSubmit()
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000)
+  },
+  getInviteReviewerOptionList() {
+    return cy.getByContainsId(INVITE_REVIEWER_OPTION_LIST)
+  },
+  getInviteReviewerSubmitButton() {
+    return cy.get(INVITE_REVIEWER_SUBMIT_BUTTON)
+  },
+  clickInviteReviewerSubmit() {
+    this.getInviteReviewerSubmitButton().click()
+  },
+  selectReviewerNamed(uuid) {
+    this.getInviteReviewerOptionList().contains(uuid).click()
+  },
+  getInvitedReviewersList() {
+    // TODO: Fix this by reading kanban invited column
+    return {
+      its() {
+        return 0
+      },
+    }
+    // return cy.get(INVITED_REVIEWERS)
+  },
+  getNumberOfInvitedReviewers() {
+    return this.getInvitedReviewersList().its('length')
   },
   getDecisionField(nth) {
     return cy.get(DECISION_FIELD).eq(nth)
@@ -173,6 +207,13 @@ export const ControlPage = {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000)
   },
+  getSharedCheckbox() {
+    // TODO: get shared checkbox in the invite reviewer modal
+    return null
+  },
+  clickSharedCheckbox() {
+    return this.getSharedCheckbox().click()
+  },
   getReviewerName() {
     return cy.get(REVIEWER_NAME)
   },
@@ -263,6 +304,7 @@ export const ControlPage = {
   },
   getDecisionFileInput() {
     return cy.get(DECISION_FILE_INPUT)
+    // eslint-disable-next-line cypress/no-unnecessary-waiting, no-unreachable
     cy.wait(3000)
   },
   getSubmitDecisionButton() {
@@ -276,6 +318,7 @@ export const ControlPage = {
   },
   checkSvgExists() {
     this.getCheckSvg().should('exist')
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000)
   },
 }

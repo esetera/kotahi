@@ -1,4 +1,24 @@
+import moment from 'moment-timezone'
+
 const tzOffset = new Date().getTimezoneOffset()
+
+/** Turn e.g. midday in the supplied timezone into midday in local timezone */
+export const transposeFromTimezoneToLocal = (date, timezone) => {
+  const timestamp = new Date(date).getTime()
+  const localOffsetMinutes = new Date().getTimezoneOffset()
+  const tzOffsetMinutes = moment.tz.zone(timezone).utcOffset(timestamp)
+  const totalOffsetMilliseconds = (localOffsetMinutes - tzOffsetMinutes) * 60000
+  return new Date(timestamp + totalOffsetMilliseconds)
+}
+
+/** Turn e.g. midday in local timezone into midday in the supplied timezone */
+export const transposeFromLocalToTimezone = (date, timezone) => {
+  const timestamp = new Date(date).getTime()
+  const localOffsetMinutes = new Date().getTimezoneOffset()
+  const tzOffsetMinutes = moment.tz.zone(timezone).utcOffset(timestamp)
+  const totalOffsetMilliseconds = (localOffsetMinutes - tzOffsetMinutes) * 60000
+  return new Date(timestamp - totalOffsetMilliseconds)
+}
 
 /** Format date as yyyy-MM-dd (using timezone if supplied, otherwise UTC) */
 export const dateToIso8601 = (date, timezoneOffsetMinutes) => {
@@ -134,4 +154,33 @@ export const convertTimestampToDateString = timestamp => {
   const cleanHours = ((hours + 11) % 12) + 1
 
   return `${month} ${pad(day)}, ${year} ${cleanHours}:${pad(minutes)}${ampm}`
+}
+
+export const convertTimestampToDateWithoutTimeString = timestamp => {
+  const date = new Date(timestamp)
+  const day = date.getDate()
+  const month = monthAbbrevs[date.getMonth()]
+  const year = date.getFullYear()
+
+  return `${month} ${pad(day)}, ${year}`
+}
+
+export const convertTimestampToRelativeDateString = timestamp => {
+  const updatedTime = new Date(timestamp)
+  const currTime = new Date()
+  const diff = Math.round((currTime - updatedTime) / (1000 * 3600 * 24))
+
+  if (diff === 0) {
+    return 'today'
+  }
+
+  if (diff === 1) {
+    return 'yesterday'
+  }
+
+  if (diff <= 7) {
+    return `${diff} days ago`
+  }
+
+  return convertTimestampToDateWithoutTimeString(timestamp)
 }

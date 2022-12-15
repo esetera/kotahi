@@ -5,10 +5,8 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Checkbox } from '@pubsweet/ui'
 import { grid } from '@pubsweet/ui-toolkit'
-import ManuscriptRow from './ManuscriptRow'
+import { useLocation } from 'react-router-dom'
 import {
-  ManuscriptsTable,
-  ManuscriptsHeaderRow,
   SelectAllField,
   SelectedManuscriptsNumber,
   ControlsContainer,
@@ -38,6 +36,8 @@ import {
   URI_PAGENUM_PARAM,
   URI_SORT_PARAM,
 } from '../../../shared/urlParamUtils'
+import ManuscriptsTable from '../../component-manuscripts-table/src/ManuscriptsTable'
+import buildColumnDefinitions from '../../component-manuscripts-table/src/util/buildColumnDefinitions'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;
@@ -87,6 +87,7 @@ const Manuscripts = ({ history, ...props }) => {
   const [isAdminChatOpen, setIsAdminChatOpen] = useState(true)
 
   const params = new URLSearchParams(history.location.search)
+  const { pathname, search } = useLocation()
 
   const toggleNewManuscriptCheck = id => {
     setSelectedNewManuscripts(s => {
@@ -226,21 +227,38 @@ const Manuscripts = ({ history, ...props }) => {
 
   const currentSearchQuery = params.get(URI_SEARCH_PARAM)
 
-  const columnsProps = getColumnsProps(
-    configuredColumnNames,
-    fieldDefinitions,
-    params,
-    sortName,
-    sortDirection,
+  // Props for instantiating special components
+  const specialComponentValues = {
     deleteManuscript,
+    archiveManuscript,
     isManuscriptBlockedFromPublishing,
     tryPublishManuscript,
     selectedNewManuscripts,
     toggleNewManuscriptCheck,
     setReadyToEvaluateLabel,
     urlFrag,
+  }
+
+  // Props for filtering / sorting
+  const displayProps = {
+    uriQueryParams,
+    sortName,
+    sortDirection,
     currentSearchQuery,
-    archiveManuscript,
+  }
+
+  // TODO: refactor to .env config
+  const adjustedColumnNames = [...configuredColumnNames]
+  adjustedColumnNames.push('actions')
+  if (['ncrc', 'colab'].includes(process.env.INSTANCE_NAME))
+    adjustedColumnNames.splice(0, 0, 'newItemCheckbox')
+
+  // Source of truth for columns
+  const columnsProps = buildColumnDefinitions(
+    adjustedColumnNames,
+    fieldDefinitions,
+    specialComponentValues,
+    displayProps,
   )
 
   const channels = [
@@ -346,48 +364,15 @@ const Manuscripts = ({ history, ...props }) => {
 
           <div>
             <ScrollableContent>
-              <ManuscriptsTable>
-                <ManuscriptsHeaderRow>
-                  {columnsProps.map(info => (
-                    <FilterSortHeader
-                      columnInfo={info}
-                      key={info.name}
-                      setFilter={(name, value) =>
-                        applyQueryParams({
-                          [name]: value,
-                          [URI_PAGENUM_PARAM]: 1,
-                        })
-                      }
-                      setSort={(name, direction) =>
-                        applyQueryParams({
-                          [URI_SORT_PARAM]: `${name}_${direction}`,
-                          [URI_PAGENUM_PARAM]: 1,
-                        })
-                      }
-                      sortDirection={sortDirection}
-                      sortName={sortName}
-                    />
-                  ))}
-                </ManuscriptsHeaderRow>
-                {manuscripts.map((manuscript, key) => {
-                  const latestVersion =
-                    manuscript.manuscriptVersions?.[0] || manuscript
-
-                  return (
-                    <ManuscriptRow
-                      columnDefinitions={columnsProps}
-                      key={latestVersion.id}
-                      manuscript={latestVersion}
-                      setFilter={(name, value) =>
-                        applyQueryParams({
-                          [name]: value,
-                          [URI_PAGENUM_PARAM]: 1,
-                        })
-                      }
-                    />
-                  )
-                })}
-              </ManuscriptsTable>
+              <ManuscriptsTable
+                columnsProps={columnsProps}
+                manuscripts={manuscripts}
+                setFilter={setFilter}
+                setSortDirection={setSortDirection}
+                setSortName={setSortName}
+                sortDirection={sortDirection}
+                sortName={sortName}
+              />
             </ScrollableContent>
             <Pagination
               limit={limit}

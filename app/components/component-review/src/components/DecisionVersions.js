@@ -14,6 +14,7 @@ import MessageContainer from '../../../component-chat/src/MessageContainer'
 
 const DecisionVersions = ({
   allUsers,
+  addReviewer,
   currentUser,
   decisionForm,
   form,
@@ -45,6 +46,10 @@ const DecisionVersions = ({
   setSelectedEmail,
   setShouldPublishField,
   isEmailAddressOptedOut,
+  updateSharedStatusForInvitedReviewer,
+  updateTask,
+  updateTasks,
+  teams,
 }) => {
   const [initialValue, setInitialValue] = useState(null)
 
@@ -80,11 +85,11 @@ const DecisionVersions = ({
           <VersionSwitcher>
             {versions.map((version, index) => (
               <DecisionVersion
+                addReviewer={addReviewer}
                 allUsers={allUsers}
                 canHideReviews={canHideReviews}
                 createFile={createFile}
                 createTeam={createTeam}
-                current={index === 0}
                 currentDecisionData={initialValue}
                 currentUser={currentUser}
                 decisionForm={decisionForm}
@@ -93,6 +98,7 @@ const DecisionVersions = ({
                 externalEmail={externalEmail}
                 form={form}
                 invitations={invitations}
+                isCurrentVersion={index === 0}
                 isEmailAddressOptedOut={isEmailAddressOptedOut}
                 key={version.manuscript.id}
                 makeDecision={makeDecision}
@@ -108,6 +114,7 @@ const DecisionVersions = ({
                 setSelectedEmail={setSelectedEmail}
                 setShouldPublishField={setShouldPublishField}
                 teamLabels={teamLabels}
+                teams={teams}
                 threadedDiscussionProps={threadedDiscussionProps}
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}
@@ -119,10 +126,16 @@ const DecisionVersions = ({
                     version.manuscript.id,
                   )
                 }
+                updateSharedStatusForInvitedReviewer={
+                  updateSharedStatusForInvitedReviewer
+                }
+                updateTask={index === 0 ? updateTask : null}
+                updateTasks={index === 0 ? updateTasks : null}
                 updateTeam={updateTeam}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}
                 version={version.manuscript}
+                versionNumber={versions.length - index}
               />
             ))}
           </VersionSwitcher>

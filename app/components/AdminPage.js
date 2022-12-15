@@ -1,53 +1,49 @@
-import React, { useContext, useCallback, useRef } from 'react'
+import { useQuery } from '@apollo/client'
 import { throttle } from 'lodash'
-import styled from 'styled-components'
-import { useQuery, gql } from '@apollo/client'
+import PropTypes from 'prop-types'
+import React, { useCallback, useContext, useRef } from 'react'
+import Modal from 'react-modal'
 import {
-  useHistory,
   matchPath,
+  Redirect,
   Route,
   Switch,
-  Redirect,
+  useHistory,
 } from 'react-router-dom'
-import PropTypes from 'prop-types'
-import Modal from 'react-modal'
+import styled from 'styled-components'
+import { ConfigProvider } from './config/src'
 import { JournalContext } from './xpub-journal/src'
 import { XpubContext } from './xpub-with-context/src'
 
-import UsersManager from './component-users-manager/src/UsersManager'
-import ManuscriptsPage from './component-manuscripts/src/ManuscriptsPage'
-import DashboardPage from './component-dashboard/src/components/DashboardPage'
-import SubmitPage from './component-submit/src/components/SubmitPage'
+import FormBuilderPage from './component-formbuilder/src/components/FormBuilderPage'
 import ManuscriptPage from './component-manuscript/src/components/ManuscriptPage'
-import ReviewersPage from './component-review/src/components/ReviewersPage'
+import ManuscriptsPage from './component-manuscripts/src/ManuscriptsPage'
+import ProductionPage from './component-production/src/components/ProductionPage'
+import { Profile } from './component-profile/src'
+import ReportPage from './component-reporting/src/ReportPage'
+import DecisionPage from './component-review/src/components/DecisionPage'
 import ReviewPage from './component-review/src/components/ReviewPage'
 import ReviewPreviewPage from './component-review/src/components/ReviewPreviewPage'
-import DecisionPage from './component-review/src/components/DecisionPage'
-import FormBuilderPage from './component-formbuilder/src/components/FormBuilderPage'
 import NewSubmissionPage from './component-submit/src/components/NewSubmissionPage'
-import ReportPage from './component-reporting/src/ReportPage'
-import { Profile } from './component-profile/src'
-import ProductionPage from './component-production/src/components/ProductionPage'
+import SubmitPage from './component-submit/src/components/SubmitPage'
+import TasksTemplatePage from './component-task-manager/src/TasksTemplatePage'
+import UsersManager from './component-users-manager/src/UsersManager'
 
-import { GET_CURRENT_USER } from '../queries'
+import QUERY from './adminPageQueries'
 
 import Menu from './Menu'
 import { Spinner } from './shared'
 
 import currentRolesVar from '../shared/currentRolesVar'
+import DashboardEditsPage from './component-dashboard/src/components/DashboardEditsPage'
+import DashboardLayout from './component-dashboard/src/components/DashboardLayout'
+import DashboardReviewsPage from './component-dashboard/src/components/DashboardReviewsPage'
+import DashboardSubmissionsPage from './component-dashboard/src/components/DashboardSubmissionsPage'
 import RolesUpdater from './RolesUpdater'
 
 const getParams = ({ routerPath, path }) => {
   return matchPath(routerPath, path).params
 }
-
-const CSS_QUERY = gql`
-  query getCSSQuery {
-    builtCss {
-      css
-    }
-  }
-`
 
 const Root = styled.div`
   display: grid;
@@ -112,29 +108,22 @@ const AdminPage = () => {
   const journal = useContext(JournalContext)
   const [conversion] = useContext(XpubContext)
 
-  const { loading, error, data, refetch } = useQuery(GET_CURRENT_USER, {
+  const { loading, error, data, refetch } = useQuery(QUERY, {
     fetchPolicy: 'network-only',
     // TODO: useCallback used because of bug: https://github.com/apollographql/apollo-client/issues/6301
     onCompleted: useCallback(dataTemp => updateStuff(dataTemp), []),
   })
 
-  const { loading: loading2, error: error2, data: data2 } = useQuery(
-    CSS_QUERY,
-    {
-      fetchPolicy: 'network-only',
-    },
-  )
-
   const previousDataRef = useRef(null)
 
   // Do this to prevent polling-related flicker
-  if (loading && loading2 && !previousDataRef.current) {
+  if (loading && !previousDataRef.current) {
     return <Spinner />
   }
 
   let notice = ''
 
-  if (error || error2) {
+  if (error) {
     if (error.networkError) {
       notice = 'You are offline.'
     } else {
@@ -143,9 +132,10 @@ const AdminPage = () => {
     }
   }
 
-  const currentUser = data && data.currentUser
-
-  journal.textStyles = data2 && data2.builtCss.css
+  const currentUser = data?.currentUser
+  journal.textStyles = data?.builtCss.css
+  const hasAlert = data?.userHasTaskAlerts
+  const config = JSON.parse(data?.config || '{}')
 
   previousDataRef.current = data
 
@@ -157,10 +147,14 @@ const AdminPage = () => {
   const reviewFormBuilderLink = `${urlFrag}/admin/review-form-builder`
   const decisionFormBuilderLink = `${urlFrag}/admin/decision-form-builder`
   const homeLink = `${urlFrag}/dashboard`
+  const dashboardSubmissionsLink = `${urlFrag}/dashboard/submissions`
+  const dashboardReviewsLink = `${urlFrag}/dashboard/reviews`
+  const dashboardEditsLink = `${urlFrag}/dashboard/edits`
   const profileLink = `${urlFrag}/profile`
   const manuscriptsLink = `${urlFrag}/admin/manuscripts`
   const reportsLink = `${urlFrag}/admin/reports`
   const userAdminLink = `${urlFrag}/admin/users`
+  const tasksTemplateLink = `${urlFrag}/admin/tasks`
   const loginLink = `/login?next=${homeLink}`
   const path = `${urlFrag}/versions/:version`
   const redirectLink = `/login?next=${homeLink}`
@@ -183,10 +177,10 @@ const AdminPage = () => {
     currentUser &&
     ['aperture', 'colab', 'ncrc'].includes(process.env.INSTANCE_NAME)
   ) {
-    links.push({ link: homeLink, name: 'Dashboard', icon: 'home' })
+    links.push({ link: homeLink, name: 'Dashboard', icon: 'home', hasAlert })
   }
 
-  if (currentUser && currentUser.admin) {
+  if (currentUser?.admin) {
     links.push({
       link: manuscriptsLink,
       name: 'Manuscripts',
@@ -196,7 +190,7 @@ const AdminPage = () => {
       links.push({ link: reportsLink, name: 'Reports', icon: 'activity' })
   }
 
-  if (currentUser && currentUser.admin) {
+  if (currentUser?.admin) {
     links.push({
       menu: 'Settings',
       name: 'Settings',
@@ -212,11 +206,28 @@ const AdminPage = () => {
             { link: decisionFormBuilderLink, name: 'Decision' },
           ],
         },
-        { link: '', name: 'Tasks', icon: 'list' },
+        { link: tasksTemplateLink, name: 'Tasks', icon: 'list' },
         { link: userAdminLink, name: 'Users', icon: 'users' },
       ],
     })
   }
+
+  const invitationId = window.localStorage.getItem('invitationId')
+    ? window.localStorage.getItem('invitationId')
+    : ''
+
+  const dashboardRedirect = () =>
+    invitationId ? (
+      <Redirect to="/invitation/accepted" />
+    ) : (
+      <Redirect
+        to={
+          currentUser.recentTab
+            ? `${urlFrag}/dashboard/${currentUser.recentTab}`
+            : dashboardSubmissionsLink
+        }
+      />
+    )
 
   // Throttled refetch query `currentUser` once every 2mins
   const throttledRefetch = throttle(refetch, 120000, { trailing: false })
@@ -232,92 +243,160 @@ const AdminPage = () => {
       onClickCapture={handleEvent}
       onKeyDownCapture={handleEvent}
     >
-      <Menu
-        brand={journal.metadata.name}
-        brandLink={homeLink}
-        className=""
-        loginLink={loginLink}
-        navLinkComponents={links}
-        notice={notice}
-        profileLink={profileLink}
-        user={currentUser}
-      />
-      <Switch>
-        <PrivateRoute
-          component={Profile}
-          exact
-          path={profileLink}
-          redirectLink={redirectLink}
+      <ConfigProvider config={config}>
+        <Menu
+          brand={journal.metadata.name}
+          brandLink={homeLink}
+          className=""
+          loginLink={loginLink}
+          navLinkComponents={links}
+          notice={notice}
+          profileLink={profileLink}
+          user={currentUser}
         />
-        <PrivateRoute
-          component={Profile}
-          currentUser={currentUser}
-          exact
-          key="view-profile"
-          path={`${urlFrag}/profile/:id`}
-          redirectLink={redirectLink}
-        />
-        <PrivateRoute
-          component={DashboardPage}
-          currentUser={currentUser}
-          exact
-          path={homeLink}
-          redirectLink={redirectLink}
-        />
-
-        <PrivateRoute
-          component={NewSubmissionPage}
-          currentUser={currentUser}
-          exact
-          path={`${urlFrag}/newSubmission`}
-          redirectLink={redirectLink}
-        />
-        <PrivateRoute
-          component={SubmitPage}
-          currentUser={currentUser}
-          exact
-          path={`${urlFrag}/versions/:version/submit`}
-          redirectLink={redirectLink}
-        />
-        <PrivateRoute
-          component={ReviewersPage}
-          currentUser={currentUser}
-          exact
-          path={`${urlFrag}/versions/:version/reviewers`}
-          redirectLink={redirectLink}
-        />
-        <PrivateRoute
-          component={ReviewPage}
-          currentUser={currentUser}
-          exact
-          path={`${urlFrag}/versions/:version/review`}
-          redirectLink={redirectLink}
-        />
-        <PrivateRoute
-          component={ReviewPreviewPage}
-          currentUser={currentUser}
-          exact
-          path={`${urlFrag}/versions/:version/reviewPreview`}
-          redirectLink={redirectLink}
-        />
-        <PrivateRoute
-          component={DecisionPage}
-          currentUser={currentUser}
-          exact
-          path={`${urlFrag}/versions/:version/decision`}
-          redirectLink={redirectLink}
-        />
-
-        {['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) && (
+        <Switch>
           <PrivateRoute
-            component={SubmitPage}
+            component={Profile}
             exact
-            path={`${urlFrag}/versions/:version/evaluation`}
+            path={profileLink}
             redirectLink={redirectLink}
           />
-        )}
-        {currentUser &&
-          currentUser.admin && [
+          <PrivateRoute
+            component={Profile}
+            currentUser={currentUser}
+            exact
+            key="view-profile"
+            path={`${urlFrag}/profile/:id`}
+            redirectLink={redirectLink}
+          />
+          <Route exact path={`${urlFrag}/dashboard/:path?`}>
+            <DashboardLayout urlFrag={urlFrag}>
+              <Switch>
+                <PrivateRoute
+                  component={dashboardRedirect}
+                  currentUser={currentUser}
+                  exact
+                  path={homeLink}
+                  redirectLink={redirectLink}
+                />
+                <PrivateRoute
+                  component={DashboardSubmissionsPage}
+                  currentUser={currentUser}
+                  exact
+                  path={dashboardSubmissionsLink}
+                  redirectLink={redirectLink}
+                />
+                <PrivateRoute
+                  component={DashboardReviewsPage}
+                  currentUser={currentUser}
+                  exact
+                  path={dashboardReviewsLink}
+                  redirectLink={redirectLink}
+                />
+                <PrivateRoute
+                  component={DashboardEditsPage}
+                  currentUser={currentUser}
+                  exact
+                  path={dashboardEditsLink}
+                  redirectLink={redirectLink}
+                />
+              </Switch>
+            </DashboardLayout>
+          </Route>
+          <PrivateRoute
+            component={NewSubmissionPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/newSubmission`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={SubmitPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/versions/:version/submit`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={ReviewPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/versions/:version/review`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={ReviewPreviewPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/versions/:version/reviewPreview`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={DecisionPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/versions/:version/decision`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={Profile}
+            exact
+            path={profileLink}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={Profile}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/profile/:id`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={NewSubmissionPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/newSubmission`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={SubmitPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/versions/:version/submit`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={ReviewPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/versions/:version/review`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={ReviewPreviewPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/versions/:version/reviewPreview`}
+            redirectLink={redirectLink}
+          />
+          <PrivateRoute
+            component={DecisionPage}
+            currentUser={currentUser}
+            exact
+            path={`${urlFrag}/versions/:version/decision`}
+            redirectLink={redirectLink}
+          />
+
+          {['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) && (
+            <PrivateRoute
+              component={SubmitPage}
+              exact
+              path={`${urlFrag}/versions/:version/evaluation`}
+              redirectLink={redirectLink}
+            />
+          )}
+          {currentUser?.admin && [
+            // We use array instead of <></> because of https://stackoverflow.com/a/68637108/6505513
             <PrivateRoute
               component={FormBuilderPage}
               currentUser={currentUser}
@@ -389,9 +468,16 @@ const AdminPage = () => {
               path={`${urlFrag}/versions/:version/production`}
               redirectLink={redirectLink}
             />,
+            <PrivateRoute
+              component={TasksTemplatePage}
+              key="tasks"
+              path={`${urlFrag}/admin/tasks`}
+              redirectLink={redirectLink}
+            />,
           ]}
-      </Switch>
-      <RolesUpdater />
+        </Switch>
+        <RolesUpdater />
+      </ConfigProvider>
     </Root>
   )
 }

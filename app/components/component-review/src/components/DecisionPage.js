@@ -14,15 +14,22 @@ import {
   updateReviewMutation,
   publishManuscriptMutation,
   setShouldPublishFieldMutation,
+  addReviewerMutation,
 } from './queries'
 
 import {
   CREATE_MESSAGE,
+  GET_BLACKLIST_INFORMATION,
+  UPDATE_SHARED_STATUS_FOR_INVITED_REVIEWER_MUTATION,
+  UPDATE_TASK,
+  UPDATE_TASKS,
+} from '../../../../queries'
+import { GET_INVITATIONS_FOR_MANUSCRIPT } from '../../../../queries/invitation'
+import {
   CREATE_TEAM_MUTATION,
   UPDATE_TEAM_MUTATION,
-  GET_INVITATIONS_FOR_MANUSCRIPT,
-  GET_BLACKLIST_INFORMATION,
-} from '../../../../queries'
+  UPDATE_MEMBER_STATUS_MUTATION,
+} from '../../../../queries/team'
 import { validateDoi } from '../../../../shared/commsUtils'
 import {
   UPDATE_PENDING_COMMENT,
@@ -97,7 +104,6 @@ const DecisionPage = ({ match }) => {
     variables: {
       id: match.params.version,
     },
-    fetchPolicy: 'cache-and-network',
   })
 
   const [selectedEmail, setSelectedEmail] = useState('')
@@ -111,7 +117,7 @@ const DecisionPage = ({ match }) => {
     },
   })
 
-  const [update] = useMutation(updateManuscriptMutation)
+  const [update] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
   const [sendEmailMutation] = useMutation(sendEmail)
   const [sendChannelMessage] = useMutation(CREATE_MESSAGE)
   const [makeDecision] = useMutation(makeDecisionMutation)
@@ -125,6 +131,76 @@ const DecisionPage = ({ match }) => {
   const [completeComment] = useMutation(COMPLETE_COMMENT)
   const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
   const [setShouldPublishField] = useMutation(setShouldPublishFieldMutation)
+
+  const [updateSharedStatusForInvitedReviewer] = useMutation(
+    UPDATE_SHARED_STATUS_FOR_INVITED_REVIEWER_MUTATION,
+  )
+
+  const [addReviewer] = useMutation(addReviewerMutation, {
+    update: (cache, { data: { addReviewer: revisedReviewersObject } }) => {
+      cache.modify({
+        id: cache.identify({
+          __typename: 'Manuscript',
+          id: revisedReviewersObject.objectId,
+        }),
+        fields: {
+          teams(existingTeamRefs = []) {
+            const newTeamRef = cache.writeFragment({
+              data: revisedReviewersObject,
+              fragment: gql`
+                fragment NewTeam on Team {
+                  id
+                  role
+                  members {
+                    id
+                    user {
+                      id
+                    }
+                  }
+                }
+              `,
+            })
+
+            return [...existingTeamRefs, newTeamRef]
+          },
+        },
+      })
+    },
+  })
+
+  const [updateTask] = useMutation(UPDATE_TASK, {
+    update(cache, { data: { updateTask: updatedTask } }) {
+      cache.modify({
+        id: cache.identify({
+          __typename: 'Manuscript',
+          id: updatedTask.manuscriptId,
+        }),
+        fields: {
+          tasks(existingTaskRefs) {
+            return existingTaskRefs.includes(updatedTask.id)
+              ? existingTaskRefs
+              : [...existingTaskRefs, updatedTask.id]
+          },
+        },
+      })
+    },
+  })
+
+  const [updateTasks] = useMutation(UPDATE_TASKS, {
+    update(cache, { data: { updateTasks: updatedTasks } }) {
+      cache.modify({
+        id: cache.identify({
+          __typename: 'Manuscript',
+          id: updatedTasks.manuscriptId,
+        }),
+        fields: {
+          tasks() {
+            return updatedTasks.tasks.map(t => t.id)
+          },
+        },
+      })
+    },
+  })
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -265,6 +341,7 @@ const DecisionPage = ({ match }) => {
 
   return (
     <DecisionVersions
+      addReviewer={addReviewer}
       allUsers={users}
       canHideReviews={config.review.hide === 'true'}
       createFile={createFile}
@@ -294,10 +371,16 @@ const DecisionPage = ({ match }) => {
       setSelectedEmail={setSelectedEmail}
       setShouldPublishField={setShouldPublishField}
       teamLabels={config.teams}
+      teams={data?.manuscript?.teams}
       threadedDiscussionProps={threadedDiscussionProps}
       updateManuscript={updateManuscript}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
+      updateSharedStatusForInvitedReviewer={
+        updateSharedStatusForInvitedReviewer
+      }
+      updateTask={updateTask}
+      updateTasks={updateTasks}
       updateTeam={updateTeam}
       urlFrag={urlFrag}
       validateDoi={validateDoi(client)}
