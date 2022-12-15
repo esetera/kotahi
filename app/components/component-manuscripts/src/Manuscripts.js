@@ -236,7 +236,7 @@ const Manuscripts = ({ history, ...props }) => {
   // Props for filtering / sorting
   const displayProps = {
     uriQueryParams,
-    sortName,
+    columnToSortOn: sortName,
     sortDirection,
     currentSearchQuery,
   }
