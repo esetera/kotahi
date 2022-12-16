@@ -12,7 +12,7 @@ const HEADER = 'General__Heading'
 const SECTION_TITLE = 'General__Title'
 const SECTION_PLACEHOLDER = 'style__Placeholder'
 const SUBMISSION_TITLE = 'VersionTitle'
-const SUBMISSION_BUTTON = '＋ New submission'
+const SUBMISSION_BUTTON = '+ New submission'
 const SUBMISSION_FILE_UPLOAD_INPUT = 'input[type=file]'
 
 /* My Submissions */
