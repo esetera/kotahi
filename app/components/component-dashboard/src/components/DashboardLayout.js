@@ -30,15 +30,15 @@ const DashboardLayout = ({
   const dashboardPages = [
     {
       href: '/dashboard/submissions',
-      label: 'Submissions',
+      label: 'My Submissions',
     },
     {
       href: '/dashboard/reviews',
-      label: 'Reviews',
+      label: 'To Review',
     },
     {
       href: '/dashboard/edits',
-      label: 'Edits',
+      label: "Manuscripts I'm Editor of",
     },
   ]
 
