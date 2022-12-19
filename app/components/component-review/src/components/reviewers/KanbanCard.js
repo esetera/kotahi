@@ -58,7 +58,7 @@ const KanbanCard = ({ reviewer, onClickAction }) => {
 }
 
 KanbanCard.propTypes = {
-  reviwer: PropTypes.shape({
+  reviewer: PropTypes.shape({
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     user: PropTypes.shape({
