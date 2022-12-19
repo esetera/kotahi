@@ -61,9 +61,9 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
     : reviewers
 
   emailAndWebReviewers.sort((a, b) => {
-    const aDate = a.declinedReason ? a.responseDate : a.updated
+    const aDate = a.responseComment ? a.responseDate : a.updated
 
-    const bDate = b.declinedReason ? b.responseDate : b.updated
+    const bDate = b.responseComment ? b.responseDate : b.updated
 
     return aDate - bDate
   })
@@ -102,7 +102,7 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
                       .map(reviewer => (
                         <KanbanCard
                           key={reviewer.id}
-                          onClickAction={() => {}}
+                          onClickAction={() => { }}
                           reviewer={reviewer}
                         />
                       ))}

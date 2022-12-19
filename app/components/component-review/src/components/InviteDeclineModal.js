@@ -11,7 +11,7 @@ const ModalBody = styled.div`
   gap: 20px;
 `
 
-const DeclinedReasonRow = styled.div`
+const ResponseCommentRow = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -62,10 +62,10 @@ const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
           <StyledH4>Status</StyledH4>
           <DeclinedBadge>Declined</DeclinedBadge>
         </ModalBodyRow>
-        <DeclinedReasonRow>
+        <ResponseCommentRow>
           <StyledH4>Declined Reason</StyledH4>
           <p>{invitation.responseComment}</p>
-        </DeclinedReasonRow>
+        </ResponseCommentRow>
       </ModalBody>
     </Modal>
   )

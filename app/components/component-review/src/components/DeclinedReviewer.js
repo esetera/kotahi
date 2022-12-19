@@ -59,7 +59,7 @@ const DeclinedReviewer = ({ declined }) => {
               <TextChange>
                 Declined{' '}
                 {convertTimestampToRelativeDateString(
-                  declined.declinedReason
+                  declined.responseComment
                     ? declined.responseDate
                     : declined.updated,
                 )}
@@ -67,7 +67,7 @@ const DeclinedReviewer = ({ declined }) => {
             </Secondary>
           </Date>
         </Box>
-        {declined.declinedReason && (
+        {declined.responseComment && (
           <UserAction onClick={() => setModalOpen(true)}>
             View Details
           </UserAction>
