@@ -82,7 +82,7 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
         <SectionRow style={{ padding: 0 }}>
           <Kanban>
             {statuses
-              .filter(status => status.value !== 'rejected')
+              .filter(status => status.value.toLowerCase() !== 'rejected')
               .map(status => (
                 <Column key={status.value}>
                   <StatusLabel
@@ -93,7 +93,12 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
                   </StatusLabel>
                   <CardsWrapper>
                     {emailAndWebReviewers
-                      .filter(reviewer => reviewer.status === status.value)
+                      .filter(
+                        reviewer =>
+                          reviewer.status === status.value ||
+                          (reviewer.status === 'UNANSWERED' &&
+                            status.value === 'invited'),
+                      )
                       .map(reviewer => (
                         <KanbanCard
                           key={status.value}

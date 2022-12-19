@@ -18,11 +18,11 @@ const DeclinedReasonRow = styled.div`
 `
 
 const ModalBodyRow = styled.div`
+  align-items: center;
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
   gap: 10px;
+  justify-content: flex-start;
 `
 
 const StyledH4 = styled.h4`
@@ -30,16 +30,16 @@ const StyledH4 = styled.h4`
 `
 
 const DeclinedBadge = styled(ErrorStatus)`
+  align-items: center;
+  background-color: #c23d20;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
-  background-color: #c23d20;
   width: 125px;
 `
 
 const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
-  return invitation ? (
+  return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
@@ -64,11 +64,11 @@ const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
         </ModalBodyRow>
         <DeclinedReasonRow>
           <StyledH4>Declined Reason</StyledH4>
-          <p>{invitation.declinedReason}</p>
+          <p>{invitation.responseComment}</p>
         </DeclinedReasonRow>
       </ModalBody>
     </Modal>
-  ) : null
+  )
 }
 
 export default InviteDeclineModal

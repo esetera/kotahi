@@ -43,28 +43,23 @@ const DeclinedReviewer = ({ declined }) => {
   return (
     <>
       <InviteDeclineModal
-        invitation={
-          Object.prototype.hasOwnProperty.call(declined, 'declinedReason')
-            ? declined
-            : null
-        }
+        invitation={declined}
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
       />
       <DeclinedReviewerContainer>
         <Box>
           <UserName>
-            <Primary>{declined.user.username}</Primary>
+            <Primary>
+              {declined.user?.username ?? declined.invitedPersonName}
+            </Primary>
           </UserName>
           <Date>
             <Secondary>
               <TextChange>
                 Declined{' '}
                 {convertTimestampToRelativeDateString(
-                  Object.prototype.hasOwnProperty.call(
-                    declined,
-                    'declinedReason',
-                  )
+                  declined.declinedReason
                     ? declined.responseDate
                     : declined.updated,
                 )}
@@ -72,7 +67,7 @@ const DeclinedReviewer = ({ declined }) => {
             </Secondary>
           </Date>
         </Box>
-        {Object.prototype.hasOwnProperty.call(declined, 'declinedReason') && (
+        {declined.declinedReason && (
           <UserAction onClick={() => setModalOpen(true)}>
             View Details
           </UserAction>

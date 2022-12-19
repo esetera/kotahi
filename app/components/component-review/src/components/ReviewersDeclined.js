@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { Icon } from '@pubsweet/ui'
 import { SectionHeader, SectionRow } from '../../../shared'
 import { UserAction } from '../../../component-manuscripts-table/src/style'
-import InviteDeclineModal from './InviteDeclineModal'
 import DeclinedReviewer from './DeclinedReviewer'
 
 const DropdownTitleContainer = styled.div`
@@ -33,50 +32,34 @@ const AddBorder = styled.div`
 
 const ReviewersDeclined = ({ emailAndWebReviewers }) => {
   const [open, setOpen] = useState(false)
-  const [modalInvitation, setModalInvitation] = useState(null)
 
   const declinations = emailAndWebReviewers.filter(user => {
-    return user.status === 'rejected'
+    return user.status.toLowerCase() === 'rejected'
   })
 
   return (
     <>
-      <InviteDeclineModal
-        invitation={modalInvitation}
-        isOpen={modalInvitation !== null}
-        onClose={() => setModalInvitation(null)}
-      />
-      {open ? (
-        <>
-          <SectionHeader onClick={() => setOpen(!open)}>
-            <DropdownTitleContainer>
-              <UserAction>Hide Declined</UserAction>
-              <Icon color="#9e9e9e">chevron-up</Icon>
-            </DropdownTitleContainer>
-          </SectionHeader>
+      <SectionHeader onClick={() => setOpen(!open)}>
+        <DropdownTitleContainer>
+          <UserAction>{open ? 'Hide Declined' : 'See Declined'}</UserAction>
+          <Icon color="#9e9e9e">{open ? 'chevron-up' : 'chevron-down'}</Icon>
+        </DropdownTitleContainer>
+      </SectionHeader>
 
-          {declinations && declinations.length ? (
-            <DeclinedReviewerContainer>
-              {declinations.map(declined => {
-                return (
-                  <AddBorder key={declined.user.id}>
-                    <DeclinedReviewer declined={declined} />
-                  </AddBorder>
-                )
-              })}
-            </DeclinedReviewerContainer>
-          ) : (
-            <SectionRow>No Declined Reviewers</SectionRow>
-          )}
-        </>
-      ) : (
-        <SectionHeader onClick={() => setOpen(!open)}>
-          <DropdownTitleContainer>
-            <UserAction>See Declined</UserAction>
-            <Icon color="#9e9e9e">chevron-down</Icon>
-          </DropdownTitleContainer>
-        </SectionHeader>
-      )}
+      {open &&
+        (declinations && declinations.length ? (
+          <DeclinedReviewerContainer>
+            {declinations.map(declined => {
+              return (
+                <AddBorder key={declined.id}>
+                  <DeclinedReviewer declined={declined} />
+                </AddBorder>
+              )
+            })}
+          </DeclinedReviewerContainer>
+        ) : (
+          <SectionRow>No Declined Reviewers</SectionRow>
+        ))}
     </>
   )
 }
