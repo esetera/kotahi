@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { Icon } from '@pubsweet/ui'
-import { th } from '@pubsweet/ui-toolkit'
-import { SectionHeader } from '../../../shared'
+import { SectionHeader, SectionRow } from '../../../shared'
 import { UserAction } from '../../../component-manuscripts-table/src/style'
 import InviteDeclineModal from './InviteDeclineModal'
 import DeclinedReviewer from './DeclinedReviewer'
@@ -26,27 +25,18 @@ const DeclinedReviewerContainer = styled.div`
   margin-top: 1em;
 `
 
-const AllRejectedReviewers = styled.div`
+const AddBorder = styled.div`
   :not(:last-child) {
     border-bottom: 0.8px solid #bfbfbf;
   }
 `
 
-const ReviewersDeclined = ({ invitations, reviewers }) => {
+const ReviewersDeclined = ({ emailAndWebReviewers }) => {
   const [open, setOpen] = useState(false)
   const [modalInvitation, setModalInvitation] = useState(null)
 
-  const declinations = invitations ? [...invitations, ...reviewers] : reviewers
-  declinations.sort((a, b) => {
-    const aDate = Object.prototype.hasOwnProperty.call(a, 'declinedReason')
-      ? a.responseDate
-      : a.updated
-
-    const bDate = Object.prototype.hasOwnProperty.call(b, 'declinedReason')
-      ? b.responseDate
-      : b.updated
-
-    return aDate - bDate
+  const declinations = emailAndWebReviewers.filter(user => {
+    return user.status === 'rejected'
   })
 
   return (
@@ -61,25 +51,29 @@ const ReviewersDeclined = ({ invitations, reviewers }) => {
           <SectionHeader onClick={() => setOpen(!open)}>
             <DropdownTitleContainer>
               <UserAction>Hide Declined</UserAction>
-              <Icon color={th('colorSecondary')}>chevron-up</Icon>
+              <Icon color="#9e9e9e">chevron-up</Icon>
             </DropdownTitleContainer>
           </SectionHeader>
-          <DeclinedReviewerContainer>
-            {declinations.map(
-              declined =>
-                declined.status === 'rejected' && (
-                  <AllRejectedReviewers>
+
+          {declinations && declinations.length ? (
+            <DeclinedReviewerContainer>
+              {declinations.map(declined => {
+                return (
+                  <AddBorder key={declined.user.id}>
                     <DeclinedReviewer declined={declined} />
-                  </AllRejectedReviewers>
-                ),
-            )}
-          </DeclinedReviewerContainer>
+                  </AddBorder>
+                )
+              })}
+            </DeclinedReviewerContainer>
+          ) : (
+            <SectionRow>No Declined Reviewers</SectionRow>
+          )}
         </>
       ) : (
         <SectionHeader onClick={() => setOpen(!open)}>
           <DropdownTitleContainer>
             <UserAction>See Declined</UserAction>
-            <Icon color={th('colorSecondary')}>chevron-down</Icon>
+            <Icon color="#9e9e9e">chevron-down</Icon>
           </DropdownTitleContainer>
         </SectionHeader>
       )}

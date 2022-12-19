@@ -55,6 +55,19 @@ const VersionNumber = styled.div`
 
 const KanbanBoard = ({ invitations, version, versionNumber }) => {
   const reviewers = getMembersOfTeam(version, 'reviewer')
+
+  const emailAndWebReviewers = invitations
+    ? [...invitations, ...reviewers]
+    : reviewers
+
+  emailAndWebReviewers.sort((a, b) => {
+    const aDate = a.declinedReason ? a.responseDate : a.updated
+
+    const bDate = b.declinedReason ? b.responseDate : b.updated
+
+    return aDate - bDate
+  })
+
   return (
     <AdminSection>
       <SectionContent>
@@ -79,7 +92,7 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
                     {status.label}
                   </StatusLabel>
                   <CardsWrapper>
-                    {reviewers
+                    {emailAndWebReviewers
                       .filter(reviewer => reviewer.status === status.value)
                       .map(reviewer => (
                         <KanbanCard
@@ -92,7 +105,7 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
                 </Column>
               ))}
           </Kanban>
-          <ReviewersDeclined invitations={invitations} reviewers={reviewers} />
+          <ReviewersDeclined emailAndWebReviewers={emailAndWebReviewers} />
         </SectionRow>
       </SectionContent>
     </AdminSection>
