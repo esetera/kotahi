@@ -49,15 +49,17 @@ const ManuscriptRow = ({
     const onRowClick = () => history.push(getLink(manuscript))
 
     return (
-      <div
-        onClick={onRowClick}
-        onKeyDown={e => e.key === 'Enter' && onRowClick()}
-        role="button"
-        tabIndex={0}
-      >
-        <ClickableManuscriptsRow>{columnContent}</ClickableManuscriptsRow>
+      <>
+        <ClickableManuscriptsRow
+          onClick={onRowClick}
+          onKeyDown={e => e.key === 'Enter' && onRowClick()}
+          role="button"
+          tabIndex={0}
+        >
+          {columnContent}
+        </ClickableManuscriptsRow>
         {manuscript.searchSnippet && searchSnippet}
-      </div>
+      </>
     )
   }
 

@@ -1,7 +1,13 @@
 import React, { useState } from 'react'
+import styled from 'styled-components'
 import { UserAction as Action } from '../style'
 import { articleStatuses } from '../../../../globals'
 import { ConfirmationModal } from '../../../component-modal/src'
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+`
 
 const Actions = ({
   manuscript,
@@ -15,7 +21,7 @@ const Actions = ({
   )
 
   return (
-    <>
+    <Container>
       {['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) &&
         [
           articleStatuses.submitted,
@@ -56,7 +62,7 @@ const Actions = ({
         isOpen={confirmArchiveModalIsOpen}
         message="Please confirm you would like to archive this manuscript"
       />
-    </>
+    </Container>
   )
 }
 

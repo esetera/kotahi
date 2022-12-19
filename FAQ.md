@@ -143,6 +143,7 @@ Publishing to Crossref requires that you have certain fields configured via the 
 | `submission.volumeNumber` | TextField | (Optional) Journal volume number |
 | `submission.issueNumber` | TextField | (Optional) Journal issue number |
 | `submission.issueYear` | TextField | The year of publication. If `submission.volumeNumber` is formatted as a year (e.g. 2021), then `submission.issueYear` is optional. |
+|`submission.doiSuffix` | TextField | (Optional) The custom DOI suffix for the article |
 
 #### Registering article evaluations via Crossref
 
@@ -154,22 +155,23 @@ CROSSREF_PASSWORD=crossrefPassword
 CROSSREF_REGISTRANT="Crossref Registrant Name"
 CROSSREF_DEPOSITOR_NAME="Crossref Depositor Name"
 CROSSREF_DEPOSITOR_EMAIL="depositor-email@yourjournal.com"
-CROSSREF_PUBLICATION_TYPE=article
+CROSSREF_PUBLICATION_TYPE=evaluations
 CROSSREF_USE_SANDBOX=true
 DOI_PREFIX=12.34567
 ```
 
 And the following form fields are required:
 
-| Field name                                                                                                                                               | Field type     | Purpose                                                  |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------- |
-| `submission.articleURL`                                                                                                                                  | TextField      | The DOI link to the article under review                 |
-| `submission.review1`                                                                                                                                     | AbstractEditor | Review number 1                                          |
-| `submission.review1date`                                                                                                                                 | TextField      | Review 1 date, formatted as yyyy-mm-dd or mm/dd/yyyy     |
-| `submission.review1creator`                                                                                                                              | TextField      | Review 1 author, formatted as Firstname Lastname         |
-| `submission.review2`, `submission.review2date`, `submission.review2creator`, `submission.review3`, `submission.review3date`, `submission.review3creator` | As above       | (Optional) Fields for second and third reviews.          |
-| `submission.summary`, `submission.summarydate`, `submission.summarycreator`                                                                              | As above       | (Optional) Fields for a summary of the reviews.          |
-| `submission.description`                                                                                                                                 | TextField      | Title of the article under review, possibly abbreviated. |
+| Field name                                                                                                                                                                                                       | Field type     | Purpose                                                  |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------- |
+| `submission.articleURL`                                                                                                                                                                                          | TextField      | The DOI link to the article under review                 |
+| `submission.review1`                                                                                                                                                                                             | AbstractEditor | Review number 1                                          |
+| `submission.review1date`                                                                                                                                                                                         | TextField      | Review 1 date, formatted as yyyy-mm-dd or mm/dd/yyyy     |
+| `submission.review1creator`                                                                                                                                                                                      | TextField      | Review 1 author, formatted as Firstname Lastname         |
+| `submission.review1suffix`                                                                                                                                                                                       | TextField      | (Optional) Review 1 custom DOI sufix                     |
+| `submission.review2`, `submission.review2date`, `submission.review2creator`, `submission.review2suffix`, `submission.review3`, `submission.review3date`, `submission.review3creator`, `submission.review3suffix` | As above       | (Optional) Fields for second and third reviews.          |
+| `submission.summary`, `submission.summarydate`, `submission.summarycreator`, `submission.summarysuffix`                                                                                                          | As above       | (Optional) Fields for a summary of the reviews.          |
+| `submission.description`                                                                                                                                                                                         | TextField      | Title of the article under review, possibly abbreviated. |
 
 ### Hypothes.is
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/client'
 // import { Heading } from '@pubsweet/ui'
@@ -17,6 +17,12 @@ import {
   Carets,
 } from './style'
 import { CommsErrorBanner, PaginationContainer } from '../../shared'
+import {
+  extractSortData,
+  URI_PAGENUM_PARAM,
+  URI_SORT_PARAM,
+  useQueryParams,
+} from '../../../shared/urlParamUtils'
 
 const GET_USERS = gql`
   query Users(
@@ -50,18 +56,23 @@ const GET_USERS = gql`
   }
 `
 
-const UsersManager = ({ currentUser }) => {
+const UsersManager = ({ history, currentUser }) => {
   const SortHeader = ({ thisSortName, children }) => {
     const changeSort = () => {
+      let newSortDirection
+
       if (sortName !== thisSortName) {
-        setSortName(thisSortName)
-        setSortDirection('ASC')
+        newSortDirection = 'ASC'
       } else if (sortDirection === 'ASC') {
-        setSortDirection('DESC')
+        newSortDirection = 'DESC'
       } else if (sortDirection === 'DESC') {
-        setSortName()
-        setSortDirection()
+        newSortDirection = 'ASC'
       }
+
+      applyQueryParams({
+        [URI_SORT_PARAM]: `${thisSortName}_${newSortDirection}`,
+        [URI_PAGENUM_PARAM]: 1,
+      })
     }
 
     const UpDown = () => {
@@ -85,9 +96,12 @@ const UsersManager = ({ currentUser }) => {
     )
   }
 
-  const [sortName, setSortName] = useState('created')
-  const [sortDirection, setSortDirection] = useState('DESC')
-  const [page, setPage] = useState(1)
+  const applyQueryParams = useQueryParams()
+
+  const params = new URLSearchParams(history.location.search)
+  const page = params.get(URI_PAGENUM_PARAM) || 1
+  const sortName = extractSortData(params).name || 'created'
+  const sortDirection = extractSortData(params).direction || 'DESC'
   const limit = 10
   const sort = sortName && sortDirection && `${sortName}_${sortDirection}`
 
@@ -131,7 +145,9 @@ const UsersManager = ({ currentUser }) => {
           limit={limit}
           page={page}
           PaginationContainer={PaginationContainer}
-          setPage={setPage}
+          setPage={newPage =>
+            applyQueryParams({ [URI_PAGENUM_PARAM]: newPage })
+          }
           totalCount={totalCount}
         />
       </Content>

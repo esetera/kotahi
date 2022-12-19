@@ -59,12 +59,16 @@ export const ManuscriptsRow = styled.div`
   display: flex;
   flex-direction: row;
   line-height: 1.4em;
-  padding: ${grid(0.5)} ${grid(2)};
   text-align: left;
   width: 100%;
 
   &:first-child {
     border-top: none;
+    padding: ${grid(0.5)} ${grid(2)};
+  }
+
+  &:not(:first-child) {
+    padding: ${grid(1.5)} ${grid(2)};
   }
 `
 
@@ -96,14 +100,19 @@ export const ManuscriptsHeaderRow = styled(ManuscriptsRow)`
 `
 
 export const Cell = styled.div`
+  display: flex;
   flex: ${({ flex }) => flex ?? '0 1 12em'};
-
+  flex-direction: row;
   ${props =>
     props.onClick &&
     css`
       cursor: pointer;
     `}
-
+  ${props =>
+    props.centered &&
+    css`
+      justify-content: center;
+    `}
   overflow-wrap: anywhere;
 `
 

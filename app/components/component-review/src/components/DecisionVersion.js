@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { set, debounce } from 'lodash'
+import { useLocation } from 'react-router-dom'
 import DecisionReviews from './decision/DecisionReviews'
 import AssignEditorsReviewers from './assignEditors/AssignEditorsReviewers'
 import AssignEditor from './assignEditors/AssignEditor'
@@ -57,6 +58,7 @@ const DecisionVersion = ({
   displayShortIdAsIdentifier,
   updateReviewJsonData,
   validateDoi,
+  validateSuffix,
   createFile,
   deleteFile,
   threadedDiscussionProps,
@@ -67,11 +69,16 @@ const DecisionVersion = ({
   setSelectedEmail,
   setShouldPublishField,
   isEmailAddressOptedOut,
+  updateSharedStatusForInvitedReviewer,
+  dois,
+  refetch,
   updateTask,
   updateTasks,
   teams,
 }) => {
   // Hooks from the old world
+  const location = useLocation()
+
   const addEditor = (manuscript, label, isCurrent, user) => {
     const isThisReadOnly = !isCurrent
 
@@ -181,6 +188,7 @@ const DecisionVersion = ({
                 threadedDiscussionProps={threadedDiscussionProps}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}
+                validateSuffix={validateSuffix}
               />
             </SectionContent>
           )}
@@ -379,6 +387,7 @@ const DecisionVersion = ({
                   threadedDiscussionProps={threadedDiscussionProps}
                   urlFrag={urlFrag}
                   validateDoi={validateDoi}
+                  validateSuffix={validateSuffix}
                 />
               </SectionContent>
             </AdminSection>
@@ -386,6 +395,7 @@ const DecisionVersion = ({
           {isCurrentVersion && (
             <AdminSection>
               <Publish
+                dois={dois}
                 manuscript={version}
                 publishManuscript={publishManuscript}
               />
@@ -398,9 +408,15 @@ const DecisionVersion = ({
     }
   }
 
+  const locationState =
+    location.state !== undefined && location.state.tab === 'Decision'
+      ? `decision_${version.id}`
+      : `team_${version.id}`
+
   return (
     <HiddenTabs
-      defaultActiveKey={`team_${version.id}`}
+      defaultActiveKey={locationState}
+      onChange={refetch}
       sections={[
         teamSection(),
         decisionSection(),
