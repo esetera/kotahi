@@ -45,7 +45,6 @@ const DateDisplay = styled.div`
 const EmailInvitedReviewer = styled.div`
   color: ${th('colorPrimary')};
   display: flex;
-  gap: 5px;
 `
 
 const SendIcon = styled(Send)`
