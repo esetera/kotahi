@@ -91,6 +91,7 @@ const resolvers = {
         .first()
 
       member.status = status
+      member.updated = new Date().toISOString()
       return member.save()
     },
   },

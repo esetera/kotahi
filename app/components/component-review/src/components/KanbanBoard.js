@@ -53,8 +53,20 @@ const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.5);
 `
 
-const KanbanBoard = ({ version, versionNumber }) => {
+const KanbanBoard = ({ invitations, version, versionNumber }) => {
   const reviewers = getMembersOfTeam(version, 'reviewer')
+
+  const emailAndWebReviewers = invitations
+    ? [...invitations, ...reviewers]
+    : reviewers
+
+  emailAndWebReviewers.sort((a, b) => {
+    const aDate = a.responseComment ? a.responseDate : a.updated
+
+    const bDate = b.responseComment ? b.responseDate : b.updated
+
+    return aDate - bDate
+  })
 
   return (
     <AdminSection>
@@ -70,7 +82,7 @@ const KanbanBoard = ({ version, versionNumber }) => {
         <SectionRow style={{ padding: 0 }}>
           <Kanban>
             {statuses
-              .filter(status => status.value !== 'rejected')
+              .filter(status => status.value.toLowerCase() !== 'rejected')
               .map(status => (
                 <Column key={status.value}>
                   <StatusLabel
@@ -80,12 +92,17 @@ const KanbanBoard = ({ version, versionNumber }) => {
                     {status.label}
                   </StatusLabel>
                   <CardsWrapper>
-                    {reviewers
-                      .filter(reviewer => reviewer.status === status.value)
+                    {emailAndWebReviewers
+                      .filter(
+                        reviewer =>
+                          reviewer.status === status.value ||
+                          (reviewer.status === 'UNANSWERED' &&
+                            status.value === 'invited'),
+                      )
                       .map(reviewer => (
                         <KanbanCard
-                          key={status.value}
-                          onClickAction={() => {}}
+                          key={reviewer.id}
+                          onClickAction={() => { }}
                           reviewer={reviewer}
                         />
                       ))}
@@ -93,7 +110,7 @@ const KanbanBoard = ({ version, versionNumber }) => {
                 </Column>
               ))}
           </Kanban>
-          <ReviewersDeclined reviewers={reviewers} />
+          <ReviewersDeclined emailAndWebReviewers={emailAndWebReviewers} />
         </SectionRow>
       </SectionContent>
     </AdminSection>
