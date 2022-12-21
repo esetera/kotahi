@@ -169,37 +169,7 @@ const DecisionPage = ({ match }) => {
     },
   })
 
-  const [removeReviewer] = useMutation(removeReviewerMutation, {
-    update: (cache, { data: { removeReviewer: revisedReviewersObject } }) => {
-      cache.modify({
-        id: cache.identify({
-          __typename: 'Manuscript',
-          id: revisedReviewersObject.objectId,
-        }),
-        fields: {
-          teams(existingTeamRefs = []) {
-            const newTeamRef = cache.writeFragment({
-              data: revisedReviewersObject,
-              fragment: gql`
-                fragment NewTeam on Team {
-                  id
-                  role
-                  members {
-                    id
-                    user {
-                      id
-                    }
-                  }
-                }
-              `,
-            })
-
-            return [...existingTeamRefs, newTeamRef]
-          },
-        },
-      })
-    },
-  })
+  const [removeReviewer] = useMutation(removeReviewerMutation)
 
   const [updateTask] = useMutation(UPDATE_TASK, {
     update(cache, { data: { updateTask: updatedTask } }) {
