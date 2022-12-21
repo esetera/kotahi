@@ -2,7 +2,7 @@ import { grid, th } from '@pubsweet/ui-toolkit'
 import React from 'react'
 import styled from 'styled-components'
 import { UserAvatar } from '../../../../component-avatar/src'
-import Modal from '../../../../component-kanban-modal'
+import Modal, { StackedHeader } from '../../../../component-kanban-modal'
 import {
   ActionButton,
   LooseColumn,
@@ -16,7 +16,10 @@ import {
 const ModalContainer = styled(LooseColumn)`
   background-color: ${th('colorBackground')};
   padding: ${grid(2.5)} ${grid(3)};
-  z-index: 10000;
+`
+
+const ReviewerName = styled.span`
+  font-weight: normal;
 `
 
 const DeleteReviewerModal = ({
@@ -29,11 +32,13 @@ const DeleteReviewerModal = ({
   return (
     <Modal isOpen={isOpen}>
       <ModalContainer>
-        Delete this reviewer?
+        <StackedHeader title="Delete this reviewer?" />
         <UserCombo>
           <UserAvatar user={reviewer.user} />
           <UserInfo>
-            <Primary>Reviewer: {reviewer.user?.username}</Primary>
+            <Primary>
+              Reviewer: <ReviewerName>{reviewer.user?.username}</ReviewerName>
+            </Primary>
             <Secondary>{reviewer.user?.defaultIdentity.identifier}</Secondary>
           </UserInfo>
         </UserCombo>
