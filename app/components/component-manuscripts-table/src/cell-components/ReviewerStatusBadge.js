@@ -3,7 +3,7 @@ import { ConfigurableStatus } from '../../../shared'
 import reviewStatuses from '../../../../../config/journal/review-status'
 import { getMembersOfTeam } from '../../../../shared/manuscriptUtils'
 
-const ReviewerBadge = ({ manuscript, currentUser }) => {
+const ReviewerStatusBadge = ({ manuscript, currentUser }) => {
   const members = getMembersOfTeam(manuscript, 'reviewer')
 
   const status = members?.find(member => member.user.id === currentUser.id)
@@ -22,4 +22,4 @@ const ReviewerBadge = ({ manuscript, currentUser }) => {
   )
 }
 
-export default ReviewerBadge
+export default ReviewerStatusBadge

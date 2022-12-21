@@ -89,9 +89,10 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
       <RoundIconButton
         iconName="Search"
         onClick={() => {
-          submitSearch(searchText)
-          if (isOpen) ref.current.focus()
-          else setIsOpen(true)
+          if (isOpen) {
+            submitSearch(searchText)
+            ref.current.focus()
+          } else setIsOpen(true)
         }}
         primary={isOpen}
         title="Search"

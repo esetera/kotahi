@@ -3,7 +3,7 @@ import config from 'config'
 import React, { useEffect } from 'react'
 import mutations from '../graphql/mutations'
 import queries from '../graphql/queries'
-import OwnerTable from './sections/OwnerTable'
+import SubmissionsTable from './sections/SubmissionsTable'
 
 const DashboardSubmissionsPage = () => {
   const instanceName = process.env.INSTANCE_NAME
@@ -33,7 +33,7 @@ const DashboardSubmissionsPage = () => {
   }, [])
 
   return !['ncrc'].includes(instanceName) ? (
-    <OwnerTable query={query} urlFrag={urlFrag} />
+    <SubmissionsTable query={query} urlFrag={urlFrag} />
   ) : null
 }
 

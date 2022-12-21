@@ -8,7 +8,27 @@ import {
   Title,
 } from '../../../../shared'
 
-const InviteReviewer = ({ reviewerUsers, manuscript, addReviewer }) => {
+const InviteReviewer = ({
+  reviewerUsers,
+  manuscript,
+  addReviewer,
+  updateSharedStatusForInvitedReviewer,
+}) => {
+  // eslint-disable-next-line
+  const toggleEmailInvitedReviewerSharedStatus = async (
+    invitationId,
+    isShared,
+  ) => {
+    await updateSharedStatusForInvitedReviewer({
+      variables: {
+        invitationId,
+        isShared,
+      },
+    })
+    // TODO: do we need this? From Reviewers.js
+    // refetchManuscriptData()
+  }
+
   return (
     <Formik
       displayName="reviewers"

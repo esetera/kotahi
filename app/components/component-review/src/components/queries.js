@@ -97,6 +97,7 @@ const manuscriptFields = `
     defaultDurationDays
     dueDate
     reminderPeriodDays
+    sequenceIndex
     status
   }
 `
@@ -116,6 +117,7 @@ const formFields = `
       name
       description
       doiValidation
+      doiUniqueSuffixValidation
       placeholder
       permitPublishing
       parse
@@ -241,12 +243,22 @@ export const query = gql`
         id
       }
     }
+
+    doisToRegister(id: $id)
   }
 `
 
 export const addReviewerMutation = gql`
 mutation($manuscriptId: ID!, $userId: ID!) {
   addReviewer(manuscriptId: $manuscriptId, userId: $userId) {
+    ${teamFields}
+  }
+}
+`
+
+export const removeReviewerMutation = gql`
+mutation($manuscriptId: ID!, $userId: ID!) {
+  removeReviewer(manuscriptId: $manuscriptId, userId: $userId) {
     ${teamFields}
   }
 }

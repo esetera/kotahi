@@ -1,19 +1,19 @@
-import React, { useState } from 'react'
-import { grid, th } from '@pubsweet/ui-toolkit'
-import styled from 'styled-components'
-import PropTypes from 'prop-types'
 import { Action } from '@pubsweet/ui'
-import { gql, useMutation } from '@apollo/client'
-import { UserAvatar } from '../../../../component-avatar/src'
+import { grid, th } from '@pubsweet/ui-toolkit'
+import PropTypes from 'prop-types'
+import React, { useState } from 'react'
+import { Send } from 'react-feather'
+import styled from 'styled-components'
 import { convertTimestampToRelativeDateString } from '../../../../../shared/dateUtils'
+import { UserAvatar } from '../../../../component-avatar/src'
 import Modal from '../../../../component-modal/src'
 import {
-  LooseColumn,
   ActionButton,
+  LooseColumn,
   MediumRow,
-  UserCombo,
   Primary,
   Secondary,
+  UserCombo,
   UserInfo,
 } from '../../../../shared'
 
@@ -59,50 +59,57 @@ const ModalContainer = styled(LooseColumn)`
   z-index: 10000;
 `
 
-const teamFields = `
-  id
-  role
-  name
-  objectId
-  objectType
-  members {
-    id
-    user {
-      id
-      username
-      profilePicture
-      isOnline
-      defaultIdentity {
-        id
-        identifier
-      }
-    }
-    status
-    isShared
-  }
+const EmailInvitedReviewer = styled.div`
+  color: ${th('colorPrimary')};
+  display: flex;
 `
 
-const removeReviewerMutation = gql`
-  mutation($manuscriptId: ID!, $userId: ID!) {
-    removeReviewer(manuscriptId: $manuscriptId, userId: $userId) {
-      ${teamFields}
-    }
-  }
+const SendIcon = styled(Send)`
+  height: 25px;
+  margin-bottom: -8px;
+  margin-left: 5px;
+  stroke: ${props =>
+    props.invitationStatus === 'rejected'
+      ? th('colorError')
+      : th('colorPrimary')};
+  width: 15px;
 `
 
-const KanbanCard = ({ reviewer, manuscript, onClickAction }) => {
+const KanbanCard = ({
+  reviewer,
+  manuscript,
+  onClickAction,
+  removeReviewer,
+}) => {
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
-  const [removeReviewer] = useMutation(removeReviewerMutation)
   return (
     <Card onClick={onClickAction}>
       <AvatarGrid>
-        <UserAvatar user={reviewer.user} />
+        <UserAvatar
+          showHoverProfile={false}
+          user={
+            reviewer.user ?? {
+              username: reviewer.invitedPersonName,
+              isOnline: false,
+            }
+          }
+        />
       </AvatarGrid>
       <InfoGrid>
-        <NameDisplay>{reviewer.user.username}</NameDisplay>
-        <DateDisplay>
-          Last updated {convertTimestampToRelativeDateString(reviewer.updated)}
-        </DateDisplay>
+        <NameDisplay>
+          {reviewer.user?.username ?? reviewer.invitedPersonName}
+        </NameDisplay>
+        {reviewer.updated ? (
+          <DateDisplay>
+            Last updated{' '}
+            {convertTimestampToRelativeDateString(reviewer.updated)}
+          </DateDisplay>
+        ) : (
+          <EmailInvitedReviewer>
+            Email invited
+            <SendIcon invitationStatus={reviewer.status.toLowerCase()} />
+          </EmailInvitedReviewer>
+        )}
       </InfoGrid>
       <Action onClick={() => setIsConfirmingDelete(true)}>Delete</Action>
       <Modal isOpen={isConfirmingDelete}>
@@ -142,7 +149,7 @@ const KanbanCard = ({ reviewer, manuscript, onClickAction }) => {
 }
 
 KanbanCard.propTypes = {
-  reviwer: PropTypes.shape({
+  reviewer: PropTypes.shape({
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     user: PropTypes.shape({

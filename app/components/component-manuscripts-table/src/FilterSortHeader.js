@@ -68,22 +68,23 @@ const FilterSortHeader = ({
   columnInfo,
   sortName,
   sortDirection,
-  setSortName,
-  setSortDirection,
+  setSort,
   setFilter,
 }) => {
   if (columnInfo.canFilterByDateRange) {
     const changeSort = () => {
       const priorSortName = sortName
-      setSortName(columnInfo.name)
+      let newSortDirection
 
       if (priorSortName !== columnInfo.name) {
-        setSortDirection(columnInfo.defaultSortDirection)
+        newSortDirection = columnInfo.defaultSortDirection
       } else if (sortDirection === 'ASC') {
-        setSortDirection('DESC')
+        newSortDirection = 'DESC'
       } else if (sortDirection === 'DESC') {
-        setSortDirection('ASC')
+        newSortDirection = 'ASC'
       }
+
+      setSort(columnInfo.name, newSortDirection)
     }
 
     const filterByDateRange = range => {
@@ -138,10 +139,15 @@ const FilterSortHeader = ({
     )
 
     return (
-      <Cell {...columnInfo} style={{ overflow: 'visible' }}>
+      <Cell {...columnInfo}>
         <Select
           aria-label={columnInfo.title}
           customStyles={{
+            container: provided => ({
+              ...provided,
+              width: 'min(100%, 10em)',
+              overflow: 'visible',
+            }),
             control: provided => ({
               ...provided,
               minHeight: 'unset',
@@ -177,15 +183,17 @@ const FilterSortHeader = ({
   if (columnInfo.canSort) {
     const changeSort = () => {
       const priorSortName = sortName
-      setSortName(columnInfo.name)
+      let newSortDirection
 
       if (priorSortName !== columnInfo.name) {
-        setSortDirection(columnInfo.defaultSortDirection)
+        newSortDirection = columnInfo.defaultSortDirection
       } else if (sortDirection === 'ASC') {
-        setSortDirection('DESC')
+        newSortDirection = 'DESC'
       } else if (sortDirection === 'DESC') {
-        setSortDirection('ASC')
+        newSortDirection = 'ASC'
       }
+
+      setSort(columnInfo.name, newSortDirection)
     }
 
     return (

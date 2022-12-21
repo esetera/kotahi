@@ -5,7 +5,6 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Checkbox } from '@pubsweet/ui'
 import { grid } from '@pubsweet/ui-toolkit'
-import { useLocation } from 'react-router-dom'
 import {
   SelectAllField,
   SelectedManuscriptsNumber,
@@ -29,9 +28,12 @@ import Modal from '../../component-modal/src'
 import BulkArchiveModal from './BulkArchiveModal'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
+import {
+  URI_SEARCH_PARAM,
+  URI_PAGENUM_PARAM,
+} from '../../../shared/urlParamUtils'
 import ManuscriptsTable from '../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../component-manuscripts-table/src/util/buildColumnDefinitions'
-import { URI_SEARCH_PARAM } from '../../../../config/journal/manuscripts'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;
@@ -55,15 +57,14 @@ const FlexRowWithSmallGapAbove = styled(FlexRow)`
 
 const Manuscripts = ({ history, ...props }) => {
   const {
+    applyQueryParams,
     validateDoi,
+    validateSuffix,
     setReadyToEvaluateLabels,
     deleteManuscriptMutations,
     importManuscripts,
     isImporting,
     publishManuscripts,
-    setSortName,
-    setSortDirection,
-    setPage,
     queryObject,
     sortDirection,
     sortName,
@@ -75,26 +76,13 @@ const Manuscripts = ({ history, ...props }) => {
     shouldAllowBulkImport,
     archiveManuscriptMutations,
     confirmBulkArchive,
+    uriQueryParams,
   } = props
 
   const [isOpenBulkArchiveModal, setIsOpenBulkArchiveModal] = useState(false)
 
   const [selectedNewManuscripts, setSelectedNewManuscripts] = useState([])
   const [isAdminChatOpen, setIsAdminChatOpen] = useState(true)
-
-  const { pathname, search } = useLocation()
-  const uriQueryParams = new URLSearchParams(search)
-
-  const setFilter = (fieldName, filterValue) => {
-    if (fieldName === URI_SEARCH_PARAM) return // In case a field happens to have the same name as the GET param we use for search
-    uriQueryParams.set(fieldName, filterValue)
-    history.replace({ pathname, search: uriQueryParams.toString() })
-  }
-
-  const applySearchQuery = query => {
-    uriQueryParams.set(URI_SEARCH_PARAM, query)
-    history.replace({ pathname, search: uriQueryParams.toString() })
-  }
 
   const toggleNewManuscriptCheck = id => {
     setSelectedNewManuscripts(s => {
@@ -168,6 +156,7 @@ const Manuscripts = ({ history, ...props }) => {
       manuscript.submission,
       data.formForPurposeAndCategory?.structure,
       validateDoi,
+      validateSuffix,
     )
 
     if (hasInvalidFields.filter(Boolean).length === 0) {
@@ -249,7 +238,7 @@ const Manuscripts = ({ history, ...props }) => {
   // Props for filtering / sorting
   const displayProps = {
     uriQueryParams,
-    sortName,
+    columnToSortOn: sortName,
     sortDirection,
     currentSearchQuery,
   }
@@ -305,7 +294,9 @@ const Manuscripts = ({ history, ...props }) => {
       )}
 
       <SearchControl
-        applySearchQuery={applySearchQuery}
+        applySearchQuery={newQuery =>
+          applyQueryParams({ [URI_SEARCH_PARAM]: newQuery })
+        }
         currentSearchQuery={currentSearchQuery}
       />
       {!isAdminChatOpen && (
@@ -370,11 +361,9 @@ const Manuscripts = ({ history, ...props }) => {
           <div>
             <ScrollableContent>
               <ManuscriptsTable
+                applyQueryParams={applyQueryParams}
                 columnsProps={columnsProps}
                 manuscripts={manuscripts}
-                setFilter={setFilter}
-                setSortDirection={setSortDirection}
-                setSortName={setSortName}
                 sortDirection={sortDirection}
                 sortName={sortName}
               />
@@ -383,7 +372,9 @@ const Manuscripts = ({ history, ...props }) => {
               limit={limit}
               page={page}
               PaginationContainer={PaginationContainerShadowed}
-              setPage={setPage}
+              setPage={newPage =>
+                applyQueryParams({ [URI_PAGENUM_PARAM]: newPage })
+              }
               totalCount={totalCount}
             />
           </div>

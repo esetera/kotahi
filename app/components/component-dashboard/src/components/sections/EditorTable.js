@@ -77,20 +77,22 @@ const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
   )
 
   return (
-    <SectionContent>
-      <SectionHeader>
-        <Title>Manuscripts I&apos;m editor of</Title>
-      </SectionHeader>
-      <ManuscriptsTable
-        columnsProps={columnsProps}
-        manuscripts={editorLatestVersions}
-        setFilter={setFilter}
-        setSortDirection={setSortDirection}
-        setSortName={setSortName}
-        sortDirection={sortDirection}
-        sortName={sortName}
-      />
-    </SectionContent>
+    <>
+      <SectionContent>
+        <SectionHeader>
+          <Title>Manuscripts I&apos;m editor of</Title>
+        </SectionHeader>
+        <ManuscriptsTable
+          columnsProps={columnsProps}
+          manuscripts={editorLatestVersions}
+          setFilter={setFilter}
+          setSortDirection={setSortDirection}
+          setSortName={setSortName}
+          sortDirection={sortDirection}
+          sortName={sortName}
+        />
+      </SectionContent>
+    </>
   )
 }
 

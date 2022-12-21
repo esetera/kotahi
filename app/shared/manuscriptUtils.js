@@ -1,7 +1,7 @@
 import React from 'react'
 import { get } from 'lodash'
 import { validateFormField } from './formValidation'
-import { convertTimestampToDateString } from './dateUtils'
+import { convertTimestampToRelativeDateString } from './dateUtils'
 import { StatusBadge } from '../components/shared'
 
 /** Validate just manuscript.submission, based on the supplied array of field definitions */
@@ -9,6 +9,7 @@ export const validateManuscriptSubmission = async (
   submission,
   submissionForm,
   validateDoi,
+  validateSuffix,
 ) => {
   const fieldDefinitions = submissionForm?.children ?? []
 
@@ -21,6 +22,7 @@ export const validateManuscriptSubmission = async (
         element.name,
         JSON.parse(element.doiValidation ? element.doiValidation : false),
         validateDoi,
+        validateSuffix,
         element.component,
       )
 
@@ -43,14 +45,14 @@ export const getFieldValueAndDisplayValue = (column, manuscript) => {
     return [
       {
         value: manuscript.created,
-        displayValue: convertTimestampToDateString(manuscript.created),
+        displayValue: convertTimestampToRelativeDateString(manuscript.created),
       },
     ]
   if (column.name === 'updated')
     return [
       {
         value: manuscript.updated,
-        displayValue: convertTimestampToDateString(manuscript.updated),
+        displayValue: convertTimestampToRelativeDateString(manuscript.updated),
       },
     ]
   if (column.name === 'status')
@@ -63,6 +65,13 @@ export const getFieldValueAndDisplayValue = (column, manuscript) => {
             status={manuscript.status}
           />
         ),
+      },
+    ]
+  if (column.name === 'manuscriptVersions')
+    return [
+      {
+        value: manuscript.manuscriptVersions,
+        displayValue: `${(manuscript.manuscriptVersions?.length ?? 0) + 1}`,
       },
     ]
   // if (column.name === 'shortId')

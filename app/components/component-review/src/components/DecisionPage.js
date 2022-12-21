@@ -1,40 +1,42 @@
-import React, { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
-import { useQuery, useMutation, gql, useApolloClient } from '@apollo/client'
-import { set, debounce } from 'lodash'
+import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client'
 import config from 'config'
-import DecisionVersions from './DecisionVersions'
-import { Spinner, CommsErrorBanner } from '../../../shared'
+import { debounce, set } from 'lodash'
+import PropTypes from 'prop-types'
+import React, { useEffect, useState } from 'react'
 import { fragmentFields } from '../../../component-submit/src/userManuscriptFormQuery'
+import { CommsErrorBanner, Spinner } from '../../../shared'
+import DecisionVersions from './DecisionVersions'
 
 import {
-  query,
-  sendEmail,
-  makeDecisionMutation,
-  updateReviewMutation,
-  publishManuscriptMutation,
-  setShouldPublishFieldMutation,
   addReviewerMutation,
+  makeDecisionMutation,
+  publishManuscriptMutation,
+  query,
+  removeReviewerMutation,
+  sendEmail,
+  setShouldPublishFieldMutation,
+  updateReviewMutation,
 } from './queries'
 
 import {
   CREATE_MESSAGE,
   GET_BLACKLIST_INFORMATION,
+  UPDATE_SHARED_STATUS_FOR_INVITED_REVIEWER_MUTATION,
   UPDATE_TASK,
   UPDATE_TASKS,
 } from '../../../../queries'
 import { GET_INVITATIONS_FOR_MANUSCRIPT } from '../../../../queries/invitation'
 import {
   CREATE_TEAM_MUTATION,
-  UPDATE_TEAM_MUTATION,
   UPDATE_MEMBER_STATUS_MUTATION,
+  UPDATE_TEAM_MUTATION,
 } from '../../../../queries/team'
-import { validateDoi } from '../../../../shared/commsUtils'
+import { validateDoi, validateSuffix } from '../../../../shared/commsUtils'
 import {
-  UPDATE_PENDING_COMMENT,
-  COMPLETE_COMMENTS,
   COMPLETE_COMMENT,
+  COMPLETE_COMMENTS,
   DELETE_PENDING_COMMENT,
+  UPDATE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
@@ -99,11 +101,10 @@ const DecisionPage = ({ match }) => {
 
   // end of code from submit page to handle possible form changes
 
-  const { loading, data, error } = useQuery(query, {
+  const { loading, data, error, refetch } = useQuery(query, {
     variables: {
       id: match.params.version,
     },
-    fetchPolicy: 'cache-and-network',
   })
 
   const [selectedEmail, setSelectedEmail] = useState('')
@@ -132,8 +133,44 @@ const DecisionPage = ({ match }) => {
   const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
   const [setShouldPublishField] = useMutation(setShouldPublishFieldMutation)
 
+  const [updateSharedStatusForInvitedReviewer] = useMutation(
+    UPDATE_SHARED_STATUS_FOR_INVITED_REVIEWER_MUTATION,
+  )
+
   const [addReviewer] = useMutation(addReviewerMutation, {
     update: (cache, { data: { addReviewer: revisedReviewersObject } }) => {
+      cache.modify({
+        id: cache.identify({
+          __typename: 'Manuscript',
+          id: revisedReviewersObject.objectId,
+        }),
+        fields: {
+          teams(existingTeamRefs = []) {
+            const newTeamRef = cache.writeFragment({
+              data: revisedReviewersObject,
+              fragment: gql`
+                fragment NewTeam on Team {
+                  id
+                  role
+                  members {
+                    id
+                    user {
+                      id
+                    }
+                  }
+                }
+              `,
+            })
+
+            return [...existingTeamRefs, newTeamRef]
+          },
+        },
+      })
+    },
+  })
+
+  const [removeReviewer] = useMutation(removeReviewerMutation, {
+    update: (cache, { data: { removeReviewer: revisedReviewersObject } }) => {
       cache.modify({
         id: cache.identify({
           __typename: 'Manuscript',
@@ -268,6 +305,7 @@ const DecisionPage = ({ match }) => {
     currentUser,
     users,
     threadedDiscussions,
+    doisToRegister,
   } = data
 
   const form = submissionForm?.structure ?? {
@@ -350,6 +388,7 @@ const DecisionPage = ({ match }) => {
         config['client-features'].displayShortIdAsIdentifier.toLowerCase() ===
           'true'
       }
+      dois={doisToRegister}
       externalEmail={externalEmail}
       form={form}
       handleChange={handleChange}
@@ -358,6 +397,8 @@ const DecisionPage = ({ match }) => {
       makeDecision={makeDecision}
       manuscript={manuscript}
       publishManuscript={publishManuscript}
+      refetch={refetch}
+      removeReviewer={removeReviewer}
       reviewers={data?.manuscript?.reviews}
       reviewForm={reviewForm}
       selectedEmail={selectedEmail}
@@ -372,11 +413,15 @@ const DecisionPage = ({ match }) => {
       updateManuscript={updateManuscript}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
+      updateSharedStatusForInvitedReviewer={
+        updateSharedStatusForInvitedReviewer
+      }
       updateTask={updateTask}
       updateTasks={updateTasks}
       updateTeam={updateTeam}
       urlFrag={urlFrag}
       validateDoi={validateDoi(client)}
+      validateSuffix={validateSuffix(client)}
     />
   )
 }

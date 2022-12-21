@@ -16,7 +16,7 @@ import {
 import { Placeholder } from '../../style'
 import { getLatestVersion } from '../../utils'
 
-const OwnerTable = ({ urlFrag, query: { data, loading, error } }) => {
+const SubmissionsTable = ({ urlFrag, query: { data, loading, error } }) => {
   const { search, pathname } = useLocation()
   const uriQueryParams = new URLSearchParams(search)
   const history = useHistory()
@@ -90,4 +90,4 @@ const OwnerTable = ({ urlFrag, query: { data, loading, error } }) => {
   )
 }
 
-export default OwnerTable
+export default SubmissionsTable

@@ -192,6 +192,7 @@ const Modal = ({
   return (
     <ReactModal
       isOpen={isOpen}
+      onRequestClose={onClose}
       style={{
         overlay: { ...styles.overlay, ...overlayStyles },
         content: { ...styles.content, ...contentStyles },
