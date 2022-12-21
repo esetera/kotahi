@@ -1,4 +1,4 @@
-import { grid, th } from '@pubsweet/ui-toolkit'
+import { th } from '@pubsweet/ui-toolkit'
 import React from 'react'
 import styled from 'styled-components'
 import { UserAvatar } from '../../../../component-avatar/src'
@@ -15,7 +15,6 @@ import {
 
 const ModalContainer = styled(LooseColumn)`
   background-color: ${th('colorBackground')};
-  padding: ${grid(2.5)} ${grid(3)};
 `
 
 const ReviewerName = styled.span`
@@ -29,8 +28,29 @@ const DeleteReviewerModal = ({
   onClose,
   removeReviewer,
 }) => {
+  const actions = (
+    <MediumRow>
+      <ActionButton
+        onClick={() => {
+          removeReviewer({
+            variables: {
+              userId: reviewer.user.id,
+              manuscriptId: manuscript.id,
+            },
+          })
+          onClose()
+        }}
+        primary
+      >
+        Ok
+      </ActionButton>
+      &nbsp;
+      <ActionButton onClick={onClose}>Cancel</ActionButton>
+    </MediumRow>
+  )
+
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} leftActions={actions}>
       <ModalContainer>
         <StackedHeader title="Delete this reviewer?" />
         <UserCombo>
@@ -42,24 +62,6 @@ const DeleteReviewerModal = ({
             <Secondary>{reviewer.user?.defaultIdentity.identifier}</Secondary>
           </UserInfo>
         </UserCombo>
-        <MediumRow>
-          <ActionButton
-            onClick={() => {
-              removeReviewer({
-                variables: {
-                  userId: reviewer.user.id,
-                  manuscriptId: manuscript.id,
-                },
-              })
-              onClose()
-            }}
-            primary
-          >
-            Ok
-          </ActionButton>
-          &nbsp;
-          <ActionButton onClick={onClose}>Cancel</ActionButton>
-        </MediumRow>
       </ModalContainer>
     </Modal>
   )
