@@ -1,21 +1,12 @@
-import { Action } from '@pubsweet/ui'
 import { grid, th } from '@pubsweet/ui-toolkit'
+import { Action } from '@pubsweet/ui/dist/molecules'
 import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 import { Send } from 'react-feather'
 import styled from 'styled-components'
 import { convertTimestampToRelativeDateString } from '../../../../../shared/dateUtils'
 import { UserAvatar } from '../../../../component-avatar/src'
-import Modal from '../../../../component-modal/src'
-import {
-  ActionButton,
-  LooseColumn,
-  MediumRow,
-  Primary,
-  Secondary,
-  UserCombo,
-  UserInfo,
-} from '../../../../shared'
+import DeleteReviewerModal from './DeleteReviewerModal'
 
 const Card = styled.div`
   background-color: #f8f8f9;
@@ -53,12 +44,6 @@ const DateDisplay = styled.div`
   line-height: 1.2;
 `
 
-const ModalContainer = styled(LooseColumn)`
-  background-color: ${th('colorBackground')};
-  padding: ${grid(2.5)} ${grid(3)};
-  z-index: 10000;
-`
-
 const EmailInvitedReviewer = styled.div`
   color: ${th('colorPrimary')};
   display: flex;
@@ -81,7 +66,7 @@ const KanbanCard = ({
   onClickAction,
   removeReviewer,
 }) => {
-  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
   return (
     <Card onClick={onClickAction}>
       <AvatarGrid>
@@ -111,39 +96,14 @@ const KanbanCard = ({
           </EmailInvitedReviewer>
         )}
       </InfoGrid>
-      <Action onClick={() => setIsConfirmingDelete(true)}>Delete</Action>
-      <Modal isOpen={isConfirmingDelete}>
-        <ModalContainer>
-          Delete this reviewer?
-          <UserCombo>
-            <UserAvatar user={reviewer.user} />
-            <UserInfo>
-              <Primary>{`Reviewer: ${reviewer.user?.username}`}</Primary>
-              <Secondary>{reviewer.user?.defaultIdentity.identifier}</Secondary>
-            </UserInfo>
-          </UserCombo>
-          <MediumRow>
-            <ActionButton
-              onClick={() => {
-                removeReviewer({
-                  variables: {
-                    userId: reviewer.user.id,
-                    manuscriptId: manuscript.id,
-                  },
-                })
-                setIsConfirmingDelete(false)
-              }}
-              primary
-            >
-              Ok
-            </ActionButton>
-            &nbsp;
-            <ActionButton onClick={() => setIsConfirmingDelete(false)}>
-              Cancel
-            </ActionButton>
-          </MediumRow>
-        </ModalContainer>
-      </Modal>
+      <Action onClick={() => setConfirmingDelete(true)}>Delete</Action>
+      <DeleteReviewerModal
+        isOpen={confirmingDelete}
+        manuscript={manuscript}
+        onClose={() => setConfirmingDelete(false)}
+        removeReviewer={removeReviewer}
+        reviewer={reviewer}
+      />
     </Card>
   )
 }

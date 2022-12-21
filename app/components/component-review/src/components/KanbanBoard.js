@@ -109,8 +109,8 @@ const KanbanBoard = ({
                           key={status.value}
                           manuscript={version}
                           onClickAction={() => {}}
-                          reviewer={reviewer}
                           removeReviewer={removeReviewer}
+                          reviewer={reviewer}
                         />
                       ))}
                   </CardsWrapper>

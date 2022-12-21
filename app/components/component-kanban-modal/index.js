@@ -199,12 +199,14 @@ const Modal = ({
       }}
       {...props}
     >
-      <MainHeader>
-        <RowHeader subtitle={subtitle} title={title} />
-        <CloseButton alignSelf="flex-end" onClick={onClose}>
-          <Icon>x</Icon>
-        </CloseButton>
-      </MainHeader>
+      {title && (
+        <MainHeader>
+          <RowHeader subtitle={subtitle} title={title} />
+          <CloseButton alignSelf="flex-end" onClick={onClose}>
+            <Icon>x</Icon>
+          </CloseButton>
+        </MainHeader>
+      )}
 
       <ModalContainer>{children}</ModalContainer>
 
