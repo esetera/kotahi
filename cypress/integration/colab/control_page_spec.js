@@ -110,7 +110,7 @@ describe('control page tests', () => {
       ReviewPage.clickAccept()
       ReviewPage.clickSubmit()
       ReviewPage.waitThreeSec()
-      DashboardPage.clickControlPanel()
+      DashboardPage.clickControlPanelDecision()
       ControlPage.clickShow()
       ControlPage.getAcceptedToPublishReview().should('be.visible')
     })
@@ -152,7 +152,7 @@ describe('control page tests', () => {
         cy.login(name.role.reviewers.reviewer1, dashboard)
       })
       cy.awaitDisappearSpinner()
-      DashboardPage.clickControlPanel()
+      DashboardPage.clickControlPanelDecision()
     })
     it('review is hidden from the author of the article', () => {
       ControlPage.clickHideReviewToAuthor()

@@ -17,6 +17,7 @@ const StyledAction = styled(Action)`
 const EditorItemLinks = ({ manuscript, urlFrag }) => (
   <StyledActionGroup>
     <StyledAction
+      data-testid="control-panel-decision"
       to={{
         pathname: `${urlFrag}/versions/${
           manuscript.parentId || manuscript.id
@@ -28,6 +29,7 @@ const EditorItemLinks = ({ manuscript, urlFrag }) => (
       &nbsp;DECISION
     </StyledAction>
     <StyledAction
+      data-testid="control-panel-team"
       to={{
         pathname: `${urlFrag}/versions/${
           manuscript.parentId || manuscript.id

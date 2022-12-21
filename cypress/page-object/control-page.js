@@ -25,7 +25,7 @@ const ASSIGN_EDITOR_DROPDOWN = 'Assign editor'
 const INVITE_REVIEWER_DROPDOWN = 'Invite reviewers'
 const INVITE_REVIEWER_OPTION_LIST = 'react-select'
 const INVITE_REVIEWER_SUBMIT_BUTTON = 'button[type="submit"]'
-// TODO: Add invited reviewers here after kanban is done
+const INVITED_REVIEWERS = '[class*=KanbanCard__Card]'
 
 // Decision + Publishing
 const PUBLISH_BUTTON =
@@ -96,13 +96,7 @@ export const ControlPage = {
     this.getInviteReviewerOptionList().contains(uuid).click()
   },
   getInvitedReviewersList() {
-    // TODO: Fix this by reading kanban invited column
-    return {
-      its() {
-        return 0
-      },
-    }
-    // return cy.get(INVITED_REVIEWERS)
+    return cy.get(INVITED_REVIEWERS)
   },
   getNumberOfInvitedReviewers() {
     return this.getInvitedReviewersList().its('length')
