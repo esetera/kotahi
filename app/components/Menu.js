@@ -199,7 +199,7 @@ const Menu = ({
             ) : (
               <Item
                 {...navInfo}
-                active={location.pathname === navInfo.link}
+                active={location.pathname.includes(navInfo.link)}
                 key={navInfo.link}
               />
             ),
