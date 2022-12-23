@@ -213,11 +213,14 @@ const DecisionPage = ({ match }) => {
     },
   })
 
-  const { data: invitations } = useQuery(GET_INVITATIONS_FOR_MANUSCRIPT, {
-    variables: { id: data?.manuscript?.id },
-  })
+  const { loading: invitationLoading, data: invitations } = useQuery(
+    GET_INVITATIONS_FOR_MANUSCRIPT,
+    {
+      variables: { id: data?.manuscript?.id },
+    },
+  )
 
-  if (loading && !data) return <Spinner />
+  if (loading || invitationLoading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
   const updateManuscript = (versionId, manuscriptDelta) =>

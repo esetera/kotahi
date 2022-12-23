@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import styled, { useTheme } from 'styled-components'
 import { X } from 'react-feather'
 import { th, grid } from '@pubsweet/ui-toolkit'
@@ -45,6 +45,11 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
     if ((query || null) !== currentSearchQuery) applySearchQuery(query)
     setSearchText(query || '')
   }
+
+  useEffect(() => {
+    setIsOpen(!!currentSearchQuery)
+    setSearchText(currentSearchQuery || '')
+  }, [currentSearchQuery])
 
   return (
     <SearchContainer isOpen={isOpen}>

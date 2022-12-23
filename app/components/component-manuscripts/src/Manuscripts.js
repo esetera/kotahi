@@ -295,7 +295,10 @@ const Manuscripts = ({ history, ...props }) => {
 
       <SearchControl
         applySearchQuery={newQuery =>
-          applyQueryParams({ [URI_SEARCH_PARAM]: newQuery })
+          applyQueryParams({
+            [URI_SEARCH_PARAM]: newQuery,
+            [URI_PAGENUM_PARAM]: 1,
+          })
         }
         currentSearchQuery={currentSearchQuery}
       />
