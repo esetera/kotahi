@@ -1,10 +1,12 @@
 import { grid, th } from '@pubsweet/ui-toolkit'
+import { Action } from '@pubsweet/ui/dist/molecules'
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useState } from 'react'
 import { Send } from 'react-feather'
 import styled from 'styled-components'
 import { convertTimestampToRelativeDateString } from '../../../../../shared/dateUtils'
 import { UserAvatar } from '../../../../component-avatar/src'
+import DeleteReviewerModal from './DeleteReviewerModal'
 
 const Card = styled.div`
   background-color: #f8f8f9;
@@ -58,7 +60,14 @@ const SendIcon = styled(Send)`
   width: 15px;
 `
 
-const KanbanCard = ({ isInvitation, reviewer, onClickAction }) => {
+const KanbanCard = ({
+  reviewer,
+  isInvitation,
+  manuscript,
+  onClickAction,
+  removeReviewer,
+}) => {
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
   return (
     <Card onClick={onClickAction}>
       <AvatarGrid>
@@ -88,6 +97,14 @@ const KanbanCard = ({ isInvitation, reviewer, onClickAction }) => {
           </EmailInvitedReviewer>
         )}
       </InfoGrid>
+      <Action onClick={() => setConfirmingDelete(true)}>Delete</Action>
+      <DeleteReviewerModal
+        isOpen={confirmingDelete}
+        manuscript={manuscript}
+        onClose={() => setConfirmingDelete(false)}
+        removeReviewer={removeReviewer}
+        reviewer={reviewer}
+      />
     </Card>
   )
 }

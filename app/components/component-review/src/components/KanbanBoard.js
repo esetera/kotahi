@@ -53,7 +53,12 @@ const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.5);
 `
 
-const KanbanBoard = ({ invitations, version, versionNumber }) => {
+const KanbanBoard = ({
+  invitations,
+  version,
+  versionNumber,
+  removeReviewer,
+}) => {
   const reviewers = getMembersOfTeam(version, 'reviewer')
   const invitationIds = invitations.map(({ id }) => id)
   const emailAndWebReviewers = [...invitations, ...reviewers]
@@ -101,7 +106,9 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
                         <KanbanCard
                           isInvitation={invitationIds.includes(reviewer.id)}
                           key={reviewer.id}
+                          manuscript={version}
                           onClickAction={() => {}}
+                          removeReviewer={removeReviewer}
                           reviewer={reviewer}
                         />
                       ))}

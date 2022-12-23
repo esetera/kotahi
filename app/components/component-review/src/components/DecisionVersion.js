@@ -75,6 +75,7 @@ const DecisionVersion = ({
   updateTask,
   updateTasks,
   teams,
+  removeReviewer,
 }) => {
   // Hooks from the old world
   const location = useLocation()
@@ -283,6 +284,7 @@ const DecisionVersion = ({
             invitations={invitations}
             version={version}
             versionNumber={versionNumber}
+            removeReviewer={removeReviewer}
           />
           {isCurrentVersion && (
             <AdminSection>
