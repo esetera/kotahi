@@ -1,28 +1,30 @@
-import React, { useMemo, useState } from 'react'
-import { useLocation, useHistory } from 'react-router-dom'
+import React, { useMemo } from 'react'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
 import {
   CommsErrorBanner,
+  Pagination,
+  PaginationContainerShadowed,
   SectionContent,
   SectionHeader,
   Spinner,
   Title,
 } from '../../../../shared'
-import { Placeholder } from '../../style'
-import { getLatestVersion } from '../../utils'
 import {
   URI_SEARCH_PARAM,
   editorColumns,
 } from '../../../../../../config/journal/manuscripts'
+import {
+  extractSortData,
+  URI_PAGENUM_PARAM,
+} from '../../../../../shared/urlParamUtils'
 
-const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
-  const { search, pathname } = useLocation()
-  const uriQueryParams = new URLSearchParams(search)
-  const history = useHistory()
-  const [sortName, setSortName] = useState('created')
-  const [sortDirection, setSortDirection] = useState('DESC')
-
+const EditorTable = ({
+  urlFrag,
+  query: { data, loading, error },
+  uriQueryParams,
+  applyQueryParams,
+}) => {
   const fieldDefinitions = useMemo(() => {
     const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
     const defs = {}
@@ -38,35 +40,24 @@ const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
 
   const currentUser = data && data.currentUser
 
-  const editorLatestVersions = data.manuscriptsUserHasCurrentRoleIn.manuscripts.map(
-    getLatestVersion,
-  )
+  const currentSearchQuery = uriQueryParams.get(URI_SEARCH_PARAM)
+  const sortName = extractSortData(uriQueryParams).name
+  const sortDirection = extractSortData(uriQueryParams).direction
 
-  if (editorLatestVersions.length === 0) {
-    return (
-      <Placeholder>
-        You have not been assigned as editor to any manuscripts yet
-      </Placeholder>
-    )
-  }
+  const page = uriQueryParams.get(URI_PAGENUM_PARAM) || 1
+  const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
+  const { totalCount } = data.manuscriptsUserHasCurrentRoleIn
 
   const specialComponentValues = {
     urlFrag,
     currentUser,
   }
 
-  const currentSearchQuery = uriQueryParams.get(URI_SEARCH_PARAM)
-
   const displayProps = {
     uriQueryParams,
-    sortName,
+    columnToSortOn: sortName,
     sortDirection,
     currentSearchQuery,
-  }
-
-  const setFilter = (fieldName, filterValue) => {
-    uriQueryParams.set(fieldName, filterValue)
-    history.replace({ pathname, search: uriQueryParams.toString() })
   }
 
   const columnsProps = buildColumnDefinitions(
@@ -83,13 +74,20 @@ const EditorTable = ({ urlFrag, query: { data, loading, error } }) => {
           <Title>Manuscripts I&apos;m editor of</Title>
         </SectionHeader>
         <ManuscriptsTable
+          applyQueryParams={applyQueryParams}
           columnsProps={columnsProps}
-          manuscripts={editorLatestVersions}
-          setFilter={setFilter}
-          setSortDirection={setSortDirection}
-          setSortName={setSortName}
+          manuscripts={data.manuscriptsUserHasCurrentRoleIn.manuscripts}
           sortDirection={sortDirection}
           sortName={sortName}
+        />
+        <Pagination
+          limit={limit}
+          page={page}
+          PaginationContainer={PaginationContainerShadowed}
+          setPage={newPage =>
+            applyQueryParams({ [URI_PAGENUM_PARAM]: newPage })
+          }
+          totalCount={totalCount}
         />
       </SectionContent>
     </>

@@ -1135,7 +1135,15 @@ const resolvers = {
     },
     async manuscriptsUserHasCurrentRoleIn(
       _,
-      { wantedRoles, sort, offset, limit, filters, timezoneOffsetMinutes },
+      {
+        reviewerStatus,
+        wantedRoles,
+        sort,
+        offset,
+        limit,
+        filters,
+        timezoneOffsetMinutes,
+      },
       ctx,
     ) {
       const submissionForm = await Form.findOneByField('purpose', 'submit')
@@ -1175,7 +1183,11 @@ const resolvers = {
         if (
           latestVersion.teams.some(t =>
             t.members.some(member => {
-              return member.userId === ctx.user && wantedRoles.includes(t.role)
+              return (
+                member.userId === ctx.user &&
+                wantedRoles.includes(t.role) &&
+                (!reviewerStatus || member.status === reviewerStatus)
+              )
             }),
           )
         ) {
@@ -1498,7 +1510,7 @@ const typeDefs = `
     manuscript(id: ID!): Manuscript!
     manuscripts: [Manuscript]!
     paginatedManuscripts(offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
-    manuscriptsUserHasCurrentRoleIn(wantedRoles: [String]!, offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
+    manuscriptsUserHasCurrentRoleIn(reviewerStatus: String, wantedRoles: [String]!, offset: Int, limit: Int, sort: ManuscriptsSort, filters: [ManuscriptsFilter!]!, timezoneOffsetMinutes: Int): PaginatedManuscripts
     publishedManuscripts(sort:String, offset: Int, limit: Int): PaginatedManuscripts
     validateDOI(articleURL: String): validateDOIResponse
     validateSuffix(suffix: String): validateDOIResponse

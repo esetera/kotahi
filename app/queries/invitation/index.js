@@ -38,6 +38,7 @@ export const GET_INVITATIONS_FOR_MANUSCRIPT = gql`
       responseComment
       responseDate
       invitedPersonName
+      updated
       status
       invitedPersonType
       userId

@@ -55,17 +55,15 @@ const VersionNumber = styled.div`
 
 const KanbanBoard = ({ invitations, version, versionNumber }) => {
   const reviewers = getMembersOfTeam(version, 'reviewer')
-
-  const emailAndWebReviewers = invitations
-    ? [...invitations, ...reviewers]
-    : reviewers
+  const invitationIds = invitations.map(({ id }) => id)
+  const emailAndWebReviewers = [...invitations, ...reviewers]
 
   emailAndWebReviewers.sort((a, b) => {
     const aDate = a.responseComment ? a.responseDate : a.updated
 
     const bDate = b.responseComment ? b.responseDate : b.updated
 
-    return aDate - bDate
+    return new Date(bDate) - new Date(aDate)
   })
 
   return (
@@ -101,8 +99,9 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
                       )
                       .map(reviewer => (
                         <KanbanCard
+                          isInvitation={invitationIds.includes(reviewer.id)}
                           key={reviewer.id}
-                          onClickAction={() => { }}
+                          onClickAction={() => {}}
                           reviewer={reviewer}
                         />
                       ))}

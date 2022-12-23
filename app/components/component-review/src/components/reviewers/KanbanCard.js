@@ -58,7 +58,7 @@ const SendIcon = styled(Send)`
   width: 15px;
 `
 
-const KanbanCard = ({ reviewer, onClickAction }) => {
+const KanbanCard = ({ isInvitation, reviewer, onClickAction }) => {
   return (
     <Card onClick={onClickAction}>
       <AvatarGrid>
@@ -76,7 +76,7 @@ const KanbanCard = ({ reviewer, onClickAction }) => {
         <NameDisplay>
           {reviewer.user?.username ?? reviewer.invitedPersonName}
         </NameDisplay>
-        {reviewer.updated ? (
+        {isInvitation ? (
           <DateDisplay>
             Last updated{' '}
             {convertTimestampToRelativeDateString(reviewer.updated)}
@@ -105,6 +105,7 @@ KanbanCard.propTypes = {
     }).isRequired,
   }).isRequired,
   onClickAction: PropTypes.func.isRequired,
+  isInvitation: PropTypes.bool.isRequired,
 }
 
 export default KanbanCard
