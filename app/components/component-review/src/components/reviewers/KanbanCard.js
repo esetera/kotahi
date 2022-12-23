@@ -86,15 +86,15 @@ const KanbanCard = ({
           {reviewer.user?.username ?? reviewer.invitedPersonName}
         </NameDisplay>
         {isInvitation ? (
-          <DateDisplay>
-            Last updated{' '}
-            {convertTimestampToRelativeDateString(reviewer.updated)}
-          </DateDisplay>
-        ) : (
           <EmailInvitedReviewer>
             Email invited
             <SendIcon invitationStatus={reviewer.status.toLowerCase()} />
           </EmailInvitedReviewer>
+        ) : (
+          <DateDisplay>
+            Last updated{' '}
+            {convertTimestampToRelativeDateString(reviewer.updated)}
+          </DateDisplay>
         )}
       </InfoGrid>
       <Action onClick={() => setConfirmingDelete(true)}>Delete</Action>
