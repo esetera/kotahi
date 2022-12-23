@@ -18,7 +18,6 @@ const styles = {
     backgroundColor: 'white',
     border: 'none',
     borderRadius: '4px',
-    minWidth: '30%',
     maxWidth: '60%',
     maxHeight: '80%',
     margin: '0px',
@@ -93,7 +92,6 @@ const ButtonPanel = styled.div`
   justify-content: space-between;
   padding: 1rem ${grid(1.5)};
   width: 100%;
-  z-index: 10001;
 `
 
 const ButtonContainer = styled.div`
@@ -199,19 +197,23 @@ const Modal = ({
       }}
       {...props}
     >
-      <MainHeader>
-        <RowHeader subtitle={subtitle} title={title} />
-        <CloseButton alignSelf="flex-end" onClick={onClose}>
-          <Icon>x</Icon>
-        </CloseButton>
-      </MainHeader>
+      {title && (
+        <MainHeader>
+          <RowHeader subtitle={subtitle} title={title} />
+          <CloseButton alignSelf="flex-end" onClick={onClose}>
+            <Icon>x</Icon>
+          </CloseButton>
+        </MainHeader>
+      )}
 
       <ModalContainer>{children}</ModalContainer>
 
-      <ButtonPanel>
-        <ButtonContainer>{leftActions && leftActions}</ButtonContainer>
-        <ButtonContainer>{rightActions && rightActions}</ButtonContainer>
-      </ButtonPanel>
+      {(leftActions || rightActions) && (
+        <ButtonPanel>
+          <ButtonContainer>{leftActions}</ButtonContainer>
+          <ButtonContainer>{rightActions}</ButtonContainer>
+        </ButtonPanel>
+      )}
     </ReactModal>
   )
 }

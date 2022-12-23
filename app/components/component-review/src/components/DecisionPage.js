@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
-import { useQuery, useMutation, gql, useApolloClient } from '@apollo/client'
-import { set, debounce } from 'lodash'
+import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client'
 import config from 'config'
-import DecisionVersions from './DecisionVersions'
-import { Spinner, CommsErrorBanner } from '../../../shared'
+import { debounce, set } from 'lodash'
+import PropTypes from 'prop-types'
+import React, { useEffect, useState } from 'react'
 import { fragmentFields } from '../../../component-submit/src/userManuscriptFormQuery'
+import { CommsErrorBanner, Spinner } from '../../../shared'
+import DecisionVersions from './DecisionVersions'
 
 import {
-  query,
-  sendEmail,
-  makeDecisionMutation,
-  updateReviewMutation,
-  publishManuscriptMutation,
-  setShouldPublishFieldMutation,
   addReviewerMutation,
+  makeDecisionMutation,
+  publishManuscriptMutation,
+  query,
+  removeReviewerMutation,
+  sendEmail,
+  setShouldPublishFieldMutation,
+  updateReviewMutation,
 } from './queries'
 
 import {
@@ -27,15 +28,15 @@ import {
 import { GET_INVITATIONS_FOR_MANUSCRIPT } from '../../../../queries/invitation'
 import {
   CREATE_TEAM_MUTATION,
-  UPDATE_TEAM_MUTATION,
   UPDATE_MEMBER_STATUS_MUTATION,
+  UPDATE_TEAM_MUTATION,
 } from '../../../../queries/team'
 import { validateDoi, validateSuffix } from '../../../../shared/commsUtils'
 import {
-  UPDATE_PENDING_COMMENT,
-  COMPLETE_COMMENTS,
   COMPLETE_COMMENT,
+  COMPLETE_COMMENTS,
   DELETE_PENDING_COMMENT,
+  UPDATE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
@@ -167,6 +168,8 @@ const DecisionPage = ({ match }) => {
       })
     },
   })
+
+  const [removeReviewer] = useMutation(removeReviewerMutation)
 
   const [updateTask] = useMutation(UPDATE_TASK, {
     update(cache, { data: { updateTask: updatedTask } }) {
@@ -368,6 +371,7 @@ const DecisionPage = ({ match }) => {
       manuscript={manuscript}
       publishManuscript={publishManuscript}
       refetch={refetch}
+      removeReviewer={removeReviewer}
       reviewers={data?.manuscript?.reviews}
       reviewForm={reviewForm}
       selectedEmail={selectedEmail}
