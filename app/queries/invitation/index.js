@@ -37,7 +37,9 @@ export const GET_INVITATIONS_FOR_MANUSCRIPT = gql`
       declinedReason
       responseComment
       responseDate
+      toEmail
       invitedPersonName
+      updated
       status
       invitedPersonType
       userId

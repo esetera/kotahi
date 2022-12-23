@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom'
 export const URI_SEARCH_PARAM = 'search'
 export const URI_PAGENUM_PARAM = 'pagenum'
 export const URI_SORT_PARAM = 'sort'
+export const URI_REVIEWER_STATUS_PARAM = 'reviewerStatusBadge' // 'your status' column on reviews dashboard tab
 
 /**
  * Extracts sortName and sortDirection from url query param of the form <sort_name>_<sort_direction>
