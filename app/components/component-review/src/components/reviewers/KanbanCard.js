@@ -62,6 +62,7 @@ const SendIcon = styled(Send)`
 
 const KanbanCard = ({
   reviewer,
+  isInvitation,
   manuscript,
   onClickAction,
   removeReviewer,
@@ -84,7 +85,7 @@ const KanbanCard = ({
         <NameDisplay>
           {reviewer.user?.username ?? reviewer.invitedPersonName}
         </NameDisplay>
-        {reviewer.updated ? (
+        {isInvitation ? (
           <DateDisplay>
             Last updated{' '}
             {convertTimestampToRelativeDateString(reviewer.updated)}
@@ -121,6 +122,7 @@ KanbanCard.propTypes = {
     }).isRequired,
   }).isRequired,
   onClickAction: PropTypes.func.isRequired,
+  isInvitation: PropTypes.bool.isRequired,
 }
 
 export default KanbanCard

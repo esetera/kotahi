@@ -6,6 +6,8 @@ import {
   URI_PAGENUM_PARAM,
   URI_SORT_PARAM,
 } from '../../../shared/urlParamUtils'
+import { Placeholder } from '../../component-dashboard/src/style'
+import { getNumVersions } from '../../component-dashboard/src/utils'
 
 const ManuscriptsTable = ({
   applyQueryParams,
@@ -41,19 +43,26 @@ const ManuscriptsTable = ({
           />
         ))}
       </ManuscriptsHeaderRow>
-      {manuscripts.map((manuscript, key) => {
-        const latestVersion = manuscript.manuscriptVersions?.[0] || manuscript
+      {manuscripts.length === 0 ? (
+        <Placeholder>No matching manuscripts were found</Placeholder>
+      ) : (
+        manuscripts.map((manuscript, key) => {
+          const latestVersion = {
+            numVersions: getNumVersions(manuscript),
+            ...(manuscript.manuscriptVersions?.[0] || manuscript),
+          }
 
-        return (
-          <ManuscriptRow
-            columnDefinitions={columnsProps}
-            getLink={getLink}
-            key={latestVersion.id}
-            manuscript={latestVersion}
-            setFilter={setFilter}
-          />
-        )
-      })}
+          return (
+            <ManuscriptRow
+              columnDefinitions={columnsProps}
+              getLink={getLink}
+              key={latestVersion.id}
+              manuscript={latestVersion}
+              setFilter={setFilter}
+            />
+          )
+        })
+      )}
     </ManuscriptsTableStyled>
   )
 }

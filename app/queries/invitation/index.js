@@ -39,6 +39,7 @@ export const GET_INVITATIONS_FOR_MANUSCRIPT = gql`
       responseDate
       toEmail
       invitedPersonName
+      updated
       status
       invitedPersonType
       userId
