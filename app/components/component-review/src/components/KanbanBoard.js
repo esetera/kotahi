@@ -63,7 +63,7 @@ const KanbanBoard = ({
 
   const emailAndWebReviewers = invitations
     ? [...invitations, ...reviewers]
-    : reviewers
+    : [...reviewers]
 
   emailAndWebReviewers.sort((a, b) => {
     const aDate = a.responseComment ? a.responseDate : a.updated
@@ -108,7 +108,7 @@ const KanbanBoard = ({
                         <KanbanCard
                           key={status.value}
                           manuscript={version}
-                          onClickAction={() => {}}
+                          onClickAction={() => { }}
                           removeReviewer={removeReviewer}
                           reviewer={reviewer}
                         />
