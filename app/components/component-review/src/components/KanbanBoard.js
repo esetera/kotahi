@@ -108,7 +108,7 @@ const KanbanBoard = ({
                         <KanbanCard
                           key={status.value}
                           manuscript={version}
-                          onClickAction={() => { }}
+                          onClickAction={() => {}}
                           removeReviewer={removeReviewer}
                           reviewer={reviewer}
                         />

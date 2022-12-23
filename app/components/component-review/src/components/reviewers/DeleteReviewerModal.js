@@ -57,9 +57,14 @@ const DeleteReviewerModal = ({
           <UserAvatar user={reviewer.user} />
           <UserInfo>
             <Primary>
-              Reviewer: <ReviewerName>{reviewer.user?.username}</ReviewerName>
+              Reviewer:{' '}
+              <ReviewerName>
+                {reviewer.user?.username ?? reviewer.invitedPersonName}
+              </ReviewerName>
             </Primary>
-            <Secondary>{reviewer.user?.defaultIdentity.identifier}</Secondary>
+            <Secondary>
+              {reviewer.user?.defaultIdentity.identifier ?? reviewer.toEmail}
+            </Secondary>
           </UserInfo>
         </UserCombo>
       </ModalContainer>
