@@ -55,12 +55,13 @@ const resolvers = {
     },
     async updateInvitationResponse(
       _,
-      { id, responseComment, declinedReason },
+      { id, responseComment, declinedReason, status },
       ctx,
     ) {
       const result = await models.Invitation.query().updateAndFetchById(id, {
         responseComment,
         declinedReason,
+        status,
       })
 
       return result
@@ -162,7 +163,7 @@ extend type Query {
 
 extend type Mutation {
   updateInvitationStatus(id: ID, status: String, userId: ID,  responseDate: DateTime ): Invitation
-  updateInvitationResponse(id: ID,  responseComment: String,  declinedReason: String ): Invitation
+  updateInvitationResponse(id: ID,  responseComment: String,  declinedReason: String, status: String ): Invitation
   addEmailToBlacklist(email: String!): BlacklistEmail
   assignUserAsAuthor(manuscriptId: ID!, userId: ID!): Team
   updateSharedStatusForInvitedReviewer(invitationId: ID!, isShared: Boolean!): Invitation!
