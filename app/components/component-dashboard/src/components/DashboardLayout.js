@@ -1,5 +1,5 @@
 import { Button } from '@pubsweet/ui'
-import { th } from '@pubsweet/ui-toolkit'
+import { th, grid } from '@pubsweet/ui-toolkit'
 import React from 'react'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
@@ -23,6 +23,11 @@ import { FlexRow } from '../../../../globals'
 const TabLink = styled(Link)`
   color: ${th('colorText')};
   text-decoration: none;
+`
+
+const Tabs = styled.div`
+  display: flex;
+  margin-top: ${grid(1)};
 `
 
 const DashboardLayout = ({
@@ -82,7 +87,7 @@ const DashboardLayout = ({
       </HeadingWithAction>
 
       <HiddenTabsContainer sticky={false}>
-        <div style={{ display: 'flex' }}>
+        <Tabs>
           {dashboardPages.map(({ href, label }) => (
             <TabContainer key={href}>
               <TabLink to={urlFrag + href}>
@@ -90,7 +95,7 @@ const DashboardLayout = ({
               </TabLink>
             </TabContainer>
           ))}
-        </div>
+        </Tabs>
       </HiddenTabsContainer>
       {children}
     </Container>
