@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { convertTimestampToDateString } from '../../../../shared/dateUtils'
 import { UserAvatar } from '../../../component-avatar/src'
 import Modal from '../../../component-kanban-modal'
-import { ErrorStatus } from '../../../shared'
+import { ConfigurableStatus } from '../../../shared'
 
 const ModalBody = styled.div`
   display: flex;
@@ -22,20 +22,14 @@ const ModalBodyRow = styled.div`
   display: flex;
   flex-direction: row;
   gap: 10px;
-  justify-content: flex-start;
 `
 
 const StyledH4 = styled.h4`
   font-weight: 600;
 `
 
-const DeclinedBadge = styled(ErrorStatus)`
-  align-items: center;
-  background-color: #c23d20;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  width: 125px;
+const DeclinedBadge = styled(ConfigurableStatus)`
+  background: #c23d20;
 `
 
 const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
@@ -60,11 +54,14 @@ const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
         </ModalBodyRow>
         <ModalBodyRow>
           <StyledH4>Status</StyledH4>
-          <DeclinedBadge>Declined</DeclinedBadge>
+          <DeclinedBadge lightText>Declined</DeclinedBadge>
+          {invitation.declinedReason === 'DO_NOT_CONTACT' && (
+            <DeclinedBadge lightText>Opted Out</DeclinedBadge>
+          )}
         </ModalBodyRow>
         <ResponseCommentRow>
           <StyledH4>Declined Reason</StyledH4>
-          <p>{invitation.responseComment}</p>
+          <p>{invitation.responseComment || 'No reason provided.'}</p>
         </ResponseCommentRow>
       </ModalBody>
     </Modal>

@@ -53,15 +53,17 @@ const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.5);
 `
 
-const KanbanBoard = ({
-  invitations,
-  version,
-  versionNumber,
-  removeReviewer,
-}) => {
+const KanbanBoard = ({ invitations, version, versionNumber }) => {
   const reviewers = getMembersOfTeam(version, 'reviewer')
-  const invitationIds = invitations.map(({ id }) => id)
-  const emailAndWebReviewers = [...invitations, ...reviewers]
+
+  const emailAndWebReviewers = [
+    ...invitations.map(invitation => {
+      return { ...invitation, isEmail: true }
+    }),
+    ...reviewers.map(reviewer => {
+      return { ...reviewer, isEmail: false }
+    }),
+  ]
 
   emailAndWebReviewers.sort((a, b) => {
     const aDate = a.responseComment ? a.responseDate : a.updated
@@ -85,7 +87,9 @@ const KanbanBoard = ({
         <SectionRow style={{ padding: 0 }}>
           <Kanban>
             {statuses
-              .filter(status => status.value.toLowerCase() !== 'rejected')
+              .filter(
+                status => !['rejected'].includes(status.value.toLowerCase()),
+              )
               .map(status => (
                 <Column key={status.value}>
                   <StatusLabel
@@ -104,12 +108,12 @@ const KanbanBoard = ({
                       )
                       .map(reviewer => (
                         <KanbanCard
-                          isInvitation={invitationIds.includes(reviewer.id)}
                           key={reviewer.id}
-                          manuscript={version}
                           onClickAction={() => {}}
-                          removeReviewer={removeReviewer}
                           reviewer={reviewer}
+                          showEmailInvitation={
+                            reviewer.isEmail && status.value === 'invited'
+                          }
                         />
                       ))}
                   </CardsWrapper>

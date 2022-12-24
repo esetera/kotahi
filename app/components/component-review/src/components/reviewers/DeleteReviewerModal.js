@@ -63,7 +63,7 @@ const DeleteReviewerModal = ({
               </ReviewerName>
             </Primary>
             <Secondary>
-              {reviewer.user?.defaultIdentity.identifier ?? reviewer.toEmail}
+              {reviewer.user?.defaultIdentity?.identifier ?? reviewer.toEmail}
             </Secondary>
           </UserInfo>
         </UserCombo>
