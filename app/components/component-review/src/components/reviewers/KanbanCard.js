@@ -38,7 +38,7 @@ const NameDisplay = styled.div`
 
 const DateDisplay = styled.div`
   color: gray;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.2;
 `
 
@@ -58,7 +58,7 @@ const EmailDisplay = styled(DateDisplay)`
 `
 
 const MailIcon = styled(Mail)`
-  height: 10px;
+  height: 12px;
   margin-right: calc(${th('gridUnit')} / 2);
   width: auto;
 `
@@ -68,6 +68,7 @@ const KanbanCard = ({ reviewer, showEmailInvitation, onClickAction }) => {
     <Card onClick={onClickAction}>
       <LeftSide>
         <UserAvatar
+          isClickable={!!reviewer.user}
           showHoverProfile={false}
           user={
             reviewer.user ?? {

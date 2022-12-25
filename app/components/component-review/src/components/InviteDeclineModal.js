@@ -1,4 +1,5 @@
 import React from 'react'
+import { th } from '@pubsweet/ui-toolkit'
 import styled from 'styled-components'
 import { convertTimestampToDateString } from '../../../../shared/dateUtils'
 import { UserAvatar } from '../../../component-avatar/src'
@@ -32,6 +33,10 @@ const DeclinedBadge = styled(ConfigurableStatus)`
   background: #c23d20;
 `
 
+const TextChange = styled.div`
+  color: ${props => (props.gray ? th('colorSecondary') : 'black')};
+`
+
 const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
   return (
     <Modal
@@ -61,7 +66,9 @@ const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
         </ModalBodyRow>
         <ResponseCommentRow>
           <StyledH4>Declined Reason</StyledH4>
-          <p>{invitation.responseComment || 'No reason provided.'}</p>
+          <TextChange gray={!invitation.responseComment}>
+            {invitation.responseComment || 'No reason provided.'}
+          </TextChange>
         </ResponseCommentRow>
       </ModalBody>
     </Modal>

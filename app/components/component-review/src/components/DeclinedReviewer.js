@@ -93,13 +93,11 @@ const DeclinedReviewer = ({ declined }) => {
             </Secondary>
           </Date>
         </LeftSide>
-        {declined.responseComment && (
-          <RightSide>
-            <UserAction onClick={() => setModalOpen(true)}>
-              View Details
-            </UserAction>
-          </RightSide>
-        )}
+        <RightSide>
+          <UserAction onClick={() => setModalOpen(true)}>
+            View Details
+          </UserAction>
+        </RightSide>
       </DeclinedReviewerContainer>
     </>
   )

@@ -74,7 +74,7 @@ const Avatar = props => {
       <ConditionalWrap
         condition={!!user?.username && isClickable}
         wrap={() => (
-          <AvatarLink to={user?.id ? `${urlFrag}/profile/${user?.id}` : '#'}>
+          <AvatarLink to={`${urlFrag}/profile/${user?.id}`}>
             <AvatarImage
               mobilesize={mobilesize}
               size={size}
