@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Formik } from 'formik'
 import ReviewerForm from './ReviewerForm'
+import { Checkbox } from '@pubsweet/ui'
 import {
   SectionRow,
   SectionContent,
@@ -29,30 +30,41 @@ const InviteReviewer = ({
     // refetchManuscriptData()
   }
 
+  const [isNewUser, setIsNewUser] = useState(false)
+  
   return (
-    <Formik
-      displayName="reviewers"
-      initialValues={{ user: undefined }}
-      onSubmit={values =>
-        addReviewer({
-          variables: {
-            userId: values.user.id,
-            manuscriptId: manuscript.id,
-          },
-        })
-      }
-    >
-      {props => (
-        <SectionContent>
-          <SectionHeader>
-            <Title>Invite Reviewers</Title>
-          </SectionHeader>
-          <SectionRow>
-            <ReviewerForm {...props} reviewerUsers={reviewerUsers} />
-          </SectionRow>
-        </SectionContent>
-      )}
-    </Formik>
+    <>
+      <Formik
+        displayName="reviewers"
+        initialValues={{ user: undefined }}
+        onSubmit={values =>
+          addReviewer({
+            variables: {
+              userId: values.user.id,
+              manuscriptId: manuscript.id,
+            },
+          })
+        }
+      >
+        {props => (
+          <>
+            <SectionContent>
+              <SectionHeader>
+                <Title>Invite Reviewers</Title>
+              </SectionHeader>
+              <SectionRow>
+                <ReviewerForm
+                  {...props}
+                  reviewerUsers={reviewerUsers}
+                  isNewUser={isNewUser}
+                  setIsNewUser={setIsNewUser}
+                />
+              </SectionRow>
+            </SectionContent>
+          </>
+        )}
+      </Formik>
+    </>
   )
 }
 

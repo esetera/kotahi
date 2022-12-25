@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'formik'
-import { Button } from '@pubsweet/ui'
+import { Button, Checkbox } from '@pubsweet/ui'
 import { required } from 'xpub-validators'
 import styled from 'styled-components'
 // import 'react-select1/dist/react-select.css'
@@ -45,20 +45,29 @@ ReviewerInput.propTypes = {
   reviewerUsers: PropTypes.arrayOf(PropTypes.shape({}).isRequired).isRequired,
 }
 
-const ReviewerForm = ({ isValid, handleSubmit, reviewerUsers }) => (
-  <form onSubmit={handleSubmit}>
-    <FieldAndButton>
-      <Field
-        component={ReviewerInput}
-        name="user"
-        reviewerUsers={reviewerUsers}
-        validate={required}
-      />
-      <Button disabled={!isValid} primary type="submit">
-        Invite reviewer
-      </Button>
-    </FieldAndButton>
-  </form>
+const ReviewerForm = ({
+  isValid,
+  handleSubmit,
+  reviewerUsers,
+  isNewUser,
+  setIsNewUser,
+}) => (
+  <>
+    <form onSubmit={handleSubmit}>
+      <Checkbox defaultChecked={false} checked={isNewUser} label="New User" onChange={() => setIsNewUser(!isNewUser)} />
+      <FieldAndButton>
+        <Field
+          component={ReviewerInput}
+          name="user"
+          reviewerUsers={reviewerUsers}
+          validate={required}
+        />
+        <Button disabled={!isValid} primary type="submit">
+          Invite reviewer
+        </Button>
+      </FieldAndButton>
+    </form>
+  </>
 )
 
 ReviewerForm.propTypes = {
