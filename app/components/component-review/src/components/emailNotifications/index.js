@@ -7,7 +7,7 @@ import SelectReceiver from './SelectReceiver'
 import SelectEmailTemplate from './SelectEmailTemplate'
 import { convertTimestampToDateString } from '../../../../../shared/dateUtils'
 import ActionButton from '../../../../shared/ActionButton'
-import { sendEmailHandler } from './emailUtils' 
+import { sendEmailHandler } from './emailUtils'
 
 const UserEmailWrapper = styled.div`
   font-size: ${th('fontSizeBaseSmall')};
@@ -108,17 +108,19 @@ const EmailNotifications = ({
           selectedEmailTemplate={selectedTemplate}
         />
         <ActionButton
-          onClick={() => sendEmailHandler(
-            manuscript,
-            currentUser,
-            sendNotifyEmail,
-            sendChannelMessageCb,
-            setNotificationStatus,
-            selectedTemplate,
-            selectedEmail,
-            externalEmail,
-            isEmailAddressOptedOut,
-          )}
+          onClick={() =>
+            sendEmailHandler(
+              manuscript,
+              currentUser,
+              sendNotifyEmail,
+              sendChannelMessageCb,
+              setNotificationStatus,
+              selectedTemplate,
+              selectedEmail,
+              externalEmail,
+              isEmailAddressOptedOut,
+            )
+          }
           primary
           status={notificationStatus}
         >

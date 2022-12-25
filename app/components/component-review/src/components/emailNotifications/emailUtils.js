@@ -260,24 +260,24 @@ export const sendEmailHandler = async (
   setNotificationStatus(responseStatus ? 'success' : 'failure')
 
   if (responseStatus) {
-      const selectedTempl = emailTemplateOptions.find(
-        template => template.value === message.selectedTemplate,
-      ).label
+    const selectedTempl = emailTemplateOptions.find(
+      template => template.value === message.selectedTemplate,
+    ).label
 
-      const receiverName = message.externalEmail
-        ? message.externalName
-        : options.find(user => user.value === message.selectedEmail).userName
+    const receiverName = message.externalEmail
+      ? message.externalName
+      : options.find(user => user.value === message.selectedEmail).userName
 
-      const date = Date.now()
+    const date = Date.now()
 
-      const body = `${convertTimestampToDateString(
-        date,
-      )} - ${selectedTempl} sent by ${currentUser.username} to ${receiverName}`
+    const body = `${convertTimestampToDateString(
+      date,
+    )} - ${selectedTempl} sent by ${currentUser.username} to ${receiverName}`
 
-      const channelId = message.manuscript.channels.find(
-        channel => channel.topic === 'Editorial discussion',
-      ).id
+    const channelId = message.manuscript.channels.find(
+      channel => channel.topic === 'Editorial discussion',
+    ).id
 
-      await sendChannelMessageCb({ content: body, channelId })
+    await sendChannelMessageCb({ content: body, channelId })
   }
 }
