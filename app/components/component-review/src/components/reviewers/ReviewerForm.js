@@ -54,18 +54,37 @@ const ReviewerForm = ({
 }) => (
   <>
     <form onSubmit={handleSubmit}>
-      <Checkbox defaultChecked={false} checked={isNewUser} label="New User" onChange={() => setIsNewUser(!isNewUser)} />
-      <FieldAndButton>
-        <Field
-          component={ReviewerInput}
-          name="user"
-          reviewerUsers={reviewerUsers}
-          validate={required}
-        />
-        <Button disabled={!isValid} primary type="submit">
-          Invite reviewer
-        </Button>
-      </FieldAndButton>
+      <Checkbox
+        defaultChecked={false}
+        checked={isNewUser}
+        label="New User"
+        onChange={() => setIsNewUser(!isNewUser)}
+      />
+      {isNewUser ? (
+        <FieldAndButton>
+          <Field
+            component={ReviewerInput}
+            name="user"
+            reviewerUsers={reviewerUsers}
+            validate={required}
+          />
+          <Button disabled={!isValid} primary type="submit">
+            Invite reviewer
+          </Button>
+        </FieldAndButton>
+      ) : (
+        <FieldAndButton>
+          <Field
+            component={ReviewerInput}
+            name="user"
+            reviewerUsers={reviewerUsers}
+            validate={required}
+          />
+          <Button disabled={!isValid} primary type="submit">
+            Invite reviewer
+          </Button>
+        </FieldAndButton>
+      )}
     </form>
   </>
 )

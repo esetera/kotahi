@@ -46,7 +46,7 @@ const InviteReviewer = ({
           })
         }
       >
-        {props => (
+        {formikProps => (
           <>
             <SectionContent>
               <SectionHeader>
@@ -54,7 +54,7 @@ const InviteReviewer = ({
               </SectionHeader>
               <SectionRow>
                 <ReviewerForm
-                  {...props}
+                  {...formikProps}
                   reviewerUsers={reviewerUsers}
                   isNewUser={isNewUser}
                   setIsNewUser={setIsNewUser}
