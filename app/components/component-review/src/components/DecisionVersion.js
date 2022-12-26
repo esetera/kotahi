@@ -280,12 +280,6 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          <KanbanBoard
-            invitations={invitations}
-            version={version}
-            versionNumber={versionNumber}
-            removeReviewer={removeReviewer}
-          />
           {isCurrentVersion && (
             <AdminSection>
               <InviteReviewer
@@ -295,6 +289,12 @@ const DecisionVersion = ({
               />
             </AdminSection>
           )}
+          <KanbanBoard
+            invitations={invitations}
+            removeReviewer={removeReviewer}
+            version={version}
+            versionNumber={versionNumber}
+          />
         </>
       ),
       key: `team_${version.id}`,

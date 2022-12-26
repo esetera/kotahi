@@ -1,5 +1,5 @@
 import { Button } from '@pubsweet/ui'
-import { th } from '@pubsweet/ui-toolkit'
+import { th, grid } from '@pubsweet/ui-toolkit'
 import React from 'react'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
@@ -25,6 +25,11 @@ const TabLink = styled(Link)`
   text-decoration: none;
 `
 
+const Tabs = styled.div`
+  display: flex;
+  margin-top: ${grid(1)};
+`
+
 const DashboardLayout = ({
   createNewTaskAlerts, // For testing only. Pass in null to disable.
   urlFrag,
@@ -40,15 +45,15 @@ const DashboardLayout = ({
   const dashboardPages = [
     {
       href: '/dashboard/submissions',
-      label: 'Submissions',
+      label: 'My Submissions',
     },
     {
       href: '/dashboard/reviews',
-      label: 'Reviews',
+      label: 'To Review',
     },
     {
       href: '/dashboard/edits',
-      label: 'Edits',
+      label: "Manuscripts I'm Editor of",
     },
   ]
 
@@ -82,7 +87,7 @@ const DashboardLayout = ({
       </HeadingWithAction>
 
       <HiddenTabsContainer sticky={false}>
-        <div style={{ display: 'flex' }}>
+        <Tabs>
           {dashboardPages.map(({ href, label }) => (
             <TabContainer key={href}>
               <TabLink to={urlFrag + href}>
@@ -90,7 +95,7 @@ const DashboardLayout = ({
               </TabLink>
             </TabContainer>
           ))}
-        </div>
+        </Tabs>
       </HiddenTabsContainer>
       {children}
     </Container>

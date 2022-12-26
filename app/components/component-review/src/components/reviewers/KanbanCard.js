@@ -18,6 +18,7 @@ const Card = styled.div`
 
   &:hover {
     box-shadow: 0px 9px 5px -6px #bfbfbf;
+    cursor: pointer;
     transition: 0.3s ease;
   }
 `
