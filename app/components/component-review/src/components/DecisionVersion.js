@@ -294,7 +294,7 @@ const DecisionVersion = ({
             removeReviewer={removeReviewer}
             version={version}
             versionNumber={versionNumber}
-          />{' '}
+          />
         </>
       ),
       key: `team_${version.id}`,
