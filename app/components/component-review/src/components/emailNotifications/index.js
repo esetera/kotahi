@@ -111,6 +111,7 @@ const EmailNotifications = ({
           onClick={() =>
             sendEmailHandler(
               manuscript,
+              isNewUser,
               currentUser,
               sendNotifyEmail,
               sendChannelMessageCb,
@@ -118,6 +119,7 @@ const EmailNotifications = ({
               selectedTemplate,
               selectedEmail,
               externalEmail,
+              externalName,
               isEmailAddressOptedOut,
             )
           }

@@ -290,6 +290,10 @@ const DecisionVersion = ({
                 addReviewer={addReviewer}
                 manuscript={version}
                 reviewerUsers={allUsers}
+                currentUser={currentUser}
+                sendNotifyEmail={sendNotifyEmail}
+                sendChannelMessageCb={sendChannelMessageCb}
+                isEmailAddressOptedOut={isEmailAddressOptedOut}
               />
             </AdminSection>
           )}

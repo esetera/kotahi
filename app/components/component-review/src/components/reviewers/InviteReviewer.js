@@ -8,12 +8,18 @@ import {
   SectionHeader,
   Title,
 } from '../../../../shared'
+import { sendEmailHandler } from '../emailNotifications/emailUtils'
 
 const InviteReviewer = ({
   reviewerUsers,
   manuscript,
   addReviewer,
   updateSharedStatusForInvitedReviewer,
+  currentUser,
+  sendNotifyEmail,
+  sendChannelMessageCb,
+  selectedEmail,
+  isEmailAddressOptedOut,
 }) => {
   // eslint-disable-next-line
   const toggleEmailInvitedReviewerSharedStatus = async (
@@ -31,25 +37,36 @@ const InviteReviewer = ({
   }
 
   const [isNewUser, setIsNewUser] = useState(false)
-  
+  const [notificationStatus, setNotificationStatus] = useState(null)
+
   return (
     <>
       <Formik
         displayName="reviewers"
-        initialValues={{ user: undefined, email: undefined, name:undefined }}
+        initialValues={{ user: undefined, email: undefined, name: undefined }}
         onSubmit={values => {
-            if(isNewUser) {
-              addReviewer({
-                variables: {
-                  userId: values.user.id,
-                  manuscriptId: manuscript.id,
-                },
-              })
-            } else {
-              
-            }
+          if (isNewUser) {
+            addReviewer({
+              variables: {
+                userId: values.user.id,
+                manuscriptId: manuscript.id,
+              },
+            })
+          } else {
+            sendEmailHandler(
+              manuscript,
+              isNewUser,
+              currentUser,
+              sendNotifyEmail,
+              sendChannelMessageCb,
+              setNotificationStatus,
+              'reviewerInvitationEmailTemplate',
+              selectedEmail,
+              externalEmail,
+              isEmailAddressOptedOut,
+            )
           }
-        }
+        }}
       >
         {formikProps => (
           <>

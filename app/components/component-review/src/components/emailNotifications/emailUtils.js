@@ -219,6 +219,7 @@ const emailTemplateOptions = [
 
 export const sendEmailHandler = async (
   manuscript,
+  isNewUser,
   currentUser,
   sendNotifyEmail,
   sendChannelMessageCb,
@@ -226,6 +227,7 @@ export const sendEmailHandler = async (
   selectedTemplate,
   selectedEmail,
   externalEmail,
+  externalName,
   isEmailAddressOptedOut,
 ) => {
   setNotificationStatus('pending')
