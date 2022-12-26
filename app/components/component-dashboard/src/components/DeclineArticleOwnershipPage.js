@@ -127,7 +127,6 @@ const DeclineArticleOwnershipPage = ({ match }) => {
                     variables: {
                       id: invitationId,
                       responseComment: feedbackComment,
-                      status: checked ? 'REJECTED' : 'DECLINED',
                       declinedReason: checked ? 'DO_NOT_CONTACT' : 'OTHER',
                     },
                   })
