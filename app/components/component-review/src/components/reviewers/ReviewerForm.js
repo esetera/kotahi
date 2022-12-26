@@ -7,6 +7,7 @@ import styled from 'styled-components'
 // import 'react-select1/dist/react-select.css'
 import { grid } from '@pubsweet/ui-toolkit'
 import { Select } from '../../../../shared'
+import { TextField } from '@pubsweet/ui/dist/atoms'
 
 const OptionRenderer = option => (
   <div>
@@ -19,6 +20,17 @@ const FieldAndButton = styled.div`
   display: grid;
   grid-gap: ${grid(2)};
   grid-template-columns: ${grid(30)} ${grid(10)};
+`
+
+const FieldsAndButton = styled.div`
+  display: grid;
+  grid-gap: ${grid(3)};
+  grid-template-columns: ${grid(30)} ${grid(30)} ${grid(10)};
+`
+
+const InputField = styled(TextField)`
+  height: 40px;
+  margin-bottom: 0;
 `
 
 const ReviewerInput = ({ field, form: { setFieldValue }, reviewerUsers }) => (
@@ -34,6 +46,28 @@ const ReviewerInput = ({ field, form: { setFieldValue }, reviewerUsers }) => (
     options={reviewerUsers}
     promptTextCreator={label => `Add ${label}?`}
     valueKey="id"
+  />
+)
+
+const NewReviewerEmailInput = ({field, form: { setFieldValue }, ...props}) => (
+  <InputField
+    {...field}
+    onChange={(e) => setFieldValue('email', e.target.value)}
+    placeholder="Email"
+    {...props}
+  />
+)
+
+const NewReviewerNameInput = ({
+  field,
+  form: { setFieldValue },
+  ...props
+}) => (
+  <InputField
+    {...field}
+    placeholder="Name"
+    onChange={(e) => setFieldValue('name', e.target.value)}
+    {...props}
   />
 )
 
@@ -61,17 +95,13 @@ const ReviewerForm = ({
         onChange={() => setIsNewUser(!isNewUser)}
       />
       {isNewUser ? (
-        <FieldAndButton>
-          <Field
-            component={ReviewerInput}
-            name="user"
-            reviewerUsers={reviewerUsers}
-            validate={required}
-          />
+        <FieldsAndButton>
+          <Field name="email" id="email" component={NewReviewerEmailInput} />
+          <Field name="name" id="name" component={NewReviewerNameInput} />
           <Button disabled={!isValid} primary type="submit">
             Invite reviewer
           </Button>
-        </FieldAndButton>
+        </FieldsAndButton>
       ) : (
         <FieldAndButton>
           <Field

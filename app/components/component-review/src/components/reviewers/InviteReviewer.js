@@ -36,14 +36,19 @@ const InviteReviewer = ({
     <>
       <Formik
         displayName="reviewers"
-        initialValues={{ user: undefined }}
-        onSubmit={values =>
-          addReviewer({
-            variables: {
-              userId: values.user.id,
-              manuscriptId: manuscript.id,
-            },
-          })
+        initialValues={{ user: undefined, email: undefined, name:undefined }}
+        onSubmit={values => {
+            if(isNewUser) {
+              addReviewer({
+                variables: {
+                  userId: values.user.id,
+                  manuscriptId: manuscript.id,
+                },
+              })
+            } else {
+              
+            }
+          }
         }
       >
         {formikProps => (
