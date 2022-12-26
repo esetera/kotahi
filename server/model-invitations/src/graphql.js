@@ -162,7 +162,7 @@ extend type Query {
 
 extend type Mutation {
   updateInvitationStatus(id: ID, status: String, userId: ID,  responseDate: DateTime ): Invitation
-  updateInvitationResponse(id: ID,  responseComment: String,  declinedReason: String): Invitation
+  updateInvitationResponse(id: ID,  responseComment: String,  declinedReason: String ): Invitation
   addEmailToBlacklist(email: String!): BlacklistEmail
   assignUserAsAuthor(manuscriptId: ID!, userId: ID!): Team
   updateSharedStatusForInvitedReviewer(invitationId: ID!, isShared: Boolean!): Invitation!
