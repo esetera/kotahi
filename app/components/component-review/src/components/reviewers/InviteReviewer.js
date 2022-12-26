@@ -84,7 +84,7 @@ const InviteReviewer = ({ reviewerUsers, manuscript, addReviewer }) => {
               </UserInfo>
             </UserCombo>
             <MediumRow>
-              <ActionButton>Cancel</ActionButton>
+              <ActionButton onClick={() => setOpen(false)}>Cancel</ActionButton>
               &nbsp;
               <ActionButton
                 onClick={() =>
