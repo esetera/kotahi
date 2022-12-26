@@ -91,7 +91,9 @@ const DashboardLayout = ({
           {dashboardPages.map(({ href, label }) => (
             <TabContainer key={href}>
               <TabLink to={urlFrag + href}>
-                <Tab active={location.pathname.endsWith(href)}>{label}</Tab>
+                <Tab active={location.pathname.endsWith(href)}>
+                  <div>{label}</div>
+                </Tab>
               </TabLink>
             </TabContainer>
           ))}
