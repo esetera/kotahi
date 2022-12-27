@@ -45,7 +45,7 @@ const InviteReviewer = ({
         displayName="reviewers"
         initialValues={{ user: undefined, email: undefined, name: undefined }}
         onSubmit={values => {
-          if (isNewUser) {
+          if (!isNewUser) {
             addReviewer({
               variables: {
                 userId: values.user.id,
@@ -62,7 +62,8 @@ const InviteReviewer = ({
               setNotificationStatus,
               'reviewerInvitationEmailTemplate',
               selectedEmail,
-              externalEmail,
+              values.email,
+              values.name,
               isEmailAddressOptedOut,
             )
           }
@@ -80,6 +81,7 @@ const InviteReviewer = ({
                   reviewerUsers={reviewerUsers}
                   isNewUser={isNewUser}
                   setIsNewUser={setIsNewUser}
+                  notificationStatus={notificationStatus}
                 />
               </SectionRow>
             </SectionContent>

@@ -1,3 +1,5 @@
+import { convertTimestampToDateString } from '../../../../../shared/dateUtils'
+
 const emailTemplateOptions = [
   {
     label: 'Author Invitation Email Template',
@@ -263,12 +265,12 @@ export const sendEmailHandler = async (
 
   if (responseStatus) {
     const selectedTempl = emailTemplateOptions.find(
-      template => template.value === message.selectedTemplate,
+      template => template.value === input.selectedTemplate,
     ).label
 
-    const receiverName = message.externalEmail
-      ? message.externalName
-      : options.find(user => user.value === message.selectedEmail).userName
+    const receiverName = input.externalEmail
+      ? input.externalName
+      : options.find(user => user.value === input.selectedEmail).userName
 
     const date = Date.now()
 
@@ -276,7 +278,7 @@ export const sendEmailHandler = async (
       date,
     )} - ${selectedTempl} sent by ${currentUser.username} to ${receiverName}`
 
-    const channelId = message.manuscript.channels.find(
+    const channelId = input.manuscript.channels.find(
       channel => channel.topic === 'Editorial discussion',
     ).id
 

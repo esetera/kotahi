@@ -5,7 +5,6 @@ import { SectionHeader, SectionRowGrid, Title } from '../style'
 import { SectionContent } from '../../../../shared'
 import SelectReceiver from './SelectReceiver'
 import SelectEmailTemplate from './SelectEmailTemplate'
-import { convertTimestampToDateString } from '../../../../../shared/dateUtils'
 import ActionButton from '../../../../shared/ActionButton'
 import { sendEmailHandler } from './emailUtils'
 
