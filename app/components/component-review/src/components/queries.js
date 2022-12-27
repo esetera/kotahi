@@ -237,6 +237,7 @@ export const query = gql`
       admin
       defaultIdentity {
         id
+        identifier
       }
     }
   }

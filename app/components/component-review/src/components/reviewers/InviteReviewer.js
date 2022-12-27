@@ -11,10 +11,10 @@ import {
   Title,
   ActionButton,
   MediumRow,
-  UserCombo,
   Primary,
   Secondary,
   UserInfo,
+  UserCombo,
   LooseColumn,
 } from '../../../../shared'
 import { UserAvatar } from '../../../../component-avatar/src'
@@ -40,7 +40,27 @@ const ModalContainer = styled(LooseColumn)`
   z-index: 10000;
 `
 
-const InviteReviewer = ({ reviewerUsers, manuscript, addReviewer }) => {
+const UserId = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+`
+
+const StyledInfo = styled.div`
+  display: grid;
+  grid-template-columns: min-content max-content;
+  gap: 10px;
+`
+
+const StyledCheckbox = styled.div`
+  grid-column: 2 / 3;
+`
+
+const InviteReviewer = ({
+  reviewerUsers,
+  manuscript,
+  addReviewer,
+  sendNotifyEmail,
+}) => {
   const [open, setOpen] = useState(false)
   const [condition, setCondition] = useState([])
 
@@ -67,34 +87,40 @@ const InviteReviewer = ({ reviewerUsers, manuscript, addReviewer }) => {
           title="Invite Reviewer"
         >
           <ModalContainer>
-            <UserCombo>
+            <StyledInfo>
               <UserAvatar
                 isClickable={false}
                 size={48}
                 user={identity?.username}
               />
-              <UserInfo>
+              <UserId>
                 <Primary>{identity?.username}</Primary>
-                <Secondary>{manuscript.id}</Secondary>
+                <Secondary>{identity?.defaultIdentity?.identifier}</Secondary>
+              </UserId>
+              <StyledCheckbox>
                 <CheckboxGroup
                   onChange={value => setCondition({ value })}
                   options={options}
                   value={condition.value}
                 />
-              </UserInfo>
-            </UserCombo>
+              </StyledCheckbox>
+            </StyledInfo>
             <MediumRow>
               <ActionButton onClick={() => setOpen(false)}>Cancel</ActionButton>
               &nbsp;
               <ActionButton
-                onClick={() =>
+                onClick={() => {
                   addReviewer({
                     variables: {
                       userId: identity.user.id,
                       manuscriptId: manuscript.id,
                     },
                   })
-                }
+
+                  if (condition.value.includes('email-notification')) {
+                    sendNotifyEmail()
+                  }
+                }}
                 primary
               >
                 Invite

@@ -280,6 +280,7 @@ const DecisionVersion = ({
                 addReviewer={addReviewer}
                 manuscript={version}
                 reviewerUsers={allUsers}
+                sendNotifyEmail={sendNotifyEmail}
               />
             </AdminSection>
           )}
