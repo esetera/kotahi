@@ -107,6 +107,7 @@ const ReviewerForm = ({
             <Button disabled={!isValid} primary type="submit">
               Invite reviewer
             </Button>
+            <div></div> 
           </>
         )}
       </RowGridStyled>
