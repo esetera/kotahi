@@ -37,6 +37,7 @@ const InviteReviewer = ({
   }
 
   const [isNewUser, setIsNewUser] = useState(false)
+  const [optedOut, setOptedOut] = useState(false)
   const [notificationStatus, setNotificationStatus] = useState(null)
 
   return (
@@ -62,6 +63,7 @@ const InviteReviewer = ({
               setNotificationStatus,
               'reviewerInvitationEmailTemplate',
               selectedEmail,
+              setOptedOut, 
               values.email,
               values.name,
               isEmailAddressOptedOut,

@@ -65,7 +65,7 @@ const EmailNotifications = ({
   const [externalName, setExternalName] = useState('')
   const [selectedTemplate, setSelectedTemplate] = useState('')
   const [isNewUser, setIsNewUser] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
+  const [isOptedOut, setIsOptedOut] = useState(false)
   const [notificationStatus, setNotificationStatus] = useState(null)
 
   const resetAll = () => {
@@ -73,7 +73,7 @@ const EmailNotifications = ({
     setSelectedEmail('')
     setExternalName('')
     setSelectedTemplate('')
-    setIsVisible(false)
+    setIsOptedOut(false)
   }
 
   const handlerForNewUserToggle = () => {
@@ -117,6 +117,7 @@ const EmailNotifications = ({
               setNotificationStatus,
               selectedTemplate,
               selectedEmail,
+              setIsOptedOut,
               externalEmail,
               externalName,
               isEmailAddressOptedOut,
@@ -128,7 +129,7 @@ const EmailNotifications = ({
           Notify
         </ActionButton>
       </RowGridStyled>
-      <MessageWrapper isVisible={isVisible}>
+      <MessageWrapper isVisible={isOptedOut}>
         User email address opted out
       </MessageWrapper>
     </SectionContent>

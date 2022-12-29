@@ -41,27 +41,27 @@ const ReviewerInput = ({ field, form: { setFieldValue }, reviewerUsers }) => (
   />
 )
 
-const NewReviewerEmailInput = ({
-  field,
-  form: { setFieldValue },
-  ...props
-}) => (
-  <InputField
-    {...field}
-    onChange={e => setFieldValue('email', e.target.value)}
-    placeholder="Email"
-    {...props}
-  />
-)
+// const NewReviewerEmailInput = ({
+//   field,
+//   form: { setFieldValue },
+//   ...props
+// }) => (
+//   <InputField
+//     {...field}
+//     onChange={e => setFieldValue('email', e.target.value)}
+//     placeholder="Email"
+//     {...props}
+//   />
+// )
 
-const NewReviewerNameInput = ({ field, form: { setFieldValue }, ...props }) => (
-  <InputField
-    {...field}
-    placeholder="Name"
-    onChange={e => setFieldValue('name', e.target.value)}
-    {...props}
-  />
-)
+// const NewReviewerNameInput = ({ field, form: { setFieldValue }, ...props }) => (
+//   <InputField
+//     {...field}
+//     placeholder="Name"
+//     onChange={e => setFieldValue('name', e.target.value)}
+//     {...props}
+//   />
+// )
 
 ReviewerInput.propTypes = {
   field: PropTypes.shape({}).isRequired,
@@ -90,8 +90,18 @@ const ReviewerForm = ({
         />
         {isNewUser ? (
           <>
-            <Field name="email" id="email" component={NewReviewerEmailInput} />
-            <Field name="name" id="name" component={NewReviewerNameInput} />
+            <Field
+              name="email"
+              id="email"
+              placeholder="Email"
+              as={InputField}
+            />
+            <Field
+              name="name"
+              id="name"
+              placeholder="Name"
+              as={InputField}
+            />
             <Button disabled={!isValid} primary type="submit">
               Invite and Notify
             </Button>
@@ -107,7 +117,7 @@ const ReviewerForm = ({
             <Button disabled={!isValid} primary type="submit">
               Invite reviewer
             </Button>
-            <div></div> 
+            <div></div>
           </>
         )}
       </RowGridStyled>

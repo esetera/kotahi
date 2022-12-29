@@ -228,6 +228,7 @@ export const sendEmailHandler = async (
   setNotificationStatus,
   selectedTemplate,
   selectedEmail,
+  setIsOptedOut,
   externalEmail,
   externalName,
   isEmailAddressOptedOut,
@@ -235,7 +236,7 @@ export const sendEmailHandler = async (
   setNotificationStatus('pending')
 
   if (isEmailAddressOptedOut?.data?.getBlacklistInformation.length) {
-    setIsVisible(true)
+    setIsOptedOut(true)
     return
   }
 
