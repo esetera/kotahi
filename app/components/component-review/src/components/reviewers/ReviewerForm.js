@@ -41,28 +41,6 @@ const ReviewerInput = ({ field, form: { setFieldValue }, reviewerUsers }) => (
   />
 )
 
-// const NewReviewerEmailInput = ({
-//   field,
-//   form: { setFieldValue },
-//   ...props
-// }) => (
-//   <InputField
-//     {...field}
-//     onChange={e => setFieldValue('email', e.target.value)}
-//     placeholder="Email"
-//     {...props}
-//   />
-// )
-
-// const NewReviewerNameInput = ({ field, form: { setFieldValue }, ...props }) => (
-//   <InputField
-//     {...field}
-//     placeholder="Name"
-//     onChange={e => setFieldValue('name', e.target.value)}
-//     {...props}
-//   />
-// )
-
 ReviewerInput.propTypes = {
   field: PropTypes.shape({}).isRequired,
   form: PropTypes.shape({
