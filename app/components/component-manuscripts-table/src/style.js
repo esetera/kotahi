@@ -47,7 +47,6 @@ export const StyledAuthor = styled.p`
 
 export const ManuscriptsTableStyled = styled.div`
   font-size: ${th('fontSizeBaseSmall')};
-  margin-top: ${grid(1)};
   width: 100%;
 `
 

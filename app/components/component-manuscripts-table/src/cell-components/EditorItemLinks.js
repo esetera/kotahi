@@ -9,8 +9,8 @@ const StyledActionGroup = styled(ActionGroup)`
 `
 
 const StyledAction = styled(Action)`
-  display: flex;
   align-items: center;
+  display: flex;
   font-size: 14px;
 `
 

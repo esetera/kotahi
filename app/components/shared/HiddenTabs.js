@@ -9,8 +9,6 @@ export const Tab = styled.div`
     active
       ? theme.colors.neutral.white
       : 'linear-gradient(180deg, #ECECEC 0%, #ECECEC 40.1%, #D6D6D6 100%)'};
-  border-bottom: 2px solid
-    ${({ active }) => (active ? th('colorPrimary') : th('colorFurniture'))};
   border-radius: ${th('borderRadius')} ${th('borderRadius')} 0 0;
   box-shadow: ${({ active }) =>
     active

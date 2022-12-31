@@ -56,6 +56,7 @@ const manuscriptFields = `
         defaultIdentity {
           id
           name
+          identifier
         }
       }
       status
@@ -250,6 +251,14 @@ export const query = gql`
 export const addReviewerMutation = gql`
 mutation($manuscriptId: ID!, $userId: ID!) {
   addReviewer(manuscriptId: $manuscriptId, userId: $userId) {
+    ${teamFields}
+  }
+}
+`
+
+export const removeReviewerMutation = gql`
+mutation($manuscriptId: ID!, $userId: ID!) {
+  removeReviewer(manuscriptId: $manuscriptId, userId: $userId) {
     ${teamFields}
   }
 }

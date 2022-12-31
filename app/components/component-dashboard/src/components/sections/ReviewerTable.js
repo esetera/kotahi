@@ -1,36 +1,32 @@
 import React, { useMemo, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
-
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
 import {
   CommsErrorBanner,
+  Pagination,
+  PaginationContainerShadowed,
   SectionContent,
   SectionHeader,
   Spinner,
   Title,
 } from '../../../../shared'
-
 import {
   reviewerColumns,
   URI_SEARCH_PARAM,
 } from '../../../../../../config/journal/manuscripts'
-import { Placeholder } from '../../style'
-import { getLatestVersion } from '../../utils'
+import {
+  extractSortData,
+  URI_PAGENUM_PARAM,
+} from '../../../../../shared/urlParamUtils'
 
 const ReviewerTable = ({
   urlFrag,
   query: { data, loading, error },
   reviewerRespond,
   updateMemberStatus,
+  uriQueryParams,
+  applyQueryParams,
 }) => {
-  const history = useHistory()
-  const { search, pathname } = useLocation()
-  const uriQueryParams = new URLSearchParams(search)
-  const [sortName, setSortName] = useState('created')
-  const [sortDirection, setSortDirection] = useState('DESC')
-  const [mainActionLink, setActionLink] = useState(null)
-
   const fieldDefinitions = useMemo(() => {
     const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
     const defs = {}
@@ -41,20 +37,21 @@ const ReviewerTable = ({
     return defs
   }, [data])
 
+  const [mainActionLink, setActionLink] = useState(null)
+
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
   const currentUser = data && data.currentUser
-
-  const reviewerLatestVersions = data?.manuscriptsUserHasCurrentRoleIn.manuscripts.map(
-    getLatestVersion,
-  )
-
-  if (reviewerLatestVersions.length === 0) {
-    return <Placeholder>You have not been assigned any reviews yet</Placeholder>
-  }
-
   const setMainActionLink = link => setActionLink(link)
+
+  const currentSearchQuery = uriQueryParams.get(URI_SEARCH_PARAM)
+  const sortName = extractSortData(uriQueryParams).name
+  const sortDirection = extractSortData(uriQueryParams).direction
+
+  const page = uriQueryParams.get(URI_PAGENUM_PARAM) || 1
+  const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
+  const { totalCount } = data.manuscriptsUserHasCurrentRoleIn
 
   const specialComponentValues = {
     urlFrag,
@@ -64,18 +61,11 @@ const ReviewerTable = ({
     setMainActionLink,
   }
 
-  const currentSearchQuery = uriQueryParams.get(URI_SEARCH_PARAM)
-
   const displayProps = {
     uriQueryParams,
-    sortName,
+    columnToSortOn: sortName,
     sortDirection,
     currentSearchQuery,
-  }
-
-  const setFilter = (fieldName, filterValue) => {
-    uriQueryParams.set(fieldName, filterValue)
-    history.replace({ pathname, search: uriQueryParams.toString() })
   }
 
   const columnsProps = buildColumnDefinitions(
@@ -91,14 +81,19 @@ const ReviewerTable = ({
         <Title>To Review</Title>
       </SectionHeader>
       <ManuscriptsTable
+        applyQueryParams={applyQueryParams}
         columnsProps={columnsProps}
         getLink={_ => mainActionLink}
-        manuscripts={reviewerLatestVersions}
-        setFilter={setFilter}
-        setSortDirection={setSortDirection}
-        setSortName={setSortName}
+        manuscripts={data?.manuscriptsUserHasCurrentRoleIn.manuscripts}
         sortDirection={sortDirection}
         sortName={sortName}
+      />
+      <Pagination
+        limit={limit}
+        page={page}
+        PaginationContainer={PaginationContainerShadowed}
+        setPage={newPage => applyQueryParams({ [URI_PAGENUM_PARAM]: newPage })}
+        totalCount={totalCount}
       />
     </SectionContent>
   )

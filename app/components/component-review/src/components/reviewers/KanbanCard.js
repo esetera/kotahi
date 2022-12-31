@@ -1,10 +1,12 @@
 import { grid, th } from '@pubsweet/ui-toolkit'
+import { Action } from '@pubsweet/ui/dist/molecules'
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useState } from 'react'
 import { Send } from 'react-feather'
 import styled from 'styled-components'
 import { convertTimestampToRelativeDateString } from '../../../../../shared/dateUtils'
 import { UserAvatar } from '../../../../component-avatar/src'
+import DeleteReviewerModal from './DeleteReviewerModal'
 
 const Card = styled.div`
   background-color: #f8f8f9;
@@ -16,6 +18,7 @@ const Card = styled.div`
 
   &:hover {
     box-shadow: 0px 9px 5px -6px #bfbfbf;
+    cursor: pointer;
     transition: 0.3s ease;
   }
 `
@@ -58,7 +61,14 @@ const SendIcon = styled(Send)`
   width: 15px;
 `
 
-const KanbanCard = ({ reviewer, onClickAction }) => {
+const KanbanCard = ({
+  reviewer,
+  isInvitation,
+  manuscript,
+  onClickAction,
+  removeReviewer,
+}) => {
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
   return (
     <Card onClick={onClickAction}>
       <AvatarGrid>
@@ -76,18 +86,26 @@ const KanbanCard = ({ reviewer, onClickAction }) => {
         <NameDisplay>
           {reviewer.user?.username ?? reviewer.invitedPersonName}
         </NameDisplay>
-        {reviewer.updated ? (
-          <DateDisplay>
-            Last updated{' '}
-            {convertTimestampToRelativeDateString(reviewer.updated)}
-          </DateDisplay>
-        ) : (
+        {isInvitation ? (
           <EmailInvitedReviewer>
             Email invited
             <SendIcon invitationStatus={reviewer.status.toLowerCase()} />
           </EmailInvitedReviewer>
+        ) : (
+          <DateDisplay>
+            Last updated{' '}
+            {convertTimestampToRelativeDateString(reviewer.updated)}
+          </DateDisplay>
         )}
       </InfoGrid>
+      <Action onClick={() => setConfirmingDelete(true)}>Delete</Action>
+      <DeleteReviewerModal
+        isOpen={confirmingDelete}
+        manuscript={manuscript}
+        onClose={() => setConfirmingDelete(false)}
+        removeReviewer={removeReviewer}
+        reviewer={reviewer}
+      />
     </Card>
   )
 }
@@ -105,6 +123,7 @@ KanbanCard.propTypes = {
     }).isRequired,
   }).isRequired,
   onClickAction: PropTypes.func.isRequired,
+  isInvitation: PropTypes.bool.isRequired,
 }
 
 export default KanbanCard

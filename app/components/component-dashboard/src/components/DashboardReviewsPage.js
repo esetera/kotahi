@@ -2,11 +2,18 @@ import { useMutation, useQuery } from '@apollo/client'
 import config from 'config'
 import React, { useEffect } from 'react'
 import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../queries/team'
+import {
+  extractFilters,
+  extractSortData,
+  URI_PAGENUM_PARAM,
+  URI_REVIEWER_STATUS_PARAM,
+  useQueryParams,
+} from '../../../../shared/urlParamUtils'
 import mutations from '../graphql/mutations'
 import queries from '../graphql/queries'
 import ReviewerTable from './sections/ReviewerTable'
 
-const DashboardReviewsPage = () => {
+const DashboardReviewsPage = ({ history }) => {
   const instanceName = process.env.INSTANCE_NAME
   const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -17,16 +24,29 @@ const DashboardReviewsPage = () => {
     'completed:reviewer',
   ]
 
+  const applyQueryParams = useQueryParams()
+
+  const uriQueryParams = new URLSearchParams(history.location.search)
+  const page = uriQueryParams.get(URI_PAGENUM_PARAM) || 1
+  const sortName = extractSortData(uriQueryParams).name
+  const sortDirection = extractSortData(uriQueryParams).direction
+  const filters = extractFilters(uriQueryParams)
+
+  const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
+
   const query = useQuery(queries.dashboard, {
     variables: {
+      reviewerStatus: uriQueryParams.get(URI_REVIEWER_STATUS_PARAM),
       wantedRoles,
-      sort: null,
-      offset: 0,
-      limit: process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10,
-      filters: [],
+      sort: sortName
+        ? { field: sortName, isAscending: sortDirection === 'ASC' }
+        : null,
+      offset: (page - 1) * limit,
+      limit,
+      filters,
       timezoneOffsetMinutes: new Date().getTimezoneOffset(),
     },
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'network-only',
   })
 
   const [updateTab] = useMutation(mutations.updateTab)
@@ -43,9 +63,11 @@ const DashboardReviewsPage = () => {
 
   return !['ncrc'].includes(instanceName) ? (
     <ReviewerTable
+      applyQueryParams={applyQueryParams}
       query={query}
       reviewerRespond={reviewerRespond}
       updateMemberStatus={updateMemberStatus}
+      uriQueryParams={uriQueryParams}
       urlFrag={urlFrag}
     />
   ) : null

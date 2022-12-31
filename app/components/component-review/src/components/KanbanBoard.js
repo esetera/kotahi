@@ -53,19 +53,22 @@ const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.5);
 `
 
-const KanbanBoard = ({ invitations, version, versionNumber }) => {
+const KanbanBoard = ({
+  invitations,
+  version,
+  versionNumber,
+  removeReviewer,
+}) => {
   const reviewers = getMembersOfTeam(version, 'reviewer')
-
-  const emailAndWebReviewers = invitations
-    ? [...invitations, ...reviewers]
-    : reviewers
+  const invitationIds = invitations.map(({ id }) => id)
+  const emailAndWebReviewers = [...invitations, ...reviewers]
 
   emailAndWebReviewers.sort((a, b) => {
     const aDate = a.responseComment ? a.responseDate : a.updated
 
     const bDate = b.responseComment ? b.responseDate : b.updated
 
-    return aDate - bDate
+    return new Date(bDate) - new Date(aDate)
   })
 
   return (
@@ -101,8 +104,11 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
                       )
                       .map(reviewer => (
                         <KanbanCard
+                          isInvitation={invitationIds.includes(reviewer.id)}
                           key={reviewer.id}
+                          manuscript={version}
                           onClickAction={() => {}}
+                          removeReviewer={removeReviewer}
                           reviewer={reviewer}
                         />
                       ))}

@@ -53,6 +53,7 @@ const DecisionVersions = ({
   updateTask,
   updateTasks,
   teams,
+  removeReviewer,
 }) => {
   const [initialValue, setInitialValue] = useState(null)
 
@@ -110,6 +111,7 @@ const DecisionVersions = ({
                 parent={manuscript}
                 publishManuscript={publishManuscript}
                 refetch={refetch}
+                removeReviewer={removeReviewer}
                 reviewers={reviewers}
                 reviewForm={reviewForm}
                 selectedEmail={selectedEmail}
