@@ -59,54 +59,56 @@ const ReviewerForm = ({
   setIsNewUser,
   notificationStatus,
   optedOut,
+  setExternalEmail,
 }) => (
-  <>
-    <form onSubmit={handleSubmit}>
-      <RowGridStyled>
-        <Checkbox
-          checked={isNewUser}
-          defaultChecked={false}
-          label="New User"
-          onChange={() => setIsNewUser(!isNewUser)}
-          width={grid(0.75)}
-        />
-        {isNewUser ? (
-          <>
-            <Field
-              as={InputField}
-              id="email"
-              name="email"
-              placeholder="Email"
-            />
-            <Field as={InputField} id="name" name="name" placeholder="Name" />
-            <ActionButton
-              disabled={!isValid}
-              primary
-              status={notificationStatus}
-              type="submit"
-            >
-              Invite and Notify
-            </ActionButton>
-            <EmailErrorMessageWrapper isVisible={optedOut}>
-              User email address opted out
-            </EmailErrorMessageWrapper>
-          </>
-        ) : (
-          <>
-            <Field
-              component={ReviewerInput}
-              name="user"
-              reviewerUsers={reviewerUsers}
-              validate={required}
-            />
-            <Button disabled={!isValid} primary type="submit">
-              Invite reviewer
-            </Button>
-          </>
-        )}
-      </RowGridStyled>
-    </form>
-  </>
+  <form onSubmit={handleSubmit}>
+    <RowGridStyled>
+      <Checkbox
+        checked={isNewUser}
+        defaultChecked={false}
+        label="New User"
+        onChange={() => setIsNewUser(!isNewUser)}
+        width={grid(0.75)}
+      />
+      {isNewUser ? (
+        <>
+          <Field
+            as={InputField}
+            id="email"
+            name="email"
+            onKeyUp={e => {
+              setExternalEmail(e.target.value)
+            }}
+            placeholder="Email"
+          />
+          <Field as={InputField} id="name" name="name" placeholder="Name" />
+          <ActionButton
+            disabled={!isValid}
+            primary
+            status={notificationStatus}
+            type="submit"
+          >
+            Invite and Notify
+          </ActionButton>
+          <EmailErrorMessageWrapper isVisible={optedOut}>
+            User email address opted out
+          </EmailErrorMessageWrapper>
+        </>
+      ) : (
+        <>
+          <Field
+            component={ReviewerInput}
+            name="user"
+            reviewerUsers={reviewerUsers}
+            validate={required}
+          />
+          <Button disabled={!isValid} primary type="submit">
+            Invite reviewer
+          </Button>
+        </>
+      )}
+    </RowGridStyled>
+  </form>
 )
 
 ReviewerForm.propTypes = {

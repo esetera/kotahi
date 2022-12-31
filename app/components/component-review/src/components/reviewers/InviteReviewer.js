@@ -22,6 +22,7 @@ const InviteReviewer = ({
   sendChannelMessageCb,
   selectedEmail,
   isEmailAddressOptedOut,
+  setExternalEmail,
 }) => {
   // eslint-disable-next-line
   const toggleEmailInvitedReviewerSharedStatus = async (
@@ -48,6 +49,8 @@ const InviteReviewer = ({
         displayName="reviewers"
         initialValues={{ user: undefined, email: undefined, name: undefined }}
         onSubmit={async values => {
+          setOptedOut(false)
+
           if (!isNewUser) {
             addReviewer({
               variables: {
@@ -58,7 +61,7 @@ const InviteReviewer = ({
           } else {
             setNotificationStatus('pending')
 
-            const { responseStatus, input } = await sendEmail(
+            const output = await sendEmail(
               manuscript,
               isNewUser,
               currentUser,
@@ -71,10 +74,16 @@ const InviteReviewer = ({
               isEmailAddressOptedOut,
             )
 
-            setNotificationStatus(responseStatus ? 'success' : 'failure')
+            setNotificationStatus(
+              output?.responseStatus ? 'success' : 'failure',
+            )
 
-            if (input) {
-              sendEmailChannelMessage(sendChannelMessageCb, currentUser, input)
+            if (output?.input) {
+              sendEmailChannelMessage(
+                sendChannelMessageCb,
+                currentUser,
+                output.input,
+              )
             }
           }
         }}
@@ -92,6 +101,7 @@ const InviteReviewer = ({
                   notificationStatus={notificationStatus}
                   optedOut={optedOut}
                   reviewerUsers={reviewerUsers}
+                  setExternalEmail={setExternalEmail}
                   setIsNewUser={setIsNewUser}
                 />
               </SectionRow>

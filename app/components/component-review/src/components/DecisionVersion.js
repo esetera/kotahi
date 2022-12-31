@@ -294,6 +294,7 @@ const DecisionVersion = ({
                 reviewerUsers={allUsers}
                 sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
+                setExternalEmail={setExternalEmail}
               />
             </AdminSection>
           )}
