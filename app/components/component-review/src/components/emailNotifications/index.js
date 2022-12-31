@@ -6,7 +6,7 @@ import { SectionContent } from '../../../../shared'
 import SelectReceiver from './SelectReceiver'
 import SelectEmailTemplate from './SelectEmailTemplate'
 import ActionButton from '../../../../shared/ActionButton'
-import { sendEmailHandler } from './emailUtils'
+import { sendEmail, sendEmailChannelMessage } from './emailUtils'
 
 const UserEmailWrapper = styled.div`
   font-size: ${th('fontSizeBaseSmall')};
@@ -24,7 +24,7 @@ const editorOption = user => ({
   userName: user.username,
 })
 
-const MessageWrapper = styled.div`
+export const EmailErrorMessageWrapper = styled.div`
   color: ${th('colorError')};
   font-family: ${th('fontInterface')};
   font-size: ${th('fontSizeBaseSmall')};
@@ -107,14 +107,14 @@ const EmailNotifications = ({
           selectedEmailTemplate={selectedTemplate}
         />
         <ActionButton
-          onClick={() =>
-            sendEmailHandler(
+          onClick={async () => {
+            setNotificationStatus('pending')
+
+            const { responseStatus, input } = await sendEmail(
               manuscript,
               isNewUser,
               currentUser,
               sendNotifyEmail,
-              sendChannelMessageCb,
-              setNotificationStatus,
               selectedTemplate,
               selectedEmail,
               setIsOptedOut,
@@ -122,16 +122,22 @@ const EmailNotifications = ({
               externalName,
               isEmailAddressOptedOut,
             )
-          }
+
+            setNotificationStatus(responseStatus ? 'success' : 'failure')
+
+            if (input) {
+              sendEmailChannelMessage(sendChannelMessageCb, currentUser, input)
+            }
+          }}
           primary
           status={notificationStatus}
         >
           Notify
         </ActionButton>
       </RowGridStyled>
-      <MessageWrapper isVisible={isOptedOut}>
+      <EmailErrorMessageWrapper isVisible={isOptedOut}>
         User email address opted out
-      </MessageWrapper>
+      </EmailErrorMessageWrapper>
     </SectionContent>
   )
 }

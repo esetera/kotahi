@@ -102,7 +102,7 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
                       .map(reviewer => (
                         <KanbanCard
                           key={reviewer.id}
-                          onClickAction={() => { }}
+                          onClickAction={() => {}}
                           reviewer={reviewer}
                         />
                       ))}

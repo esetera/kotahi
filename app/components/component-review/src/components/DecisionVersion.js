@@ -288,12 +288,12 @@ const DecisionVersion = ({
             <AdminSection>
               <InviteReviewer
                 addReviewer={addReviewer}
+                currentUser={currentUser}
+                isEmailAddressOptedOut={isEmailAddressOptedOut}
                 manuscript={version}
                 reviewerUsers={allUsers}
-                currentUser={currentUser}
-                sendNotifyEmail={sendNotifyEmail}
                 sendChannelMessageCb={sendChannelMessageCb}
-                isEmailAddressOptedOut={isEmailAddressOptedOut}
+                sendNotifyEmail={sendNotifyEmail}
               />
             </AdminSection>
           )}

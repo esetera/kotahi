@@ -1,13 +1,13 @@
-import React, { Children } from 'react'
-import PropTypes from 'prop-types'
-import { Field } from 'formik'
 import { Button, Checkbox } from '@pubsweet/ui'
-import { required } from 'xpub-validators'
-import styled from 'styled-components'
 import { grid } from '@pubsweet/ui-toolkit'
-import { Select } from '../../../../shared'
 import { TextField } from '@pubsweet/ui/dist/atoms'
-import { SectionRowGrid } from '../../../../shared'
+import { Field } from 'formik'
+import PropTypes from 'prop-types'
+import React from 'react'
+import styled from 'styled-components'
+import { required } from 'xpub-validators'
+import { ActionButton, Select } from '../../../../shared'
+import { EmailErrorMessageWrapper } from '../emailNotifications'
 
 const OptionRenderer = option => (
   <div>
@@ -16,7 +16,9 @@ const OptionRenderer = option => (
   </div>
 )
 
-const RowGridStyled = styled(SectionRowGrid)`
+const RowGridStyled = styled.div`
+  display: grid;
+  gap: ${grid(2)};
   grid-template-columns: repeat(4, minmax(0, 1fr));
 `
 
@@ -55,13 +57,15 @@ const ReviewerForm = ({
   reviewerUsers,
   isNewUser,
   setIsNewUser,
+  notificationStatus,
+  optedOut,
 }) => (
   <>
     <form onSubmit={handleSubmit}>
       <RowGridStyled>
         <Checkbox
-          defaultChecked={false}
           checked={isNewUser}
+          defaultChecked={false}
           label="New User"
           onChange={() => setIsNewUser(!isNewUser)}
           width={grid(0.75)}
@@ -69,20 +73,23 @@ const ReviewerForm = ({
         {isNewUser ? (
           <>
             <Field
-              name="email"
+              as={InputField}
               id="email"
+              name="email"
               placeholder="Email"
-              as={InputField}
             />
-            <Field
-              name="name"
-              id="name"
-              placeholder="Name"
-              as={InputField}
-            />
-            <Button disabled={!isValid} primary type="submit">
+            <Field as={InputField} id="name" name="name" placeholder="Name" />
+            <ActionButton
+              disabled={!isValid}
+              primary
+              status={notificationStatus}
+              type="submit"
+            >
               Invite and Notify
-            </Button>
+            </ActionButton>
+            <EmailErrorMessageWrapper isVisible={optedOut}>
+              User email address opted out
+            </EmailErrorMessageWrapper>
           </>
         ) : (
           <>
@@ -95,7 +102,6 @@ const ReviewerForm = ({
             <Button disabled={!isValid} primary type="submit">
               Invite reviewer
             </Button>
-            <div></div>
           </>
         )}
       </RowGridStyled>

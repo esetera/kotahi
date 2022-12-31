@@ -219,13 +219,11 @@ const emailTemplateOptions = [
   },
 ]
 
-export const sendEmailHandler = async (
+export const sendEmail = async (
   manuscript,
   isNewUser,
   currentUser,
   sendNotifyEmail,
-  sendChannelMessageCb,
-  setNotificationStatus,
   selectedTemplate,
   selectedEmail,
   setIsOptedOut,
@@ -233,14 +231,12 @@ export const sendEmailHandler = async (
   externalName,
   isEmailAddressOptedOut,
 ) => {
-  setNotificationStatus('pending')
-
   if (isEmailAddressOptedOut?.data?.getBlacklistInformation.length) {
     setIsOptedOut(true)
-    return
+    return undefined
   }
 
-  if (!selectedTemplate || !manuscript) return
+  if (!selectedTemplate || !manuscript) return undefined
 
   const input = isNewUser
     ? {
@@ -257,32 +253,38 @@ export const sendEmailHandler = async (
         currentUser: currentUser.username,
       }
 
-  if (isNewUser && (!externalName || !externalEmail)) return
-  if (!isNewUser && !selectedEmail) return
+  if (isNewUser && (!externalName || !externalEmail)) return undefined
+  if (!isNewUser && !selectedEmail) return undefined
 
   const response = await sendNotifyEmail(input)
   const responseStatus = response.data.sendEmail.success
-  setNotificationStatus(responseStatus ? 'success' : 'failure')
+  if (responseStatus) return { responseStatus, input }
+  return undefined
+}
 
-  if (responseStatus) {
-    const selectedTempl = emailTemplateOptions.find(
-      template => template.value === input.selectedTemplate,
-    ).label
+export const sendEmailChannelMessage = async (
+  sendChannelMessageCb,
+  currentUser,
+  input,
+) => {
+  const selectedTempl = emailTemplateOptions.find(
+    template => template.value === input.selectedTemplate,
+  ).label
 
-    const receiverName = input.externalEmail
-      ? input.externalName
-      : options.find(user => user.value === input.selectedEmail).userName
+  const receiverName = input.externalEmail
+    ? input.externalName
+    : emailTemplateOptions.find(user => user.value === input.selectedEmail)
+        .userName
 
-    const date = Date.now()
+  const date = Date.now()
 
-    const body = `${convertTimestampToDateString(
-      date,
-    )} - ${selectedTempl} sent by ${currentUser.username} to ${receiverName}`
+  const body = `${convertTimestampToDateString(
+    date,
+  )} - ${selectedTempl} sent by ${currentUser.username} to ${receiverName}`
 
-    const channelId = input.manuscript.channels.find(
-      channel => channel.topic === 'Editorial discussion',
-    ).id
+  const channelId = input.manuscript.channels.find(
+    channel => channel.topic === 'Editorial discussion',
+  ).id
 
-    await sendChannelMessageCb({ content: body, channelId })
-  }
+  await sendChannelMessageCb({ content: body, channelId })
 }

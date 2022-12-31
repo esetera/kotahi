@@ -1,5 +1,5 @@
 import React from 'react'
-import OwnerTable from '../../app/components/component-dashboard/src/components/sections/OwnerTable'
+import SubmissionsTable from '../../app/components/component-dashboard/src/components/sections/SubmissionsTable'
 import { JournalProvider } from '../../app/components/xpub-journal/src'
 import { XpubProvider } from '../../app/components/xpub-with-context/src'
 import * as journal from '../../config/journal'
@@ -25,7 +25,7 @@ export const Base = args => (
             <h2 style={{ color: '#333333' }}>Component</h2>
           </>
         )}
-        <OwnerTable {...args} />
+        <SubmissionsTable {...args} />
       </>
     </JournalProvider>
   </XpubProvider>
@@ -33,7 +33,7 @@ export const Base = args => (
 
 export const Empty = Base.bind()
 
-const ownerLatestVersions = [
+const submissionsLatestVersions = [
   {
     id: '96482a0a-c149-4675-bc94-87ada45f04e8',
     shortId: 5,
@@ -290,7 +290,9 @@ const currentUser = {
 const props = {
   query: {
     data: {
-      manuscriptsUserHasCurrentRoleIn: { manuscripts: ownerLatestVersions },
+      manuscriptsUserHasCurrentRoleIn: {
+        manuscripts: submissionsLatestVersions,
+      },
       currentUser,
     },
     loading: false,
@@ -315,8 +317,8 @@ Empty.args = {
 }
 
 export default {
-  title: 'Dashboard/OwnerTable',
-  component: OwnerTable,
+  title: 'Dashboard/SubmissionsTable',
+  component: SubmissionsTable,
   parameters: {
     docs: {
       page: () => (

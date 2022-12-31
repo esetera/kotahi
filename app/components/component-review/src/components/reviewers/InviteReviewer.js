@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 import { Formik } from 'formik'
 import ReviewerForm from './ReviewerForm'
-import { Checkbox } from '@pubsweet/ui'
 import {
   SectionRow,
   SectionContent,
   SectionHeader,
   Title,
 } from '../../../../shared'
-import { sendEmailHandler } from '../emailNotifications/emailUtils'
+import {
+  sendEmail,
+  sendEmailChannelMessage,
+} from '../emailNotifications/emailUtils'
 
 const InviteReviewer = ({
   reviewerUsers,
@@ -45,7 +47,7 @@ const InviteReviewer = ({
       <Formik
         displayName="reviewers"
         initialValues={{ user: undefined, email: undefined, name: undefined }}
-        onSubmit={values => {
+        onSubmit={async values => {
           if (!isNewUser) {
             addReviewer({
               variables: {
@@ -54,20 +56,26 @@ const InviteReviewer = ({
               },
             })
           } else {
-            sendEmailHandler(
+            setNotificationStatus('pending')
+
+            const { responseStatus, input } = await sendEmail(
               manuscript,
               isNewUser,
               currentUser,
               sendNotifyEmail,
-              sendChannelMessageCb,
-              setNotificationStatus,
               'reviewerInvitationEmailTemplate',
               selectedEmail,
-              setOptedOut, 
+              setOptedOut,
               values.email,
               values.name,
               isEmailAddressOptedOut,
             )
+
+            setNotificationStatus(responseStatus ? 'success' : 'failure')
+
+            if (input) {
+              sendEmailChannelMessage(sendChannelMessageCb, currentUser, input)
+            }
           }
         }}
       >
@@ -80,10 +88,11 @@ const InviteReviewer = ({
               <SectionRow>
                 <ReviewerForm
                   {...formikProps}
-                  reviewerUsers={reviewerUsers}
                   isNewUser={isNewUser}
-                  setIsNewUser={setIsNewUser}
                   notificationStatus={notificationStatus}
+                  optedOut={optedOut}
+                  reviewerUsers={reviewerUsers}
+                  setIsNewUser={setIsNewUser}
                 />
               </SectionRow>
             </SectionContent>
