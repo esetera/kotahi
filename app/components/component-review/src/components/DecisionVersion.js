@@ -284,8 +284,13 @@ const DecisionVersion = ({
             <AdminSection>
               <InviteReviewer
                 addReviewer={addReviewer}
+                currentUser={currentUser}
+                isEmailAddressOptedOut={isEmailAddressOptedOut}
                 manuscript={version}
                 reviewerUsers={allUsers}
+                sendChannelMessageCb={sendChannelMessageCb}
+                sendNotifyEmail={sendNotifyEmail}
+                setExternalEmail={setExternalEmail}
               />
             </AdminSection>
           )}

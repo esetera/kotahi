@@ -119,7 +119,14 @@ const DecisionPage = ({ match }) => {
   })
 
   const [update] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
-  const [sendEmailMutation] = useMutation(sendEmail)
+
+  const [sendEmailMutation] = useMutation(sendEmail, {
+    refetchQueries: [
+      { query: GET_INVITATIONS_FOR_MANUSCRIPT },
+      'getInvitationsForManuscript',
+    ],
+  })
+
   const [sendChannelMessage] = useMutation(CREATE_MESSAGE)
   const [makeDecision] = useMutation(makeDecisionMutation)
   const [publishManuscript] = useMutation(publishManuscriptMutation)
