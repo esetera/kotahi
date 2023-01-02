@@ -102,7 +102,7 @@ const DecisionPage = ({ match }) => {
 
   // end of code from submit page to handle possible form changes
 
-  const { loading, data, error, refetch } = useQuery(query, {
+  const { loading, data, error, refetch: refetchManuscript } = useQuery(query, {
     variables: {
       id: match.params.version,
     },
@@ -225,12 +225,13 @@ const DecisionPage = ({ match }) => {
     },
   })
 
-  const { loading: invitationLoading, data: invitations } = useQuery(
-    GET_INVITATIONS_FOR_MANUSCRIPT,
-    {
-      variables: { id: data?.manuscript?.id },
-    },
-  )
+  const {
+    loading: invitationLoading,
+    data: invitations,
+    refetch: refetchInvitations,
+  } = useQuery(GET_INVITATIONS_FOR_MANUSCRIPT, {
+    variables: { id: data?.manuscript?.id },
+  })
 
   if (loading || invitationLoading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
@@ -379,7 +380,10 @@ const DecisionPage = ({ match }) => {
       makeDecision={makeDecision}
       manuscript={manuscript}
       publishManuscript={publishManuscript}
-      refetch={refetch}
+      refetch={() => {
+        refetchManuscript()
+        refetchInvitations()
+      }}
       removeReviewer={removeReviewer}
       reviewers={data?.manuscript?.reviews}
       reviewForm={reviewForm}
