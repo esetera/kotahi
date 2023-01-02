@@ -31,6 +31,9 @@ created
 updated
 published
 hasOverdueTasksForUser
+invitations {
+  status
+}
 `
 
 const formForPurposeAndCategoryFragment = `formForPurposeAndCategory(purpose: "submit", category: "submission") {
