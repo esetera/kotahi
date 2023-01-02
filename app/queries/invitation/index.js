@@ -43,11 +43,16 @@ export const GET_INVITATIONS_FOR_MANUSCRIPT = gql`
       status
       invitedPersonType
       userId
+      isShared
       user {
         id
         username
         profilePicture
         isOnline
+        defaultIdentity {
+          id
+          identifier
+        }
       }
     }
   }

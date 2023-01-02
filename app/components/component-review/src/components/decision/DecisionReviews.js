@@ -11,7 +11,7 @@ import { SectionContent } from '../../../../shared'
 //     )[0] || {}
 //   return status
 
-const getCompletedReviews = (manuscript, currentUser) => {
+const getCompletedReview = (manuscript, currentUser) => {
   const team = manuscript.teams.find(team_ => team_.role === 'reviewer') || {}
 
   if (!team.members) {
@@ -19,7 +19,7 @@ const getCompletedReviews = (manuscript, currentUser) => {
   }
 
   const currentMember = team.members.find(m => m.user?.id === currentUser?.id)
-  return currentMember && currentMember.status
+  return currentMember
 }
 
 const DecisionReviews = ({
@@ -31,11 +31,13 @@ const DecisionReviews = ({
   threadedDiscussionProps,
   invitations,
   urlFrag,
+  updateSharedStatusForInvitedReviewer,
+  updateTeamMember,
 }) => {
   const reviewsToShow = manuscript?.reviews?.length
     ? manuscript.reviews.filter(
         review =>
-          getCompletedReviews(manuscript, review.user) === 'completed' &&
+          getCompletedReview(manuscript, review.user)?.status === 'completed' &&
           review.isDecision === false,
       )
     : []
@@ -71,10 +73,15 @@ const DecisionReviews = ({
                 open
                 review={review}
                 reviewer={{ user: review.user, ordinal: index + 1 }}
+                reviewerTeamMember={getCompletedReview(manuscript, review.user)}
                 reviewForm={reviewForm}
                 teams={manuscript.teams}
                 threadedDiscussionProps={threadedDiscussionProps}
                 updateReview={updateReview}
+                updateSharedStatusForInvitedReviewer={
+                  updateSharedStatusForInvitedReviewer
+                }
+                updateTeamMember={updateTeamMember}
               />
             </SectionRow>
           ))

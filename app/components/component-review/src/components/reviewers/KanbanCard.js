@@ -1,12 +1,11 @@
 import { grid, th } from '@pubsweet/ui-toolkit'
-import { Action } from '@pubsweet/ui/dist/molecules'
 import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 import { Send } from 'react-feather'
 import styled from 'styled-components'
 import { convertTimestampToRelativeDateString } from '../../../../../shared/dateUtils'
 import { UserAvatar } from '../../../../component-avatar/src'
-import DeleteReviewerModal from './DeleteReviewerModal'
+import ReviewDetailsModal from '../../../../component-review-detail-modal'
 
 const Card = styled.div`
   background-color: #f8f8f9;
@@ -65,48 +64,66 @@ const KanbanCard = ({
   reviewer,
   isInvitation,
   manuscript,
-  onClickAction,
   removeReviewer,
+  status,
+  reviewForm,
+  review,
+  isCurrentVersion,
+  updateSharedStatusForInvitedReviewer,
+  updateTeamMember,
+  updateReview,
 }) => {
-  const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [open, setOpen] = useState(false)
+
   return (
-    <Card onClick={onClickAction}>
-      <AvatarGrid>
-        <UserAvatar
-          showHoverProfile={false}
-          user={
-            reviewer.user ?? {
-              username: reviewer.invitedPersonName,
-              isOnline: false,
-            }
-          }
-        />
-      </AvatarGrid>
-      <InfoGrid>
-        <NameDisplay>
-          {reviewer.user?.username ?? reviewer.invitedPersonName}
-        </NameDisplay>
-        {isInvitation ? (
-          <EmailInvitedReviewer>
-            Email invited
-            <SendIcon invitationStatus={reviewer.status.toLowerCase()} />
-          </EmailInvitedReviewer>
-        ) : (
-          <DateDisplay>
-            Last updated{' '}
-            {convertTimestampToRelativeDateString(reviewer.updated)}
-          </DateDisplay>
-        )}
-      </InfoGrid>
-      <Action onClick={() => setConfirmingDelete(true)}>Delete</Action>
-      <DeleteReviewerModal
-        isOpen={confirmingDelete}
-        manuscript={manuscript}
-        onClose={() => setConfirmingDelete(false)}
+    <>
+      <ReviewDetailsModal
+        isInvitation={isInvitation}
+        isOpen={open}
+        manuscriptId={manuscript.id}
+        onClose={() => setOpen(false)}
+        readOnly={!isCurrentVersion}
         removeReviewer={removeReviewer}
-        reviewer={reviewer}
+        review={review}
+        reviewerTeamMember={reviewer}
+        reviewForm={reviewForm}
+        status={status}
+        updateReview={updateReview}
+        updateSharedStatusForInvitedReviewer={
+          updateSharedStatusForInvitedReviewer
+        }
+        updateTeamMember={updateTeamMember}
       />
-    </Card>
+      <Card onClick={() => setOpen(true)}>
+        <AvatarGrid>
+          <UserAvatar
+            showHoverProfile={false}
+            user={
+              reviewer.user ?? {
+                username: reviewer.invitedPersonName,
+                isOnline: false,
+              }
+            }
+          />
+        </AvatarGrid>
+        <InfoGrid>
+          <NameDisplay>
+            {reviewer.user?.username ?? reviewer.invitedPersonName}
+          </NameDisplay>
+          {isInvitation ? (
+            <EmailInvitedReviewer>
+              Email invited
+              <SendIcon invitationStatus={reviewer.status.toLowerCase()} />
+            </EmailInvitedReviewer>
+          ) : (
+            <DateDisplay>
+              Last updated{' '}
+              {convertTimestampToRelativeDateString(reviewer.updated)}
+            </DateDisplay>
+          )}
+        </InfoGrid>
+      </Card>
+    </>
   )
 }
 
@@ -122,7 +139,6 @@ KanbanCard.propTypes = {
       }),
     }).isRequired,
   }).isRequired,
-  onClickAction: PropTypes.func.isRequired,
   isInvitation: PropTypes.bool.isRequired,
 }
 

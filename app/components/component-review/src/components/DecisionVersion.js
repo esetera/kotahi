@@ -76,6 +76,7 @@ const DecisionVersion = ({
   updateTasks,
   teams,
   removeReviewer,
+  updateTeamMember,
 }) => {
   // Hooks from the old world
   const location = useLocation()
@@ -280,6 +281,21 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
+          <KanbanBoard
+            invitations={invitations}
+            isCurrentVersion={isCurrentVersion}
+            manuscript={version}
+            removeReviewer={removeReviewer}
+            reviewForm={reviewForm}
+            reviews={reviewers}
+            updateReview={updateReview}
+            updateSharedStatusForInvitedReviewer={
+              updateSharedStatusForInvitedReviewer
+            }
+            updateTeamMember={updateTeamMember}
+            version={version}
+            versionNumber={versionNumber}
+          />
           {isCurrentVersion && (
             <AdminSection>
               <InviteReviewer
@@ -294,12 +310,6 @@ const DecisionVersion = ({
               />
             </AdminSection>
           )}
-          <KanbanBoard
-            invitations={invitations}
-            removeReviewer={removeReviewer}
-            version={version}
-            versionNumber={versionNumber}
-          />
         </>
       ),
       key: `team_${version.id}`,
@@ -327,6 +337,7 @@ const DecisionVersion = ({
               decisionForm={decisionForm}
               isControlPage
               manuscript={version}
+              readOnly
               reviewForm={reviewForm}
               showEditorOnlyFields
               threadedDiscussionProps={threadedDiscussionProps}
@@ -341,6 +352,10 @@ const DecisionVersion = ({
               reviewForm={reviewForm}
               threadedDiscussionProps={threadedDiscussionProps}
               updateReview={updateReview}
+              updateSharedStatusForInvitedReviewer={
+                updateSharedStatusForInvitedReviewer
+              }
+              updateTeamMember={updateTeamMember}
               urlFrag={urlFrag}
             />
           )}

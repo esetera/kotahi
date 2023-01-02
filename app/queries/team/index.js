@@ -57,3 +57,19 @@ export const UPDATE_MEMBER_STATUS_MUTATION = gql`
     }
   }
 `
+
+export const updateTeamMemberMutation = gql`
+  mutation($id: ID!, $input: String) {
+    updateTeamMember(id: $id, input: $input) {
+      id
+      user {
+        id
+        username
+        profilePicture
+        isOnline
+      }
+      status
+      isShared
+    }
+  }
+`
