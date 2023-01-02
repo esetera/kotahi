@@ -53,6 +53,7 @@ const DecisionVersions = ({
   updateTask,
   updateTasks,
   teams,
+  updateTeamMember,
   removeReviewer,
 }) => {
   const [initialValue, setInitialValue] = useState(null)
@@ -139,6 +140,7 @@ const DecisionVersions = ({
                 updateTask={index === 0 ? updateTask : null}
                 updateTasks={index === 0 ? updateTasks : null}
                 updateTeam={updateTeam}
+                updateTeamMember={updateTeamMember}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}
                 validateSuffix={validateSuffix}

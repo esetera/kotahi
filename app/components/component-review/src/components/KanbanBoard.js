@@ -58,6 +58,13 @@ const KanbanBoard = ({
   version,
   versionNumber,
   removeReviewer,
+  reviews,
+  reviewForm,
+  isCurrentVersion,
+  manuscript,
+  updateSharedStatusForInvitedReviewer,
+  updateTeamMember,
+  updateReview,
 }) => {
   const reviewers = getMembersOfTeam(version, 'reviewer')
   const invitationIds = invitations.map(({ id }) => id)
@@ -70,6 +77,19 @@ const KanbanBoard = ({
 
     return new Date(bDate) - new Date(aDate)
   })
+
+  const allReviews = isCurrentVersion
+    ? reviews
+    : (Array.isArray(manuscript.reviews) &&
+        manuscript.reviews.filter(review => !review.isDecision)) ||
+      []
+
+  const findReview = reviewer => {
+    return allReviews.find(
+      review =>
+        review.user.id === reviewer.user.id && review.isDecision === false,
+    )
+  }
 
   return (
     <AdminSection>
@@ -104,12 +124,24 @@ const KanbanBoard = ({
                       )
                       .map(reviewer => (
                         <KanbanCard
+                          isCurrentVersion={isCurrentVersion}
                           isInvitation={invitationIds.includes(reviewer.id)}
                           key={reviewer.id}
                           manuscript={version}
-                          onClickAction={() => {}}
                           removeReviewer={removeReviewer}
+                          review={
+                            status.value === 'completed'
+                              ? findReview(reviewer)
+                              : null
+                          }
                           reviewer={reviewer}
+                          reviewForm={reviewForm}
+                          status={status.value}
+                          updateReview={updateReview}
+                          updateSharedStatusForInvitedReviewer={
+                            updateSharedStatusForInvitedReviewer
+                          }
+                          updateTeamMember={updateTeamMember}
                         />
                       ))}
                   </CardsWrapper>

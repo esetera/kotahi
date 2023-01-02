@@ -28,6 +28,7 @@ import {
 import { GET_INVITATIONS_FOR_MANUSCRIPT } from '../../../../queries/invitation'
 import {
   CREATE_TEAM_MUTATION,
+  updateTeamMemberMutation,
   UPDATE_MEMBER_STATUS_MUTATION,
   UPDATE_TEAM_MUTATION,
 } from '../../../../queries/team'
@@ -132,6 +133,7 @@ const DecisionPage = ({ match }) => {
   const [publishManuscript] = useMutation(publishManuscriptMutation)
   const [updateTeam] = useMutation(UPDATE_TEAM_MUTATION)
   const [createTeam] = useMutation(CREATE_TEAM_MUTATION)
+  const [updateTeamMember] = useMutation(updateTeamMemberMutation)
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
   const [updatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
@@ -399,6 +401,7 @@ const DecisionPage = ({ match }) => {
       updateTask={updateTask}
       updateTasks={updateTasks}
       updateTeam={updateTeam}
+      updateTeamMember={updateTeamMember}
       urlFrag={urlFrag}
       validateDoi={validateDoi(client)}
       validateSuffix={validateSuffix(client)}
