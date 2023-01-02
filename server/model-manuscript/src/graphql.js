@@ -1163,7 +1163,7 @@ const resolvers = {
       // Get those top-level manuscripts with all versions, all with teams and members
       const allManuscriptsWithInfo = await models.Manuscript.query()
         .withGraphFetched(
-          '[teams.[members], tasks, manuscriptVersions(orderByCreated).[teams.[members], tasks]]',
+          '[teams.[members], tasks, invitations, manuscriptVersions(orderByCreated).[teams.[members], tasks, invitations]]',
         )
         .whereIn(
           'id',
@@ -1592,6 +1592,7 @@ const typeDefs = `
     importSourceServer: String
     tasks: [Task!]
     hasOverdueTasksForUser: Boolean
+    invitations: [Invitation]
   }
 
   input ManuscriptInput {

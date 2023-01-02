@@ -167,6 +167,8 @@ class Manuscript extends BaseModel {
     const Team = require('../../model-team/src/team')
     /* eslint-disable-next-line global-require */
     const Task = require('../../model-task/src/task')
+    /* eslint-disable-next-line global-require */
+    const Invitation = require('../../model-invitations/src/invitations')
 
     return {
       submitter: {
@@ -231,6 +233,14 @@ class Manuscript extends BaseModel {
         join: {
           from: 'manuscripts.id',
           to: 'manuscripts.parentId',
+        },
+      },
+      invitations: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: Invitation,
+        join: {
+          from: 'manuscripts.id',
+          to: 'invitations.manuscriptId',
         },
       },
     }
