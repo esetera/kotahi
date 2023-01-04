@@ -13,8 +13,6 @@ import {
   MediumRow,
   Primary,
   Secondary,
-  UserInfo,
-  UserCombo,
   LooseColumn,
 } from '../../../../shared'
 import { UserAvatar } from '../../../../component-avatar/src'
