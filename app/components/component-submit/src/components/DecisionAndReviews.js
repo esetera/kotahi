@@ -41,7 +41,7 @@ const Decision = ({
 
 const DecisionAndReviews = ({
   manuscript,
-  isControlPage,
+  isControlPage = false,
   reviewForm,
   decisionForm,
   showEditorOnlyFields,
@@ -101,7 +101,9 @@ const DecisionAndReviews = ({
           reviewsToShow.map((review, index) => (
             <SectionRow key={review.id}>
               <DecisionReview
+                isControlPage={isControlPage}
                 open
+                readOnly
                 review={review}
                 reviewer={{
                   name: review.user.username,

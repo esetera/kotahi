@@ -46,6 +46,7 @@ const buildColumnDefinition = (
 
   const defaultProps = {
     name: columnName,
+    centered: field?.centered || false,
     title: field?.shortDescription ?? field?.title ?? '',
     defaultSortDirection: canSort ? 'ASC' : null,
     component: DefaultField,

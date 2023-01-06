@@ -58,6 +58,7 @@ const DecisionVersion = ({
   displayShortIdAsIdentifier,
   updateReviewJsonData,
   validateDoi,
+  validateSuffix,
   createFile,
   deleteFile,
   threadedDiscussionProps,
@@ -68,8 +69,14 @@ const DecisionVersion = ({
   setSelectedEmail,
   setShouldPublishField,
   isEmailAddressOptedOut,
+  updateSharedStatusForInvitedReviewer,
+  dois,
+  refetch,
   updateTask,
   updateTasks,
+  teams,
+  removeReviewer,
+  updateTeamMember,
 }) => {
   // Hooks from the old world
   const location = useLocation()
@@ -183,6 +190,7 @@ const DecisionVersion = ({
                 threadedDiscussionProps={threadedDiscussionProps}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}
+                validateSuffix={validateSuffix}
               />
             </SectionContent>
           )}
@@ -273,14 +281,32 @@ const DecisionVersion = ({
               </SectionRow>
             </SectionContent>
           )}
-          <KanbanBoard versionNumber={versionNumber} />
+          <KanbanBoard
+            invitations={invitations}
+            isCurrentVersion={isCurrentVersion}
+            manuscript={version}
+            removeReviewer={removeReviewer}
+            reviewForm={reviewForm}
+            reviews={reviewers}
+            updateReview={updateReview}
+            updateSharedStatusForInvitedReviewer={
+              updateSharedStatusForInvitedReviewer
+            }
+            updateTeamMember={updateTeamMember}
+            version={version}
+            versionNumber={versionNumber}
+          />
           {isCurrentVersion && (
             <AdminSection>
               <InviteReviewer
                 addReviewer={addReviewer}
+                currentUser={currentUser}
+                isEmailAddressOptedOut={isEmailAddressOptedOut}
                 manuscript={version}
                 reviewerUsers={allUsers}
+                sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
+                setExternalEmail={setExternalEmail}
               />
             </AdminSection>
           )}
@@ -311,6 +337,7 @@ const DecisionVersion = ({
               decisionForm={decisionForm}
               isControlPage
               manuscript={version}
+              readOnly
               reviewForm={reviewForm}
               showEditorOnlyFields
               threadedDiscussionProps={threadedDiscussionProps}
@@ -325,6 +352,10 @@ const DecisionVersion = ({
               reviewForm={reviewForm}
               threadedDiscussionProps={threadedDiscussionProps}
               updateReview={updateReview}
+              updateSharedStatusForInvitedReviewer={
+                updateSharedStatusForInvitedReviewer
+              }
+              updateTeamMember={updateTeamMember}
               urlFrag={urlFrag}
             />
           )}
@@ -378,6 +409,7 @@ const DecisionVersion = ({
                   threadedDiscussionProps={threadedDiscussionProps}
                   urlFrag={urlFrag}
                   validateDoi={validateDoi}
+                  validateSuffix={validateSuffix}
                 />
               </SectionContent>
             </AdminSection>
@@ -385,6 +417,7 @@ const DecisionVersion = ({
           {isCurrentVersion && (
             <AdminSection>
               <Publish
+                dois={dois}
                 manuscript={version}
                 publishManuscript={publishManuscript}
               />
@@ -405,6 +438,7 @@ const DecisionVersion = ({
   return (
     <HiddenTabs
       defaultActiveKey={locationState}
+      onChange={refetch}
       sections={[
         teamSection(),
         decisionSection(),

@@ -1,28 +1,30 @@
-import React, { useMemo, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import React, { useMemo } from 'react'
 import {
   ownerColumns,
   URI_SEARCH_PARAM,
 } from '../../../../../../config/journal/manuscripts'
+import {
+  extractSortData,
+  URI_PAGENUM_PARAM,
+} from '../../../../../shared/urlParamUtils'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
 import {
   CommsErrorBanner,
+  Pagination,
+  PaginationContainerShadowed,
   SectionContent,
   SectionHeader,
   Spinner,
   Title,
 } from '../../../../shared'
-import { Placeholder } from '../../style'
-import { getLatestVersion } from '../../utils'
 
-const OwnerTable = ({ urlFrag, query: { data, loading, error } }) => {
-  const { search, pathname } = useLocation()
-  const uriQueryParams = new URLSearchParams(search)
-  const history = useHistory()
-  const [sortName, setSortName] = useState('created')
-  const [sortDirection, setSortDirection] = useState('DESC')
-
+const SubmissionsTable = ({
+  urlFrag,
+  applyQueryParams,
+  uriQueryParams,
+  query: { data, loading, error },
+}) => {
   const fieldDefinitions = useMemo(() => {
     const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
     const defs = {}
@@ -36,30 +38,23 @@ const OwnerTable = ({ urlFrag, query: { data, loading, error } }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const authorLatestVersions = data.manuscriptsUserHasCurrentRoleIn.manuscripts.map(
-    getLatestVersion,
-  )
+  const currentSearchQuery = uriQueryParams.get(URI_SEARCH_PARAM)
+  const sortName = extractSortData(uriQueryParams).name
+  const sortDirection = extractSortData(uriQueryParams).direction
 
-  if (authorLatestVersions.length === 0) {
-    return <Placeholder>You have not submitted any manuscripts yet</Placeholder>
-  }
+  const page = uriQueryParams.get(URI_PAGENUM_PARAM) || 1
+  const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
+  const { totalCount } = data.manuscriptsUserHasCurrentRoleIn
 
   const specialComponentValues = {
     urlFrag,
   }
 
-  const currentSearchQuery = uriQueryParams.get(URI_SEARCH_PARAM)
-
   const displayProps = {
     uriQueryParams,
-    sortName,
+    columnToSortOn: sortName,
     sortDirection,
     currentSearchQuery,
-  }
-
-  const setFilter = (fieldName, filterValue) => {
-    uriQueryParams.set(fieldName, filterValue)
-    history.replace({ pathname, search: uriQueryParams.toString() })
   }
 
   const columnsProps = buildColumnDefinitions(
@@ -75,19 +70,24 @@ const OwnerTable = ({ urlFrag, query: { data, loading, error } }) => {
         <Title>My Submissions</Title>
       </SectionHeader>
       <ManuscriptsTable
+        applyQueryParams={applyQueryParams}
         columnsProps={columnsProps}
         getLink={manuscript =>
           `${urlFrag}/versions/${manuscript.parentId || manuscript.id}/submit`
         }
-        manuscripts={authorLatestVersions}
-        setFilter={setFilter}
-        setSortDirection={setSortDirection}
-        setSortName={setSortName}
+        manuscripts={data.manuscriptsUserHasCurrentRoleIn.manuscripts}
         sortDirection={sortDirection}
         sortName={sortName}
+      />
+      <Pagination
+        limit={limit}
+        page={page}
+        PaginationContainer={PaginationContainerShadowed}
+        setPage={newPage => applyQueryParams({ [URI_PAGENUM_PARAM]: newPage })}
+        totalCount={totalCount}
       />
     </SectionContent>
   )
 }
 
-export default OwnerTable
+export default SubmissionsTable

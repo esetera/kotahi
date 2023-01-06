@@ -8,8 +8,10 @@ import {
   SectionRow,
   Title,
 } from '../../../shared'
-
+import ReviewersDeclined from './ReviewersDeclined'
+import { getMembersOfTeam } from '../../../../shared/manuscriptUtils'
 import statuses from '../../../../../config/journal/review-status'
+import KanbanCard from './reviewers/KanbanCard'
 
 const Kanban = styled.div`
   margin: 15px 7.5px;
@@ -25,7 +27,7 @@ const Column = styled.div`
 const StatusLabel = styled.div`
   background-color: ${props => props.statusColor || '#ffffff'};
   border-radius: 12px;
-  color: rgba(0, 0, 0, 0.6);
+  color: ${props => (props.lightText ? '#ffffff' : '#000000')};
   display: inline-block;
   font-weight: bold;
   margin-block: 4px;
@@ -51,7 +53,44 @@ const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.5);
 `
 
-const KanbanBoard = ({ versionNumber }) => {
+const KanbanBoard = ({
+  invitations,
+  version,
+  versionNumber,
+  removeReviewer,
+  reviews,
+  reviewForm,
+  isCurrentVersion,
+  manuscript,
+  updateSharedStatusForInvitedReviewer,
+  updateTeamMember,
+  updateReview,
+}) => {
+  const reviewers = getMembersOfTeam(version, 'reviewer')
+  const invitationIds = invitations.map(({ id }) => id)
+  const emailAndWebReviewers = [...invitations, ...reviewers]
+
+  emailAndWebReviewers.sort((a, b) => {
+    const aDate = a.responseComment ? a.responseDate : a.updated
+
+    const bDate = b.responseComment ? b.responseDate : b.updated
+
+    return new Date(bDate) - new Date(aDate)
+  })
+
+  const allReviews = isCurrentVersion
+    ? reviews
+    : (Array.isArray(manuscript.reviews) &&
+        manuscript.reviews.filter(review => !review.isDecision)) ||
+      []
+
+  const findReview = reviewer => {
+    return allReviews.find(
+      review =>
+        review.user.id === reviewer.user.id && review.isDecision === false,
+    )
+  }
+
   return (
     <AdminSection>
       <SectionContent>
@@ -66,16 +105,50 @@ const KanbanBoard = ({ versionNumber }) => {
         <SectionRow style={{ padding: 0 }}>
           <Kanban>
             {statuses
-              .filter(status => status.label !== 'Declined')
+              .filter(status => status.value.toLowerCase() !== 'rejected')
               .map(status => (
                 <Column key={status.value}>
-                  <StatusLabel statusColor={status.color}>
+                  <StatusLabel
+                    lightText={status.lightText}
+                    statusColor={status.color}
+                  >
                     {status.label}
                   </StatusLabel>
-                  <CardsWrapper />
+                  <CardsWrapper>
+                    {emailAndWebReviewers
+                      .filter(
+                        reviewer =>
+                          reviewer.status === status.value ||
+                          (reviewer.status === 'UNANSWERED' &&
+                            status.value === 'invited'),
+                      )
+                      .map(reviewer => (
+                        <KanbanCard
+                          isCurrentVersion={isCurrentVersion}
+                          isInvitation={invitationIds.includes(reviewer.id)}
+                          key={reviewer.id}
+                          manuscript={version}
+                          removeReviewer={removeReviewer}
+                          review={
+                            status.value === 'completed'
+                              ? findReview(reviewer)
+                              : null
+                          }
+                          reviewer={reviewer}
+                          reviewForm={reviewForm}
+                          status={status.value}
+                          updateReview={updateReview}
+                          updateSharedStatusForInvitedReviewer={
+                            updateSharedStatusForInvitedReviewer
+                          }
+                          updateTeamMember={updateTeamMember}
+                        />
+                      ))}
+                  </CardsWrapper>
                 </Column>
               ))}
           </Kanban>
+          <ReviewersDeclined emailAndWebReviewers={emailAndWebReviewers} />
         </SectionRow>
       </SectionContent>
     </AdminSection>

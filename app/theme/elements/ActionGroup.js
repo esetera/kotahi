@@ -9,6 +9,6 @@ export default {
     }
   `,
   ActionWrapper: css`
-    font-size: 5px;
+    padding: 0 4px;
   `,
 }

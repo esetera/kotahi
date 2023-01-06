@@ -9,14 +9,15 @@ const StyledActionGroup = styled(ActionGroup)`
 `
 
 const StyledAction = styled(Action)`
-  display: flex;
   align-items: center;
+  display: flex;
   font-size: 14px;
 `
 
 const EditorItemLinks = ({ manuscript, urlFrag }) => (
   <StyledActionGroup>
     <StyledAction
+      data-testid="control-panel-decision"
       to={{
         pathname: `${urlFrag}/versions/${
           manuscript.parentId || manuscript.id
@@ -28,6 +29,7 @@ const EditorItemLinks = ({ manuscript, urlFrag }) => (
       &nbsp;DECISION
     </StyledAction>
     <StyledAction
+      data-testid="control-panel-team"
       to={{
         pathname: `${urlFrag}/versions/${
           manuscript.parentId || manuscript.id

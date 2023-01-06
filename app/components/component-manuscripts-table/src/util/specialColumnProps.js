@@ -12,7 +12,10 @@ import {
   EditorItemLinks,
   ReviewStatusDonut,
   OverdueTooltip,
+  LastUpdated,
+  ReviewerStatusBadge,
 } from '../cell-components'
+import reviewFilterOptions from '../../../../../config/journal/review-status'
 /**
  * @typedef {Object} ComponentValues
  * @param {string} urlFrag Action Button: The top level urlFrag, e.g. 'kotahi'
@@ -58,14 +61,19 @@ const buildSpecialColumnProps = specialComponentValues => {
       canSort: true,
       canFilterByDateRange: true,
       defaultSortDirection: 'DESC',
-      flex: '0 1 7em',
+      flex: '0.25 1 7em',
     },
     updated: {
       title: 'Updated',
       canSort: true,
       canFilterByDateRange: true,
       defaultSortDirection: 'DESC',
-      flex: '0 1 7em',
+      flex: '0.25 1 7em',
+    },
+    lastUpdated: {
+      title: 'Last Status Update',
+      component: LastUpdated,
+      flex: '0.25 1 8em',
     },
     status: {
       title: 'Status',
@@ -86,13 +94,19 @@ const buildSpecialColumnProps = specialComponentValues => {
               { label: 'Evaluated', value: 'evaluated' },
               { label: 'Published', value: 'published' },
             ],
-      flex: '0 1 10em',
+      flex: '0.25 1 10em',
       component: FilterableStatusBadge,
+      centered: true,
+    },
+    manuscriptVersions: {
+      title: 'Version',
+      flex: '0 1 6em',
+      centered: true,
     },
     author: { title: 'Author', flex: '0 1 16em', component: Submitter },
     editor: { title: 'Editor', flex: '0 1 12em', component: Editors },
     actions: {
-      flex: '0 1 6em',
+      flex: '0 1 8em',
       component: Actions,
       extraProps: {
         deleteManuscript,
@@ -118,9 +132,22 @@ const buildSpecialColumnProps = specialComponentValues => {
     //     currentUser,
     //   },
     // },
+    reviewerStatusBadge: {
+      title: 'Your Status',
+      flex: '0.25 1 10em',
+      canSort: true,
+      defaultSortDirection: 'DESC',
+      filterOptions: reviewFilterOptions,
+      component: ReviewerStatusBadge,
+      centered: true,
+      extraProps: {
+        currentUser,
+      },
+    },
     statusCounts: {
       title: 'Reviewer Status',
-      flex: '0 1 10em',
+      flex: '0.25 1 10em',
+      centered: true,
       component: ReviewStatusDonut,
     },
     editorLinks: {

@@ -1,40 +1,43 @@
-import React, { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
-import { useQuery, useMutation, gql, useApolloClient } from '@apollo/client'
-import { set, debounce } from 'lodash'
+import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client'
 import config from 'config'
-import DecisionVersions from './DecisionVersions'
-import { Spinner, CommsErrorBanner } from '../../../shared'
+import { debounce, set } from 'lodash'
+import PropTypes from 'prop-types'
+import React, { useEffect, useState } from 'react'
 import { fragmentFields } from '../../../component-submit/src/userManuscriptFormQuery'
+import { CommsErrorBanner, Spinner } from '../../../shared'
+import DecisionVersions from './DecisionVersions'
 
 import {
-  query,
-  sendEmail,
-  makeDecisionMutation,
-  updateReviewMutation,
-  publishManuscriptMutation,
-  setShouldPublishFieldMutation,
   addReviewerMutation,
+  makeDecisionMutation,
+  publishManuscriptMutation,
+  query,
+  removeReviewerMutation,
+  sendEmail,
+  setShouldPublishFieldMutation,
+  updateReviewMutation,
 } from './queries'
 
 import {
   CREATE_MESSAGE,
   GET_BLACKLIST_INFORMATION,
+  UPDATE_SHARED_STATUS_FOR_INVITED_REVIEWER_MUTATION,
   UPDATE_TASK,
   UPDATE_TASKS,
 } from '../../../../queries'
 import { GET_INVITATIONS_FOR_MANUSCRIPT } from '../../../../queries/invitation'
 import {
   CREATE_TEAM_MUTATION,
-  UPDATE_TEAM_MUTATION,
+  updateTeamMemberMutation,
   UPDATE_MEMBER_STATUS_MUTATION,
+  UPDATE_TEAM_MUTATION,
 } from '../../../../queries/team'
-import { validateDoi } from '../../../../shared/commsUtils'
+import { validateDoi, validateSuffix } from '../../../../shared/commsUtils'
 import {
-  UPDATE_PENDING_COMMENT,
-  COMPLETE_COMMENTS,
   COMPLETE_COMMENT,
+  COMPLETE_COMMENTS,
   DELETE_PENDING_COMMENT,
+  UPDATE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
@@ -99,11 +102,10 @@ const DecisionPage = ({ match }) => {
 
   // end of code from submit page to handle possible form changes
 
-  const { loading, data, error } = useQuery(query, {
+  const { loading, data, error, refetch: refetchManuscript } = useQuery(query, {
     variables: {
       id: match.params.version,
     },
-    fetchPolicy: 'cache-and-network',
   })
 
   const [selectedEmail, setSelectedEmail] = useState('')
@@ -118,12 +120,20 @@ const DecisionPage = ({ match }) => {
   })
 
   const [update] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
-  const [sendEmailMutation] = useMutation(sendEmail)
+
+  const [sendEmailMutation] = useMutation(sendEmail, {
+    refetchQueries: [
+      { query: GET_INVITATIONS_FOR_MANUSCRIPT },
+      'getInvitationsForManuscript',
+    ],
+  })
+
   const [sendChannelMessage] = useMutation(CREATE_MESSAGE)
   const [makeDecision] = useMutation(makeDecisionMutation)
   const [publishManuscript] = useMutation(publishManuscriptMutation)
   const [updateTeam] = useMutation(UPDATE_TEAM_MUTATION)
   const [createTeam] = useMutation(CREATE_TEAM_MUTATION)
+  const [updateTeamMember] = useMutation(updateTeamMemberMutation)
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
   const [updatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
@@ -131,6 +141,10 @@ const DecisionPage = ({ match }) => {
   const [completeComment] = useMutation(COMPLETE_COMMENT)
   const [deletePendingComment] = useMutation(DELETE_PENDING_COMMENT)
   const [setShouldPublishField] = useMutation(setShouldPublishFieldMutation)
+
+  const [updateSharedStatusForInvitedReviewer] = useMutation(
+    UPDATE_SHARED_STATUS_FOR_INVITED_REVIEWER_MUTATION,
+  )
 
   const [addReviewer] = useMutation(addReviewerMutation, {
     update: (cache, { data: { addReviewer: revisedReviewersObject } }) => {
@@ -163,6 +177,8 @@ const DecisionPage = ({ match }) => {
       })
     },
   })
+
+  const [removeReviewer] = useMutation(removeReviewerMutation)
 
   const [updateTask] = useMutation(UPDATE_TASK, {
     update(cache, { data: { updateTask: updatedTask } }) {
@@ -209,11 +225,15 @@ const DecisionPage = ({ match }) => {
     },
   })
 
-  const { data: invitations } = useQuery(GET_INVITATIONS_FOR_MANUSCRIPT, {
+  const {
+    loading: invitationLoading,
+    data: invitations,
+    refetch: refetchInvitations,
+  } = useQuery(GET_INVITATIONS_FOR_MANUSCRIPT, {
     variables: { id: data?.manuscript?.id },
   })
 
-  if (loading && !data) return <Spinner />
+  if (loading || invitationLoading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
   const updateManuscript = (versionId, manuscriptDelta) =>
@@ -268,6 +288,7 @@ const DecisionPage = ({ match }) => {
     currentUser,
     users,
     threadedDiscussions,
+    doisToRegister,
   } = data
 
   const form = submissionForm?.structure ?? {
@@ -350,6 +371,7 @@ const DecisionPage = ({ match }) => {
         config['client-features'].displayShortIdAsIdentifier.toLowerCase() ===
           'true'
       }
+      dois={doisToRegister}
       externalEmail={externalEmail}
       form={form}
       handleChange={handleChange}
@@ -358,6 +380,11 @@ const DecisionPage = ({ match }) => {
       makeDecision={makeDecision}
       manuscript={manuscript}
       publishManuscript={publishManuscript}
+      refetch={() => {
+        refetchManuscript()
+        refetchInvitations()
+      }}
+      removeReviewer={removeReviewer}
       reviewers={data?.manuscript?.reviews}
       reviewForm={reviewForm}
       selectedEmail={selectedEmail}
@@ -367,15 +394,21 @@ const DecisionPage = ({ match }) => {
       setSelectedEmail={setSelectedEmail}
       setShouldPublishField={setShouldPublishField}
       teamLabels={config.teams}
+      teams={data?.manuscript?.teams}
       threadedDiscussionProps={threadedDiscussionProps}
       updateManuscript={updateManuscript}
       updateReview={updateReview}
       updateReviewJsonData={updateReviewJsonData}
+      updateSharedStatusForInvitedReviewer={
+        updateSharedStatusForInvitedReviewer
+      }
       updateTask={updateTask}
       updateTasks={updateTasks}
       updateTeam={updateTeam}
+      updateTeamMember={updateTeamMember}
       urlFrag={urlFrag}
       validateDoi={validateDoi(client)}
+      validateSuffix={validateSuffix(client)}
     />
   )
 }

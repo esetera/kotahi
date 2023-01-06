@@ -9,7 +9,7 @@ const OverdueTooltip = ({ manuscript }) => {
         <Tooltip
           overlay={<p color="red">Overdue Task</p>}
           overlayInnerStyle={{
-            backgroundColor: 'LightGray',
+            backgroundColor: 'White',
             borderColor: 'LightGray',
             fontWeight: 'bold',
             color: 'red',

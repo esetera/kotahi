@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import DecisionReview from './DecisionReview'
 import { SectionHeader, SectionRow, Title } from '../style'
 import { SectionContent } from '../../../../shared'
-import InvitationResults from './InvitationResults'
 
 // TODO: read reviewer ordinal and name from project reviewer
 // const { status } =
@@ -12,7 +11,7 @@ import InvitationResults from './InvitationResults'
 //     )[0] || {}
 //   return status
 
-const getCompletedReviews = (manuscript, currentUser) => {
+const getCompletedReview = (manuscript, currentUser) => {
   const team = manuscript.teams.find(team_ => team_.role === 'reviewer') || {}
 
   if (!team.members) {
@@ -20,7 +19,7 @@ const getCompletedReviews = (manuscript, currentUser) => {
   }
 
   const currentMember = team.members.find(m => m.user?.id === currentUser?.id)
-  return currentMember && currentMember.status
+  return currentMember
 }
 
 const DecisionReviews = ({
@@ -32,20 +31,24 @@ const DecisionReviews = ({
   threadedDiscussionProps,
   invitations,
   urlFrag,
+  updateSharedStatusForInvitedReviewer,
+  updateTeamMember,
 }) => {
+  const reviewsToShow = manuscript?.reviews?.length
+    ? manuscript.reviews.filter(
+        review =>
+          getCompletedReview(manuscript, review.user)?.status === 'completed' &&
+          review.isDecision === false,
+      )
+    : []
+
   return (
     <SectionContent>
       <SectionHeader>
         <Title>Completed Reviews</Title>
       </SectionHeader>
-      <InvitationResults invitations={invitations} />
-      {manuscript.reviews && manuscript.reviews.length ? (
-        manuscript.reviews
-          .filter(
-            review =>
-              getCompletedReviews(manuscript, review.user) === 'completed' &&
-              review.isDecision === false,
-          )
+      {reviewsToShow.length > 0 ? (
+        reviewsToShow
           .sort((reviewOne, reviewTwo) => {
             // Get the username of reviewer and convert to uppercase
             const usernameOne = reviewOne.user.username.toUpperCase()
@@ -70,10 +73,15 @@ const DecisionReviews = ({
                 open
                 review={review}
                 reviewer={{ user: review.user, ordinal: index + 1 }}
+                reviewerTeamMember={getCompletedReview(manuscript, review.user)}
                 reviewForm={reviewForm}
                 teams={manuscript.teams}
                 threadedDiscussionProps={threadedDiscussionProps}
                 updateReview={updateReview}
+                updateSharedStatusForInvitedReviewer={
+                  updateSharedStatusForInvitedReviewer
+                }
+                updateTeamMember={updateTeamMember}
               />
             </SectionRow>
           ))
