@@ -18,11 +18,11 @@ import spacing from './spacing'
 import typography from './typography'
 
 // Fonts
-// import '@fontsource/roboto/400.css'
-// import '@fontsource/roboto/500.css'
-// import '@fontsource/roboto/700.css'
-// import '@fontsource/roboto/900.css'
-// import '@fontsource/roboto/400-italic.css'
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/500.css'
+import '@fontsource/roboto/700.css'
+import '@fontsource/roboto/900.css'
+import '@fontsource/roboto/400-italic.css'
 
 const cokoTheme = {
   colors,
