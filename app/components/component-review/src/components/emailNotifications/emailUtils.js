@@ -257,8 +257,8 @@ export const sendEmail = async (
   if (!isNewUser && !selectedEmail) return undefined
 
   const response = await sendNotifyEmail(input)
-  const responseStatus = response.data.sendEmail.success
-  if (responseStatus) return { responseStatus, input }
+  const invitation = response.data.sendEmail
+  if (invitation) return { invitation, input }
   return undefined
 }
 

@@ -239,7 +239,7 @@ const resolvers = {
       const emailValidationResult = emailValidationRegexp.test(receiverEmail)
 
       if (!emailValidationResult || !receiverName) {
-        return { success: false }
+        return null
       }
 
       const invitationSender = await models.User.find(ctx.user)
@@ -249,7 +249,7 @@ const resolvers = {
       const status = 'UNANSWERED'
       const senderId = invitationSender.id
 
-      let invitationId = ''
+      let invitation = null
 
       const invitationContainingEmailTemplate = [
         'authorInvitationEmailTemplate',
@@ -281,7 +281,7 @@ const resolvers = {
             ? 'AUTHOR'
             : 'REVIEWER'
 
-        const newInvitation = await new Invitation({
+        invitation = await new Invitation({
           manuscriptId,
           toEmail,
           purpose,
@@ -291,11 +291,9 @@ const resolvers = {
           invitedPersonName,
           userId,
         }).saveGraph()
-
-        invitationId = newInvitation.id
       }
 
-      if (invitationId === '') {
+      if (invitation === null) {
         console.error(
           'Invitation Id is not available to be used for this template.',
         )
@@ -318,17 +316,17 @@ const resolvers = {
           shortId: manuscript.shortId,
           instance,
           toEmail,
-          invitationId,
+          invitationId: invitation.id,
           submissionLink: JSON.parse(manuscript.submission).link,
           purpose,
           status,
           senderId,
           appUrl: config['pubsweet-client'].baseUrl,
         })
-        return { success: true }
+        return invitation
       } catch (e) {
         console.error(e)
-        return { success: false }
+        return null
       }
     },
   },
@@ -393,10 +391,6 @@ const typeDefs = `
     searchUsers(teamId: ID, query: String): [User]
   }
 
-  type SendEmailResponse {
-    success: Boolean
-  }
-
   type PaginatedUsers {
     totalCount: Int
     users: [User]
@@ -407,7 +401,7 @@ const typeDefs = `
     deleteUser(id: ID): User
     updateUser(id: ID, input: String): User
     updateCurrentUsername(username: String): User
-    sendEmail(input: String): SendEmailResponse
+    sendEmail(input: String): Invitation
     updateCurrentEmail(email: String): UpdateEmailResponse
     updateRecentTab(tab: String): User
   }
