@@ -13,20 +13,6 @@ import {
 import InviteReviewerModal from './InviteReviewerModal'
 import ReviewerForm from './ReviewerForm'
 
-// const Card = styled.div`
-//   background-color: #f8f8f9;
-//   border-bottom: 0.8px solid #bfbfbf;
-//   border-radius: 8px;
-//   display: flex;
-//   padding: 10px;
-//   width: 100%;
-
-//   &:hover {
-//     box-shadow: 0px 9px 5px -6px #bfbfbf;
-//     transition: 0.3s ease;
-//   }
-// `
-
 const InviteReviewer = ({
   reviewerUsers,
   manuscript,
