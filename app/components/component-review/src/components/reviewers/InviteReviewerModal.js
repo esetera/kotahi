@@ -110,6 +110,7 @@ const InviteReviewerModal = ({
               )
 
               let teamMember
+
               if (isInvitation) {
                 const response = await sendEmail(
                   manuscript,
@@ -142,6 +143,7 @@ const InviteReviewerModal = ({
                     manuscriptId: manuscript.id,
                   },
                 })
+
                 teamMember = data.addReviewer.members.find(
                   member => member.user.id === identity.id,
                 )
