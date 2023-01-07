@@ -266,6 +266,7 @@ export const sendEmailChannelMessage = async (
   sendChannelMessageCb,
   currentUser,
   input,
+  reviewers = [],
 ) => {
   const selectedTempl = emailTemplateOptions.find(
     template => template.value === input.selectedTemplate,
@@ -273,8 +274,7 @@ export const sendEmailChannelMessage = async (
 
   const receiverName = input.externalEmail
     ? input.externalName
-    : emailTemplateOptions.find(user => user.value === input.selectedEmail)
-        .userName
+    : reviewers.find(user => user.value === input.selectedEmail).userName
 
   const date = Date.now()
 

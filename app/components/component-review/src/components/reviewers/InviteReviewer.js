@@ -82,6 +82,10 @@ const InviteReviewer = ({
                 sendChannelMessageCb,
                 currentUser,
                 output.input,
+                reviewerUsers.map(reviewer => ({
+                  userName: reviewer.username,
+                  value: reviewer.email,
+                })),
               )
             }
           }

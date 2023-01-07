@@ -132,6 +132,10 @@ const InviteReviewerModal = ({
                     sendChannelMessageCb,
                     currentUser,
                     response.input,
+                    reviewerUsers.map(reviewer => ({
+                      userName: reviewer.username,
+                      value: reviewer.email,
+                    })),
                   )
                 }
 
