@@ -28,6 +28,7 @@ import {
 import { GET_INVITATIONS_FOR_MANUSCRIPT } from '../../../../queries/invitation'
 import {
   CREATE_TEAM_MUTATION,
+  updateTeamMemberMutation,
   UPDATE_MEMBER_STATUS_MUTATION,
   UPDATE_TEAM_MUTATION,
 } from '../../../../queries/team'
@@ -101,7 +102,7 @@ const DecisionPage = ({ match }) => {
 
   // end of code from submit page to handle possible form changes
 
-  const { loading, data, error, refetch } = useQuery(query, {
+  const { loading, data, error, refetch: refetchManuscript } = useQuery(query, {
     variables: {
       id: match.params.version,
     },
@@ -119,12 +120,20 @@ const DecisionPage = ({ match }) => {
   })
 
   const [update] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
-  const [sendEmailMutation] = useMutation(sendEmail)
+
+  const [sendEmailMutation] = useMutation(sendEmail, {
+    refetchQueries: [
+      { query: GET_INVITATIONS_FOR_MANUSCRIPT },
+      'getInvitationsForManuscript',
+    ],
+  })
+
   const [sendChannelMessage] = useMutation(CREATE_MESSAGE)
   const [makeDecision] = useMutation(makeDecisionMutation)
   const [publishManuscript] = useMutation(publishManuscriptMutation)
   const [updateTeam] = useMutation(UPDATE_TEAM_MUTATION)
   const [createTeam] = useMutation(CREATE_TEAM_MUTATION)
+  const [updateTeamMember] = useMutation(updateTeamMemberMutation)
   const [doUpdateReview] = useMutation(updateReviewMutation)
   const [createFile] = useMutation(createFileMutation)
   const [updatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
@@ -216,12 +225,13 @@ const DecisionPage = ({ match }) => {
     },
   })
 
-  const { loading: invitationLoading, data: invitations } = useQuery(
-    GET_INVITATIONS_FOR_MANUSCRIPT,
-    {
-      variables: { id: data?.manuscript?.id },
-    },
-  )
+  const {
+    loading: invitationLoading,
+    data: invitations,
+    refetch: refetchInvitations,
+  } = useQuery(GET_INVITATIONS_FOR_MANUSCRIPT, {
+    variables: { id: data?.manuscript?.id },
+  })
 
   if (loading || invitationLoading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
@@ -370,7 +380,10 @@ const DecisionPage = ({ match }) => {
       makeDecision={makeDecision}
       manuscript={manuscript}
       publishManuscript={publishManuscript}
-      refetch={refetch}
+      refetch={() => {
+        refetchManuscript()
+        refetchInvitations()
+      }}
       removeReviewer={removeReviewer}
       reviewers={data?.manuscript?.reviews}
       reviewForm={reviewForm}
@@ -392,6 +405,7 @@ const DecisionPage = ({ match }) => {
       updateTask={updateTask}
       updateTasks={updateTasks}
       updateTeam={updateTeam}
+      updateTeamMember={updateTeamMember}
       urlFrag={urlFrag}
       validateDoi={validateDoi(client)}
       validateSuffix={validateSuffix(client)}

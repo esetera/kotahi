@@ -38,14 +38,16 @@ const TextChange = styled.div`
 `
 
 const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
+  const name = invitation.invitedPersonName ?? invitation.user.username
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       subtitle={`Declined: ${convertTimestampToDateString(
-        invitation.responseDate,
+        invitation.responseDate ?? invitation.updated,
       )}`}
-      title={`${invitation.invitedPersonName}'s Invitation Decline`}
+      title={`${name}'s Invitation Decline`}
     >
       <ModalBody style={{ width: '600px' }}>
         <ModalBodyRow style={{ gap: '0px' }}>
@@ -55,7 +57,7 @@ const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
             user={invitation.user}
           />
           <StyledH4 style={{ marginRight: '5px' }}>Reviewer: </StyledH4>
-          <p>{invitation.invitedPersonName}</p>
+          <p>{name}</p>
         </ModalBodyRow>
         <ModalBodyRow>
           <StyledH4>Status</StyledH4>

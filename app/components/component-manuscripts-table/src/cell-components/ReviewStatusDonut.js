@@ -5,6 +5,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { th } from '@pubsweet/ui-toolkit'
 import { Chart } from 'react-google-charts'
+import { countBy } from 'lodash'
 import { getMembersOfTeam } from '../../../../shared/manuscriptUtils'
 import reviewStatuses from '../../../../../config/journal/review-status'
 
@@ -47,48 +48,48 @@ const CenterLabel = styled.div`
   transform: translate(-50%, -50%);
 `
 
+const invitationStatusMapping = {
+  UNANSWERED: 'invited',
+  REJECTED: 'rejected',
+}
+
+const header = [
+  { type: 'string', id: 'Status' },
+  { type: 'number', id: 'Count' },
+  { type: 'string', role: 'tooltip', p: { html: true } },
+]
+
 const ReviewStatusDonut = ({ manuscript }) => {
-  const statusOptions = reviewStatuses.reduce((obj, item) => {
-    // eslint-disable-next-line no-param-reassign
-    obj[item.value] = { text: item.label, color: item.color }
-    return obj
-  }, {})
+  const statusOptions = {}
+  reviewStatuses.forEach(item => {
+    statusOptions[item.value] = { text: item.label, color: item.color }
+  })
 
-  const statusCounts = getMembersOfTeam(manuscript, 'reviewer').reduce(
-    (a, b) => {
-      // eslint-disable-next-line no-param-reassign
-      a[b.status] = a[b.status] + 1 || 1
-      return a
-    },
-    {},
+  const reviewerStatuses = getMembersOfTeam(manuscript, 'reviewer').map(
+    ({ status }) => status,
   )
 
-  const totalStatusCount = Object.values(statusCounts).reduce(
-    (a, b) => a + b,
-    0,
-  )
+  const invitationStatuses = manuscript.invitations
+    .filter(({ status }) => status in invitationStatusMapping)
+    .map(({ status }) => invitationStatusMapping[status])
 
-  const statusTooltips = Object.keys(statusCounts).reduce((a, status) => {
+  const allStatuses = [...reviewerStatuses, ...invitationStatuses]
+  const statusCounts = countBy(allStatuses)
+
+  const statusTooltips = {}
+  Object.keys(statusCounts).forEach(status => {
     const count = statusCounts[status]
     const { text } = statusOptions[status]
-    // eslint-disable-next-line no-param-reassign
-    a[
+    statusTooltips[
       status
     ] = `<div style="min-width: 10em; padding: 5px 15px; font-size: ${th(
       'fontSizeBase',
     )}; color: black;">${text}: ${count}</div>`
-    return a
-  }, {})
+  })
 
   const statusColors = Object.keys(statusCounts).map(
     status => statusOptions[status].color,
   )
-
-  const header = [
-    { type: 'string', id: 'Status' },
-    { type: 'number', id: 'Count' },
-    { type: 'string', role: 'tooltip', p: { html: true } },
-  ]
 
   const data = [
     header,
@@ -103,6 +104,8 @@ const ReviewStatusDonut = ({ manuscript }) => {
     ...chartOptions,
     colors: statusColors,
   }
+
+  const totalStatusCount = allStatuses.length
 
   return totalStatusCount > 0 ? (
     <Root>

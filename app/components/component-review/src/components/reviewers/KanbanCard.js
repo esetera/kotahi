@@ -1,10 +1,11 @@
 import { grid, th } from '@pubsweet/ui-toolkit'
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useState } from 'react'
 import { Mail } from 'react-feather'
 import styled from 'styled-components'
 import { convertTimestampToRelativeDateString } from '../../../../../shared/dateUtils'
 import { UserAvatar } from '../../../../component-avatar/src'
+import ReviewDetailsModal from '../../../../component-review-detail-modal'
 
 const Card = styled.div`
   background-color: #f8f8f9;
@@ -20,6 +21,7 @@ const Card = styled.div`
 
   &:hover {
     box-shadow: 0px 9px 5px -6px #bfbfbf;
+    cursor: pointer;
     transition: 0.3s ease;
     z-index: 1;
   }
@@ -63,37 +65,71 @@ const MailIcon = styled(Mail)`
   width: auto;
 `
 
-const KanbanCard = ({ reviewer, showEmailInvitation, onClickAction }) => {
+const KanbanCard = ({
+  reviewer,
+  isInvitation,
+  manuscript,
+  removeReviewer,
+  status,
+  reviewForm,
+  review,
+  isCurrentVersion,
+  updateSharedStatusForInvitedReviewer,
+  updateTeamMember,
+  updateReview,
+  showEmailInvitation,
+}) => {
+  const [open, setOpen] = useState(false)
+
   return (
-    <Card onClick={onClickAction}>
-      <LeftSide>
-        <UserAvatar
-          isClickable={!!reviewer.user}
-          showHoverProfile={false}
-          user={
-            reviewer.user ?? {
-              username: reviewer.invitedPersonName,
-              isOnline: false,
+    <>
+      <ReviewDetailsModal
+        isInvitation={isInvitation}
+        isOpen={open}
+        manuscriptId={manuscript.id}
+        onClose={() => setOpen(false)}
+        readOnly={!isCurrentVersion}
+        removeReviewer={removeReviewer}
+        review={review}
+        reviewerTeamMember={reviewer}
+        reviewForm={reviewForm}
+        status={status}
+        updateReview={updateReview}
+        updateSharedStatusForInvitedReviewer={
+          updateSharedStatusForInvitedReviewer
+        }
+        updateTeamMember={updateTeamMember}
+      />
+      <Card onClick={() => setOpen(true)}>
+        <LeftSide>
+          <UserAvatar
+            isClickable={!!reviewer.user}
+            showHoverProfile={false}
+            user={
+              reviewer.user ?? {
+                username: reviewer.invitedPersonName,
+                isOnline: false,
+              }
             }
-          }
-        />
-        <InfoGrid>
-          <NameDisplay>
-            {reviewer.user?.username ?? reviewer.invitedPersonName}
-          </NameDisplay>
-          <DateDisplay>
-            Last updated
-            {` ${convertTimestampToRelativeDateString(reviewer.updated)}`}
-          </DateDisplay>
-          {showEmailInvitation && (
-            <EmailDisplay>
-              <MailIcon invitationStatus={reviewer.status.toLowerCase()} />
-              {' Invited via email'}
-            </EmailDisplay>
-          )}
-        </InfoGrid>
-      </LeftSide>
-    </Card>
+          />
+          <InfoGrid>
+            <NameDisplay>
+              {reviewer.user?.username ?? reviewer.invitedPersonName}
+            </NameDisplay>
+            <DateDisplay>
+              Last updated
+              {` ${convertTimestampToRelativeDateString(reviewer.updated)}`}
+            </DateDisplay>
+            {showEmailInvitation && (
+              <EmailDisplay>
+                <MailIcon invitationStatus={reviewer.status.toLowerCase()} />
+                {' Invited via email'}
+              </EmailDisplay>
+            )}
+          </InfoGrid>
+        </LeftSide>
+      </Card>
+    </>
   )
 }
 
@@ -109,8 +145,7 @@ KanbanCard.propTypes = {
       }),
     }).isRequired,
   }).isRequired,
-  onClickAction: PropTypes.func.isRequired,
-  showEmailInvitation: PropTypes.bool.isRequired,
+  isInvitation: PropTypes.bool.isRequired,
 }
 
 export default KanbanCard

@@ -9,6 +9,7 @@ import InviteDeclineModal from './InviteDeclineModal'
 
 const DeclinedReviewerContainer = styled.div`
   display: flex;
+  font-size: 14px;
   justify-content: space-between;
   margin-bottom: 1.5em;
   margin-left: 1em;

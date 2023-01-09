@@ -53,7 +53,19 @@ const VersionNumber = styled.div`
   color: rgba(0, 0, 0, 0.5);
 `
 
-const KanbanBoard = ({ invitations, version, versionNumber }) => {
+const KanbanBoard = ({
+  invitations,
+  version,
+  versionNumber,
+  removeReviewer,
+  reviews,
+  reviewForm,
+  isCurrentVersion,
+  manuscript,
+  updateSharedStatusForInvitedReviewer,
+  updateTeamMember,
+  updateReview,
+}) => {
   const reviewers = getMembersOfTeam(version, 'reviewer')
 
   const emailAndWebReviewers = [
@@ -72,6 +84,19 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
 
     return new Date(bDate) - new Date(aDate)
   })
+
+  const allReviews = isCurrentVersion
+    ? reviews
+    : (Array.isArray(manuscript.reviews) &&
+        manuscript.reviews.filter(review => !review.isDecision)) ||
+      []
+
+  const findReview = reviewer => {
+    return allReviews.find(
+      review =>
+        review.user.id === reviewer.user.id && review.isDecision === false,
+    )
+  }
 
   return (
     <AdminSection>
@@ -108,12 +133,27 @@ const KanbanBoard = ({ invitations, version, versionNumber }) => {
                       )
                       .map(reviewer => (
                         <KanbanCard
+                          isCurrentVersion={isCurrentVersion}
+                          isInvitation={reviewer.isEmail}
                           key={reviewer.id}
-                          onClickAction={() => {}}
+                          manuscript={version}
+                          removeReviewer={removeReviewer}
+                          review={
+                            status.value === 'completed'
+                              ? findReview(reviewer)
+                              : null
+                          }
                           reviewer={reviewer}
+                          reviewForm={reviewForm}
                           showEmailInvitation={
                             reviewer.isEmail && status.value === 'invited'
                           }
+                          status={status.value}
+                          updateReview={updateReview}
+                          updateSharedStatusForInvitedReviewer={
+                            updateSharedStatusForInvitedReviewer
+                          }
+                          updateTeamMember={updateTeamMember}
                         />
                       ))}
                   </CardsWrapper>

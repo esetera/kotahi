@@ -54,12 +54,12 @@ const StackedHeaderContainer = styled.div`
   font-weight: 600;
 `
 
-const Title = styled.div`
+export const Title = styled.div`
   font-size: ${th('fontSizeHeading5')};
   font-weight: 500;
 `
 
-const Subtitle = styled.div`
+export const Subtitle = styled.div`
   color: grey;
   font-size: ${th('fontSizeHeading6')};
   font-weight: normal;
@@ -87,15 +87,19 @@ const CloseButton = styled(Button)`
 
 const ButtonPanel = styled.div`
   align-items: center;
+  background-color: #f9fafb;
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
   display: flex;
   flex-direction: row;
+  font-size: 15px;
   justify-content: space-between;
-  padding: 1rem ${grid(1.5)};
+  padding: ${grid(1.5)} ${grid(3)};
   width: 100%;
 `
 
 const ButtonContainer = styled.div`
   display: flex;
+  gap: ${grid(2)};
 `
 
 const PrimaryActionButton = styled(ActionButton)`
@@ -107,11 +111,11 @@ const PrimaryActionButton = styled(ActionButton)`
 `
 
 const SecondaryActionButton = styled(ActionButton)`
-  background-color: grey;
+  background-color: white;
+  border: 1px solid black;
   border-radius: 6px;
-  color: white;
+  color: grey;
   cursor: pointer;
-  margin: 0px 5px;
 `
 
 const CheckBoxContainer = styled.div`
@@ -154,11 +158,12 @@ export const CheckBoxButton = ({ onClick, isClicked, children }) => {
 export const StackedHeader = ({
   title,
   subtitle, // optional
+  textStyles,
 }) => {
   return (
     <StackedHeaderContainer>
-      <Title>{title}</Title>
-      {subtitle && <Subtitle>{subtitle}</Subtitle>}
+      <Title style={textStyles}>{title}</Title>
+      {subtitle && <Subtitle style={textStyles}>{subtitle}</Subtitle>}
     </StackedHeaderContainer>
   )
 }
@@ -188,33 +193,35 @@ const Modal = ({
   ...props
 }) => {
   return (
-    <ReactModal
-      isOpen={isOpen}
-      onRequestClose={onClose}
-      style={{
-        overlay: { ...styles.overlay, ...overlayStyles },
-        content: { ...styles.content, ...contentStyles },
-      }}
-      {...props}
-    >
-      {title && (
-        <MainHeader>
-          <RowHeader subtitle={subtitle} title={title} />
-          <CloseButton alignSelf="flex-end" onClick={onClose}>
-            <Icon>x</Icon>
-          </CloseButton>
-        </MainHeader>
-      )}
+    isOpen && (
+      <ReactModal
+        isOpen={isOpen}
+        onRequestClose={onClose}
+        style={{
+          overlay: { ...styles.overlay, ...overlayStyles },
+          content: { ...styles.content, ...contentStyles },
+        }}
+        {...props}
+      >
+        {title && (
+          <MainHeader>
+            <RowHeader subtitle={subtitle} title={title} />
+            <CloseButton alignSelf="flex-end" onClick={onClose}>
+              <Icon>x</Icon>
+            </CloseButton>
+          </MainHeader>
+        )}
 
-      <ModalContainer>{children}</ModalContainer>
+        <ModalContainer>{children}</ModalContainer>
 
-      {(leftActions || rightActions) && (
-        <ButtonPanel>
-          <ButtonContainer>{leftActions}</ButtonContainer>
-          <ButtonContainer>{rightActions}</ButtonContainer>
-        </ButtonPanel>
-      )}
-    </ReactModal>
+        {(leftActions || rightActions) && (
+          <ButtonPanel>
+            <ButtonContainer>{leftActions}</ButtonContainer>
+            <ButtonContainer>{rightActions}</ButtonContainer>
+          </ButtonPanel>
+        )}
+      </ReactModal>
+    )
   )
 }
 

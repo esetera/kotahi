@@ -76,6 +76,7 @@ const DecisionVersion = ({
   updateTasks,
   teams,
   removeReviewer,
+  updateTeamMember,
 }) => {
   // Hooks from the old world
   const location = useLocation()
@@ -282,16 +283,30 @@ const DecisionVersion = ({
           )}
           <KanbanBoard
             invitations={invitations}
+            isCurrentVersion={isCurrentVersion}
+            manuscript={version}
+            removeReviewer={removeReviewer}
+            reviewForm={reviewForm}
+            reviews={reviewers}
+            updateReview={updateReview}
+            updateSharedStatusForInvitedReviewer={
+              updateSharedStatusForInvitedReviewer
+            }
+            updateTeamMember={updateTeamMember}
             version={version}
             versionNumber={versionNumber}
-            removeReviewer={removeReviewer}
           />
           {isCurrentVersion && (
             <AdminSection>
               <InviteReviewer
                 addReviewer={addReviewer}
+                currentUser={currentUser}
+                isEmailAddressOptedOut={isEmailAddressOptedOut}
                 manuscript={version}
                 reviewerUsers={allUsers}
+                sendChannelMessageCb={sendChannelMessageCb}
+                sendNotifyEmail={sendNotifyEmail}
+                setExternalEmail={setExternalEmail}
               />
             </AdminSection>
           )}
@@ -322,6 +337,7 @@ const DecisionVersion = ({
               decisionForm={decisionForm}
               isControlPage
               manuscript={version}
+              readOnly
               reviewForm={reviewForm}
               showEditorOnlyFields
               threadedDiscussionProps={threadedDiscussionProps}
@@ -336,6 +352,10 @@ const DecisionVersion = ({
               reviewForm={reviewForm}
               threadedDiscussionProps={threadedDiscussionProps}
               updateReview={updateReview}
+              updateSharedStatusForInvitedReviewer={
+                updateSharedStatusForInvitedReviewer
+              }
+              updateTeamMember={updateTeamMember}
               urlFrag={urlFrag}
             />
           )}

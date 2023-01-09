@@ -23,7 +23,7 @@ const ReviewerName = styled.span`
 
 const DeleteReviewerModal = ({
   reviewer,
-  manuscript,
+  manuscriptId,
   isOpen,
   onClose,
   removeReviewer,
@@ -35,10 +35,9 @@ const DeleteReviewerModal = ({
           removeReviewer({
             variables: {
               userId: reviewer.user.id,
-              manuscriptId: manuscript.id,
+              manuscriptId,
             },
           })
-          onClose()
         }}
         primary
       >
