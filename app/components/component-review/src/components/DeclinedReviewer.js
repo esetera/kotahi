@@ -19,26 +19,15 @@ const DeclinedReviewerContainer = styled.div`
   overflow-y: auto;
 `
 
-const LeftSide = styled.div`
-  display: flex;
-  flex-grow: 1;
-  justify-content: space-between;
-`
-
-const RightSide = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-grow: 1;
-  justify-content: flex-end;
-`
-
 const UserName = styled.div`
   display: flex;
+  flex: 2;
   flex-direction: row;
   word-break: break-all;
 `
 
 const Date = styled.div`
+  flex: 1;
   word-break: break-all;
 `
 
@@ -59,6 +48,16 @@ const MailIcon = styled(Mail)`
   width: auto;
 `
 
+const ViewDetailsWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+`
+
+const ViewDetails = styled(UserAction)`
+  width: auto;
+`
+
 const DeclinedReviewer = ({ declined }) => {
   const [isModalOpen, setModalOpen] = useState(false)
   return (
@@ -69,36 +68,36 @@ const DeclinedReviewer = ({ declined }) => {
         onClose={() => setModalOpen(false)}
       />
       <DeclinedReviewerContainer>
-        <LeftSide>
-          <UserName>
-            <Primary>
-              {declined.user?.username ?? declined.invitedPersonName}
-            </Primary>
-            {declined.isEmail && (
-              <EmailDisplay>
-                <MailIcon />
-                {' Invited via email'}
-              </EmailDisplay>
-            )}
-          </UserName>
-          <Date>
-            <Secondary>
-              <TextChange>
-                Declined{' '}
-                {convertTimestampToRelativeDateString(
-                  declined.responseComment
-                    ? declined.responseDate
-                    : declined.updated,
-                )}
-              </TextChange>
-            </Secondary>
-          </Date>
-        </LeftSide>
-        <RightSide>
-          <UserAction onClick={() => setModalOpen(true)}>
+        <UserName>
+          <Primary>
+            {declined.user?.username ?? declined.invitedPersonName}
+          </Primary>
+          {declined.isEmail && (
+            <EmailDisplay>
+              <MailIcon />
+              {' Invited via email'}
+            </EmailDisplay>
+          )}
+        </UserName>
+
+        <Date>
+          <Secondary>
+            <TextChange>
+              Declined{' '}
+              {convertTimestampToRelativeDateString(
+                declined.responseComment
+                  ? declined.responseDate
+                  : declined.updated,
+              )}
+            </TextChange>
+          </Secondary>
+        </Date>
+
+        <ViewDetailsWrapper>
+          <ViewDetails onClick={() => setModalOpen(true)}>
             View Details
-          </UserAction>
-        </RightSide>
+          </ViewDetails>
+        </ViewDetailsWrapper>
       </DeclinedReviewerContainer>
     </>
   )
