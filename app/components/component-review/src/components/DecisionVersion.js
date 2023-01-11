@@ -307,6 +307,10 @@ const DecisionVersion = ({
                 sendChannelMessageCb={sendChannelMessageCb}
                 sendNotifyEmail={sendNotifyEmail}
                 setExternalEmail={setExternalEmail}
+                updateSharedStatusForInvitedReviewer={
+                  updateSharedStatusForInvitedReviewer
+                }
+                updateTeamMember={updateTeamMember}
               />
             </AdminSection>
           )}

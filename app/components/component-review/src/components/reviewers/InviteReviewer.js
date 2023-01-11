@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
 import { Formik } from 'formik'
-import ReviewerForm from './ReviewerForm'
+import React, { useState } from 'react'
 import {
-  SectionRow,
   SectionContent,
   SectionHeader,
+  SectionRow,
   Title,
 } from '../../../../shared'
 import {
   sendEmail,
   sendEmailChannelMessage,
 } from '../emailNotifications/emailUtils'
+import InviteReviewerModal from './InviteReviewerModal'
+import ReviewerForm from './ReviewerForm'
 
 const InviteReviewer = ({
   reviewerUsers,
@@ -23,21 +24,11 @@ const InviteReviewer = ({
   selectedEmail,
   isEmailAddressOptedOut,
   setExternalEmail,
+  updateTeamMember,
 }) => {
-  // eslint-disable-next-line
-  const toggleEmailInvitedReviewerSharedStatus = async (
-    invitationId,
-    isShared,
-  ) => {
-    await updateSharedStatusForInvitedReviewer({
-      variables: {
-        invitationId,
-        isShared,
-      },
-    })
-    // TODO: do we need this? From Reviewers.js
-    // refetchManuscriptData()
-  }
+  const [open, setOpen] = useState(false)
+
+  const [userId, setUserId] = useState(undefined)
 
   const [isNewUser, setIsNewUser] = useState(false)
   const [optedOut, setOptedOut] = useState(false)
@@ -52,12 +43,8 @@ const InviteReviewer = ({
           setOptedOut(false)
 
           if (!isNewUser) {
-            addReviewer({
-              variables: {
-                userId: values.user.id,
-                manuscriptId: manuscript.id,
-              },
-            })
+            setOpen(true)
+            setUserId(values.user.id)
           } else {
             setNotificationStatus('pending')
 
@@ -74,15 +61,17 @@ const InviteReviewer = ({
               isEmailAddressOptedOut,
             )
 
-            setNotificationStatus(
-              output?.responseStatus ? 'success' : 'failure',
-            )
+            setNotificationStatus(output?.invitation ? 'success' : 'failure')
 
             if (output?.input) {
               sendEmailChannelMessage(
                 sendChannelMessageCb,
                 currentUser,
                 output.input,
+                reviewerUsers.map(reviewer => ({
+                  userName: reviewer.username,
+                  value: reviewer.email,
+                })),
               )
             }
           }
@@ -109,6 +98,22 @@ const InviteReviewer = ({
           </>
         )}
       </Formik>
+      <InviteReviewerModal
+        addReviewer={addReviewer}
+        currentUser={currentUser}
+        manuscript={manuscript}
+        onClose={() => setOpen(false)}
+        open={open}
+        reviewerUsers={reviewerUsers}
+        selectedEmail={selectedEmail}
+        sendChannelMessageCb={sendChannelMessageCb}
+        sendNotifyEmail={sendNotifyEmail}
+        updateSharedStatusForInvitedReviewer={
+          updateSharedStatusForInvitedReviewer
+        }
+        updateTeamMember={updateTeamMember}
+        userId={userId}
+      />
     </>
   )
 }

@@ -110,7 +110,7 @@ const EmailNotifications = ({
           onClick={async () => {
             setNotificationStatus('pending')
 
-            const { responseStatus, input } = await sendEmail(
+            const output = await sendEmail(
               manuscript,
               isNewUser,
               currentUser,
@@ -123,7 +123,14 @@ const EmailNotifications = ({
               isEmailAddressOptedOut,
             )
 
-            setNotificationStatus(responseStatus ? 'success' : 'failure')
+            if (!output) {
+              setNotificationStatus('failure')
+              return
+            }
+
+            const { invitation, input } = output
+
+            setNotificationStatus(invitation ? 'success' : 'failure')
 
             if (input) {
               sendEmailChannelMessage(sendChannelMessageCb, currentUser, input)

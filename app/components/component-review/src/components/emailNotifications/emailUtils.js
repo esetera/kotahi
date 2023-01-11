@@ -257,8 +257,8 @@ export const sendEmail = async (
   if (!isNewUser && !selectedEmail) return undefined
 
   const response = await sendNotifyEmail(input)
-  const responseStatus = response.data.sendEmail.success
-  if (responseStatus) return { responseStatus, input }
+  const invitation = response.data.sendEmail
+  if (invitation) return { invitation, input }
   return undefined
 }
 
@@ -266,6 +266,7 @@ export const sendEmailChannelMessage = async (
   sendChannelMessageCb,
   currentUser,
   input,
+  reviewers = [],
 ) => {
   const selectedTempl = emailTemplateOptions.find(
     template => template.value === input.selectedTemplate,
@@ -273,8 +274,7 @@ export const sendEmailChannelMessage = async (
 
   const receiverName = input.externalEmail
     ? input.externalName
-    : emailTemplateOptions.find(user => user.value === input.selectedEmail)
-        .userName
+    : reviewers.find(user => user.value === input.selectedEmail).userName
 
   const date = Date.now()
 
