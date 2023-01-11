@@ -67,8 +67,15 @@ const KanbanBoard = ({
   updateReview,
 }) => {
   const reviewers = getMembersOfTeam(version, 'reviewer')
-  const invitationIds = invitations.map(({ id }) => id)
-  const emailAndWebReviewers = [...invitations, ...reviewers]
+
+  const emailAndWebReviewers = [
+    ...invitations.map(invitation => {
+      return { ...invitation, isEmail: true }
+    }),
+    ...reviewers.map(reviewer => {
+      return { ...reviewer, isEmail: false }
+    }),
+  ]
 
   emailAndWebReviewers.sort((a, b) => {
     const aDate = a.responseComment ? a.responseDate : a.updated
@@ -105,7 +112,9 @@ const KanbanBoard = ({
         <SectionRow style={{ padding: 0 }}>
           <Kanban>
             {statuses
-              .filter(status => status.value.toLowerCase() !== 'rejected')
+              .filter(
+                status => !['rejected'].includes(status.value.toLowerCase()),
+              )
               .map(status => (
                 <Column key={status.value}>
                   <StatusLabel
@@ -125,7 +134,7 @@ const KanbanBoard = ({
                       .map(reviewer => (
                         <KanbanCard
                           isCurrentVersion={isCurrentVersion}
-                          isInvitation={invitationIds.includes(reviewer.id)}
+                          isInvitation={reviewer.isEmail}
                           key={reviewer.id}
                           manuscript={version}
                           removeReviewer={removeReviewer}
@@ -136,6 +145,9 @@ const KanbanBoard = ({
                           }
                           reviewer={reviewer}
                           reviewForm={reviewForm}
+                          showEmailInvitation={
+                            reviewer.isEmail && status.value === 'invited'
+                          }
                           status={status.value}
                           updateReview={updateReview}
                           updateSharedStatusForInvitedReviewer={

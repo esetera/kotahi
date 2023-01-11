@@ -1,9 +1,10 @@
 import React from 'react'
+import { th } from '@pubsweet/ui-toolkit'
 import styled from 'styled-components'
 import { convertTimestampToDateString } from '../../../../shared/dateUtils'
 import { UserAvatar } from '../../../component-avatar/src'
 import Modal from '../../../component-kanban-modal'
-import { ErrorStatus } from '../../../shared'
+import { ConfigurableStatus } from '../../../shared'
 
 const ModalBody = styled.div`
   display: flex;
@@ -22,31 +23,31 @@ const ModalBodyRow = styled.div`
   display: flex;
   flex-direction: row;
   gap: 10px;
-  justify-content: flex-start;
 `
 
 const StyledH4 = styled.h4`
   font-weight: 600;
 `
 
-const DeclinedBadge = styled(ErrorStatus)`
-  align-items: center;
-  background-color: #c23d20;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  width: 125px;
+const DeclinedBadge = styled(ConfigurableStatus)`
+  background: #c23d20;
+`
+
+const TextChange = styled.div`
+  color: ${props => (props.gray ? th('colorSecondary') : 'black')};
 `
 
 const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
+  const name = invitation.invitedPersonName ?? invitation.user.username
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       subtitle={`Declined: ${convertTimestampToDateString(
-        invitation.responseDate,
+        invitation.responseDate ?? invitation.updated,
       )}`}
-      title={`${invitation.invitedPersonName}'s Invitation Decline`}
+      title={`${name}'s Invitation Decline`}
     >
       <ModalBody style={{ width: '600px' }}>
         <ModalBodyRow style={{ gap: '0px' }}>
@@ -56,15 +57,20 @@ const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
             user={invitation.user}
           />
           <StyledH4 style={{ marginRight: '5px' }}>Reviewer: </StyledH4>
-          <p>{invitation.invitedPersonName}</p>
+          <p>{name}</p>
         </ModalBodyRow>
         <ModalBodyRow>
           <StyledH4>Status</StyledH4>
-          <DeclinedBadge>Declined</DeclinedBadge>
+          <DeclinedBadge lightText>Declined</DeclinedBadge>
+          {invitation.declinedReason === 'DO_NOT_CONTACT' && (
+            <DeclinedBadge lightText>Opted Out</DeclinedBadge>
+          )}
         </ModalBodyRow>
         <ResponseCommentRow>
           <StyledH4>Declined Reason</StyledH4>
-          <p>{invitation.responseComment}</p>
+          <TextChange gray={!invitation.responseComment}>
+            {invitation.responseComment || 'No reason provided.'}
+          </TextChange>
         </ResponseCommentRow>
       </ModalBody>
     </Modal>

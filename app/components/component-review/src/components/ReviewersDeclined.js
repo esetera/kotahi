@@ -7,6 +7,7 @@ import DeclinedReviewer from './DeclinedReviewer'
 
 const DropdownTitleContainer = styled.div`
   align-content: center;
+  cursor: pointer;
   display: flex;
   font-size: 18px;
   justify-content: space-between;
@@ -41,13 +42,15 @@ const ReviewersDeclined = ({ emailAndWebReviewers }) => {
     <>
       <SectionHeader onClick={() => setOpen(!open)}>
         <DropdownTitleContainer>
-          <UserAction>{open ? 'Hide Declined' : 'See Declined'}</UserAction>
+          <UserAction>
+            {open ? 'Hide Declined' : `See Declined (${declinations.length})`}
+          </UserAction>
           <Icon color="#9e9e9e">{open ? 'chevron-up' : 'chevron-down'}</Icon>
         </DropdownTitleContainer>
       </SectionHeader>
 
       {open &&
-        (declinations && declinations.length ? (
+        (declinations && declinations.length > 0 ? (
           <DeclinedReviewerContainer>
             {declinations.map(declined => {
               return (

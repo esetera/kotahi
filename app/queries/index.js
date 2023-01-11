@@ -66,29 +66,6 @@ export const GET_BLACKLIST_INFORMATION = gql`
   }
 `
 
-// TODO: Move initation queries to invitation/index.js
-export const UPDATE_INVITATION_RESPONSE = gql`
-  mutation($id: ID!, $responseComment: String, $declinedReason: String!) {
-    updateInvitationResponse(
-      id: $id
-      responseComment: $responseComment
-      declinedReason: $declinedReason
-    ) {
-      responseComment
-      declinedReason
-      toEmail
-    }
-  }
-`
-export const GET_INVITATION_MANUSCRIPT_ID = gql`
-  query invitationManuscriptId($id: ID) {
-    invitationManuscriptId(id: $id) {
-      manuscriptId
-      invitedPersonType
-      isShared
-    }
-  }
-`
 export const GET_EMAIL_INVITED_REVIEWERS = gql`
   query getEmailInvitedReviewers($manuscriptId: ID!) {
     getEmailInvitedReviewers(manuscriptId: $manuscriptId) {
@@ -96,35 +73,6 @@ export const GET_EMAIL_INVITED_REVIEWERS = gql`
       invitedPersonName
       isShared
       status
-    }
-  }
-`
-
-export const GET_INVITATION_STATUS = gql`
-  query invitationStatus($id: ID) {
-    invitationStatus(id: $id) {
-      status
-    }
-  }
-`
-
-export const GET_INVITATIONS_FOR_MANUSCRIPT = gql`
-  query getInvitationsForManuscript($id: ID) {
-    getInvitationsForManuscript(id: $id) {
-      id
-      declinedReason
-      responseComment
-      responseDate
-      invitedPersonName
-      status
-      invitedPersonType
-      userId
-      user {
-        id
-        username
-        profilePicture
-        isOnline
-      }
     }
   }
 `

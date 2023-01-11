@@ -1,7 +1,7 @@
 import { grid, th } from '@pubsweet/ui-toolkit'
 import PropTypes from 'prop-types'
 import React, { useState } from 'react'
-import { Send } from 'react-feather'
+import { Mail } from 'react-feather'
 import styled from 'styled-components'
 import { convertTimestampToRelativeDateString } from '../../../../../shared/dateUtils'
 import { UserAvatar } from '../../../../component-avatar/src'
@@ -12,13 +12,18 @@ const Card = styled.div`
   border-bottom: 0.8px solid #bfbfbf;
   border-radius: 8px;
   display: flex;
-  padding: 10px;
+  flex-direction: row;
+  font-size: ${th('fontSizeBaseSmall')};
+  justify-content: space-between;
+  padding: ${grid(1)};
+  position: relative;
   width: 100%;
 
   &:hover {
     box-shadow: 0px 9px 5px -6px #bfbfbf;
     cursor: pointer;
     transition: 0.3s ease;
+    z-index: 1;
   }
 `
 
@@ -29,35 +34,35 @@ const InfoGrid = styled.div`
   margin-left: ${grid(1)};
 `
 
-const AvatarGrid = styled.div`
-  align-items: center;
-  display: flex;
-`
-
 const NameDisplay = styled.div`
   font-weight: bold;
 `
 
 const DateDisplay = styled.div`
   color: gray;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.2;
 `
 
-const EmailInvitedReviewer = styled.div`
-  color: ${th('colorPrimary')};
+const LeftSide = styled.div`
+  align-items: center;
   display: flex;
 `
 
-const SendIcon = styled(Send)`
-  height: 25px;
-  margin-bottom: -8px;
-  margin-left: 5px;
-  stroke: ${props =>
+const EmailDisplay = styled(DateDisplay)`
+  align-items: center;
+  color: ${props =>
     props.invitationStatus === 'rejected'
       ? th('colorError')
       : th('colorPrimary')};
-  width: 15px;
+  display: flex;
+  margin-top: calc(${th('gridUnit')} / 2);
+`
+
+const MailIcon = styled(Mail)`
+  height: 12px;
+  margin-right: calc(${th('gridUnit')} / 2);
+  width: auto;
 `
 
 const KanbanCard = ({
@@ -72,6 +77,7 @@ const KanbanCard = ({
   updateSharedStatusForInvitedReviewer,
   updateTeamMember,
   updateReview,
+  showEmailInvitation,
 }) => {
   const [open, setOpen] = useState(false)
 
@@ -95,8 +101,9 @@ const KanbanCard = ({
         updateTeamMember={updateTeamMember}
       />
       <Card onClick={() => setOpen(true)}>
-        <AvatarGrid>
+        <LeftSide>
           <UserAvatar
+            isClickable={!!reviewer.user}
             showHoverProfile={false}
             user={
               reviewer.user ?? {
@@ -105,23 +112,22 @@ const KanbanCard = ({
               }
             }
           />
-        </AvatarGrid>
-        <InfoGrid>
-          <NameDisplay>
-            {reviewer.user?.username ?? reviewer.invitedPersonName}
-          </NameDisplay>
-          {isInvitation ? (
-            <EmailInvitedReviewer>
-              Email invited
-              <SendIcon invitationStatus={reviewer.status.toLowerCase()} />
-            </EmailInvitedReviewer>
-          ) : (
+          <InfoGrid>
+            <NameDisplay>
+              {reviewer.user?.username ?? reviewer.invitedPersonName}
+            </NameDisplay>
             <DateDisplay>
-              Last updated{' '}
-              {convertTimestampToRelativeDateString(reviewer.updated)}
+              Last updated
+              {` ${convertTimestampToRelativeDateString(reviewer.updated)}`}
             </DateDisplay>
-          )}
-        </InfoGrid>
+            {showEmailInvitation && (
+              <EmailDisplay>
+                <MailIcon invitationStatus={reviewer.status.toLowerCase()} />
+                {' Invited via email'}
+              </EmailDisplay>
+            )}
+          </InfoGrid>
+        </LeftSide>
       </Card>
     </>
   )
