@@ -278,7 +278,7 @@ services:
       - db-anystyle
     image: dbvisel/coko-anystyle
     ports:
-      - "4567:4567"
+      - ${SERVICE_ANYSTYLE_PORT:-4567}:${SERVICE_ANYSTYLE_PORT:-4567}
     environment:
       - SERVER_PORT=${SERVICE_ANYSTYLE_PORT:-4567}
       - SERVER_PROTOCOL=http
