@@ -16,23 +16,12 @@ import {
   ReviewerStatusBadge,
 } from '../cell-components'
 import reviewFilterOptions from '../../../../../config/journal/review-status'
-/**
- * @typedef {Object} ComponentValues
- * @param {string} urlFrag Action Button: The top level urlFrag, e.g. 'kotahi'
- * @param {function} deleteManuscript Action Button: A function that deletes a manuscript
- * @param {function} isManuscriptBlockedFromPublishing Action Button: Function if a manuscript can be published
- * @param {function} tryPublishManuscript Action Button: A function that publishes a manuscript
- * @param {Array[object]} selectedNewManuscripts newItem Checkbox: The list of selected manuscripts
- * @param {function} toggleNewManuscriptCheck newItem Checkbox: A callback to toggle a manuscript
- * @param {function} setReadyToEvaluateLabel submission label: If submission is ready to be evaluated
- */
 
 /**
  * buildSpecialColumnProps: Build the special components for specific form fields
- * @param {ComponentValues} specialComponentValues values needed for specific components
+ * @param {object} specialComponentValues values needed for specific components
  * @returns {object} The built special components
  */
-
 const buildSpecialColumnProps = specialComponentValues => {
   const {
     deleteManuscript,
