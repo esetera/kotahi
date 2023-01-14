@@ -9,7 +9,6 @@ const ReviewerStatusBadge = ({ manuscript, currentUser }) => {
   const status = members?.find(member => member.user.id === currentUser.id)
     ?.status
 
-  // get item in list with value === status
   const statusConfig = reviewStatuses.find(item => item.value === status)
 
   return (
