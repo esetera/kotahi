@@ -202,7 +202,9 @@ export const ControlPage = {
     cy.wait(2000)
   },
   getSharedCheckbox() {
+    // TODO: Get new invite reviewer button and click it to open modal
     // TODO: get shared checkbox in the invite reviewer modal
+    // TODO: Click "Invite"
     return null
   },
   clickSharedCheckbox() {
