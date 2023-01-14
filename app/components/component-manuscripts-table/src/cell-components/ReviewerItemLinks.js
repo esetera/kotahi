@@ -14,14 +14,6 @@ const Divider = styled.div`
   background-size: 1px 100%;
 `
 
-/**
- * ReviewLink
- * @param {string} urlFrag urlFragment
- * @param {function} reviewerRespond graphQL query callback
- * @param {function} updateMemberStatus graphQL query callback
- * @param {object} currentUser current user
- * @param {function} setMainActionLink callback to set main action link
- */
 const ReviewerItemLinks = ({
   manuscript,
   urlFrag,
