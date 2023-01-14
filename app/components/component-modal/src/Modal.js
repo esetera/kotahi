@@ -3,7 +3,7 @@ import ReactModal from 'react-modal'
 import styled from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
 import { Button } from '@pubsweet/ui'
-import { Icon, ActionButton } from '../shared'
+import { Icon, ActionButton } from '../../shared'
 
 const styles = {
   overlay: {

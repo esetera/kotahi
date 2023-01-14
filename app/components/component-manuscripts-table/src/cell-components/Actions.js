@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { UserAction as Action } from '../style'
 import { articleStatuses } from '../../../../globals'
-import { ConfirmationModal } from '../../../component-modal/src'
+import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
 
 const Container = styled.div`
   display: flex;

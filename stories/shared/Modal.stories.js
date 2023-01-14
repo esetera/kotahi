@@ -4,7 +4,7 @@ import Modal, {
   PrimaryButton,
   SecondaryButton,
   StackedHeader,
-} from '../../app/components/component-kanban-modal'
+} from '../../app/components/component-modal/src/Modal'
 
 export default {
   component: Modal,

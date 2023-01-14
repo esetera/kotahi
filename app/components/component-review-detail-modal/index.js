@@ -4,7 +4,7 @@ import { get } from 'lodash'
 import { Checkbox } from '@pubsweet/ui/dist/atoms'
 import { convertTimestampToDateString } from '../../shared/dateUtils'
 import { ensureJsonIsParsed } from '../../shared/objectUtils'
-import Modal, { SecondaryButton } from '../component-kanban-modal'
+import Modal, { SecondaryButton } from '../component-modal/src/Modal'
 import { showFieldData } from '../component-review/src/components/metadata/ReadonlyFormTemplate'
 import {
   ConfigurableStatus,

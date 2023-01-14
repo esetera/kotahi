@@ -3,7 +3,7 @@ import { grid, th } from '@pubsweet/ui-toolkit'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { UserAvatar } from '../../../../component-avatar/src'
-import Modal from '../../../../component-kanban-modal'
+import Modal from '../../../../component-modal/src/Modal'
 import {
   ActionButton,
   LooseColumn,

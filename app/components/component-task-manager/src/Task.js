@@ -21,7 +21,7 @@ import {
   MediumRow,
 } from '../../shared'
 import { DragVerticalIcon } from '../../shared/Icons'
-import Modal from '../../component-modal/src'
+import Modal from '../../component-modal/src/ConfirmationModal'
 import { ConfigContext } from '../../config/src'
 
 const TextInput = styled(MinimalTextInput)`

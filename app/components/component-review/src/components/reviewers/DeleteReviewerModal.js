@@ -2,7 +2,7 @@ import { th } from '@pubsweet/ui-toolkit'
 import React from 'react'
 import styled from 'styled-components'
 import { UserAvatar } from '../../../../component-avatar/src'
-import Modal, { StackedHeader } from '../../../../component-kanban-modal'
+import Modal, { StackedHeader } from '../../../../component-modal/src/Modal'
 import {
   ActionButton,
   LooseColumn,

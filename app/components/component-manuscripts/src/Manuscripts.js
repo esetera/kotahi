@@ -24,7 +24,7 @@ import {
 } from '../../shared'
 import { articleStatuses } from '../../../globals'
 import MessageContainer from '../../component-chat/src/MessageContainer'
-import Modal from '../../component-modal/src'
+import Modal from '../../component-modal/src/ConfirmationModal'
 import BulkArchiveModal from './BulkArchiveModal'
 import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'

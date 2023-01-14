@@ -3,7 +3,7 @@ import { th } from '@pubsweet/ui-toolkit'
 import styled from 'styled-components'
 import { convertTimestampToDateString } from '../../../../shared/dateUtils'
 import { UserAvatar } from '../../../component-avatar/src'
-import Modal from '../../../component-kanban-modal'
+import Modal from '../../../component-modal/src/Modal'
 import { ConfigurableStatus } from '../../../shared'
 
 const ModalBody = styled.div`
