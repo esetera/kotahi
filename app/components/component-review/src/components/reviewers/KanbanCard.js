@@ -5,7 +5,7 @@ import { Mail } from 'react-feather'
 import styled from 'styled-components'
 import { convertTimestampToRelativeDateString } from '../../../../../shared/dateUtils'
 import { UserAvatar } from '../../../../component-avatar/src'
-import ReviewDetailsModal from '../../../../component-review-detail-modal'
+import ReviewDetailsModal from '../../../../component-review-detail-modal/src'
 
 const Card = styled.div`
   background-color: #f8f8f9;

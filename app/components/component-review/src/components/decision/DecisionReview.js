@@ -9,7 +9,7 @@ import ShareIcon from '../../../../../shared/icons/share'
 import { UserCombo, Primary, Secondary, UserInfo } from '../../../../shared'
 import { UserAvatar } from '../../../../component-avatar/src'
 import { ensureJsonIsParsed } from '../../../../../shared/objectUtils'
-import ReviewDetailsModal from '../../../../component-review-detail-modal'
+import ReviewDetailsModal from '../../../../component-review-detail-modal/src'
 
 export const ToggleReview = ({ open, toggle }) => (
   <Button onClick={toggle} plain>
