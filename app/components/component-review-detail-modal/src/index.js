@@ -2,21 +2,21 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { get } from 'lodash'
 import { Checkbox } from '@pubsweet/ui/dist/atoms'
-import { convertTimestampToDateString } from '../../shared/dateUtils'
-import { ensureJsonIsParsed } from '../../shared/objectUtils'
-import Modal, { SecondaryButton } from '../component-modal/src/Modal'
-import { showFieldData } from '../component-review/src/components/metadata/ReadonlyFormTemplate'
+import { convertTimestampToDateString } from '../../../shared/dateUtils'
+import { ensureJsonIsParsed } from '../../../shared/objectUtils'
+import Modal, { SecondaryButton } from '../../component-modal/src/Modal'
+import { showFieldData } from '../../component-review/src/components/metadata/ReadonlyFormTemplate'
 import {
   ConfigurableStatus,
   UserInfo,
   UserCombo,
   Primary,
   Secondary,
-} from '../shared'
-import reviewStatuses from '../../../config/journal/review-status'
-import recommendations from '../../../config/journal/recommendations'
-import { UserAvatar } from '../component-avatar/src'
-import DeleteReviewerModal from '../component-review/src/components/reviewers/DeleteReviewerModal'
+} from '../../shared'
+import reviewStatuses from '../../../../config/journal/review-status'
+import recommendations from '../../../../config/journal/recommendations'
+import { UserAvatar } from '../../component-avatar/src'
+import DeleteReviewerModal from '../../component-review/src/components/reviewers/DeleteReviewerModal'
 
 const Header = styled.div`
   font-size: 18px;
