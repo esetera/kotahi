@@ -28,7 +28,8 @@ describe('control page tests', () => {
       })
     })
     it('shared message is visible', () => {
-      ControlPage.clickSharedCheckbox()
+      ControlPage.clickInvitedReviewer()
+      ControlPage.clickReviewerSharedCheckbox()
       ControlPage.waitThreeSec()
       cy.fixture('role_names').then(name => {
         cy.login(name.role.reviewers.reviewer1, dashboard)
@@ -70,7 +71,8 @@ describe('control page tests', () => {
       ControlPage.getShowButton().should('not.exist')
     })
     it('checkbox can be published publicly is visible', () => {
-      ControlPage.clickSharedCheckbox()
+      ControlPage.clickInvitedReviewer()
+      ControlPage.clickReviewerSharedCheckbox()
       ControlPage.waitThreeSec()
       cy.fixture('role_names').then(name => {
         cy.login(name.role.reviewers.reviewer1, dashboard)
@@ -91,7 +93,8 @@ describe('control page tests', () => {
       )
     })
     it('icon for accepted to publish review is visible', () => {
-      ControlPage.clickSharedCheckbox()
+      ControlPage.clickInvitedReviewer()
+      ControlPage.clickReviewerSharedCheckbox()
       ControlPage.waitThreeSec()
       cy.fixture('role_names').then(name => {
         cy.login(name.role.reviewers.reviewer1, dashboard)
@@ -130,7 +133,8 @@ describe('control page tests', () => {
         ControlPage.clickAssignSeniorEditorDropdown()
         ControlPage.selectDropdownOptionByName(name.role.reviewers.reviewer1)
         ControlPage.inviteReviewer(name.role.reviewers.reviewer1)
-        ControlPage.clickSharedCheckbox()
+        ControlPage.clickInvitedReviewer()
+        ControlPage.clickReviewerSharedCheckbox()
         ControlPage.waitThreeSec()
         cy.login(name.role.reviewers.reviewer1, dashboard)
         cy.awaitDisappearSpinner()
@@ -210,7 +214,8 @@ describe('control page tests', () => {
         ControlPage.clickAssignSeniorEditorDropdown()
         ControlPage.selectDropdownOptionByName(name.role.reviewers.reviewer2)
         ControlPage.inviteReviewer(name.role.reviewers.reviewer2)
-        ControlPage.clickSharedCheckbox()
+        ControlPage.clickInvitedReviewer()
+        ControlPage.clickReviewerSharedCheckbox()
         ControlPage.waitThreeSec()
         cy.login(name.role.reviewers.reviewer2, dashboard)
         cy.awaitDisappearSpinner()

@@ -26,6 +26,8 @@ const INVITE_REVIEWER_DROPDOWN = 'Invite reviewers'
 const INVITE_REVIEWER_OPTION_LIST = 'react-select'
 const INVITE_REVIEWER_SUBMIT_BUTTON = 'button[type="submit"]'
 const INVITED_REVIEWERS = '[class*=KanbanCard__Card]'
+const INVITE_REVIEWER_SUBMIT_MODAL_BUTTON = '[data-test-id="submit-modal"]'
+const REVIEWER_MODAL_SHARED_CHECKBOX = 'input[type="checkbox"]'
 
 // Decision + Publishing
 const PUBLISH_BUTTON =
@@ -80,6 +82,7 @@ export const ControlPage = {
     this.clickInviteReviewerDropdown()
     this.selectReviewerNamed(name)
     this.clickInviteReviewerSubmit()
+    this.clickReviewerSubmitModalButton()
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000)
   },
@@ -201,14 +204,23 @@ export const ControlPage = {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000)
   },
-  getSharedCheckbox() {
-    // TODO: Get new invite reviewer button and click it to open modal
-    // TODO: get shared checkbox in the invite reviewer modal
-    // TODO: Click "Invite"
-    return null
+  getReviewerSubmitModalButton() {
+    return cy.get(INVITE_REVIEWER_SUBMIT_MODAL_BUTTON)
   },
-  clickSharedCheckbox() {
-    return this.getSharedCheckbox().click()
+  clickReviewerSubmitModalButton() {
+    return this.getReviewerSubmitModalButton().click()
+  },
+  getReviewerSharedCheckbox() {
+    return cy.get(REVIEWER_MODAL_SHARED_CHECKBOX)
+  },
+  clickReviewerSharedCheckbox() {
+    return this.getInviteReviewerSharedCheckbox().click()
+  },
+  getInvitedReviewer() {
+    return cy.get(INVITED_REVIEWERS)
+  },
+  clickInvitedReviewer() {
+    return this.getInvitedReviewer().click()
   },
   getReviewerName() {
     return cy.get(REVIEWER_NAME)
