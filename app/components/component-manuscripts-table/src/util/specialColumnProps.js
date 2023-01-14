@@ -123,15 +123,6 @@ const buildSpecialColumnProps = specialComponentValues => {
         urlFrag,
       },
     },
-    // TODO: Confirm our removal of this
-    // roles: {
-    //   title: 'Your roles',
-    //   flex: '0 1 6em',
-    //   component: RoleText,
-    //   extraProps: {
-    //     currentUser,
-    //   },
-    // },
     reviewerStatusBadge: {
       title: 'Your Status',
       flex: '0.25 1 10em',
