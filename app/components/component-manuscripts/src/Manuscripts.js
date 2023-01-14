@@ -243,7 +243,6 @@ const Manuscripts = ({ history, ...props }) => {
     currentSearchQuery,
   }
 
-  // TODO: refactor to .env config
   const adjustedColumnNames = [...configuredColumnNames]
   adjustedColumnNames.push('actions')
   if (['ncrc', 'colab'].includes(process.env.INSTANCE_NAME))
