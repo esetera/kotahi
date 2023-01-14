@@ -1,5 +1,4 @@
-// TODO: relocate test
-import getUriQueryParams from '../../../shared/urlUtils'
+import getUriQueryParams from '../urlUtils'
 
 describe('getUriQueryParams', () => {
   test('none', () => {
