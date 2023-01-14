@@ -1,26 +1,17 @@
 import buildSpecialColumnProps from './specialColumnProps'
 import { DefaultField } from '../cell-components'
-/**
- * An object of props used for filtering, sorting, and general display
- * @typedef {Object} DisplayProps
- * @param {object} uriQueryParams An object of key value URI Query parameters {'field': 'value'}
- * @param {string} columnToSortOn The current column we should be sorting on
- * @param {string} sortDirection The current direction of the column sort
- * @param {string} currentSearchQuery Search query - NOTE: disables sorting
- */
+
+const fieldCanBeSorted = field => {
+  return ['AbstractEditor', 'TextField'].includes(field?.component)
+}
 
 /**
  * buildColumnDefinition: Takes in a column key and information to build out a standardized object of properties
  * @param {string} columnName The column key
  * @param {object} fieldDefinitions Field definitions returned from the GQL GET_MANUSCRIPTS_AND_FORM query
  * @param {object} specialColumnProperties Special component definitions for columns
- * @param {DisplayProps} customDisplayProps Props for display
+ * @param {object} customDisplayProps Props for display
  */
-
-const fieldCanBeSorted = field => {
-  return ['AbstractEditor', 'TextField'].includes(field?.component)
-}
-
 const buildColumnDefinition = (
   columnName,
   fieldDefinitions,
@@ -69,13 +60,12 @@ const buildColumnDefinition = (
 
 /**
  * buildColumnDefinitions: Master function to build the Manuscripts table definition
- * @param {Array[String]} columnNames The columns we want to display as a part of the table
+ * @param {string[]} columnNames The columns we want to display as a part of the table
  * @param {object} fieldDefinitions The graphQL structure of the fields returned from GET_MANUSCRIPTS_AND_FORM
- * @param {ComponentValues} specialComponentValues values needed for specific components
- * @param {DisplayProps} customDisplayProps Props for display
+ * @param {object} specialComponentValues values needed for specific components
+ * @param {object} displayProps Props for display
  * @returns {object} the list of standardized column information
  */
-
 const buildColumnDefinitions = (
   columnNames,
   fieldDefinitions,
