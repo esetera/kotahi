@@ -1,11 +1,9 @@
 import React, { useMemo } from 'react'
-import {
-  ownerColumns,
-  URI_SEARCH_PARAM,
-} from '../../../../../../config/journal/manuscripts'
+import { ownerColumns } from '../../../../../../config/journal/manuscripts'
 import {
   extractSortData,
   URI_PAGENUM_PARAM,
+  URI_SEARCH_PARAM,
 } from '../../../../../shared/urlParamUtils'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'

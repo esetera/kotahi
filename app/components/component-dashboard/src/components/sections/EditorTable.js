@@ -10,13 +10,11 @@ import {
   Spinner,
   Title,
 } from '../../../../shared'
-import {
-  URI_SEARCH_PARAM,
-  editorColumns,
-} from '../../../../../../config/journal/manuscripts'
+import { editorColumns } from '../../../../../../config/journal/manuscripts'
 import {
   extractSortData,
   URI_PAGENUM_PARAM,
+  URI_SEARCH_PARAM,
 } from '../../../../../shared/urlParamUtils'
 
 const EditorTable = ({

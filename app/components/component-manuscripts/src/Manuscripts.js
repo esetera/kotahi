@@ -1,39 +1,39 @@
 /* eslint-disable no-shadow */
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 import { Checkbox } from '@pubsweet/ui'
 import { grid } from '@pubsweet/ui-toolkit'
-import {
-  SelectAllField,
-  SelectedManuscriptsNumber,
-  ControlsContainer,
-} from './style'
-import {
-  Container,
-  Spinner,
-  ScrollableContent,
-  Heading,
-  CommsErrorBanner,
-  Pagination,
-  PaginationContainerShadowed,
-  Columns,
-  RoundIconButton,
-  ActionButton,
-} from '../../shared'
+import React, { useState } from 'react'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import styled from 'styled-components'
 import { articleStatuses } from '../../../globals'
-import MessageContainer from '../../component-chat/src/MessageContainer'
-import Modal from '../../component-modal/src/ConfirmationModal'
-import BulkArchiveModal from './BulkArchiveModal'
-import SearchControl from './SearchControl'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
 import {
-  URI_SEARCH_PARAM,
   URI_PAGENUM_PARAM,
+  URI_SEARCH_PARAM,
 } from '../../../shared/urlParamUtils'
+import MessageContainer from '../../component-chat/src/MessageContainer'
 import ManuscriptsTable from '../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../component-manuscripts-table/src/util/buildColumnDefinitions'
+import Modal from '../../component-modal/src/ConfirmationModal'
+import {
+  ActionButton,
+  Columns,
+  CommsErrorBanner,
+  Container,
+  Heading,
+  Pagination,
+  PaginationContainerShadowed,
+  RoundIconButton,
+  ScrollableContent,
+  Spinner,
+} from '../../shared'
+import BulkArchiveModal from './BulkArchiveModal'
+import SearchControl from './SearchControl'
+import {
+  ControlsContainer,
+  SelectAllField,
+  SelectedManuscriptsNumber,
+} from './style'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;

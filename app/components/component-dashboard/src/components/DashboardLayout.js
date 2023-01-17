@@ -13,9 +13,9 @@ import {
 import { Container } from '../style'
 import SearchControl from '../../../component-manuscripts/src/SearchControl'
 import { ControlsContainer } from '../../../component-manuscripts/src/style'
-import { URI_SEARCH_PARAM } from '../../../../../config/journal/manuscripts'
 import {
   URI_PAGENUM_PARAM,
+  URI_SEARCH_PARAM,
   useQueryParams,
 } from '../../../../shared/urlParamUtils'
 import { FlexRow } from '../../../../globals'

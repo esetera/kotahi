@@ -1,5 +1,3 @@
-const { URI_SEARCH_PARAM } = require('../../../config/journal/manuscripts')
-
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 const { ensureJsonIsParsed } = require('../../utils/objectUtils')
 const { formatSearchQueryForPostgres } = require('../../utils/searchUtils')
@@ -12,6 +10,7 @@ const {
 
 const SUBMISSION_FIELD_PREFIX = 'submission'
 const META_FIELD_PREFIX = 'meta'
+const URI_SEARCH_PARAM = 'search'
 
 /** This returns a modified array of reviews, omitting fields or entire reviews marked as
  * hidden from author, UNLESS the current user is the reviewer the review belongs to.

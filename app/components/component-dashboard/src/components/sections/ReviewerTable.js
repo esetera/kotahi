@@ -10,13 +10,11 @@ import {
   Spinner,
   Title,
 } from '../../../../shared'
-import {
-  reviewerColumns,
-  URI_SEARCH_PARAM,
-} from '../../../../../../config/journal/manuscripts'
+import { reviewerColumns } from '../../../../../../config/journal/manuscripts'
 import {
   extractSortData,
   URI_PAGENUM_PARAM,
+  URI_SEARCH_PARAM,
 } from '../../../../../shared/urlParamUtils'
 
 const ReviewerTable = ({

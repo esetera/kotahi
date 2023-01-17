@@ -28,11 +28,8 @@ const reviewerColumns = [
   'reviewerLinks',
 ]
 
-const URI_SEARCH_PARAM = 'search'
-
 module.exports = {
   editorColumns,
   ownerColumns,
   reviewerColumns,
-  URI_SEARCH_PARAM,
 }
