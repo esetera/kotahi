@@ -47,7 +47,7 @@ const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {
   const name = invitation.invitedPersonName ?? invitation.user.username
 
   const details =
-    invitation.toEmail ?? invitation.user.defaultIdentity.identifier
+    invitation?.user?.defaultIdentity?.identifier ?? invitation.toEmail
 
   return (
     <Modal
