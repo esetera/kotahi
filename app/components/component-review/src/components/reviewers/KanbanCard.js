@@ -16,7 +16,6 @@ const Card = styled.div`
   display: flex;
   flex-direction: row;
   font-size: ${th('fontSizeBaseSmall')};
-  justify-content: space-between;
   padding: ${grid(1)};
   position: relative;
   width: 100%;
