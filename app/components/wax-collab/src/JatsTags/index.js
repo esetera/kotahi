@@ -27,35 +27,6 @@ import Keyword from './keywords/Keyword'
 import GlossarySection from './glossary/GlossarySection'
 import GlossaryTerm from './glossary/GlossaryTerm'
 
-// const getMixedCitations = main => {
-//   const citations = DocumentHelpers.findChildrenByType(
-//     main.state.doc,
-//     main.state.schema.nodes.mixedCitationSpan,
-//     true,
-//   )
-//
-// return citations
-// }
-
-// Note that toDOM for a lot of the Wax marks looks like this:
-
-// toDOM(hook, next) {
-// 	hook.value = ['span', hook.node.attrs, 0];
-// 	next();
-// },
-//
-// ( https://gitlab.coko.foundation/wax/wax-prosemirror/-/blob/master/wax-prosemirror-schema/src/marks/smallcapsMark.js )
-//
-// though in prosemirror this tends to look like this:
-//
-// toDOM() {
-// 	return ['span', { class: 'mixed-citation' }, 0]
-// },
-
-// FIGURE OUT:
-//
-// - how can we exclude more than one thing? just an array?
-
 class JatsTagsService extends Service {
   // boot() {}
 
