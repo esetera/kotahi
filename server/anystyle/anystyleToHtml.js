@@ -112,27 +112,32 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
           10,
         )
 
-        console.error(`\n\n\nInternal citation number found: `, citationNumber)
+        // eslint-disable-next-line
+        console.log(`\n\n\nInternal citation number found: `, citationNumber)
         const theCitationNumber = $(thisCitation).find('citation-number').text()
         theText = theText.replace(
           theCitationNumber,
           `<span class="citation-label">${theCitationNumber}</span>`,
         )
       } else {
-        console.error(
+        // eslint-disable-next-line
+        console.log(
           '\n\n\nNo internal citation number, reference ID: ',
           citationNumber,
         )
       }
 
-      console.error('Raw text: ', theText)
-      console.error('XML from Anystyle: ', $(thisCitation).html())
+      // eslint-disable-next-line
+      console.log('Raw text: ', theText)
+      // eslint-disable-next-line
+      console.log('XML from Anystyle: ', $(thisCitation).html())
 
       // check for author name
 
       if ($(thisCitation).find('author').length) {
         const authorName = $(thisCitation).find('author').text()
-        console.error('Author name found: ', authorName)
+        // eslint-disable-next-line
+        console.log('Author name found: ', authorName)
         // TODO: can we split this?
         theText = theText.replace(
           authorName,
@@ -144,7 +149,8 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
 
       if ($(thisCitation).find('journal').length) {
         const journalName = $(thisCitation).find('journal').text()
-        console.error('Journal found: ', journalName)
+        // eslint-disable-next-line
+        console.log('Journal found: ', journalName)
         theText = theText.replace(
           journalName,
           `<span class="journal-title">${journalName}</span>`,
@@ -155,7 +161,8 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
 
       if ($(thisCitation).find('title').length) {
         const articleName = $(thisCitation).find('title').text()
-        console.error('Article title found: ', articleName)
+        // eslint-disable-next-line
+        console.log('Article title found: ', articleName)
         theText = theText.replace(
           articleName,
           `<span class="article-title">${articleName}</span>`,
@@ -166,7 +173,8 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
 
       if ($(thisCitation).find('date').length) {
         const thisDate = $(thisCitation).find('date').text()
-        console.error('Date found: ', thisDate)
+        // eslint-disable-next-line
+        console.log('Date found: ', thisDate)
         theText = theText.replace(
           thisDate,
           `<span class="year">${thisDate}</span>`,
@@ -177,7 +185,8 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
 
       if ($(thisCitation).find('volume').length) {
         const thisVolume = $(thisCitation).find('volume').text()
-        console.error('Volume found: ', thisVolume)
+        // eslint-disable-next-line
+        console.log('Volume found: ', thisVolume)
         theText = theText.replace(
           thisVolume,
           `<span class="volume">${thisVolume}</span>`,
@@ -188,21 +197,24 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
 
       if ($(thisCitation).find('issue').length) {
         const thisIssue = $(thisCitation).find('issue').text()
-        console.error('Issue found: ', thisIssue)
+        // eslint-disable-next-line
+        console.log('Issue found: ', thisIssue)
         theText = theText.replace(
           thisIssue,
           `<span class="issue">${thisIssue}</span>`,
         )
       }
 
-      // check for pages – split into first-page, last-name if possible
+      // check for pages – split into first-page, last-page if possible
 
       if ($(thisCitation).find('pages').length) {
         const thisPages = $(thisCitation).find('pages').text()
-        console.error('Pages found: ', thisPages)
+        // eslint-disable-next-line
+        console.log('Pages found: ', thisPages)
 
         if (thisPages.includes('-') || thisPages.includes('–')) {
-          console.error('--> Page range found, splitting!')
+          // eslint-disable-next-line
+          console.log('--> Page range found, splitting!')
           const pageSplit = thisPages.split(/-|–/)
           theText = theText.replace(
             thisPages,
@@ -220,11 +232,13 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
 
       if ($(thisCitation).find('url').length) {
         const theUrl = $(thisCitation).find('url').text()
-        console.error('URL found: ', theUrl)
+        // eslint-disable-next-line
+        console.log('URL found: ', theUrl)
         const isDOI = theUrl.includes('doi.org')
 
         if (isDOI) {
-          console.error('--> DOI found, calling it a DOI')
+          // eslint-disable-next-line
+          console.log('--> DOI found, calling it a DOI')
         }
 
         theText = theText.replace(
@@ -240,7 +254,8 @@ const anystyleXmlToHtml = (anystyleXml, startCount = 0) => {
   }
 
   if (outText.length > 1) {
-    console.error('Multiple citations!')
+    // eslint-disable-next-line
+    console.log('Multiple citations!')
     return outText.map(x => `<p class="paragraph">${x}</p>`).join('')
   }
 

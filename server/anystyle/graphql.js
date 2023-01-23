@@ -133,7 +133,8 @@ const parseCitations = async (references, startNumber = 0) => {
   const form = new FormData()
   // clean any HTML out of what's coming in to Anystyle so it isn't confused
   form.append('txt', fs.createReadStream(`${txtPath}`))
-  console.error('Text path: ', txtPath)
+  // eslint-disable-next-line
+  console.log('Text path: ', txtPath)
   return new Promise((resolve, reject) => {
     axios({
       method: 'post',
@@ -150,7 +151,8 @@ const parseCitations = async (references, startNumber = 0) => {
         // 2 pass citations to HTML wrapper
         // res.data is Anystyle XML as a string
         // TODO: take an initial index for the reference IDs so we don't make duplicate IDs
-        console.error('Result from Anystyle:', res.data)
+        // eslint-disable-next-line
+        console.log('Result from Anystyle:', res.data)
 
         const htmledResult =
           anystyleXmlToHtml(res.data, startNumber) || references
