@@ -72,7 +72,7 @@ const AnyStyleButton = ({ view = {}, item, anyStyle }) => {
     }
   }
 
-  useEffect(() => {}, [])
+  // useEffect(() => {}, [])
 
   const isActive = !!active(state, activeViewId)
   let isDisabled = !select(state, activeViewId, activeView)
