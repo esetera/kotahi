@@ -1,22 +1,14 @@
 const fs = require('fs-extra')
-// const path = require('path')
 const fsPromised = require('fs').promises
 const axios = require('axios')
 const FormData = require('form-data')
 const crypto = require('crypto')
 const { promisify } = require('util')
+const striptags = require('striptags')
 const config = require('config')
 const anystyleXmlToHtml = require('./anystyleToHtml')
 
 const randomBytes = promisify(crypto.randomBytes)
-
-// this is loading a text file of references for testing
-// Uncomment this (and imports above) for testing without frontend data
-
-// const sampleReferences = fs.readFileSync(
-//   path.resolve(__dirname, 'data/sampleReferences.txt'),
-//   'utf8',
-// )
 
 const { clientId, clientSecret, port, protocol, host } = config.anystyle
 
@@ -75,8 +67,12 @@ const convertHtmlToText = text => {
   returnText = returnText.replace(/<br\/>/gi, '\n')
 
   // -- remove P and A tags but preserve what's inside of them
-  returnText = returnText.replace(/<p.*>/gi, '\n')
-  returnText = returnText.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, ' $2 ($1)')
+  returnText = returnText.replace(
+    /<a\s+href=["']([^'"]*)["'][^>]*>(.*?)<\/a>/gi,
+    ' $2 ($1)',
+  )
+  returnText = striptags(returnText, ['br', 'p'], '') // Strip all but <br> and <p> tags, and replace them with ''
+  returnText = striptags(returnText, [], '\n') // Replace remaining tags (i.e., <br> and <p>) with '\n'
 
   // -- remove all inside SCRIPT and STYLE tags
   returnText = returnText.replace(
@@ -106,10 +102,6 @@ const convertHtmlToText = text => {
   // -- return
   return returnText
 }
-
-// 	curl --location --request POST 'http://localhost:4567' \
-// --form 'references="Derrida, J. (1967). L’écriture et la différence (1 éd.). Paris: Éditions du Seuil.
-// Vassy, J.L.; Christensen, K.D.; Schonman, E.F.; Blout, C.L.; Robinson, J.O.; Krier, J.B.; Diamond, P.M.; Lebo, M.; Machini, K.; Azzariti, D.R.; et al. The Impact of Whole-Genome Sequencing on the Primary Care and Outcomes of Healthy Adult Patients. Ann. Intern. Med. 2017, 167, 159–169, https://doi.org/10.7326/M17-018."'
 
 const parseCitations = async (references, startNumber = 0) => {
   // check to see if we have an access token. If not, wait for one.
@@ -219,9 +211,3 @@ const typeDefs = `
 `
 
 module.exports = { resolvers, typeDefs }
-
-// UNCOMMENT THIS FOR TESTING WITHOUT FRONTEND:
-
-// const output = parseCitations(sampleReferences)
-
-// console.log('Final output: ', output)
