@@ -55,7 +55,7 @@ const InviteReviewerModal = ({
   isEmailAddressOptedOut,
 }) => {
   const [shared, setShared] = useState(false)
-  const [sendEmailNotification, setSendEmailNotification] = useState(false)
+  const [sendEmailNotification, setSendEmailNotification] = useState(true)
 
   const identity = reviewerUsers.find(user => user.id === userId)
 
