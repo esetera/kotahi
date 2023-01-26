@@ -80,7 +80,7 @@ const InviteReviewerModal = ({
   const userOptedOut = !!isEmailAddressOptedOut?.data?.getBlacklistInformation
     .length
 
-  const isInvitation = isNewUser || sendEmailNotification
+  const isInvitation = isNewUser || (!userOptedOut && sendEmailNotification)
 
   return (
     <Modal isOpen={open} onClose={onClose} title="Invite Reviewer">
