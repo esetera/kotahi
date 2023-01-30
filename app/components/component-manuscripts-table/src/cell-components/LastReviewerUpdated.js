@@ -8,7 +8,7 @@ const DateDisplay = styled.div`
   line-height: 1.2;
 `
 
-const LastUpdated = ({ manuscript }) => {
+const LastReviewerUpdated = ({ manuscript }) => {
   const updatedTimes = getMembersOfTeam(manuscript, 'reviewer').map(
     reviewer => reviewer.updated,
   )
@@ -24,4 +24,4 @@ const LastUpdated = ({ manuscript }) => {
   return <DateDisplay>{timestamp}</DateDisplay>
 }
 
-export default LastUpdated
+export default LastReviewerUpdated

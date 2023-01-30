@@ -12,7 +12,7 @@ import {
   EditorItemLinks,
   ReviewStatusDonut,
   OverdueTooltip,
-  LastUpdated,
+  LastReviewerUpdated,
   ReviewerStatusBadge,
 } from '../cell-components'
 import reviewFilterOptions from '../../../../../config/journal/review-status'
@@ -61,7 +61,7 @@ const buildSpecialColumnProps = specialComponentValues => {
     },
     lastUpdated: {
       title: 'Last Status Update',
-      component: LastUpdated,
+      component: LastReviewerUpdated,
       flex: '0.25 1 8em',
     },
     status: {
