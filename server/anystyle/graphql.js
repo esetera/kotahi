@@ -20,6 +20,17 @@ const serviceHandshake = async () => {
   const buff = Buffer.from(`${clientId}:${clientSecret}`, 'utf8')
   const base64data = buff.toString('base64')
 
+  console.error(
+    'Client ID: ',
+    clientId,
+    'Client secret: ',
+    clientSecret,
+    'Basic auth: ',
+    base64data,
+  )
+
+  console.error('Server URL: ', serverUrl)
+
   const serviceHealthCheck = await axios({
     method: 'get',
     url: `${serverUrl}/healthcheck`,
