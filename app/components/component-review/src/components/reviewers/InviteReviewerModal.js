@@ -56,6 +56,7 @@ const InviteReviewerModal = ({
 }) => {
   const [shared, setShared] = useState(false)
   const [sendEmailNotification, setSendEmailNotification] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
 
   const identity = reviewerUsers.find(user => user.id === userId)
 
@@ -115,7 +116,9 @@ const InviteReviewerModal = ({
           &nbsp;
           <ActionButton
             data-test-id="submit-modal"
+            disabled={submitting}
             onClick={async () => {
+              setSubmitting(true)
               let teamMember
 
               if (isInvitation) {
@@ -168,6 +171,7 @@ const InviteReviewerModal = ({
               }
 
               onClose()
+              setSubmitting(false)
             }}
             primary
           >
