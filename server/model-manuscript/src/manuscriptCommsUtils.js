@@ -6,6 +6,7 @@ const importArticlesFromBiorxiv = require('../../import-articles/biorxiv-import'
 const importArticlesFromBiorxivWithFullTextSearch = require('../../import-articles/biorxiv-full-text-import')
 const importArticlesFromPubmed = require('../../import-articles/pubmed-import')
 const importArticlesFromSemanticScholar = require('../../import-articles/semantic-scholar-papers-import')
+const { runImports } = require('../../plugins')
 
 const { getPubsub } = pubsubManager
 
@@ -35,6 +36,8 @@ const importManuscripts = async ctx => {
   if (isImportInProgress) return false
   isImportInProgress = true
 
+  await runImports(ctx.user)
+
   const promises = []
 
   if (process.env.INSTANCE_NAME === 'ncrc') {
@@ -43,8 +46,6 @@ const importManuscripts = async ctx => {
   } else if (process.env.INSTANCE_NAME === 'colab') {
     promises.push(importArticlesFromBiorxivWithFullTextSearch(ctx))
   }
-
-  if (!promises.length) return false
 
   Promise.all(promises)
     .catch(error => console.error(error))

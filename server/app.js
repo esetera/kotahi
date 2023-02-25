@@ -1,6 +1,7 @@
 const config = require('config')
 const { app } = require('@coko/server')
 const { setConfig } = require('./config/src/configObject')
+const { registerPlugins } = require('./plugins')
 
 // You can modify the app or ensure other things are imported here.
 const schedule = require('../node_modules/node-schedule')
@@ -14,6 +15,8 @@ const {
 } = require('./model-manuscript/src/manuscriptCommsUtils')
 
 const { createNewTaskAlerts } = require('./model-task/src/taskCommsUtils')
+
+registerPlugins()
 
 if (config.manuscripts.autoImportHourUtc) {
   schedule.scheduleJob(
