@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { set, debounce } from 'lodash'
 import { useLocation } from 'react-router-dom'
+import styled from 'styled-components'
 import DecisionReviews from './decision/DecisionReviews'
 import AssignEditorsReviewers from './assignEditors/AssignEditorsReviewers'
 import AssignEditor from './assignEditors/AssignEditor'
@@ -23,6 +24,10 @@ import TaskList from '../../../component-task-manager/src/TaskList'
 import KanbanBoard from './KanbanBoard'
 import InviteReviewer from './reviewers/InviteReviewer'
 
+const TaskSectionRow = styled(SectionRow)`
+  padding: 12px 0 18px;
+`
+
 const createBlankSubmissionBasedOnForm = form => {
   const allBlankedFields = {}
   const fieldNames = form?.children?.map(field => field.name)
@@ -33,6 +38,7 @@ const createBlankSubmissionBasedOnForm = form => {
 const DecisionVersion = ({
   allUsers,
   addReviewer,
+  roles,
   decisionForm,
   form,
   currentDecisionData,
@@ -77,18 +83,24 @@ const DecisionVersion = ({
   teams,
   removeReviewer,
   updateTeamMember,
+  updateTaskNotification,
+  deleteTaskNotification,
+  createTaskEmailNotificationLog,
 }) => {
+  const debouncedSave = useCallback(
+    debounce(source => {
+      updateManuscript(version.id, { meta: { source } })
+    }, 2000),
+    [],
+  )
+
+  useEffect(() => debouncedSave.flush, [])
+
   // Hooks from the old world
   const location = useLocation()
 
   const addEditor = (manuscript, label, isCurrent, user) => {
     const isThisReadOnly = !isCurrent
-
-    const handleSave = useCallback(
-      debounce(source => {
-        updateManuscript(manuscript.id, { meta: { source } })
-      }, 2000),
-    )
 
     return {
       content: (
@@ -96,7 +108,7 @@ const DecisionVersion = ({
           currentUser={user}
           manuscript={manuscript}
           readonly={isThisReadOnly}
-          saveSource={isThisReadOnly ? null : handleSave}
+          saveSource={isThisReadOnly ? null : debouncedSave}
         />
       ),
       key: `editor_${manuscript.id}`,
@@ -224,16 +236,23 @@ const DecisionVersion = ({
             <SectionHeader>
               <Title>Tasks</Title>
             </SectionHeader>
-            <SectionRow>
+            <TaskSectionRow>
               <TaskList
+                createTaskEmailNotificationLog={createTaskEmailNotificationLog}
+                currentUser={currentUser}
+                deleteTaskNotification={deleteTaskNotification}
                 isReadOnly={!isCurrentVersion}
+                manuscript={version}
                 manuscriptId={version.id}
+                roles={roles}
+                sendNotifyEmail={sendNotifyEmail}
                 tasks={version.tasks}
                 updateTask={updateTask}
+                updateTaskNotification={updateTaskNotification}
                 updateTasks={updateTasks}
                 users={allUsers}
               />
-            </SectionRow>
+            </TaskSectionRow>
           </SectionContent>
         </>
       ),

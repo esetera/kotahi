@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { sanitize } from 'dompurify'
+import { sanitize } from 'isomorphic-dompurify'
 import 'rc-tooltip/assets/bootstrap_white.css'
 import React from 'react'
 import { useHistory } from 'react-router-dom'

@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useMutation, useQuery, gql } from '@apollo/client'
 import config from 'config'
 import { Redirect } from 'react-router-dom'
 import ReactRouterPropTypes from 'react-router-prop-types'
-import { set } from 'lodash'
+import { set, debounce } from 'lodash'
 import ReviewLayout from './review/ReviewLayout'
 import { Heading, Page, Spinner } from '../../../shared'
 import useCurrentUser from '../../../../hooks/useCurrentUser'
@@ -286,6 +286,79 @@ const ReviewPage = ({ match, ...props }) => {
 
   // Find an existing review or create a placeholder, and hold a ref to it
   const existingReview = reviewOrInitial(latestVersion)
+
+  const updateReviewJsonData = (value, path) => {
+    if (!latestVersion.id) {
+      // we shouldn't need this because of debouncing! But this protects against trying to save while loading is still happening
+      // eslint-disable-next-line no-console
+      console.log('no version id!')
+      return false
+    }
+
+    const reviewDelta = {} // Only the changed fields
+    // E.g. if path is 'foo.bar' and value is 'Baz' this gives { foo: { bar: 'Baz' } }
+    set(reviewDelta, path, value)
+
+    const reviewPayload = {
+      isDecision: false,
+      jsonData: JSON.stringify(reviewDelta),
+      manuscriptId: latestVersion.id,
+      userId: currentUser.id,
+    }
+
+    return updateReviewMutation({
+      variables: { id: existingReview.id, input: reviewPayload },
+      update: (cache, { data: { updateReview: updateReviewTemp } }) => {
+        cache.modify({
+          id: cache.identify({
+            __typename: 'Manuscript',
+            id: latestVersion.id,
+          }),
+          fields: {
+            reviews(existingReviewRefs = [], { readField }) {
+              const newReviewRef = cache.writeFragment({
+                data: updateReviewTemp,
+                fragment: gql`
+                  fragment NewReview on Review {
+                    id
+                  }
+                `,
+              })
+
+              if (
+                existingReviewRefs.some(
+                  ref => readField('id', ref) === updateReviewTemp.id,
+                )
+              ) {
+                return existingReviewRefs
+              }
+
+              return [...existingReviewRefs, newReviewRef]
+            },
+          },
+        })
+      },
+    })
+  }
+
+  const debouncedUpdateReviewJsonData = useCallback(
+    debounce(updateReviewJsonData ?? (() => {}), 1000),
+    [latestVersion?.id],
+  )
+
+  useEffect(() => debouncedUpdateReviewJsonData.flush, [])
+
+  if (loading) return <Spinner />
+
+  if (error) {
+    console.warn(error.message)
+    return (
+      <Page>
+        <Heading>This review is no longer accessible.</Heading>
+      </Page>
+    )
+  }
+
   const { manuscript, threadedDiscussions } = data
 
   // We shouldn't arrive at this page with a subsequent/child manuscript ID. If we do, redirect to the parent/original ID
@@ -335,53 +408,6 @@ const ReviewPage = ({ match, ...props }) => {
   const reviewerStatus = reviewersTeam.members.find(
     member => member.user.id === currentUser?.id,
   )?.status
-
-  const updateReviewJsonData = (value, path) => {
-    const reviewDelta = {} // Only the changed fields
-    // E.g. if path is 'foo.bar' and value is 'Baz' this gives { foo: { bar: 'Baz' } }
-    set(reviewDelta, path, value)
-
-    const reviewPayload = {
-      isDecision: false,
-      jsonData: JSON.stringify(reviewDelta),
-      manuscriptId: latestVersion.id,
-      userId: currentUser.id,
-    }
-
-    return updateReviewMutation({
-      variables: { id: existingReview.id, input: reviewPayload },
-      update: (cache, { data: { updateReview: updateReviewTemp } }) => {
-        cache.modify({
-          id: cache.identify({
-            __typename: 'Manuscript',
-            id: latestVersion.id,
-          }),
-          fields: {
-            reviews(existingReviewRefs = [], { readField }) {
-              const newReviewRef = cache.writeFragment({
-                data: updateReviewTemp,
-                fragment: gql`
-                  fragment NewReview on Review {
-                    id
-                  }
-                `,
-              })
-
-              if (
-                existingReviewRefs.some(
-                  ref => readField('id', ref) === updateReviewTemp.id,
-                )
-              ) {
-                return existingReviewRefs
-              }
-
-              return [...existingReviewRefs, newReviewRef]
-            },
-          },
-        })
-      },
-    })
-  }
 
   const updateReview = review => {
     const reviewData = {
@@ -465,7 +491,7 @@ const ReviewPage = ({ match, ...props }) => {
       submissionForm={submissionForm}
       threadedDiscussionProps={threadedDiscussionProps}
       updateReview={updateReview}
-      updateReviewJsonData={updateReviewJsonData}
+      updateReviewJsonData={debouncedUpdateReviewJsonData}
       versions={versions}
     />
   )

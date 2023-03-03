@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { fragmentFields } from '../../../component-submit/src/userManuscriptFormQuery'
 import { CommsErrorBanner, Spinner } from '../../../shared'
 import DecisionVersions from './DecisionVersions'
+import { roles } from '../../../../globals'
 
 import {
   addReviewerMutation,
@@ -24,6 +25,9 @@ import {
   UPDATE_SHARED_STATUS_FOR_INVITED_REVIEWER_MUTATION,
   UPDATE_TASK,
   UPDATE_TASKS,
+  UPDATE_TASK_NOTIFICATION,
+  DELETE_TASK_NOTIFICATION,
+  CREATE_TASK_EMAIL_NOTIFICATION_LOGS,
 } from '../../../../queries'
 import { GET_INVITATIONS_FOR_MANUSCRIPT } from '../../../../queries/invitation'
 import {
@@ -84,6 +88,7 @@ const DecisionPage = ({ match }) => {
 
   useEffect(() => {
     return () => {
+      Object.values(debouncers).forEach(d => d.flush())
       debouncers = {}
     }
   }, [])
@@ -180,6 +185,10 @@ const DecisionPage = ({ match }) => {
 
   const [removeReviewer] = useMutation(removeReviewerMutation)
 
+  const [createTaskEmailNotificationLog] = useMutation(
+    CREATE_TASK_EMAIL_NOTIFICATION_LOGS,
+  )
+
   const [updateTask] = useMutation(UPDATE_TASK, {
     update(cache, { data: { updateTask: updatedTask } }) {
       cache.modify({
@@ -188,15 +197,37 @@ const DecisionPage = ({ match }) => {
           id: updatedTask.manuscriptId,
         }),
         fields: {
-          tasks(existingTaskRefs) {
-            return existingTaskRefs.includes(updatedTask.id)
-              ? existingTaskRefs
-              : [...existingTaskRefs, updatedTask.id]
+          tasks(existingTaskRefs = [], { readField }) {
+            const newTaskRef = cache.writeFragment({
+              data: updatedTask,
+              fragment: gql`
+                fragment NewTask on Task {
+                  id
+                  title
+                  dueDate
+                  defaultDurationDays
+                }
+              `,
+            })
+
+            if (
+              existingTaskRefs.some(
+                ref => readField('id', ref) === updatedTask.id,
+              )
+            ) {
+              return existingTaskRefs
+            }
+
+            return [...existingTaskRefs, newTaskRef]
           },
         },
       })
     },
   })
+
+  const [updateTaskNotification] = useMutation(UPDATE_TASK_NOTIFICATION)
+
+  const [deleteTaskNotification] = useMutation(DELETE_TASK_NOTIFICATION)
 
   const [updateTasks] = useMutation(UPDATE_TASKS, {
     update(cache, { data: { updateTasks: updatedTasks } }) {
@@ -362,10 +393,12 @@ const DecisionPage = ({ match }) => {
       allUsers={users}
       canHideReviews={config.review.hide === 'true'}
       createFile={createFile}
+      createTaskEmailNotificationLog={createTaskEmailNotificationLog}
       createTeam={createTeam}
       currentUser={currentUser}
       decisionForm={decisionForm}
       deleteFile={deleteFile}
+      deleteTaskNotification={deleteTaskNotification}
       displayShortIdAsIdentifier={
         config['client-features'].displayShortIdAsIdentifier &&
         config['client-features'].displayShortIdAsIdentifier.toLowerCase() ===
@@ -387,6 +420,7 @@ const DecisionPage = ({ match }) => {
       removeReviewer={removeReviewer}
       reviewers={data?.manuscript?.reviews}
       reviewForm={reviewForm}
+      roles={roles}
       selectedEmail={selectedEmail}
       sendChannelMessageCb={sendChannelMessageCb}
       sendNotifyEmail={sendNotifyEmail}
@@ -403,6 +437,7 @@ const DecisionPage = ({ match }) => {
         updateSharedStatusForInvitedReviewer
       }
       updateTask={updateTask}
+      updateTaskNotification={updateTaskNotification}
       updateTasks={updateTasks}
       updateTeam={updateTeam}
       updateTeamMember={updateTeamMember}

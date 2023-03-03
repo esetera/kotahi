@@ -53,6 +53,7 @@ const manuscriptFields = `
         username
         profilePicture
         isOnline
+        email
         defaultIdentity {
           id
           name
@@ -87,18 +88,47 @@ const manuscriptFields = `
     updated
     manuscriptId
     title
-    assigneeUserId
     assignee {
       id
       username
       email
       profilePicture
     }
+    assigneeUserId
     defaultDurationDays
     dueDate
     reminderPeriodDays
     sequenceIndex
     status
+    assigneeType
+    assigneeEmail
+    assigneeName
+    emailNotifications {
+      id
+      taskId
+      recipientUserId
+      recipientType
+      notificationElapsedDays
+      emailTemplateKey
+      recipientName
+      recipientEmail
+      recipientUser {
+        id
+        username
+        email
+      }
+      sentAt
+    }
+    notificationLogs {
+      id
+      taskId
+      senderEmail
+      recipientEmail
+      emailTemplateKey
+      content
+      updated
+      created
+    }
   }
 `
 
@@ -172,6 +202,7 @@ export const query = gql`
       id
       username
       admin
+      email
     }
 
     manuscript(id: $id) {

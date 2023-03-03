@@ -405,6 +405,7 @@ const permissions = {
     convertToJats: or(userIsEditor, userIsAdmin),
     convertToPdf: or(userIsEditor, userIsAdmin),
     currentUser: isAuthenticated,
+    docmap: allow,
     editorsActivity: or(userIsEditor, userIsAdmin),
     file: deny, // Never used
     files: deny, // Never used
@@ -430,6 +431,7 @@ const permissions = {
     messages: isAuthenticated,
     paginatedManuscripts: or(userIsEditor, userIsAdmin),
     paginatedUsers: userIsAdmin,
+    publishedArtifacts: allow,
     publishedManuscript: allow,
     publishedManuscripts: allow,
     reviewersActivity: or(userIsEditor, userIsAdmin),
@@ -506,6 +508,7 @@ const permissions = {
     ),
     updateTask: or(userIsEditor, userIsAdmin),
     updateTasks: or(userIsEditor, userIsAdmin),
+    updateTaskNotification: or(userIsEditor, userIsAdmin),
     updateTeam: or(userIsEditor, userIsAdmin),
     updateTeamMember: or(userIsEditor, userIsAdmin),
     updateTeamMemberStatus: or(
@@ -516,6 +519,7 @@ const permissions = {
     upload: isAuthenticated,
     uploadFile: isAuthenticated,
     uploadFiles: isAuthenticated,
+    updateTaskStatus: isAuthenticated,
   },
   Subscription: {
     fileUpdated: isAuthenticated,
