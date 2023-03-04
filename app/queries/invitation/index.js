@@ -7,6 +7,7 @@ export const UPDATE_INVITATION_RESPONSE = gql`
       responseComment: $responseComment
       declinedReason: $declinedReason
     ) {
+      id
       responseComment
       declinedReason
       toEmail
