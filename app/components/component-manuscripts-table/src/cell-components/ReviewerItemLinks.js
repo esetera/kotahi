@@ -19,7 +19,7 @@ const ReviewerItemLinks = ({
   urlFrag,
   reviewerRespond,
   currentUser,
-  updateMemberStatus,
+  updateReviewerStatus,
   setMainActionLink,
 }) => {
   const team =
@@ -55,7 +55,7 @@ const ReviewerItemLinks = ({
             // on click, update review status before forwarding to link
 
             if (status === 'accepted') {
-              await updateMemberStatus({
+              await updateReviewerStatus({
                 variables: {
                   manuscriptId: manuscript.id,
                   status: 'inProgress',

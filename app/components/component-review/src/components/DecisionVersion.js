@@ -95,8 +95,6 @@ const DecisionVersion = ({
   )
 
   useEffect(() => debouncedSave.flush, [])
-
-  // Hooks from the old world
   const location = useLocation()
 
   const addEditor = (manuscript, label, isCurrent, user) => {

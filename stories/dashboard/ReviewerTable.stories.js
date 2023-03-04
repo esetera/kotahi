@@ -182,7 +182,7 @@ const props = {
     error: null,
   },
   urlFrag,
-  updateMemberStatus: () => {},
+  updateReviewerStatus: () => {},
   reviewerRespond: () => {},
 }
 

@@ -21,7 +21,7 @@ const ReviewerTable = ({
   urlFrag,
   query: { data, loading, error },
   reviewerRespond,
-  updateMemberStatus,
+  updateReviewerStatus,
   uriQueryParams,
   applyQueryParams,
 }) => {
@@ -55,7 +55,7 @@ const ReviewerTable = ({
     urlFrag,
     currentUser,
     reviewerRespond,
-    updateMemberStatus,
+    updateReviewerStatus,
     setMainActionLink,
   }
 

@@ -14,7 +14,7 @@ import {
   COMPLETE_COMMENT,
   DELETE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
-import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../queries/team'
+import { UPDATE_REVIEWER_STATUS_MUTATION } from '../../../../queries/team'
 
 const createFileMutation = gql`
   mutation($file: Upload!, $meta: FileMetaInput!) {
@@ -231,7 +231,7 @@ const urlFrag = config.journal.metadata.toplevel_urlfragment
 const ReviewPage = ({ match, ...props }) => {
   const currentUser = useCurrentUser()
   const [updateReviewMutation] = useMutation(updateReviewMutationQuery)
-  const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
+  const [updateReviewerStatus] = useMutation(UPDATE_REVIEWER_STATUS_MUTATION)
   const [createFile] = useMutation(createFileMutation)
   const [updatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
   const [completeComments] = useMutation(COMPLETE_COMMENTS)
@@ -452,7 +452,7 @@ const ReviewPage = ({ match, ...props }) => {
   }
 
   const handleSubmit = async ({ manuscriptId, history }) => {
-    await updateMemberStatus({
+    await updateReviewerStatus({
       variables: {
         status: 'completed',
         manuscriptId,

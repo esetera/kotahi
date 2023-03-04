@@ -33,7 +33,6 @@ import { GET_INVITATIONS_FOR_MANUSCRIPT } from '../../../../queries/invitation'
 import {
   CREATE_TEAM_MUTATION,
   updateTeamMemberMutation,
-  UPDATE_MEMBER_STATUS_MUTATION,
   UPDATE_TEAM_MUTATION,
 } from '../../../../queries/team'
 import { validateDoi, validateSuffix } from '../../../../shared/commsUtils'
@@ -124,8 +123,6 @@ const DecisionPage = ({ match }) => {
     },
   })
 
-  const [update] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
-
   const [sendEmailMutation] = useMutation(sendEmail, {
     refetchQueries: [
       { query: GET_INVITATIONS_FOR_MANUSCRIPT },
@@ -133,6 +130,7 @@ const DecisionPage = ({ match }) => {
     ],
   })
 
+  const [doUpdateManuscript] = useMutation(updateManuscriptMutation)
   const [sendChannelMessage] = useMutation(CREATE_MESSAGE)
   const [makeDecision] = useMutation(makeDecisionMutation)
   const [publishManuscript] = useMutation(publishManuscriptMutation)
@@ -268,7 +266,7 @@ const DecisionPage = ({ match }) => {
   if (error) return <CommsErrorBanner error={error} />
 
   const updateManuscript = (versionId, manuscriptDelta) =>
-    update({
+    doUpdateManuscript({
       variables: {
         id: versionId,
         input: JSON.stringify(manuscriptDelta),

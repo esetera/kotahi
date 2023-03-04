@@ -35,7 +35,7 @@ const buildSpecialColumnProps = specialComponentValues => {
     reviewerRespond,
     setMainActionLink,
     currentUser,
-    updateMemberStatus,
+    updateReviewerStatus,
   } = specialComponentValues
 
   const specialColumnProps = {
@@ -144,7 +144,7 @@ const buildSpecialColumnProps = specialComponentValues => {
         urlFrag,
         reviewerRespond,
         currentUser,
-        updateMemberStatus,
+        updateReviewerStatus,
         setMainActionLink,
       },
     },

@@ -75,7 +75,7 @@ const resolvers = {
       }
     },
 
-    async updateTeamMemberStatus(_, { manuscriptId, status }, ctx) {
+    async updateReviewerTeamMemberStatus(_, { manuscriptId, status }, ctx) {
       const manuscript = await models.Manuscript.query()
         .findById(manuscriptId)
         .withGraphFetched('[submitter.[defaultIdentity], channels.members]')
@@ -100,7 +100,7 @@ const resolvers = {
 const typeDefs = `
   extend type Mutation {
     updateReview(id: ID, input: ReviewInput): Review!
-    updateTeamMemberStatus(manuscriptId: ID!, status: String): TeamMember
+    updateReviewerTeamMemberStatus(manuscriptId: ID!, status: String): TeamMember
   }
 
   type Review {

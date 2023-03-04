@@ -49,9 +49,12 @@ mutation($manuscriptId: ID!, $userId: ID!, $invitationId: ID) {
   }
 }`
 
-export const UPDATE_MEMBER_STATUS_MUTATION = gql`
+export const UPDATE_REVIEWER_STATUS_MUTATION = gql`
   mutation($manuscriptId: ID!, $status: String) {
-    updateTeamMemberStatus(manuscriptId: $manuscriptId, status: $status) {
+    updateReviewerTeamMemberStatus(
+      manuscriptId: $manuscriptId
+      status: $status
+    ) {
       id
       status
     }

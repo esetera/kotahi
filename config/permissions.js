@@ -186,7 +186,7 @@ const userIsReviewAuthorAndReviewIsNotCompleted = rule({
   if (!ctx.user) return false
   let manuscriptId
 
-  // updateTeamMemberStatus
+  // updateReviewerTeamMemberStatus
   if (args.manuscriptId) manuscriptId = args.manuscriptId
 
   // updateReview
@@ -224,7 +224,7 @@ const userIsEditorOfTheManuscriptOfTheReview = rule({
 })(async (parent, args, ctx, info) => {
   let manuscriptId
 
-  // updateTeamMemberStatus
+  // updateReviewerTeamMemberStatus
   if (args.manuscriptId) manuscriptId = args.manuscriptId
 
   // updateReview
@@ -512,7 +512,7 @@ const permissions = {
     updateTaskNotification: or(userIsEditor, userIsAdmin),
     updateTeam: or(userIsEditor, userIsAdmin),
     updateTeamMember: or(userIsEditor, userIsAdmin),
-    updateTeamMemberStatus: or(
+    updateReviewerTeamMemberStatus: or(
       userIsReviewAuthorAndReviewIsNotCompleted,
       userIsEditorOfTheManuscriptOfTheReview,
     ),

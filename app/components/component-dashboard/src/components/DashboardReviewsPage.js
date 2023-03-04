@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client'
 import config from 'config'
 import React, { useEffect } from 'react'
-import { UPDATE_MEMBER_STATUS_MUTATION } from '../../../../queries/team'
+import { UPDATE_REVIEWER_STATUS_MUTATION } from '../../../../queries/team'
 import {
   extractFilters,
   extractSortData,
@@ -52,7 +52,7 @@ const DashboardReviewsPage = ({ history }) => {
 
   const [updateTab] = useMutation(mutations.updateTab)
   const [reviewerRespond] = useMutation(mutations.reviewerResponseMutation)
-  const [updateMemberStatus] = useMutation(UPDATE_MEMBER_STATUS_MUTATION)
+  const [updateReviewerStatus] = useMutation(UPDATE_REVIEWER_STATUS_MUTATION)
 
   useEffect(() => {
     updateTab({
@@ -67,7 +67,7 @@ const DashboardReviewsPage = ({ history }) => {
       applyQueryParams={applyQueryParams}
       query={query}
       reviewerRespond={reviewerRespond}
-      updateMemberStatus={updateMemberStatus}
+      updateReviewerStatus={updateReviewerStatus}
       uriQueryParams={uriQueryParams}
       urlFrag={urlFrag}
     />
