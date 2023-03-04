@@ -116,9 +116,7 @@ const sendEmailWithPreparedData = async (input, ctx, emailSender) => {
     manuscriptId,
   )
 
-  const author = await manuscriptObject.getManuscriptAuthor({
-    onlyAccepted: true,
-  })
+  const author = await manuscriptObject.getManuscriptAuthor()
 
   const authorName = author ? author.username : ''
 

@@ -7,12 +7,9 @@ class TeamMember extends BaseModel {
 
   static get modifiers() {
     return {
-      onlyAccepted(builder) {
-        builder.where('status', 'accepted');
-      },
       orderByCreatedDesc(builder) {
         builder.orderBy('created', 'desc')
-      }
+      },
     }
   }
 

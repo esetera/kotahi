@@ -112,23 +112,16 @@ class Manuscript extends BaseModel {
     return manuscriptVersions
   }
 
-  async getManuscriptAuthor(params = {}) {
+  async getManuscriptAuthor() {
     if (!this.id) {
       return null
     }
 
-    const { onlyAccepted = false } = params
-
-    let relations = '[teams(onlyAuthors).[members(orderByCreatedDesc).[user]]]'
-
-    if (onlyAccepted) {
-      relations =
-        '[teams(onlyAuthors).[members(onlyAccepted, orderByCreatedDesc).[user]]]'
-    }
-
     const manuscriptWithAuthors = await Manuscript.query()
       .findById(this.id)
-      .withGraphFetched(relations)
+      .withGraphFetched(
+        '[teams(onlyAuthors).[members(orderByCreatedDesc).[user]]]',
+      )
 
     if (
       !manuscriptWithAuthors.teams.length ||
