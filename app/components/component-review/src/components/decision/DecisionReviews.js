@@ -11,7 +11,7 @@ import { SectionContent } from '../../../../shared'
 //     )[0] || {}
 //   return status
 
-const getCompletedReview = (manuscript, currentUser) => {
+const getReviewerTeamMember = (manuscript, currentUser) => {
   const team = manuscript.teams.find(team_ => team_.role === 'reviewer') || {}
 
   if (!team.members) {
@@ -37,8 +37,8 @@ const DecisionReviews = ({
   const reviewsToShow = manuscript?.reviews?.length
     ? manuscript.reviews.filter(
         review =>
-          getCompletedReview(manuscript, review.user)?.status === 'completed' &&
-          review.isDecision === false,
+          getReviewerTeamMember(manuscript, review.user)?.status ===
+            'completed' && review.isDecision === false,
       )
     : []
 
@@ -73,7 +73,10 @@ const DecisionReviews = ({
                 open
                 review={review}
                 reviewer={{ user: review.user, ordinal: index + 1 }}
-                reviewerTeamMember={getCompletedReview(manuscript, review.user)}
+                reviewerTeamMember={getReviewerTeamMember(
+                  manuscript,
+                  review.user,
+                )}
                 reviewForm={reviewForm}
                 teams={manuscript.teams}
                 threadedDiscussionProps={threadedDiscussionProps}
