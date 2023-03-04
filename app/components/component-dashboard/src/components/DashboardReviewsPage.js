@@ -21,6 +21,7 @@ const DashboardReviewsPage = ({ history }) => {
     'reviewer',
     'invited:reviewer',
     'accepted:reviewer',
+    'inProgress:reviewer',
     'completed:reviewer',
   ]
 
