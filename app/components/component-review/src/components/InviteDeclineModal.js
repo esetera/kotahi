@@ -34,7 +34,7 @@ const DeclinedBadge = styled(ConfigurableStatus)`
 `
 
 const TextChange = styled.div`
-  color: ${props => (props.gray ? th('colorSecondary') : 'black')};
+  color: ${props => (props.gray ? th('colorSecondary') : th('colorText'))};
 `
 
 const InviteDeclineModal = ({ invitation, isOpen, onClose }) => {

@@ -61,7 +61,7 @@ export const NormalStatus = styled(Status)`
 
 export const ConfigurableStatus = styled(Status)`
   ${props => css`
-    color: ${props.lightText ? 'white' : 'black'};
+    color: ${props.lightText ? th('colorTextReverse') : th('colorText')};
     background-color: ${props.color};
   `}
 `

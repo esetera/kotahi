@@ -84,7 +84,7 @@ const ReviewStatusDonut = ({ manuscript }) => {
       status
     ] = `<div style="min-width: 10em; padding: 5px 15px; font-size: ${th(
       'fontSizeBase',
-    )}; color: black;">${text}: ${count}</div>`
+    )}; color: ${th('colorText')};">${text}: ${count}</div>`
   })
 
   const statusColors = Object.keys(statusCounts).map(
