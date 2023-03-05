@@ -45,7 +45,7 @@ const InviteReviewerModal = ({
   addReviewer,
   manuscript,
   selectedEmail,
-  sendChannelMessageCb,
+  sendChannelMessage,
   sendNotifyEmail,
   currentUser,
   updateSharedStatusForInvitedReviewer,
@@ -130,7 +130,7 @@ const InviteReviewerModal = ({
 
                 if (response.input) {
                   sendEmailChannelMessage(
-                    sendChannelMessageCb,
+                    sendChannelMessage,
                     currentUser,
                     response.input,
                     reviewerUsers.map(reviewer => ({

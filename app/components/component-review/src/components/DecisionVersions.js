@@ -23,7 +23,7 @@ const DecisionVersions = ({
   updateManuscript,
   manuscript,
   sendNotifyEmail,
-  sendChannelMessageCb,
+  sendChannelMessage,
   makeDecision,
   updateReviewJsonData,
   publishManuscript,
@@ -122,7 +122,7 @@ const DecisionVersions = ({
                 reviewForm={reviewForm}
                 roles={roles}
                 selectedEmail={selectedEmail}
-                sendChannelMessageCb={sendChannelMessageCb}
+                sendChannelMessage={sendChannelMessage}
                 sendNotifyEmail={sendNotifyEmail}
                 setExternalEmail={setExternalEmail}
                 setSelectedEmail={setSelectedEmail}

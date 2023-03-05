@@ -826,7 +826,7 @@ const props = {
     },
   ],
   sendNotifyEmail: {},
-  sendChannelMessageCb: {},
+  sendChannelMessage: {},
   publishManuscript: {},
   assignEditors: {
     called: true,

@@ -263,7 +263,7 @@ export const sendEmail = async (
 }
 
 export const sendEmailChannelMessage = async (
-  sendChannelMessageCb,
+  sendChannelMessage,
   currentUser,
   input,
   reviewers = [],
@@ -286,5 +286,5 @@ export const sendEmailChannelMessage = async (
     channel => channel.topic === 'Editorial discussion',
   ).id
 
-  await sendChannelMessageCb({ content: body, channelId })
+  await sendChannelMessage({ content: body, channelId })
 }

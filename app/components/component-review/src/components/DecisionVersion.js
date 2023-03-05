@@ -51,7 +51,7 @@ const DecisionVersion = ({
   onChange, // To handle form editing
   makeDecision,
   sendNotifyEmail,
-  sendChannelMessageCb,
+  sendChannelMessage,
   publishManuscript,
   updateTeam,
   createTeam,
@@ -224,7 +224,7 @@ const DecisionVersion = ({
                 isEmailAddressOptedOut={isEmailAddressOptedOut}
                 manuscript={version}
                 selectedEmail={selectedEmail}
-                sendChannelMessageCb={sendChannelMessageCb}
+                sendChannelMessage={sendChannelMessage}
                 sendNotifyEmail={sendNotifyEmail}
                 setExternalEmail={setExternalEmail}
                 setSelectedEmail={setSelectedEmail}
@@ -321,7 +321,7 @@ const DecisionVersion = ({
                 isEmailAddressOptedOut={isEmailAddressOptedOut}
                 manuscript={version}
                 reviewerUsers={allUsers}
-                sendChannelMessageCb={sendChannelMessageCb}
+                sendChannelMessage={sendChannelMessage}
                 sendNotifyEmail={sendNotifyEmail}
                 setExternalEmail={setExternalEmail}
                 updateSharedStatusForInvitedReviewer={

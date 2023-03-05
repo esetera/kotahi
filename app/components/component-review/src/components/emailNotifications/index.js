@@ -55,7 +55,7 @@ const EmailNotifications = ({
   allUsers,
   currentUser,
   sendNotifyEmail,
-  sendChannelMessageCb,
+  sendChannelMessage,
   selectedEmail,
   externalEmail,
   setSelectedEmail,
@@ -133,7 +133,7 @@ const EmailNotifications = ({
             setNotificationStatus(invitation ? 'success' : 'failure')
 
             if (input) {
-              sendEmailChannelMessage(sendChannelMessageCb, currentUser, input)
+              sendEmailChannelMessage(sendChannelMessage, currentUser, input)
             }
           }}
           primary

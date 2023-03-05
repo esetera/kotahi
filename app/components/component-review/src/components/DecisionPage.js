@@ -131,7 +131,7 @@ const DecisionPage = ({ match }) => {
   })
 
   const [doUpdateManuscript] = useMutation(updateManuscriptMutation)
-  const [sendChannelMessage] = useMutation(CREATE_MESSAGE)
+  const [doSendChannelMessage] = useMutation(CREATE_MESSAGE)
   const [makeDecision] = useMutation(makeDecisionMutation)
   const [publishManuscript] = useMutation(publishManuscriptMutation)
   const [updateTeam] = useMutation(UPDATE_TEAM_MUTATION)
@@ -351,8 +351,8 @@ const DecisionPage = ({ match }) => {
     return response
   }
 
-  const sendChannelMessageCb = async messageData => {
-    const response = await sendChannelMessage({
+  const sendChannelMessage = async messageData => {
+    const response = await doSendChannelMessage({
       variables: messageData,
     })
 
@@ -420,7 +420,7 @@ const DecisionPage = ({ match }) => {
       reviewForm={reviewForm}
       roles={roles}
       selectedEmail={selectedEmail}
-      sendChannelMessageCb={sendChannelMessageCb}
+      sendChannelMessage={sendChannelMessage}
       sendNotifyEmail={sendNotifyEmail}
       setExternalEmail={setExternalEmail}
       setSelectedEmail={setSelectedEmail}

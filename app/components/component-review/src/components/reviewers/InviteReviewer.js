@@ -20,7 +20,7 @@ const InviteReviewer = ({
   updateSharedStatusForInvitedReviewer,
   currentUser,
   sendNotifyEmail,
-  sendChannelMessageCb,
+  sendChannelMessage,
   selectedEmail,
   isEmailAddressOptedOut,
   setExternalEmail,
@@ -65,7 +65,7 @@ const InviteReviewer = ({
 
             if (output?.input) {
               sendEmailChannelMessage(
-                sendChannelMessageCb,
+                sendChannelMessage,
                 currentUser,
                 output.input,
                 reviewerUsers.map(reviewer => ({
@@ -106,7 +106,7 @@ const InviteReviewer = ({
         open={open}
         reviewerUsers={reviewerUsers}
         selectedEmail={selectedEmail}
-        sendChannelMessageCb={sendChannelMessageCb}
+        sendChannelMessage={sendChannelMessage}
         sendNotifyEmail={sendNotifyEmail}
         updateSharedStatusForInvitedReviewer={
           updateSharedStatusForInvitedReviewer
