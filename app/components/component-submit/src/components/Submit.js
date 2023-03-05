@@ -123,6 +123,7 @@ const Submit = ({
           <>
             {hasDecision && (
               <DecisionAndReviews
+                currentUser={currentUser}
                 decisionForm={decisionForm}
                 manuscript={version}
                 reviewForm={reviewForm}
@@ -191,7 +192,7 @@ const Submit = ({
         </ErrorBoundary>
       </Manuscript>
       <Chat>
-        <MessageContainer channelId={channelId} />
+        <MessageContainer channelId={channelId} currentUser={currentUser} />
       </Chat>
     </Columns>
   )

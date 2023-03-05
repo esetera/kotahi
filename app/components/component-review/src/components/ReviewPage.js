@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import { useMutation, useQuery, gql } from '@apollo/client'
 import config from 'config'
 import { Redirect } from 'react-router-dom'
@@ -6,7 +7,6 @@ import ReactRouterPropTypes from 'react-router-prop-types'
 import { set, debounce } from 'lodash'
 import ReviewLayout from './review/ReviewLayout'
 import { Heading, Page, Spinner } from '../../../shared'
-import useCurrentUser from '../../../../hooks/useCurrentUser'
 import manuscriptVersions from '../../../../shared/manuscript_versions'
 import {
   UPDATE_PENDING_COMMENT,
@@ -228,8 +228,7 @@ const updateReviewMutationQuery = gql`
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
-const ReviewPage = ({ match, ...props }) => {
-  const currentUser = useCurrentUser()
+const ReviewPage = ({ currentUser, history, match }) => {
   const [updateReviewMutation] = useMutation(updateReviewMutationQuery)
   const [updateReviewerStatus] = useMutation(UPDATE_REVIEWER_STATUS_MUTATION)
   const [createFile] = useMutation(createFileMutation)
@@ -451,11 +450,11 @@ const ReviewPage = ({ match, ...props }) => {
     })
   }
 
-  const handleSubmit = async ({ manuscriptId, history }) => {
+  const handleSubmit = async () => {
     await updateReviewerStatus({
       variables: {
         status: 'completed',
-        manuscriptId,
+        manuscriptId: latestVersion.id,
       },
     })
 
@@ -479,12 +478,7 @@ const ReviewPage = ({ match, ...props }) => {
       currentUser={currentUser}
       decisionForm={decisionForm}
       deleteFile={deleteFile}
-      onSubmit={values =>
-        handleSubmit({
-          manuscriptId: latestVersion.id,
-          history: props.history,
-        })
-      }
+      onSubmit={handleSubmit}
       review={existingReview}
       reviewForm={reviewForm}
       status={reviewerStatus}
@@ -498,6 +492,9 @@ const ReviewPage = ({ match, ...props }) => {
 }
 
 ReviewPage.propTypes = {
+  currentUser: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }).isRequired,
   match: ReactRouterPropTypes.match.isRequired,
   history: ReactRouterPropTypes.history.isRequired,
 }

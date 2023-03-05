@@ -77,6 +77,7 @@ const Manuscripts = ({ history, ...props }) => {
     archiveManuscriptMutations,
     confirmBulkArchive,
     uriQueryParams,
+    currentUser,
   } = props
 
   const [isOpenBulkArchiveModal, setIsOpenBulkArchiveModal] = useState(false)
@@ -390,6 +391,7 @@ const Manuscripts = ({ history, ...props }) => {
             }
             channels={channels}
             chatRoomId={chatRoomId}
+            currentUser={currentUser}
             hideChat={hideChat}
           />
         )}

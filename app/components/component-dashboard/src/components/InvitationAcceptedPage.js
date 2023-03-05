@@ -22,6 +22,7 @@ const InvitationAcceptedPage = () => {
     variables: { id: invitationId },
   })
 
+  // TODO just query currentUser here, and get rid of useCurrentUser.
   const invitedUser = useCurrentUser()
 
   const [updateInvitationStatus] = useMutation(UPDATE_INVITATION_STATUS, {

@@ -159,7 +159,11 @@ const DecisionVersions = ({
         </ErrorBoundary>
       </Manuscript>
       <Chat>
-        <MessageContainer channels={channels} manuscriptId={manuscript.id} />
+        <MessageContainer
+          channels={channels}
+          currentUser={currentUser}
+          manuscriptId={manuscript.id}
+        />
       </Chat>
     </Columns>
   )

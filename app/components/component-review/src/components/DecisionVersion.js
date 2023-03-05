@@ -355,6 +355,7 @@ const DecisionVersion = ({
           )}
           {!isCurrentVersion && (
             <DecisionAndReviews
+              currentUser={currentUser}
               decisionForm={decisionForm}
               isControlPage
               manuscript={version}
@@ -367,6 +368,7 @@ const DecisionVersion = ({
           {isCurrentVersion && (
             <DecisionReviews
               canHideReviews={canHideReviews}
+              currentUser={currentUser}
               invitations={invitations}
               manuscript={version}
               reviewers={reviewers}

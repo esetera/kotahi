@@ -35,7 +35,7 @@ import { validateDoi, validateSuffix } from '../../../shared/commsUtils'
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 const chatRoomId = fnv.hash(config['pubsweet-client'].baseUrl).hex()
 
-const ManuscriptsPage = ({ history }) => {
+const ManuscriptsPage = ({ currentUser, history }) => {
   const [isImporting, setIsImporting] = useState(false)
   const applyQueryParams = useQueryParams()
 
@@ -171,6 +171,7 @@ const ManuscriptsPage = ({ history }) => {
       chatRoomId={chatRoomId}
       configuredColumnNames={configuredColumnNames}
       confirmBulkArchive={confirmBulkArchive}
+      currentUser={currentUser}
       deleteManuscriptMutations={deleteManuscriptMutations}
       history={history}
       importManuscripts={importManuscriptsAndRefetch}

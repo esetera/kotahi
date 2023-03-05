@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import { Button, Checkbox } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import { JournalContext } from '../../../../xpub-journal/src'
-import useCurrentUser from '../../../../../hooks/useCurrentUser'
 import ShareIcon from '../../../../../shared/icons/share'
 import { UserCombo, Primary, Secondary, UserInfo } from '../../../../shared'
 import { UserAvatar } from '../../../../component-avatar/src'
@@ -185,9 +184,8 @@ const DecisionReview = ({
   readOnly,
   updateSharedStatusForInvitedReviewer,
   updateTeamMember,
+  currentUser,
 }) => {
-  const currentUser = useCurrentUser()
-
   const {
     isHiddenFromAuthor,
     isHiddenReviewerName,
@@ -254,6 +252,9 @@ DecisionReview.propTypes = {
   review: PropTypes.object,
   // eslint-disable-next-line
   reviewer: PropTypes.object,
+  currentUser: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }).isRequired,
 }
 
 ReviewHeading.propTypes = {

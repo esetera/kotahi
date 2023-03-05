@@ -2,7 +2,6 @@ import React from 'react'
 
 // TODO: Sort out the imports, perhaps make DecisionReview a shared component?
 import DecisionReview from '../../../component-review/src/components/decision/DecisionReview'
-import useCurrentUser from '../../../../hooks/useCurrentUser'
 import ReadonlyFormTemplate from '../../../component-review/src/components/metadata/ReadonlyFormTemplate'
 
 import {
@@ -46,9 +45,8 @@ const DecisionAndReviews = ({
   decisionForm,
   showEditorOnlyFields,
   threadedDiscussionProps,
+  currentUser,
 }) => {
-  const currentUser = useCurrentUser()
-
   const decision =
     manuscript.reviews &&
     !!manuscript.reviews.length &&
@@ -101,6 +99,7 @@ const DecisionAndReviews = ({
           reviewsToShow.map((review, index) => (
             <SectionRow key={review.id}>
               <DecisionReview
+                currentUser={currentUser}
                 isControlPage={isControlPage}
                 open
                 readOnly

@@ -33,6 +33,7 @@ const DecisionReviews = ({
   urlFrag,
   updateSharedStatusForInvitedReviewer,
   updateTeamMember,
+  currentUser,
 }) => {
   const reviewsToShow = manuscript?.reviews?.length
     ? manuscript.reviews.filter(
@@ -68,6 +69,7 @@ const DecisionReviews = ({
             <SectionRow key={review.id}>
               <DecisionReview
                 canHideReviews={canHideReviews}
+                currentUser={currentUser}
                 isControlPage
                 manuscriptId={manuscript.id}
                 open
@@ -117,6 +119,9 @@ DecisionReviews.propTypes = {
         ).isRequired,
       }).isRequired,
     ).isRequired,
+  }).isRequired,
+  currentUser: PropTypes.shape({
+    id: PropTypes.string.isRequired,
   }).isRequired,
 }
 
