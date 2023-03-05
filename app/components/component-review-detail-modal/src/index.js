@@ -5,7 +5,6 @@ import { Checkbox } from '@pubsweet/ui/dist/atoms'
 import { convertTimestampToDateString } from '../../../shared/dateUtils'
 import { ensureJsonIsParsed } from '../../../shared/objectUtils'
 import Modal, { SecondaryButton } from '../../component-modal/src/Modal'
-import { showFieldData } from '../../component-review/src/components/metadata/ReadonlyFormTemplate'
 import {
   ConfigurableStatus,
   UserInfo,
@@ -17,6 +16,7 @@ import reviewStatuses from '../../../../config/journal/review-status'
 import recommendations from '../../../../config/journal/recommendations'
 import { UserAvatar } from '../../component-avatar/src'
 import DeleteReviewerModal from '../../component-review/src/components/reviewers/DeleteReviewerModal'
+import ReadonlyFieldData from '../../component-review/src/components/metadata/ReadonlyFieldData'
 
 const Header = styled.div`
   font-size: 18px;
@@ -282,12 +282,12 @@ const ReviewData = ({
         {[...nonFileFields, ...fileFields].map((element, i) => (
           <ReviewItemContainer key={element.id}>
             <Header>{element.shortDescription || element.title}</Header>
-            {showFieldData(
-              reviewFormData,
-              element.name,
-              reviewForm,
-              threadedDiscussionProps,
-            )}
+            <ReadonlyFieldData
+              fieldName={element.name}
+              form={reviewForm}
+              formData={reviewFormData}
+              threadedDiscussionProps={threadedDiscussionProps}
+            />
           </ReviewItemContainer>
         ))}
       </ReviewItemsContainer>
