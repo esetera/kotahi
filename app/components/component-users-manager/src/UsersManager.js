@@ -57,12 +57,12 @@ const GET_USERS = gql`
 `
 
 const UsersManager = ({ history, currentUser }) => {
-  const SortHeader = ({ thisSortName, children }) => {
+  const SortHeader = ({ thisSortName, defaultSortDirection, children }) => {
     const changeSort = () => {
       let newSortDirection
 
       if (sortName !== thisSortName) {
-        newSortDirection = 'ASC'
+        newSortDirection = defaultSortDirection || 'ASC'
       } else if (sortDirection === 'ASC') {
         newSortDirection = 'DESC'
       } else if (sortDirection === 'DESC') {
@@ -126,10 +126,18 @@ const UsersManager = ({ history, currentUser }) => {
         <Table>
           <Header>
             <tr>
-              <SortHeader thisSortName="username">Name</SortHeader>
-              <SortHeader thisSortName="created">Created</SortHeader>
-              <SortHeader thisSortName="lastOnline">Last Online</SortHeader>
-              <SortHeader thisSortName="admin">Admin</SortHeader>
+              <SortHeader defaultSortDirection="ASC" thisSortName="username">
+                Name
+              </SortHeader>
+              <SortHeader defaultSortDirection="DESC" thisSortName="created">
+                Created
+              </SortHeader>
+              <SortHeader defaultSortDirection="DESC" thisSortName="lastOnline">
+                Last Online
+              </SortHeader>
+              <SortHeader defaultSortDirection="ASC" thisSortName="admin">
+                Admin
+              </SortHeader>
               {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
               <th />
             </tr>
