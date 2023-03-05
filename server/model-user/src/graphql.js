@@ -32,7 +32,15 @@ const resolvers = {
 
       if (sort) {
         // e.g. 'created_DESC' into 'created' and 'DESC' arguments
-        query.orderBy(...sort.split('_'))
+        const [fieldName, direction] = sort.split('_')
+
+        if (fieldName === 'lastOnline') {
+          query.orderByRaw(
+            `(last_online IS NULL) ${direction === 'DESC' ? 'ASC' : 'DESC'}`,
+          )
+        }
+
+        query.orderBy(fieldName, direction)
       }
 
       if (limit) {
