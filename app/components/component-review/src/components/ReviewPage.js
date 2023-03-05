@@ -255,17 +255,6 @@ const ReviewPage = ({ currentUser, history, match }) => {
     partialRefetch: true,
   })
 
-  if (loading || currentUser === null) return <Spinner />
-
-  if (error) {
-    console.warn(error.message)
-    return (
-      <Page>
-        <Heading>This review is no longer accessible.</Heading>
-      </Page>
-    )
-  }
-
   const reviewOrInitial = manuscript =>
     manuscript?.reviews?.find(
       review => review?.user?.id === currentUser?.id && !review.isDecision,
@@ -347,7 +336,7 @@ const ReviewPage = ({ currentUser, history, match }) => {
 
   useEffect(() => debouncedUpdateReviewJsonData.flush, [])
 
-  if (loading) return <Spinner />
+  if (loading || currentUser === null) return <Spinner />
 
   if (error) {
     console.warn(error.message)
