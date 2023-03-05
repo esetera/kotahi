@@ -1,7 +1,4 @@
-const ReportsSharedTemplate = ({
-  receiverName,
-  submissionLink,
-}) => {
+const ReportsSharedTemplate = ({ receiverName, submissionLink }) => {
   const result = {
     cc: '',
     subject: '',

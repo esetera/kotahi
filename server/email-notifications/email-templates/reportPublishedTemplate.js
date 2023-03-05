@@ -1,7 +1,4 @@
-const ReportPublishedTemplate = ({
-  receiverName,
-  authorName,
-}) => {
+const ReportPublishedTemplate = ({ receiverName, authorName }) => {
   const result = {
     cc: '',
     subject: '',
