@@ -58,20 +58,8 @@
                                                                                                                                                                                                        <li>{{topic}}</li> 
           {% endfor %}
         </ul>
-        <h1 class="tile">{{article.meta.title}}</h1>
-        <p class="authors">
-          <ul class="authors-list">
-            {% for author in article.parsedSubmission.authors %}
-                                                                                                                                                                                                       <li>
-              {% if author.email === parsedSubmission.AuthorCorrespondence%}
-                                                                                                                                                                                                       <sup>*</sup>
-              {% endif %}
-              {{author.lastName | safe}} {{author.firstName | safe}} 
-              <small>{{author.affiliation}}</small>
-            </li>
-            {% endfor %}
-          </ul>
-        </p>
+        <h1 class="title">{{article.meta.title}}</h1>
+				{{article.articleMetadata.formattedAuthors | safe}} 
       </header>
       <aside class="marginData left">
         <section class="emailList">

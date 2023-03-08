@@ -317,20 +317,33 @@
       color: var(--color-primary);
       text-decoration: none;
     }
-    .authors-list li,
-    .affiliations-list li {
-      display: inline;
-    }
 
-    .authors-list li {
+		.formattedAuthors {
       font-weight: 700;
       color: var(--color-title);
-    }
+			margin-bottom: 0;
+		}
 
-    .authors-list li small {
-      font-weight: 400;
-      color: black;
-    }
+		.formmatedAuthors small {
+			color: black;
+			font-weight: 400;
+		}
+
+		.formattedAffiliations {
+			list-style-type: none;
+			margin: 0 0 1em 0;
+		}
+
+		.formattedAffiliations li {
+			display: inline-block;
+			margin: 0;
+		}
+
+		.formattedAffiliations li small {
+			color: black;
+			font-weight: 400;
+		}
+
 
     /* li{
     display: inline;

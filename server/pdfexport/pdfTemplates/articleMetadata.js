@@ -47,17 +47,17 @@ const makeFormattedAuthors = (authors, correspondingAuthor) => {
   const outAuthors = [] // an array of formatted author names
 
   for (let i = 0; i < authors.length; i += 1) {
-    let thisAuthor
+    let thisAuthor = ''
 
     // we are assuming that author.affiliation is a single string. We could make this an array?
     const affliationList = affiliationMemo
       .filter(x => x.value === authors[i].affiliation)
       .map(x => x.label)
 
-    thisAuthor += `${authors[i].firstName} ${authors[i].lastName} (${authors[i].email})`
+    thisAuthor += `${authors[i].firstName} ${authors[i].lastName} <small>(${authors[i].email})</small>`
 
     if (affliationList.length) {
-      thisAuthor += ` <sup>${affliationList.join(', ')}</sup>`
+      thisAuthor += ` <sup><small>${affliationList.join(', ')}</small></sup>`
     }
 
     if (correspondingAuthor && correspondingAuthor === authors[i].email) {
@@ -71,9 +71,12 @@ const makeFormattedAuthors = (authors, correspondingAuthor) => {
   outHtml += outAuthors.join(', ')
 
   outHtml += `</p>`
-  outHtml += `<ul class="formattedAffiliations">${affiliationMemo.map(
-    affiliation => `<li>${affiliation.label}: ${affiliation.value}</li>`,
-  )}</ul>`
+  outHtml += `<ul class="formattedAffiliations">${affiliationMemo
+    .map(
+      affiliation =>
+        `<li><small>${affiliation.label}:</small> ${affiliation.value}</li>`,
+    )
+    .join(', ')}</ul>`
   // console.log('\n\n\nFormatted authors: \n\n', outHtml, '\n\n\n')
   return outHtml
 }
