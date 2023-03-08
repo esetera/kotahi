@@ -322,6 +322,7 @@
       font-weight: 700;
       color: var(--color-title);
 			margin-bottom: 0;
+			text-align: left;
 		}
 
 		.formmatedAuthors small {
@@ -332,6 +333,7 @@
 		.formattedAffiliations {
 			list-style-type: none;
 			margin: 0 0 1em 0;
+			text-align: left;
 		}
 
 		.formattedAffiliations li {
