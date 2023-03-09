@@ -100,10 +100,12 @@ const sendEmailWithPreparedData = async (input, ctx, emailSender) => {
       'reviewer',
     ]
 
-    isEditor = manuscriptRoles.roles.some(role => editorRoles.includes(role))
-    isReviewer = manuscriptRoles.roles.some(role =>
-      reviewerRoles.includes(role),
-    )
+    isEditor =
+      manuscriptRoles &&
+      manuscriptRoles.roles.some(role => editorRoles.includes(role))
+    isReviewer =
+      manuscriptRoles &&
+      manuscriptRoles.roles.some(role => reviewerRoles.includes(role))
   }
 
   if (isEditor) manuscriptPageUrl += '/decision'
