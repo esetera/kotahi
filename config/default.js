@@ -188,6 +188,7 @@ module.exports = {
   manuscripts: {
     teamTimezone: 'Etc/UTC',
     autoImportHourUtc: '',
+    taskEmailNotificationHourUtc: '',
     archivePeriodDays: '',
     allowManualImport: 'false',
     semanticScholarImportsRecencyPeriodDays: '42',
