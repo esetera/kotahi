@@ -41,6 +41,8 @@ ENV ALLOW_MANUAL_IMPORT $allow_manual_import
 
 RUN apk add --no-cache git python make g++ bash 
 
+RUN apk update && apk add --no-cache ..... imagemagick potrace
+
 WORKDIR /home/node/app
 
 COPY package.json .

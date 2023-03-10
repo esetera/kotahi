@@ -1,4 +1,10 @@
 FROM node:12.22-bullseye
+
+RUN apt-get update \
+  && apt-get install -y imagemagick
+RUN sed -i'.bak' '/\<policy domain="coder" rights="none" pattern="PS" \/\>/d' /etc/ImageMagick-6/policy.xml
+RUN sed -i'.bak' '/\<policy domain="coder" rights="none" pattern="EPS" \/\>/d' /etc/ImageMagick-6/policy.xml
+
 RUN apt-get update && apt-get -y install curl vim bash nano
 
 WORKDIR /home/node/app

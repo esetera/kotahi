@@ -1747,10 +1747,10 @@
     stylelint-order "^4.1.0"
     stylelint-processor-styled-components "^1.10.0"
 
-"@coko/server@^1.16.2":
-  version "1.16.2"
-  resolved "https://registry.yarnpkg.com/@coko/server/-/server-1.16.2.tgz#f5c408636ceb37e158d94586bc0af0ad4f6490ae"
-  integrity sha512-JElAZF+ibx4P/XPtGQ91mOqM46ipmj8TGDZ0niPPbytJa012bFu0nYu78WqKgXRK8Y+37mYDfk2c4ZMLBV7k+g==
+"@coko/server@1.18.2":
+  version "1.18.2"
+  resolved "https://registry.yarnpkg.com/@coko/server/-/server-1.18.2.tgz#cd4387616aff047c10b7af979ffa943684c5467b"
+  integrity sha512-v+uo3CENVEVSCVNI00VT5kjuS/0RuF7rBNO8r5JgD9LnA2U71wGaM2A47gZ7mJPYdcB4v9fkEfcDkvl/2Js2lg==
   dependencies:
     "@pubsweet/base-model" "^4.0.10"
     "@pubsweet/component-send-email" "^0.4.13"
@@ -1762,6 +1762,7 @@
     aws-sdk "^2.1046.0"
     axios "^0.24.0"
     body-parser "^1.19.0"
+    command-exists "^1.2.9"
     config "^3.3.2"
     cookie-parser "^1.4.5"
     cors "^2.8.5"
@@ -1775,6 +1776,7 @@
     mime-types "^2.1.34"
     morgan "^1.10.0"
     node-cron "^2.0.3"
+    objection "^2.2.15"
     passport "^0.4.1"
     pubsweet "^5.1.25"
     pubsweet-server "^13.12.11"
@@ -7300,6 +7302,11 @@ comma-separated-tokens@^1.0.0:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/comma-separated-tokens/-/comma-separated-tokens-1.0.8.tgz#632b80b6117867a158f1080ad498b2fbe7e3f5ea"
   integrity sha512-GHuDRO12Sypu2cV70d1dkA2EUmXHgntrzbpvOB+Qy+49ypNfGgFQIC2fhhXbnyrJRynDCAARsT7Ou0M6hirpfw==
+
+command-exists@^1.2.9:
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.9.tgz#c50725af3808c8ab0260fd60b01fbfa25b954f69"
+  integrity sha512-LTQ/SGc+s0Xc0Fu5WaKnR0YiygZkm9eKFvyS+fRsU7/ZWFF8ykFM6Pc9aCVf1+xasOOZpO3BAVgVrKvsqKHV7w==
 
 commander@2.17.x:
   version "2.17.1"
@@ -16114,6 +16121,14 @@ objection@^2.1.3, objection@^2.1.6, objection@^2.2.14:
   version "2.2.15"
   resolved "https://registry.yarnpkg.com/objection/-/objection-2.2.15.tgz#104ecb180b0d2e8dff756a83886be035e3d323e5"
   integrity sha512-ZOLJDigE9Z2ppk3C//S2fcWL6ph2jUe6Cwl0CEpslTZegnnOeG6RPIV80nhPAaghWjl/8F2kox/w89VVBN4ccg==
+  dependencies:
+    ajv "^6.12.6"
+    db-errors "^0.2.3"
+
+objection@^2.2.15:
+  version "2.2.18"
+  resolved "https://registry.yarnpkg.com/objection/-/objection-2.2.18.tgz#68ffef0074c058c325a0e94ca59a798ed44bf485"
+  integrity sha512-la7dWwKzpw+Sh4ROWWrZycq2k2z0IyYv3kb8rTPJPIRKuyV59DlSSctALPs5Feoi8I3RNxo3vnCuVoNcKgxthw==
   dependencies:
     ajv "^6.12.6"
     db-errors "^0.2.3"
