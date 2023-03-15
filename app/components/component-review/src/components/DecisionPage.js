@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { useQuery, useMutation, gql, useApolloClient } from '@apollo/client'
 import { set, debounce } from 'lodash'
 import config from 'config'
+import { Button } from '@pubsweet/ui'
 import DecisionVersions from './DecisionVersions'
 import { Spinner, CommsErrorBanner } from '../../../shared'
 import { fragmentFields } from '../../../component-submit/src/userManuscriptFormQuery'
@@ -36,6 +37,7 @@ import {
   COMPLETE_COMMENT,
   DELETE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
+import ReviewInvitationModal from './modals/ReviewInvitationModal'
 
 const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -108,6 +110,7 @@ const DecisionPage = ({ match }) => {
 
   const [selectedEmail, setSelectedEmail] = useState('')
   const [externalEmail, setExternalEmail] = useState('')
+  const [showModal, setShowModal] = useState(false)
 
   const inputEmail = externalEmail || selectedEmail || ''
 
@@ -186,7 +189,7 @@ const DecisionPage = ({ match }) => {
           }),
           fields: {
             tasks() {
-              return updatedTasks;
+              return updatedTasks
             },
           },
         })
@@ -333,53 +336,80 @@ const DecisionPage = ({ match }) => {
   }
 
   return (
-    <DecisionVersions
-      allUsers={users}
-      canHideReviews={config.review.hide === 'true'}
-      createFile={createFile}
-      createTaskEmailNotificationLog={createTaskEmailNotificationLog}
-      createTeam={createTeam}
-      currentUser={currentUser}
-      decisionForm={decisionForm}
-      deleteFile={deleteFile}
-      deleteTaskNotification={deleteTaskNotification}
-      displayShortIdAsIdentifier={
-        config['client-features'].displayShortIdAsIdentifier &&
-        config['client-features'].displayShortIdAsIdentifier.toLowerCase() ===
-          'true'
-      }
-      dois={doisToRegister}
-      externalEmail={externalEmail}
-      form={form}
-      handleChange={handleChange}
-      invitations={invitations?.getInvitationsForManuscript}
-      isEmailAddressOptedOut={isEmailAddressOptedOut}
-      makeDecision={makeDecision}
-      manuscript={manuscript}
-      publishManuscript={publishManuscript}
-      refetch={refetch}
-      reviewers={data?.manuscript?.reviews}
-      reviewForm={reviewForm}
-      roles={roles}
-      selectedEmail={selectedEmail}
-      sendChannelMessageCb={sendChannelMessageCb}
-      sendNotifyEmail={sendNotifyEmail}
-      setExternalEmail={setExternalEmail}
-      setSelectedEmail={setSelectedEmail}
-      setShouldPublishField={setShouldPublishField}
-      teamLabels={config.teams}
-      threadedDiscussionProps={threadedDiscussionProps}
-      updateManuscript={updateManuscript}
-      updateReview={updateReview}
-      updateReviewJsonData={updateReviewJsonData}
-      updateTask={updateTask}
-      updateTaskNotification={updateTaskNotification}
-      updateTasks={updateTasks}
-      updateTeam={updateTeam}
-      urlFrag={urlFrag}
-      validateDoi={validateDoi(client)}
-      validateSuffix={validateSuffix(client)}
-    />
+    <>
+      <Button
+        onClick={() => setShowModal(true)}
+        primary
+        style={{ width: '50px' }}
+      >
+        open
+      </Button>
+      <ReviewInvitationModal
+        isOpen={showModal}
+        manuscript={manuscript}
+        message={`You have been invited to peer review the manuscript ${manuscript.meta.title}`}
+        onAccept={() => {
+          setShowModal(false)
+          // code to accept
+        }}
+        onCancel={() => {
+          setShowModal(false)
+          window.location = '/kotahi/dashboard'
+        }}
+        onReject={() => {
+          setShowModal(false)
+          // code to reject
+          window.location = '/kotahi/dashboard'
+        }}
+      />
+      <DecisionVersions
+        allUsers={users}
+        canHideReviews={config.review.hide === 'true'}
+        createFile={createFile}
+        createTaskEmailNotificationLog={createTaskEmailNotificationLog}
+        createTeam={createTeam}
+        currentUser={currentUser}
+        decisionForm={decisionForm}
+        deleteFile={deleteFile}
+        deleteTaskNotification={deleteTaskNotification}
+        displayShortIdAsIdentifier={
+          config['client-features'].displayShortIdAsIdentifier &&
+          config['client-features'].displayShortIdAsIdentifier.toLowerCase() ===
+            'true'
+        }
+        dois={doisToRegister}
+        externalEmail={externalEmail}
+        form={form}
+        handleChange={handleChange}
+        invitations={invitations?.getInvitationsForManuscript}
+        isEmailAddressOptedOut={isEmailAddressOptedOut}
+        makeDecision={makeDecision}
+        manuscript={manuscript}
+        publishManuscript={publishManuscript}
+        refetch={refetch}
+        reviewers={data?.manuscript?.reviews}
+        reviewForm={reviewForm}
+        roles={roles}
+        selectedEmail={selectedEmail}
+        sendChannelMessageCb={sendChannelMessageCb}
+        sendNotifyEmail={sendNotifyEmail}
+        setExternalEmail={setExternalEmail}
+        setSelectedEmail={setSelectedEmail}
+        setShouldPublishField={setShouldPublishField}
+        teamLabels={config.teams}
+        threadedDiscussionProps={threadedDiscussionProps}
+        updateManuscript={updateManuscript}
+        updateReview={updateReview}
+        updateReviewJsonData={updateReviewJsonData}
+        updateTask={updateTask}
+        updateTaskNotification={updateTaskNotification}
+        updateTasks={updateTasks}
+        updateTeam={updateTeam}
+        urlFrag={urlFrag}
+        validateDoi={validateDoi(client)}
+        validateSuffix={validateSuffix(client)}
+      />
+    </>
   )
 }
 
