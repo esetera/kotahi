@@ -38,7 +38,9 @@ const ReviewerItemLinks = ({
       ? `${urlFrag}/versions/${manuscript.id}/reviewPreview`
       : `${urlFrag}/versions/${manuscript.parentId || manuscript.id}/review`
 
-  setMainActionLink(mainActionLink)
+  // The timeout is a hack to avoid "Cannot update component while rendering a different component" error
+  // TODO Having a subcomponent determine the state of its parent is poor design. This state should be determined higher up and passed down.
+  setTimeout(() => setMainActionLink(mainActionLink), 10)
 
   const reviewLinkText = {
     completed: 'Completed',
