@@ -125,7 +125,7 @@ const ReadonlyFieldData = ({
   if (data && fieldDefinition?.component === 'AbstractEditor')
     return <SimpleWaxEditor readonly value={data} />
 
-  return data
+  return data || (data === 0 ? '0' : null)
 }
 
 export default ReadonlyFieldData
