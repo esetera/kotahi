@@ -60,12 +60,11 @@ const EmailNotifications = ({
   externalEmail,
   setSelectedEmail,
   setExternalEmail,
-  isEmailAddressOptedOut,
+  selectedEmailIsBlacklisted,
 }) => {
   const [externalName, setExternalName] = useState('')
   const [selectedTemplate, setSelectedTemplate] = useState('')
   const [isNewUser, setIsNewUser] = useState(false)
-  const [isOptedOut, setIsOptedOut] = useState(false)
   const [notificationStatus, setNotificationStatus] = useState(null)
 
   const resetAll = () => {
@@ -73,7 +72,6 @@ const EmailNotifications = ({
     setSelectedEmail('')
     setExternalName('')
     setSelectedTemplate('')
-    setIsOptedOut(false)
   }
 
   const handlerForNewUserToggle = () => {
@@ -117,10 +115,9 @@ const EmailNotifications = ({
               sendNotifyEmail,
               selectedTemplate,
               selectedEmail,
-              setIsOptedOut,
               externalEmail,
               externalName,
-              isEmailAddressOptedOut,
+              selectedEmailIsBlacklisted,
             )
 
             if (!output) {
@@ -142,7 +139,7 @@ const EmailNotifications = ({
           Notify
         </ActionButton>
       </RowGridStyled>
-      <EmailErrorMessageWrapper isVisible={isOptedOut}>
+      <EmailErrorMessageWrapper isVisible={selectedEmailIsBlacklisted}>
         User email address opted out
       </EmailErrorMessageWrapper>
     </SectionContent>

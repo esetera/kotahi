@@ -143,7 +143,7 @@ KanbanCard.propTypes = {
       defaultIdentity: PropTypes.shape({
         identifier: PropTypes.string.isRequired,
       }),
-    }).isRequired,
+    }),
   }).isRequired,
   isInvitation: PropTypes.bool.isRequired,
 }

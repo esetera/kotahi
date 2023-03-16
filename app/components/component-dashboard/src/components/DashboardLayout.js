@@ -86,6 +86,7 @@ const DashboardLayout = ({
         </FlexRow>
       </HeadingWithAction>
 
+      {/* TODO The following block should be replaced with a new LinkTabs component */}
       <HiddenTabsContainer sticky={false}>
         <Tabs>
           {dashboardPages.map(({ href, label }) => (

@@ -226,16 +226,11 @@ export const sendEmail = async (
   sendNotifyEmail,
   selectedTemplate,
   selectedEmail,
-  setIsOptedOut,
   externalEmail,
   externalName,
-  isEmailAddressOptedOut,
+  selectedEmailIsBlacklisted,
 ) => {
-  if (isEmailAddressOptedOut?.data?.getBlacklistInformation.length) {
-    setIsOptedOut(true)
-    return undefined
-  }
-
+  if (selectedEmailIsBlacklisted) return undefined
   if (!selectedTemplate || !manuscript) return undefined
 
   const input = isNewUser

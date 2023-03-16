@@ -22,7 +22,7 @@ const InviteReviewer = ({
   sendNotifyEmail,
   sendChannelMessage,
   selectedEmail,
-  isEmailAddressOptedOut,
+  selectedEmailIsBlacklisted,
   setExternalEmail,
   updateTeamMember,
 }) => {
@@ -31,7 +31,6 @@ const InviteReviewer = ({
   const [userId, setUserId] = useState(undefined)
 
   const [isNewUser, setIsNewUser] = useState(false)
-  const [optedOut, setOptedOut] = useState(false)
   const [notificationStatus, setNotificationStatus] = useState(null)
 
   return (
@@ -40,8 +39,6 @@ const InviteReviewer = ({
         displayName="reviewers"
         initialValues={{ user: undefined, email: undefined, name: undefined }}
         onSubmit={async values => {
-          setOptedOut(false)
-
           if (!isNewUser) {
             setOpen(true)
             setUserId(values.user.id)
@@ -55,10 +52,9 @@ const InviteReviewer = ({
               sendNotifyEmail,
               'reviewerInvitationEmailTemplate',
               selectedEmail,
-              setOptedOut,
               values.email,
               values.name,
-              isEmailAddressOptedOut,
+              selectedEmailIsBlacklisted,
             )
 
             setNotificationStatus(output?.invitation ? 'success' : 'failure')
@@ -88,7 +84,7 @@ const InviteReviewer = ({
                   {...formikProps}
                   isNewUser={isNewUser}
                   notificationStatus={notificationStatus}
-                  optedOut={optedOut}
+                  optedOut={selectedEmailIsBlacklisted}
                   reviewerUsers={reviewerUsers}
                   setExternalEmail={setExternalEmail}
                   setIsNewUser={setIsNewUser}

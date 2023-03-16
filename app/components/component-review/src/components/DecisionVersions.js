@@ -47,7 +47,7 @@ const DecisionVersions = ({
   selectedEmail,
   setSelectedEmail,
   setShouldPublishField,
-  isEmailAddressOptedOut,
+  selectedEmailIsBlacklisted,
   updateSharedStatusForInvitedReviewer,
   dois,
   refetch,
@@ -110,7 +110,6 @@ const DecisionVersions = ({
                 form={form}
                 invitations={invitations}
                 isCurrentVersion={index === 0}
-                isEmailAddressOptedOut={isEmailAddressOptedOut}
                 key={version.manuscript.id}
                 makeDecision={makeDecision}
                 onChange={handleChange}
@@ -122,6 +121,7 @@ const DecisionVersions = ({
                 reviewForm={reviewForm}
                 roles={roles}
                 selectedEmail={selectedEmail}
+                selectedEmailIsBlacklisted={selectedEmailIsBlacklisted}
                 sendChannelMessage={sendChannelMessage}
                 sendNotifyEmail={sendNotifyEmail}
                 setExternalEmail={setExternalEmail}

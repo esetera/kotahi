@@ -117,11 +117,14 @@ const DecisionPage = ({ match }) => {
 
   const inputEmail = externalEmail || selectedEmail || ''
 
-  const isEmailAddressOptedOut = useQuery(GET_BLACKLIST_INFORMATION, {
+  const blacklistInfoQuery = useQuery(GET_BLACKLIST_INFORMATION, {
     variables: {
       email: inputEmail,
     },
   })
+
+  const selectedEmailIsBlacklisted = !!blacklistInfoQuery.data
+    ?.getBlacklistInformation?.length
 
   const [sendEmailMutation] = useMutation(sendEmail, {
     refetchQueries: [
@@ -409,7 +412,6 @@ const DecisionPage = ({ match }) => {
       form={form}
       handleChange={handleChange}
       invitations={invitations?.getInvitationsForManuscript}
-      isEmailAddressOptedOut={isEmailAddressOptedOut}
       makeDecision={makeDecision}
       manuscript={manuscript}
       publishManuscript={publishManuscript}
@@ -422,6 +424,7 @@ const DecisionPage = ({ match }) => {
       reviewForm={reviewForm}
       roles={roles}
       selectedEmail={selectedEmail}
+      selectedEmailIsBlacklisted={selectedEmailIsBlacklisted}
       sendChannelMessage={sendChannelMessage}
       sendNotifyEmail={sendNotifyEmail}
       setExternalEmail={setExternalEmail}

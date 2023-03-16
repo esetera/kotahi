@@ -74,7 +74,7 @@ const DecisionVersion = ({
   selectedEmail,
   setSelectedEmail,
   setShouldPublishField,
-  isEmailAddressOptedOut,
+  selectedEmailIsBlacklisted,
   updateSharedStatusForInvitedReviewer,
   dois,
   refetch,
@@ -221,9 +221,9 @@ const DecisionVersion = ({
                 allUsers={allUsers}
                 currentUser={currentUser}
                 externalEmail={externalEmail}
-                isEmailAddressOptedOut={isEmailAddressOptedOut}
                 manuscript={version}
                 selectedEmail={selectedEmail}
+                selectedEmailIsBlacklisted={selectedEmailIsBlacklisted}
                 sendChannelMessage={sendChannelMessage}
                 sendNotifyEmail={sendNotifyEmail}
                 setExternalEmail={setExternalEmail}
@@ -318,9 +318,9 @@ const DecisionVersion = ({
               <InviteReviewer
                 addReviewer={addReviewer}
                 currentUser={currentUser}
-                isEmailAddressOptedOut={isEmailAddressOptedOut}
                 manuscript={version}
                 reviewerUsers={allUsers}
+                selectedEmailIsBlacklisted={selectedEmailIsBlacklisted}
                 sendChannelMessage={sendChannelMessage}
                 sendNotifyEmail={sendNotifyEmail}
                 setExternalEmail={setExternalEmail}

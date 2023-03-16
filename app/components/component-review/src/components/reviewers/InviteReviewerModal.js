@@ -120,7 +120,6 @@ const InviteReviewerModal = ({
                   sendNotifyEmail,
                   'reviewerInvitationEmailTemplate',
                   identity.email,
-                  () => {},
                   identity.email,
                   identity.username,
                   false,

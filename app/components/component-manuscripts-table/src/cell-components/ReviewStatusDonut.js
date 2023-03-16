@@ -59,6 +59,7 @@ const header = [
   { type: 'string', role: 'tooltip', p: { html: true } },
 ]
 
+// TODO Refactor to use recharts instead of react-google-charts
 const ReviewStatusDonut = ({ manuscript }) => {
   const statusOptions = {}
   reviewStatuses.forEach(item => {
@@ -69,7 +70,7 @@ const ReviewStatusDonut = ({ manuscript }) => {
     ({ status }) => status,
   )
 
-  const invitationStatuses = manuscript.invitations
+  const invitationStatuses = (manuscript.invitations || [])
     .filter(({ status }) => status in invitationStatusMapping)
     .map(({ status }) => invitationStatusMapping[status])
 
