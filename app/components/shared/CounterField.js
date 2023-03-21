@@ -9,29 +9,29 @@ const Container = styled.div`
 `
 
 const LabelContainer = styled.div`
+  align-items: center;
   background: white;
   border: 1.5px solid ${theme.colors.neutral.gray70};
-  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
   display: flex;
   justify-content: center;
-  align-items: center;
-  position: relative;
   padding-right: ${props => (props.showResetIcon ? '15px' : '0')};
+  position: relative;
   width: ${props => (props.compact ? '50px' : '65px')};
 `
 
 const ControlsContainer = styled.div`
-  margin-left: 4px;
   display: flex;
   flex-direction: column;
+  margin-left: 4px;
 `
 
 const CounterActionContainer = styled.div`
   button {
-    cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
     background: transparent;
     border: none;
+    cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
 
     svg {
       color: ${props =>
@@ -56,10 +56,10 @@ const CounterValueDown = styled(CounterActionContainer)`
 `
 
 const CloseIconContainer = styled(CounterActionContainer)`
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-  border-radius: 500px;
-  display: flex;
   align-items: center;
+  border-radius: 500px;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  display: flex;
   justify-content: center;
   position: absolute;
   right: 3px;
@@ -96,10 +96,7 @@ const CounterField = ({
   }, [value])
 
   const resetValue = () => {
-    if (disabled) {
-      return
-    }
-
+    if (disabled) return
     setValue(defaultValue)
   }
 
