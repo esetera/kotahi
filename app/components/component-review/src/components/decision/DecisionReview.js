@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { Button, Checkbox } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import { JournalContext } from '../../../../xpub-journal/src'
+import { ConfigContext } from '../../../../config/src'
 import ShareIcon from '../../../../../shared/icons/share'
 import { UserCombo, Primary, Secondary, UserInfo } from '../../../../shared'
 import { UserAvatar } from '../../../../component-avatar/src'
@@ -72,6 +73,7 @@ const ReviewHeading = ({
   updateReview,
   canHideReviews,
 }) => {
+  const config = useContext(ConfigContext)
   if (!currentUser) return null
 
   const editorTeam = teams.filter(team => {
@@ -132,7 +134,7 @@ const ReviewHeading = ({
         }
         {(isCurrentUserEditor || currentUser.admin) &&
           canBePublishedPublicly &&
-          process.env.INSTANCE_NAME === 'colab' && (
+          config.instanceName === 'colab' && (
             <>
               &nbsp;
               <ShareIcon />

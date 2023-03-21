@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useContext } from 'react'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
 import {
@@ -16,6 +16,7 @@ import {
   URI_PAGENUM_PARAM,
   URI_SEARCH_PARAM,
 } from '../../../../../shared/urlParamUtils'
+import { ConfigContext } from '../../../../config/src'
 
 const ReviewerTable = ({
   urlFrag,
@@ -25,6 +26,8 @@ const ReviewerTable = ({
   uriQueryParams,
   applyQueryParams,
 }) => {
+  const config = useContext(ConfigContext)
+
   const fieldDefinitions = useMemo(() => {
     const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
     const defs = {}
@@ -48,7 +51,7 @@ const ReviewerTable = ({
   const sortDirection = extractSortData(uriQueryParams).direction
 
   const page = uriQueryParams.get(URI_PAGENUM_PARAM) || 1
-  const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
+  const limit = config?.manuscript?.paginationCount || 10
   const { totalCount } = data.manuscriptsUserHasCurrentRoleIn
 
   const specialComponentValues = {
@@ -67,6 +70,7 @@ const ReviewerTable = ({
   }
 
   const columnsProps = buildColumnDefinitions(
+    config,
     reviewerColumns,
     fieldDefinitions,
     specialComponentValues,

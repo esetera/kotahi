@@ -46,7 +46,7 @@ const getUserRolesInManuscript = async (userId, manuscriptId) => {
 const sendEmailWithPreparedData = async (input, ctx, emailSender) => {
   let inputParsed = input
 
-  if (ctx) {
+  if (ctx && typeof input === 'string') {
     inputParsed = JSON.parse(input)
   }
 
@@ -72,6 +72,7 @@ const sendEmailWithPreparedData = async (input, ctx, emailSender) => {
   let manuscriptPageUrl = `${baseUrl}/versions/${manuscript.id}`
   let isEditor = false
   let isReviewer = false
+  let isAuthor = false
 
   if (selectedEmail) {
     // If the email of a pre-existing user is selected
@@ -96,9 +97,10 @@ const sendEmailWithPreparedData = async (input, ctx, emailSender) => {
       'accepted:reviewer',
       'inProgress:reviewer',
       'completed:reviewer',
-      'invited:reviewer',
       'reviewer',
     ]
+
+    const authorRoles = ['author']
 
     isEditor =
       manuscriptRoles &&
@@ -106,6 +108,19 @@ const sendEmailWithPreparedData = async (input, ctx, emailSender) => {
     isReviewer =
       manuscriptRoles &&
       manuscriptRoles.roles.some(role => reviewerRoles.includes(role))
+    isAuthor =
+      manuscriptRoles &&
+      manuscriptRoles.roles.some(role => authorRoles.includes(role))
+  }
+
+  if (isEditor) {
+    manuscriptPageUrl += '/decision'
+  } else if (isReviewer) {
+    manuscriptPageUrl += '/review'
+  } else if (isAuthor) {
+    manuscriptPageUrl += '/submit'
+  } else {
+    manuscriptPageUrl = `${baseUrl}/dashboard`
   }
 
   if (isEditor) manuscriptPageUrl += '/decision'
@@ -140,7 +155,7 @@ const sendEmailWithPreparedData = async (input, ctx, emailSender) => {
   const toEmail = receiverEmail
   const purpose = 'Inviting an author to accept a manuscript'
   const status = 'UNANSWERED'
-  const senderId = invitationSender.id
+  const senderId = invitationSender ? invitationSender.id : null
 
   let invitationId = ''
 

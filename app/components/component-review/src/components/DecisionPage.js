@@ -1,8 +1,8 @@
-import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client'
-import config from 'config'
-import { debounce, set } from 'lodash'
+import React, { useEffect, useState, useContext } from 'react'
 import PropTypes from 'prop-types'
-import React, { useEffect, useState } from 'react'
+import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client'
+import { set, debounce } from 'lodash'
+import { ConfigContext } from '../../../config/src'
 import { fragmentFields } from '../../../component-submit/src/userManuscriptFormQuery'
 import { CommsErrorBanner, Spinner } from '../../../shared'
 import DecisionVersions from './DecisionVersions'
@@ -43,8 +43,6 @@ import {
   UPDATE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
 
-const urlFrag = config.journal.metadata.toplevel_urlfragment
-
 export const updateManuscriptMutation = gql`
   mutation($id: ID!, $input: String) {
     updateManuscript(id: $id, input: $input) {
@@ -84,6 +82,8 @@ let debouncers = {}
 const DecisionPage = ({ match }) => {
   // start of code from submit page to handle possible form changes
   const client = useApolloClient()
+  const config = useContext(ConfigContext)
+  const urlFrag = config.journal.metadata.toplevel_urlfragment
 
   useEffect(() => {
     return () => {
@@ -394,7 +394,7 @@ const DecisionPage = ({ match }) => {
     <DecisionVersions
       addReviewer={addReviewer}
       allUsers={users}
-      canHideReviews={config.review.hide === 'true'}
+      canHideReviews={config?.controlPanel?.hideReview}
       createFile={createFile}
       createTaskEmailNotificationLog={createTaskEmailNotificationLog}
       createTeam={createTeam}
@@ -403,9 +403,7 @@ const DecisionPage = ({ match }) => {
       deleteFile={deleteFile}
       deleteTaskNotification={deleteTaskNotification}
       displayShortIdAsIdentifier={
-        config['client-features'].displayShortIdAsIdentifier &&
-        config['client-features'].displayShortIdAsIdentifier.toLowerCase() ===
-          'true'
+        config?.controlPanel?.displayManuscriptShortId
       }
       dois={doisToRegister}
       externalEmail={externalEmail}

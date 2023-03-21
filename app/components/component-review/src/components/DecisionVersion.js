@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react'
+import React, { useContext, useRef, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { set, debounce } from 'lodash'
 import { useLocation } from 'react-router-dom'
@@ -23,6 +23,7 @@ import FormTemplate from '../../../component-submit/src/components/FormTemplate'
 import TaskList from '../../../component-task-manager/src/TaskList'
 import KanbanBoard from './KanbanBoard'
 import InviteReviewer from './reviewers/InviteReviewer'
+import { ConfigContext } from '../../../config/src'
 
 const TaskSectionRow = styled(SectionRow)`
   padding: 12px 0 18px;
@@ -87,6 +88,8 @@ const DecisionVersion = ({
   deleteTaskNotification,
   createTaskEmailNotificationLog,
 }) => {
+  const config = useContext(ConfigContext)
+
   const debouncedSave = useCallback(
     debounce(source => {
       updateManuscript(version.id, { meta: { source } })
@@ -216,7 +219,7 @@ const DecisionVersion = ({
       content: (
         <>
           {isCurrentVersion &&
-            ['aperture', 'colab'].includes(process.env.INSTANCE_NAME) && (
+            ['aperture', 'colab'].includes(config.instanceName) && (
               <EmailNotifications
                 allUsers={allUsers}
                 currentUser={currentUser}
@@ -453,10 +456,46 @@ const DecisionVersion = ({
     }
   }
 
+  let defaultActiveKey
+
+  switch (config?.controlPanel?.showTabs[0]) {
+    case 'Workflow':
+      defaultActiveKey = `team_${version.id}`
+      break
+    case 'Manuscript text':
+      defaultActiveKey = `editor_${version.id}`
+      break
+    case 'Metadata':
+      defaultActiveKey = `metadata_${version.id}`
+      break
+    case 'Tasks & Notifications':
+      defaultActiveKey = `tasks_${version.id}`
+      break
+    default:
+      defaultActiveKey = `team_${version.id}`
+      break
+  }
+
   const locationState =
     location.state !== undefined && location.state.tab === 'Decision'
       ? `decision_${version.id}`
-      : `team_${version.id}`
+      : defaultActiveKey
+
+  const sections = []
+
+  if (config?.controlPanel?.showTabs) {
+    if (config?.controlPanel?.showTabs.includes('Workflow')) {
+      sections.push(teamSection())
+      sections.push(decisionSection())
+    }
+
+    if (config?.controlPanel?.showTabs.includes('Manuscript text'))
+      sections.push(editorSection)
+    if (config?.controlPanel?.showTabs.includes('Metadata'))
+      sections.push(metadataSection())
+    if (config?.controlPanel?.showTabs.includes('Tasks & Notifications'))
+      sections.push(tasksAndNotificationsSection())
+  }
 
   return (
     <HiddenTabs

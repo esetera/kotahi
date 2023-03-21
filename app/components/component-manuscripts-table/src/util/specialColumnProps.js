@@ -22,7 +22,7 @@ import reviewFilterOptions from '../../../../../config/journal/review-status'
  * @param {object} specialComponentValues values needed for specific components
  * @returns {object} The built special components
  */
-const buildSpecialColumnProps = specialComponentValues => {
+const buildSpecialColumnProps = (specialComponentValues, config) => {
   const {
     deleteManuscript,
     isManuscriptBlockedFromPublishing,
@@ -66,7 +66,7 @@ const buildSpecialColumnProps = specialComponentValues => {
     },
     status: {
       title: 'Status',
-      filterOptions: ['aperture', 'colab'].includes(process.env.INSTANCE_NAME)
+      filterOptions: ['elife', 'ncrc'].includes(config?.instanceName)
         ? [
             { label: 'Unsubmitted', value: 'new' },
             { label: 'Submitted', value: 'submitted' },
@@ -97,6 +97,7 @@ const buildSpecialColumnProps = specialComponentValues => {
       flex: '0 1 8em',
       component: Actions,
       extraProps: {
+        config,
         deleteManuscript,
         isManuscriptBlockedFromPublishing,
         tryPublishManuscript,
@@ -162,7 +163,7 @@ const buildSpecialColumnProps = specialComponentValues => {
     'submission.labels': {
       flex: '0 1 10em',
       extraProps: { setReadyToEvaluateLabel },
-      component: ['ncrc', 'colab'].includes(process.env.INSTANCE_NAME)
+      component: config?.manuscript?.labelColumn
         ? LabelsOrSelectButton
         : DefaultField,
     },
@@ -170,13 +171,13 @@ const buildSpecialColumnProps = specialComponentValues => {
     'submission.journal': { flex: '0.2 1 12em' },
     'submission.articleDescription': {
       component:
-        process.env.INSTANCE_NAME === 'ncrc'
+        config?.instanceName === 'ncrc'
           ? TitleWithAbstractAsTooltip
           : DefaultField,
     },
     'meta.title': {
       component:
-        process.env.INSTANCE_NAME === 'colab'
+        config?.instanceName === 'colab'
           ? TitleWithAbstractAsTooltip
           : DefaultField,
     },

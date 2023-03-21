@@ -67,6 +67,7 @@ const buildColumnDefinition = (
  * @returns {object} the list of standardized column information
  */
 const buildColumnDefinitions = (
+  config,
   columnNames,
   fieldDefinitions,
   specialComponentValues,
@@ -74,6 +75,7 @@ const buildColumnDefinitions = (
 ) => {
   const specialColumnProperties = buildSpecialColumnProps(
     specialComponentValues,
+    config,
   )
 
   return columnNames.map(columnName => {

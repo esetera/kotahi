@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useContext } from 'react'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
 import {
@@ -16,6 +16,7 @@ import {
   URI_PAGENUM_PARAM,
   URI_SEARCH_PARAM,
 } from '../../../../../shared/urlParamUtils'
+import { ConfigContext } from '../../../../config/src'
 
 const EditorTable = ({
   urlFrag,
@@ -23,6 +24,8 @@ const EditorTable = ({
   uriQueryParams,
   applyQueryParams,
 }) => {
+  const config = useContext(ConfigContext)
+
   const fieldDefinitions = useMemo(() => {
     const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
     const defs = {}
@@ -43,7 +46,7 @@ const EditorTable = ({
   const sortDirection = extractSortData(uriQueryParams).direction
 
   const page = uriQueryParams.get(URI_PAGENUM_PARAM) || 1
-  const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
+  const limit = config?.manuscript?.paginationCount || 10
   const { totalCount } = data.manuscriptsUserHasCurrentRoleIn
 
   const specialComponentValues = {
@@ -59,6 +62,7 @@ const EditorTable = ({
   }
 
   const columnsProps = buildColumnDefinitions(
+    config,
     editorColumns,
     fieldDefinitions,
     specialComponentValues,

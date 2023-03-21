@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
-import config from 'config'
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
+import { ConfigContext } from '../../../config/src'
 import {
   extractFilters,
   extractSortData,
@@ -12,7 +12,7 @@ import queries from '../graphql/queries'
 import SubmissionsTable from './sections/SubmissionsTable'
 
 const DashboardSubmissionsPage = ({ history }) => {
-  const instanceName = process.env.INSTANCE_NAME
+  const config = useContext(ConfigContext)
   const urlFrag = config.journal.metadata.toplevel_urlfragment
   const wantedRoles = ['author']
 
@@ -24,7 +24,7 @@ const DashboardSubmissionsPage = ({ history }) => {
   const sortDirection = extractSortData(uriQueryParams).direction
   const filters = extractFilters(uriQueryParams)
 
-  const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
+  const limit = config?.manuscript?.paginationCount || 10
 
   const query = useQuery(queries.dashboard, {
     variables: {
@@ -50,7 +50,7 @@ const DashboardSubmissionsPage = ({ history }) => {
     })
   }, [])
 
-  return !['ncrc'].includes(instanceName) ? (
+  return config?.dashboard?.showSections.includes('submission') ? (
     <SubmissionsTable
       applyQueryParams={applyQueryParams}
       query={query}

@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import {
@@ -9,8 +9,8 @@ import {
   useSubscription,
   useApolloClient,
 } from '@apollo/client'
-import config from 'config'
 import fnv from 'fnv-plus'
+import { ConfigContext } from '../../config/src'
 import {
   GET_MANUSCRIPTS_AND_FORM,
   DELETE_MANUSCRIPT,
@@ -20,7 +20,6 @@ import {
   ARCHIVE_MANUSCRIPT,
   ARCHIVE_MANUSCRIPTS,
 } from '../../../queries'
-import configuredColumnNames from './configuredColumnNames'
 import { updateMutation } from '../../component-submit/src/components/SubmitPage'
 import { publishManuscriptMutation } from '../../component-review/src/components/queries'
 import Manuscripts from './Manuscripts'
@@ -32,10 +31,17 @@ import {
 } from '../../../shared/urlParamUtils'
 import { validateDoi, validateSuffix } from '../../../shared/commsUtils'
 
-const urlFrag = config.journal.metadata.toplevel_urlfragment
-const chatRoomId = fnv.hash(config['pubsweet-client'].baseUrl).hex()
-
 const ManuscriptsPage = ({ currentUser, history }) => {
+  const config = useContext(ConfigContext)
+  const urlFrag = config.journal.metadata.toplevel_urlfragment
+  const chatRoomId = fnv.hash(config.baseUrl).hex()
+
+  /** Returns an array of column names, e.g.
+   *  ['shortId', 'created', 'meta.title', 'submission.topic', 'status'] */
+  const configuredColumnNames = (config?.manuscript?.tableColumns || '')
+    .split(',')
+    .map(columnName => columnName.trim())
+
   const [isImporting, setIsImporting] = useState(false)
   const applyQueryParams = useQueryParams()
 
@@ -44,8 +50,7 @@ const ManuscriptsPage = ({ currentUser, history }) => {
   const sortName = extractSortData(uriQueryParams).name
   const sortDirection = extractSortData(uriQueryParams).direction
   const filters = extractFilters(uriQueryParams)
-
-  const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
+  const limit = config?.manuscript?.paginationCount || 10
 
   const queryObject = useQuery(GET_MANUSCRIPTS_AND_FORM, {
     variables: {
@@ -160,9 +165,7 @@ const ManuscriptsPage = ({ currentUser, history }) => {
     })
   }
 
-  const shouldAllowBulkImport =
-    config.manuscripts.allowManualImport === 'true' &&
-    ['colab', 'ncrc'].includes(process.env.INSTANCE_NAME)
+  const shouldAllowBulkImport = config?.manuscript?.manualImport
 
   return (
     <Manuscripts

@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useMutation, useQuery, gql } from '@apollo/client'
-import config from 'config'
 import { Redirect } from 'react-router-dom'
 import ReactRouterPropTypes from 'react-router-prop-types'
 import { set, debounce } from 'lodash'
+import { ConfigContext } from '../../../config/src'
 import ReviewLayout from './review/ReviewLayout'
 import { Heading, Page, Spinner } from '../../../shared'
 import manuscriptVersions from '../../../../shared/manuscript_versions'
@@ -226,9 +226,9 @@ const updateReviewMutationQuery = gql`
   }
 `
 
-const urlFrag = config.journal.metadata.toplevel_urlfragment
-
 const ReviewPage = ({ currentUser, history, match }) => {
+  const config = useContext(ConfigContext)
+  const urlFrag = config.journal.metadata.toplevel_urlfragment
   const [updateReviewMutation] = useMutation(updateReviewMutationQuery)
   const [updateReviewerStatus] = useMutation(UPDATE_REVIEWER_STATUS_MUTATION)
   const [createFile] = useMutation(createFileMutation)

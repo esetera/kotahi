@@ -2,7 +2,9 @@ import React from 'react'
 import SubmissionsTable from '../../app/components/component-dashboard/src/components/sections/SubmissionsTable'
 import { JournalProvider } from '../../app/components/xpub-journal/src'
 import { XpubProvider } from '../../app/components/xpub-with-context/src'
+import { ConfigProvider } from '../../app/components/config/src'
 import * as journal from '../../config/journal'
+import config from '../../config/sampleConfigFormData'
 import DesignEmbed from '../common/utils'
 
 const urlFrag = '/kotahi'
@@ -10,7 +12,7 @@ const urlFrag = '/kotahi'
 export const Base = args => (
   <XpubProvider>
     <JournalProvider journal={JSON.parse(JSON.stringify(journal))}>
-      <>
+      <ConfigProvider config={config}>
         {args.figmaEmbedLink && (
           <>
             <h2 style={{ color: '#333333' }}>Design</h2>
@@ -26,7 +28,7 @@ export const Base = args => (
           </>
         )}
         <SubmissionsTable {...args} />
-      </>
+      </ConfigProvider>
     </JournalProvider>
   </XpubProvider>
 )

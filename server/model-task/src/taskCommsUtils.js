@@ -1,5 +1,5 @@
 const moment = require('moment-timezone')
-const config = require('config')
+const Config = require('../../config/src/config')
 const Task = require('./task')
 const TaskAlert = require('./taskAlert')
 const Team = require('../../model-team/src/team')
@@ -18,6 +18,8 @@ const {
 const TaskEmailNotification = require('./taskEmailNotification')
 
 const populateTemplatedTasksForManuscript = async manuscriptId => {
+  const activeConfig = await Config.query().first() // To be replaced with group based active config in future
+
   const newTasks = await Task.query()
     .whereNull('manuscriptId')
     .orderBy('sequenceIndex')
@@ -28,7 +30,7 @@ const populateTemplatedTasksForManuscript = async manuscriptId => {
     .orderBy('sequenceIndex')
 
   const endOfToday = moment()
-    .tz(config.manuscripts.teamTimezone || 'Etc/UTC')
+    .tz(activeConfig.formData.taskManager.teamTimezone || 'Etc/UTC')
     .endOf('day')
 
   return Task.transaction(async trx => {
@@ -51,19 +53,39 @@ const populateTemplatedTasksForManuscript = async manuscriptId => {
             .insertAndFetch(task)
             .withGraphFetched('assignee')
             .then(taskObject => {
-              Promise.all(
-                taskObject.emailNotifications.map(emailNotification => {
-                  const taskEmailNotification = {
-                    ...emailNotification,
-                    taskId: taskObject.id,
-                  }
+              const emailNotificationPromises = []
 
-                  delete taskEmailNotification.id
-                  return TaskEmailNotification.query(trx).insertAndFetch(
-                    taskEmailNotification,
-                  )
-                }),
-              )
+              // Start delay at 100ms per notification
+              let delay = 0
+
+              // eslint-disable-next-line no-restricted-syntax
+              for (const emailNotification of taskObject.emailNotifications) {
+                const taskEmailNotification = {
+                  ...emailNotification,
+                  taskId: taskObject.id,
+                }
+
+                delete taskEmailNotification.id
+
+                // Increment the delay by 100ms per notification
+                delay += 100
+
+                const emailNotificationPromise = new Promise(
+                  // eslint-disable-next-line no-loop-func, no-shadow
+                  (resolve, reject) => {
+                    setTimeout(() => {
+                      TaskEmailNotification.query(trx)
+                        .insertAndFetch(taskEmailNotification)
+                        .then(result => resolve(result))
+                        .catch(error => reject(error))
+                    }, delay)
+                  },
+                )
+
+                emailNotificationPromises.push(emailNotificationPromise)
+              }
+
+              Promise.all(emailNotificationPromises)
                 .then(result => resolve(result))
                 .catch(error => reject(error))
             })
@@ -142,8 +164,10 @@ const updateAlertsForTask = async (task, trx) => {
 /** For all tasks that have gone overdue during the previous calendar day, create alerts as appropriate.
  * Don't look further than yesterday, to avoid regenerating alerts that have already been seen. */
 const createNewTaskAlerts = async () => {
+  const activeConfig = await Config.query().first() // To be replaced with group based active config in future
+
   const startOfToday = moment()
-    .tz(config.manuscripts.teamTimezone || 'Etc/UTC')
+    .tz(activeConfig.formData.taskManager.teamTimezone || 'Etc/UTC')
     .startOf('day')
 
   const startOfYesterday = moment(startOfToday).subtract(1, 'days')
@@ -208,196 +232,210 @@ const getTaskEmailNotifications = async ({ status = null }) => {
     .withGraphFetched('task.manuscript')
 }
 
-const sendAutomatedTaskEmailNotifications = async () => {
-  const taskEmailNotifications = await getTaskEmailNotifications({
-    status: taskConfigs.status.IN_PROGRESS,
-  })
+const sendNotification = async n => {
+  const { recipientTypes } = taskConfigs.emailNotifications
+  const { assigneeTypes } = taskConfigs
+  let notificationRecipients = []
+
+  let recipientIsExternal = false
+
+  switch (n.recipientType) {
+    case recipientTypes.UNREGISTERED_USER:
+      if (n.recipientEmail) {
+        recipientIsExternal = true
+        notificationRecipients = [
+          {
+            email: n.recipientEmail,
+            name: n.recipientName,
+          },
+        ]
+      }
+
+      break
+
+    case recipientTypes.REGISTERED_USER:
+      if (n.recipientUser) {
+        notificationRecipients = [
+          {
+            email: n.recipientUser.email,
+            name: n.recipientUser.username,
+          },
+        ]
+      }
+
+      break
+
+    case recipientTypes.EDITOR:
+      notificationRecipients = await getTeamRecipients(n, [
+        recipientTypes.EDITOR,
+        recipientTypes.SENIOR_EDITOR,
+        recipientTypes.HANDLING_EDITOR,
+      ])
+      break
+
+    case recipientTypes.REVIEWER:
+    case recipientTypes.AUTHOR:
+      notificationRecipients = await getTeamRecipients(n, [n.recipientType])
+      break
+
+    case recipientTypes.ASSIGNEE:
+      switch (n.task.assigneeType) {
+        case assigneeTypes.UNREGISTERED_USER:
+          if (n.task.assigneeEmail) {
+            recipientIsExternal = true
+            notificationRecipients = [
+              {
+                email: n.task.assigneeEmail,
+                name: n.task.assigneeName,
+              },
+            ]
+          }
+
+          break
+
+        case assigneeTypes.REGISTERED_USER:
+          if (n.task.assignee) {
+            notificationRecipients = [
+              {
+                email: n.task.assignee.email,
+                name: n.task.assignee.username,
+              },
+            ]
+          }
+
+          break
+
+        case assigneeTypes.EDITOR:
+          notificationRecipients = await getTeamRecipients(n, [
+            assigneeTypes.EDITOR,
+            assigneeTypes.SENIOR_EDITOR,
+            assigneeTypes.HANDLING_EDITOR,
+          ])
+          break
+
+        case assigneeTypes.REVIEWER:
+        case assigneeTypes.AUTHOR:
+          notificationRecipients = await getTeamRecipients(n, [
+            n.task.assigneeType,
+          ])
+          break
+        default:
+      }
+
+      break
+    default:
+  }
+
+  const { manuscript } = n.task
+
+  // eslint-disable-next-line no-await-in-loop
+  const editor = await manuscript.getManuscriptEditor()
+  const currentUser = editor ? editor.username : ''
 
   // eslint-disable-next-line no-restricted-syntax
-  for (const emailNotification of taskEmailNotifications) {
-    const dateOfNotification = moment(emailNotification.task.dueDate).add(
-      emailNotification.notificationElapsedDays,
-      'days',
-    )
+  for (const recipient of notificationRecipients) {
+    let logData
 
-    const today = moment()
-
-    if (dateOfNotification.diff(today, 'days') !== 0) {
-      // eslint-disable-next-line no-continue
-      continue
-    }
-
-    if (emailNotification.sentAt) {
-      // eslint-disable-next-line no-continue
-      continue
-    }
-
-    const { recipientTypes } = taskConfigs.emailNotifications
-    let notificationRecipients = []
-
-    switch (emailNotification.recipientType) {
-      case recipientTypes.UNREGISTERED_USER:
-        if (emailNotification.recipientEmail) {
-          notificationRecipients = [
-            {
-              email: emailNotification.recipientEmail,
-              name: emailNotification.recipientName,
-            },
-          ]
+    if (n.emailTemplateKey) {
+      try {
+        let notificationInput = {
+          manuscript,
+          selectedTemplate: n.emailTemplateKey,
+          externalName: recipient.name, // New User username
+          currentUser,
         }
 
-        break
-
-      case recipientTypes.REGISTERED_USER:
-        if (emailNotification.recipientUser) {
-          notificationRecipients = [
-            {
-              email: emailNotification.recipientUser.email,
-              name: emailNotification.recipientUser.username,
-            },
-          ]
-        }
-
-        break
-
-      case recipientTypes.EDITOR:
-        // eslint-disable-next-line no-await-in-loop
-        notificationRecipients = await getTeamRecipients(emailNotification, [
-          recipientTypes.EDITOR,
-          recipientTypes.SENIOR_EDITOR,
-          recipientTypes.HANDLING_EDITOR,
-        ])
-        break
-
-      case recipientTypes.REVIEWER:
-      case recipientTypes.AUTHOR:
-        // eslint-disable-next-line no-await-in-loop
-        notificationRecipients = await getTeamRecipients(emailNotification, [
-          emailNotification.recipientType,
-        ])
-        break
-
-      case recipientTypes.ASSIGNEE:
-        // eslint-disable-next-line no-case-declarations
-        const { assigneeTypes } = taskConfigs
-
-        switch (emailNotification.task.assigneeType) {
-          case assigneeTypes.UNREGISTERED_USER:
-            if (emailNotification.task.assigneeEmail) {
-              notificationRecipients = [
-                {
-                  email: emailNotification.task.assigneeEmail,
-                  name: emailNotification.task.assigneeName,
-                },
-              ]
-            }
-
-            break
-
-          case assigneeTypes.REGISTERED_USER:
-            if (emailNotification.task.assignee) {
-              notificationRecipients = [
-                {
-                  email: emailNotification.task.assignee.email,
-                  name: emailNotification.task.assignee.username,
-                },
-              ]
-            }
-
-            break
-
-          case assigneeTypes.EDITOR:
-            // eslint-disable-next-line no-await-in-loop
-            notificationRecipients = await getTeamRecipients(
-              emailNotification,
-              [
-                assigneeTypes.EDITOR,
-                assigneeTypes.SENIOR_EDITOR,
-                assigneeTypes.HANDLING_EDITOR,
-              ],
-            )
-            break
-
-          case assigneeTypes.REVIEWER:
-          case assigneeTypes.AUTHOR:
-            // eslint-disable-next-line no-await-in-loop
-            notificationRecipients = await getTeamRecipients(
-              emailNotification,
-              [emailNotification.task.assigneeType],
-            )
-            break
-          default:
-        }
-
-        break
-      default:
-    }
-
-    const { manuscript } = emailNotification.task
-
-    // eslint-disable-next-line no-await-in-loop
-    const editor = await manuscript.getManuscriptEditor()
-    const currentUser = editor ? editor.username : ''
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (const recipient of notificationRecipients) {
-      let logData
-
-      if (emailNotification.emailTemplateKey) {
-        try {
-          const notificationInput = {
-            manuscript,
-            // selectedEmail: recipient.email, // selectedExistingRecieverEmail (TODO?): This is for a pre-existing receiver being selected
-            selectedTemplate: emailNotification.emailTemplateKey,
+        if (recipientIsExternal) {
+          notificationInput = {
+            ...notificationInput,
             externalEmail: recipient.email,
-            externalName: recipient.name, // New User username
-            currentUser,
           }
-
-          const emailTemplateOption = emailNotification.emailTemplateKey.replace(
-            /([A-Z])/g,
-            ' $1',
-          )
-
-          const selectedTemplateValue =
-            emailTemplateOption.charAt(0).toUpperCase() +
-            emailTemplateOption.slice(1)
-
-          const messageBody = `${selectedTemplateValue} sent by Kotahi to ${recipient.name}`
-
-          logData = {
-            taskId: emailNotification.task.id,
-            content: messageBody,
-            emailTemplateKey: emailTemplateOption,
-            senderEmail: editor.email,
-            recipientEmail: recipient.email,
+        } else {
+          notificationInput = {
+            ...notificationInput,
+            selectedEmail: recipient.email,
           }
-
-          const ctx = {}
-          // eslint-disable-next-line no-await-in-loop
-          await sendEmailWithPreparedData(notificationInput, ctx, editor)
-          // eslint-disable-next-line no-await-in-loop
-          await logTaskEmailNotificationData(logData)
-        } catch (error) {
-          console.error(error)
         }
+
+        const emailTemplateOption = n.emailTemplateKey.replace(
+          /([A-Z])/g,
+          ' $1',
+        )
+
+        const selectedTemplateValue =
+          emailTemplateOption.charAt(0).toUpperCase() +
+          emailTemplateOption.slice(1)
+
+        const messageBody = `${selectedTemplateValue} sent by Kotahi to ${recipient.name}`
+
+        logData = {
+          taskId: n.task.id,
+          content: messageBody,
+          emailTemplateKey: emailTemplateOption,
+          senderEmail: editor ? editor.email : '',
+          recipientEmail: recipient.email,
+        }
+
+        const ctx = null
+        // eslint-disable-next-line no-await-in-loop
+        await sendEmailWithPreparedData(notificationInput, ctx, editor)
+        // eslint-disable-next-line no-await-in-loop
+        await logTaskEmailNotificationData(logData)
+      } catch (error) {
+        console.error(error)
       }
     }
   }
 }
 
+const sendAutomatedTaskEmailNotifications = async () => {
+  const activeConfig = await Config.query().first() // To be replaced with group based active config in future
+
+  const startOfToday = moment()
+    .tz(activeConfig.formData.taskManager.teamTimezone || 'Etc/UTC')
+    .startOf('day')
+
+  const startOfTomorrow = moment(startOfToday).add(1, 'days')
+
+  const taskEmailNotifications = await getTaskEmailNotifications({
+    status: taskConfigs.status.IN_PROGRESS,
+  })
+
+  // eslint-disable-next-line no-restricted-syntax
+  await Promise.all(
+    taskEmailNotifications
+      .filter(n => {
+        if (n.sentAt || !n.task.dueDate) return false
+
+        const dateOfNotification = moment(n.task.dueDate)
+          .add(1, 'milliseconds') // Due date is usually 1 ms before midnight, so this pushes it to the following day.
+          .add(n.notificationElapsedDays, 'days')
+
+        return (
+          dateOfNotification.isSameOrAfter(startOfToday) &&
+          dateOfNotification.isBefore(startOfTomorrow)
+        )
+      })
+      .map(sendNotification),
+  )
+}
+
 const getTeamRecipients = async (emailNotification, roles) => {
   const teamQuery = Team.query()
     .where({
-      object_type: 'manuscript',
-      object_id: emailNotification.task.manuscriptId,
+      objectType: 'manuscript',
+      objectId: emailNotification.task.manuscriptId,
     })
     .whereIn('role', roles) // no await here because it's a sub-query
 
-  const teamMemberUsers = await Team.relatedQuery('users').for(teamQuery)
-  return teamMemberUsers.map(user => ({
-    email: user.email,
-    name: user.username,
+  const teamMembers = await Team.relatedQuery('members')
+    .whereNotIn('status', ['invited', 'rejected'])
+    .for(teamQuery)
+    .withGraphFetched('user')
+
+  return teamMembers.map(member => ({
+    email: member.user.email,
+    name: member.user.username,
   }))
 }
 

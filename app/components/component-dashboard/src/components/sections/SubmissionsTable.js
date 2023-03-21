@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useContext } from 'react'
 import { ownerColumns } from '../../../../../../config/journal/manuscripts'
 import {
   extractSortData,
@@ -7,6 +7,7 @@ import {
 } from '../../../../../shared/urlParamUtils'
 import ManuscriptsTable from '../../../../component-manuscripts-table/src/ManuscriptsTable'
 import buildColumnDefinitions from '../../../../component-manuscripts-table/src/util/buildColumnDefinitions'
+import { ConfigContext } from '../../../../config/src'
 import {
   CommsErrorBanner,
   Pagination,
@@ -23,6 +24,8 @@ const SubmissionsTable = ({
   uriQueryParams,
   query: { data, loading, error },
 }) => {
+  const config = useContext(ConfigContext)
+
   const fieldDefinitions = useMemo(() => {
     const fields = data?.formForPurposeAndCategory?.structure?.children ?? []
     const defs = {}
@@ -41,7 +44,7 @@ const SubmissionsTable = ({
   const sortDirection = extractSortData(uriQueryParams).direction
 
   const page = uriQueryParams.get(URI_PAGENUM_PARAM) || 1
-  const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
+  const limit = config?.manuscript?.paginationCount || 10
   const { totalCount } = data.manuscriptsUserHasCurrentRoleIn
 
   const specialComponentValues = {
@@ -56,6 +59,7 @@ const SubmissionsTable = ({
   }
 
   const columnsProps = buildColumnDefinitions(
+    config,
     ownerColumns,
     fieldDefinitions,
     specialComponentValues,

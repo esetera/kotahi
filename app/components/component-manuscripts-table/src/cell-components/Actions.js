@@ -10,6 +10,7 @@ const Container = styled.div`
 `
 
 const Actions = ({
+  config,
   manuscript,
   archiveManuscript,
   isManuscriptBlockedFromPublishing,
@@ -22,7 +23,7 @@ const Actions = ({
 
   return (
     <Container>
-      {['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) &&
+      {['elife', 'ncrc'].includes(config.instanceName) &&
         [
           articleStatuses.submitted,
           articleStatuses.evaluated,
@@ -33,7 +34,7 @@ const Actions = ({
             Evaluation
           </Action>
         )}
-      {['aperture', 'colab'].includes(process.env.INSTANCE_NAME) && (
+      {['aperture', 'colab'].includes(config.instanceName) && (
         <Action to={`${urlFrag}/versions/${manuscript.id}/decision`}>
           Control
         </Action>
@@ -47,7 +48,7 @@ const Actions = ({
       <Action to={`${urlFrag}/versions/${manuscript.id}/production`}>
         Production
       </Action>
-      {['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) &&
+      {['elife', 'ncrc'].includes(config.instanceName) &&
         manuscript.status === articleStatuses.evaluated && (
           <Action
             isDisabled={isManuscriptBlockedFromPublishing(manuscript.id)}

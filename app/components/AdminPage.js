@@ -11,9 +11,9 @@ import {
   useHistory,
 } from 'react-router-dom'
 import styled from 'styled-components'
-import { ConfigProvider } from './config/src'
 import { JournalContext } from './xpub-journal/src'
 import { XpubContext } from './xpub-with-context/src'
+import { ConfigContext } from './config/src'
 
 import FormBuilderPage from './component-formbuilder/src/components/FormBuilderPage'
 import ManuscriptPage from './component-manuscript/src/components/ManuscriptPage'
@@ -28,6 +28,7 @@ import NewSubmissionPage from './component-submit/src/components/NewSubmissionPa
 import SubmitPage from './component-submit/src/components/SubmitPage'
 import TasksTemplatePage from './component-task-manager/src/TasksTemplatePage'
 import UsersManager from './component-users-manager/src/UsersManager'
+import ConfigManagerPage from './component-config-manager/src/ConfigManagerPage'
 
 import QUERY from './adminPageQueries'
 
@@ -66,11 +67,14 @@ const Root = styled.div`
 
 // TODO: Redirect if token expires
 const PrivateRoute = ({ component: Component, redirectLink, ...rest }) => {
+  const config = useContext(ConfigContext)
+
   if (
-    ['aperture', 'colab'].includes(process.env.INSTANCE_NAME) &&
+    ['aperture', 'colab'].includes(config.instanceName) &&
     rest.currentUser &&
     !rest.currentUser.email
   ) {
+    // TODO: remove instance based redirection url's and configure it via config manager after finalizing the requirement
     return <Redirect to="/kotahi/profile" />
   }
 
@@ -107,6 +111,7 @@ const AdminPage = () => {
   const history = useHistory()
   const journal = useContext(JournalContext)
   const [conversion] = useContext(XpubContext)
+  const config = useContext(ConfigContext)
 
   const { loading, error, data, refetch } = useQuery(QUERY, {
     fetchPolicy: 'network-only',
@@ -135,7 +140,6 @@ const AdminPage = () => {
   const currentUser = data?.currentUser
   journal.textStyles = data?.builtCss.css
   const hasAlert = data?.userHasTaskAlerts
-  const config = JSON.parse(data?.config || '{}')
 
   previousDataRef.current = data
 
@@ -146,6 +150,7 @@ const AdminPage = () => {
   const submissionFormBuilderLink = `${urlFrag}/admin/submission-form-builder`
   const reviewFormBuilderLink = `${urlFrag}/admin/review-form-builder`
   const decisionFormBuilderLink = `${urlFrag}/admin/decision-form-builder`
+  const configurationLink = `${urlFrag}/admin/configuration`
   const homeLink = `${urlFrag}/dashboard`
   const dashboardSubmissionsLink = `${urlFrag}/dashboard/submissions`
   const dashboardReviewsLink = `${urlFrag}/dashboard/reviews`
@@ -175,7 +180,7 @@ const AdminPage = () => {
 
   if (
     currentUser &&
-    ['aperture', 'colab', 'ncrc'].includes(process.env.INSTANCE_NAME)
+    ['aperture', 'colab', 'ncrc'].includes(config.instanceName) // TODO: remove instance based logic and refactor it to be enabled and disabled from config manager
   ) {
     links.push({ link: homeLink, name: 'Dashboard', icon: 'home', hasAlert })
   }
@@ -186,7 +191,7 @@ const AdminPage = () => {
       name: 'Manuscripts',
       icon: 'file-text',
     })
-    if (process.env.INSTANCE_NAME !== 'ncrc')
+    if (config.report.showInMenu)
       links.push({ link: reportsLink, name: 'Reports', icon: 'activity' })
   }
 
@@ -208,6 +213,7 @@ const AdminPage = () => {
         },
         { link: tasksTemplateLink, name: 'Tasks', icon: 'list' },
         { link: userAdminLink, name: 'Users', icon: 'users' },
+        { link: configurationLink, name: 'Configuration', icon: 'sliders' },
       ],
     })
   }
@@ -243,42 +249,81 @@ const AdminPage = () => {
       onClickCapture={handleEvent}
       onKeyDownCapture={handleEvent}
     >
-      <ConfigProvider config={config}>
-        <Menu
-          brand={journal.metadata.name}
-          brandLink={homeLink}
-          className=""
-          loginLink={loginLink}
-          navLinkComponents={links}
-          notice={notice}
-          profileLink={profileLink}
-          user={currentUser}
+      <Menu
+        brand={journal.metadata.name}
+        brandLink={homeLink}
+        className=""
+        loginLink={loginLink}
+        navLinkComponents={links}
+        notice={notice}
+        profileLink={profileLink}
+        user={currentUser}
+      />
+      <Switch>
+        <PrivateRoute
+          component={Profile}
+          exact
+          path={profileLink}
+          redirectLink={redirectLink}
         />
-        <Switch>
-          <PrivateRoute
-            component={Profile}
-            exact
-            path={profileLink}
-            redirectLink={redirectLink}
-          />
-          <PrivateRoute
-            component={Profile}
-            currentUser={currentUser}
-            exact
-            key="view-profile"
-            path={`${urlFrag}/profile/:id`}
-            redirectLink={redirectLink}
-          />
-          <Route exact path={`${urlFrag}/dashboard/:path?`}>
-            <DashboardLayout urlFrag={urlFrag}>
-              <Switch>
-                <PrivateRoute
-                  component={dashboardRedirect}
-                  currentUser={currentUser}
-                  exact
-                  path={homeLink}
-                  redirectLink={redirectLink}
-                />
+        <PrivateRoute
+          component={Profile}
+          currentUser={currentUser}
+          exact
+          path={`${urlFrag}/profile/:id`}
+          redirectLink={redirectLink}
+        />
+        <PrivateRoute
+          component={NewSubmissionPage}
+          currentUser={currentUser}
+          exact
+          path={`${urlFrag}/newSubmission`}
+          redirectLink={redirectLink}
+        />
+        <PrivateRoute
+          component={ReviewPage}
+          currentUser={currentUser}
+          exact
+          path={`${urlFrag}/versions/:version/review`}
+          redirectLink={redirectLink}
+        />
+        <PrivateRoute
+          component={ReviewPreviewPage}
+          currentUser={currentUser}
+          exact
+          path={`${urlFrag}/versions/:version/reviewPreview`}
+          redirectLink={redirectLink}
+        />
+        <PrivateRoute
+          component={DecisionPage}
+          currentUser={currentUser}
+          exact
+          path={`${urlFrag}/versions/:version/decision`}
+          redirectLink={redirectLink}
+        />
+        {/* TODO: remove instance based custom submit page and refactor it to be enabled from config manager after finalizaing the requirements */}
+        <PrivateRoute
+          component={SubmitPage}
+          currentUser={currentUser}
+          exact
+          path={`${urlFrag}/versions/:version/${
+            ['elife', 'ncrc'].includes(config.instanceName)
+              ? 'evaluation'
+              : 'submit'
+          }`}
+          redirectLink={redirectLink}
+        />
+        <Route exact path={`${urlFrag}/dashboard/:path?`}>
+          <DashboardLayout urlFrag={urlFrag}>
+            <Switch>
+              <PrivateRoute
+                component={dashboardRedirect}
+                currentUser={currentUser}
+                exact
+                path={homeLink}
+                redirectLink={redirectLink}
+              />
+              {config?.dashboard?.showSections.includes('submission') && (
                 <PrivateRoute
                   component={DashboardSubmissionsPage}
                   currentUser={currentUser}
@@ -286,6 +331,8 @@ const AdminPage = () => {
                   path={dashboardSubmissionsLink}
                   redirectLink={redirectLink}
                 />
+              )}
+              {config?.dashboard?.showSections.includes('review') && (
                 <PrivateRoute
                   component={DashboardReviewsPage}
                   currentUser={currentUser}
@@ -293,6 +340,8 @@ const AdminPage = () => {
                   path={dashboardReviewsLink}
                   redirectLink={redirectLink}
                 />
+              )}
+              {config?.dashboard?.showSections.includes('editor') && (
                 <PrivateRoute
                   component={DashboardEditsPage}
                   currentUser={currentUser}
@@ -300,184 +349,98 @@ const AdminPage = () => {
                   path={dashboardEditsLink}
                   redirectLink={redirectLink}
                 />
-              </Switch>
-            </DashboardLayout>
-          </Route>
+              )}
+            </Switch>
+          </DashboardLayout>
+        </Route>
+        {currentUser?.admin && [
+          // We use array instead of <></> because of https://stackoverflow.com/a/68637108/6505513
           <PrivateRoute
-            component={NewSubmissionPage}
+            component={FormBuilderPage}
             currentUser={currentUser}
             exact
-            path={`${urlFrag}/newSubmission`}
+            key="form-builder"
+            path={`${urlFrag}/admin/form-builder`}
             redirectLink={redirectLink}
-          />
+          />,
           <PrivateRoute
-            component={SubmitPage}
+            category="submission"
+            component={FormBuilderPage}
             currentUser={currentUser}
             exact
-            path={`${urlFrag}/versions/:version/submit`}
+            key="submission-form-builder"
+            path={`${urlFrag}/admin/submission-form-builder`}
             redirectLink={redirectLink}
-          />
+          />,
           <PrivateRoute
-            component={ReviewPage}
+            category="review"
+            component={FormBuilderPage}
             currentUser={currentUser}
             exact
-            path={`${urlFrag}/versions/:version/review`}
+            key="review-form-builder"
+            path={`${urlFrag}/admin/review-form-builder`}
             redirectLink={redirectLink}
-          />
+          />,
           <PrivateRoute
-            component={ReviewPreviewPage}
+            category="decision"
+            component={FormBuilderPage}
             currentUser={currentUser}
             exact
-            path={`${urlFrag}/versions/:version/reviewPreview`}
+            key="decision-form-builder"
+            path={`${urlFrag}/admin/decision-form-builder`}
             redirectLink={redirectLink}
-          />
+          />,
           <PrivateRoute
-            component={DecisionPage}
+            component={ManuscriptPage}
             currentUser={currentUser}
             exact
-            path={`${urlFrag}/versions/:version/decision`}
+            key="manuscript"
+            path={`${urlFrag}/versions/:version/manuscript`}
             redirectLink={redirectLink}
-          />
+          />,
           <PrivateRoute
-            component={Profile}
-            exact
-            path={profileLink}
-            redirectLink={redirectLink}
-          />
-          <PrivateRoute
-            component={Profile}
+            component={UsersManager}
             currentUser={currentUser}
-            exact
-            path={`${urlFrag}/profile/:id`}
+            key="users"
+            path={`${urlFrag}/admin/users`}
             redirectLink={redirectLink}
-          />
+          />,
           <PrivateRoute
-            component={NewSubmissionPage}
+            component={ManuscriptsPage}
             currentUser={currentUser}
-            exact
-            path={`${urlFrag}/newSubmission`}
+            key="manuscripts"
+            path={`${urlFrag}/admin/manuscripts`}
             redirectLink={redirectLink}
-          />
+          />,
           <PrivateRoute
-            component={SubmitPage}
+            component={ReportPage}
             currentUser={currentUser}
-            exact
-            path={`${urlFrag}/versions/:version/submit`}
+            key="reports"
+            path={reportsLink}
             redirectLink={redirectLink}
-          />
+          />,
           <PrivateRoute
-            component={ReviewPage}
+            component={ProductionPage}
             currentUser={currentUser}
-            exact
-            path={`${urlFrag}/versions/:version/review`}
+            key="production"
+            path={`${urlFrag}/versions/:version/production`}
             redirectLink={redirectLink}
-          />
+          />,
           <PrivateRoute
-            component={ReviewPreviewPage}
-            currentUser={currentUser}
-            exact
-            path={`${urlFrag}/versions/:version/reviewPreview`}
+            component={TasksTemplatePage}
+            key="tasks"
+            path={`${urlFrag}/admin/tasks`}
             redirectLink={redirectLink}
-          />
+          />,
           <PrivateRoute
-            component={DecisionPage}
-            currentUser={currentUser}
-            exact
-            path={`${urlFrag}/versions/:version/decision`}
+            component={ConfigManagerPage}
+            key="configuration"
+            path={`${urlFrag}/admin/configuration`}
             redirectLink={redirectLink}
-          />
-
-          {['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) && (
-            <PrivateRoute
-              component={SubmitPage}
-              exact
-              path={`${urlFrag}/versions/:version/evaluation`}
-              redirectLink={redirectLink}
-            />
-          )}
-          {currentUser?.admin && [
-            // We use array instead of <></> because of https://stackoverflow.com/a/68637108/6505513
-            <PrivateRoute
-              component={FormBuilderPage}
-              currentUser={currentUser}
-              exact
-              key="form-builder"
-              path={`${urlFrag}/admin/form-builder`}
-              redirectLink={redirectLink}
-            />,
-            <PrivateRoute
-              category="submission"
-              component={FormBuilderPage}
-              currentUser={currentUser}
-              exact
-              key="submission-form-builder"
-              path={`${urlFrag}/admin/submission-form-builder`}
-              redirectLink={redirectLink}
-            />,
-            <PrivateRoute
-              category="review"
-              component={FormBuilderPage}
-              currentUser={currentUser}
-              exact
-              key="review-form-builder"
-              path={`${urlFrag}/admin/review-form-builder`}
-              redirectLink={redirectLink}
-            />,
-            <PrivateRoute
-              category="decision"
-              component={FormBuilderPage}
-              currentUser={currentUser}
-              exact
-              key="decision-form-builder"
-              path={`${urlFrag}/admin/decision-form-builder`}
-              redirectLink={redirectLink}
-            />,
-            <PrivateRoute
-              component={ManuscriptPage}
-              currentUser={currentUser}
-              exact
-              key="manuscript"
-              path={`${urlFrag}/versions/:version/manuscript`}
-              redirectLink={redirectLink}
-            />,
-            <PrivateRoute
-              component={UsersManager}
-              currentUser={currentUser}
-              key="users"
-              path={`${urlFrag}/admin/users`}
-              redirectLink={redirectLink}
-            />,
-            <PrivateRoute
-              component={ManuscriptsPage}
-              currentUser={currentUser}
-              key="manuscripts"
-              path={`${urlFrag}/admin/manuscripts`}
-              redirectLink={redirectLink}
-            />,
-            <PrivateRoute
-              component={ReportPage}
-              currentUser={currentUser}
-              key="reports"
-              path={reportsLink}
-              redirectLink={redirectLink}
-            />,
-            <PrivateRoute
-              component={ProductionPage}
-              currentUser={currentUser}
-              key="production"
-              path={`${urlFrag}/versions/:version/production`}
-              redirectLink={redirectLink}
-            />,
-            <PrivateRoute
-              component={TasksTemplatePage}
-              key="tasks"
-              path={`${urlFrag}/admin/tasks`}
-              redirectLink={redirectLink}
-            />,
-          ]}
-        </Switch>
-        <RolesUpdater />
-      </ConfigProvider>
+          />,
+        ]}
+      </Switch>
+      <RolesUpdater />
     </Root>
   )
 }

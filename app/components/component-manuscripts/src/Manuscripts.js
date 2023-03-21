@@ -1,10 +1,10 @@
 /* eslint-disable no-shadow */
+import React, { useContext, useState } from 'react'
+import styled from 'styled-components'
 import { Checkbox } from '@pubsweet/ui'
 import { grid } from '@pubsweet/ui-toolkit'
-import React, { useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import styled from 'styled-components'
 import { articleStatuses } from '../../../globals'
 import { validateManuscriptSubmission } from '../../../shared/manuscriptUtils'
 import {
@@ -34,6 +34,7 @@ import {
   SelectAllField,
   SelectedManuscriptsNumber,
 } from './style'
+import { ConfigContext } from '../../config/src'
 
 const OuterContainer = styled(Container)`
   overflow: hidden;
@@ -79,6 +80,8 @@ const Manuscripts = ({ history, ...props }) => {
     uriQueryParams,
     currentUser,
   } = props
+
+  const config = useContext(ConfigContext)
 
   const [isOpenBulkArchiveModal, setIsOpenBulkArchiveModal] = useState(false)
 
@@ -130,7 +133,7 @@ const Manuscripts = ({ history, ...props }) => {
     })
   }
 
-  const limit = process.env.INSTANCE_NAME === 'ncrc' ? 100 : 10
+  const limit = config?.manuscript?.paginationCount
 
   const { loading, error, data } = queryObject
 
@@ -246,11 +249,12 @@ const Manuscripts = ({ history, ...props }) => {
 
   const adjustedColumnNames = [...configuredColumnNames]
   adjustedColumnNames.push('actions')
-  if (['ncrc', 'colab'].includes(process.env.INSTANCE_NAME))
+  if (['ncrc', 'colab'].includes(config.instanceName))
     adjustedColumnNames.splice(0, 0, 'newItemCheckbox')
 
   // Source of truth for columns
   const columnsProps = buildColumnDefinitions(
+    config,
     adjustedColumnNames,
     fieldDefinitions,
     specialComponentValues,
@@ -266,17 +270,11 @@ const Manuscripts = ({ history, ...props }) => {
 
   const hideChat = () => setIsAdminChatOpen(false)
 
-  const shouldAllowNewSubmission = ['elife', 'ncrc'].includes(
-    process.env.INSTANCE_NAME,
-  )
-
-  const shouldAllowBulkDelete = ['ncrc', 'colab'].includes(
-    process.env.INSTANCE_NAME,
-  )
+  const shouldAllowBulkDelete = ['ncrc', 'colab'].includes(config.instanceName)
 
   const topRightControls = (
     <ControlsContainer>
-      {shouldAllowNewSubmission && (
+      {config?.manuscript?.newSubmission && (
         <ActionButton
           onClick={() => history.push(`${urlFrag}/newSubmission`)}
           primary
@@ -396,7 +394,7 @@ const Manuscripts = ({ history, ...props }) => {
           />
         )}
       </Columns>
-      {['ncrc', 'colab'].includes(process.env.INSTANCE_NAME) && (
+      {['ncrc', 'colab'].includes(config.instanceName) && (
         <Modal
           isOpen={isOpenBulkArchiveModal}
           onRequestClose={closeModalBulkArchiveConfirmation}
