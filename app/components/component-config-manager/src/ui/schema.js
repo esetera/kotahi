@@ -510,14 +510,14 @@ const schema = {
                 archivePeriodDays: {
                   type: 'integer',
                   description:
-                    'Number of days a Manuscripts should remain in the Manuscripts page before being automatically archived',
+                    'Number of days a manuscript should remain in the Manuscripts page before being automatically archived',
                   minimum: 1,
                   maximum: 90,
                 },
                 semanticScholarImportsRecencyPeriodDays: {
                   type: 'integer',
                   description:
-                    'Import manuscripts from Sematic Scholar no older than X number of days',
+                    'Import manuscripts from Sematic Scholar no older than ‘x’ number of days',
                   minimum: 1,
                   maximum: 90,
                 },
@@ -551,7 +551,7 @@ const schema = {
                 },
                 sharedReview: {
                   type: 'boolean',
-                  title: 'Reviewers can see each other submitted reviews',
+                  title: 'Reviewers can see submitted reviews',
                   default: false,
                 },
                 hideReview: {
@@ -634,7 +634,7 @@ const schema = {
                     reverseFieldOrder: {
                       type: 'boolean',
                       title:
-                        'Reverse the order of fields published to Hypothesis ',
+                        'Reverse the order of Submission/Decision form fields published to Hypothesis',
                       default: false,
                     },
                   },
@@ -885,14 +885,14 @@ const schema = {
                 archivePeriodDays: {
                   type: 'integer',
                   description:
-                    'Number of days a Manuscripts should remain in the Manuscripts page before being automatically archived',
+                    'Number of days a manuscript should remain in the Manuscripts page before being automatically archived',
                   minimum: 1,
                   maximum: 90,
                 },
                 semanticScholarImportsRecencyPeriodDays: {
                   type: 'integer',
                   description:
-                    'Import manuscripts from Sematic Scholar no older than X number of days',
+                    'Import manuscripts from Sematic Scholar no older than ‘x’ number of days',
                   minimum: 1,
                   maximum: 90,
                 },
@@ -926,7 +926,7 @@ const schema = {
                 },
                 sharedReview: {
                   type: 'boolean',
-                  title: 'Reviewers can see each other submitted reviews',
+                  title: 'Reviewers can see submitted reviews',
                   default: false,
                 },
                 hideReview: {
@@ -1009,7 +1009,7 @@ const schema = {
                     reverseFieldOrder: {
                       type: 'boolean',
                       title:
-                        'Reverse the order of fields published to Hypothesis ',
+                        'Reverse the order of Submission/Decision form fields published to Hypothesis',
                       default: false,
                     },
                   },
@@ -1259,14 +1259,14 @@ const schema = {
                 archivePeriodDays: {
                   type: 'integer',
                   description:
-                    'Number of days a Manuscripts should remain in the Manuscripts page before being automatically archived',
+                    'Number of days a manuscript should remain in the Manuscripts page before being automatically archived',
                   minimum: 1,
                   maximum: 90,
                 },
                 semanticScholarImportsRecencyPeriodDays: {
                   type: 'integer',
                   description:
-                    'Import manuscripts from Sematic Scholar no older than X number of days',
+                    'Import manuscripts from Sematic Scholar no older than ‘x’ number of days',
                   minimum: 1,
                   maximum: 90,
                 },
@@ -1300,7 +1300,7 @@ const schema = {
                 },
                 sharedReview: {
                   type: 'boolean',
-                  title: 'Reviewers can see each other submitted reviews',
+                  title: 'Reviewers can see submitted reviews',
                   default: false,
                 },
                 hideReview: {
@@ -1378,7 +1378,7 @@ const schema = {
                     reverseFieldOrder: {
                       type: 'boolean',
                       title:
-                        'Reverse the order of fields published to Hypothesis ',
+                        'Reverse the order of Submission/Decision form fields published to Hypothesis',
                       default: false,
                     },
                   },
@@ -1628,14 +1628,14 @@ const schema = {
                 archivePeriodDays: {
                   type: 'integer',
                   description:
-                    'Number of days a Manuscripts should remain in the Manuscripts page before being automatically archived',
+                    'Number of days a manuscript should remain in the Manuscripts page before being automatically archived',
                   minimum: 1,
                   maximum: 90,
                 },
                 semanticScholarImportsRecencyPeriodDays: {
                   type: 'integer',
                   description:
-                    'Import manuscripts from Sematic Scholar no older than X number of days',
+                    'Import manuscripts from Sematic Scholar no older than ‘x’ number of days',
                   minimum: 1,
                   maximum: 90,
                 },
@@ -1669,7 +1669,7 @@ const schema = {
                 },
                 sharedReview: {
                   type: 'boolean',
-                  title: 'Reviewers can see each other submitted reviews',
+                  title: 'Reviewers can see submitted reviews',
                   default: false,
                 },
                 hideReview: {
@@ -1747,7 +1747,7 @@ const schema = {
                     reverseFieldOrder: {
                       type: 'boolean',
                       title:
-                        'Reverse the order of fields published to Hypothesis ',
+                        'Reverse the order of Submission/Decision form fields published to Hypothesis',
                       default: false,
                     },
                   },
