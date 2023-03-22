@@ -1,9 +1,10 @@
 import { CheckboxGroup } from '@pubsweet/ui'
 import { grid, th } from '@pubsweet/ui-toolkit'
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import styled from 'styled-components'
 import { UserAvatar } from '../../../../component-avatar/src'
 import Modal from '../../../../component-modal/src/Modal'
+import { ConfigContext } from '../../../../config/src'
 import {
   ActionButton,
   LooseColumn,
@@ -51,6 +52,7 @@ const InviteReviewerModal = ({
   updateSharedStatusForInvitedReviewer,
   updateTeamMember,
 }) => {
+  const config = useContext(ConfigContext)
   const [condition, setCondition] = useState([])
   const identity = reviewerUsers.find(user => user.id === userId)
 
@@ -72,16 +74,10 @@ const InviteReviewerModal = ({
     }
   }
 
-  const options = [
-    {
-      value: 'shared',
-      label: 'Shared',
-    },
-    {
-      value: 'email-notification',
-      label: 'Email Notification',
-    },
-  ]
+  const options = []
+  if (config.controlPanel?.sharedReview)
+    options.push({ value: 'shared', label: 'Shared' })
+  options.push({ value: 'email-notification', label: 'Email Notification' })
 
   return (
     <Modal isOpen={open} onClose={onClose} title="Invite Reviewer">

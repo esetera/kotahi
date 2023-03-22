@@ -1,6 +1,6 @@
+import React, { useContext } from 'react'
 import { Button } from '@pubsweet/ui'
 import { th, grid } from '@pubsweet/ui-toolkit'
-import React from 'react'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import {
@@ -19,6 +19,7 @@ import {
   useQueryParams,
 } from '../../../../shared/urlParamUtils'
 import { FlexRow } from '../../../../globals'
+import { ConfigContext } from '../../../config/src'
 
 const TabLink = styled(Link)`
   color: ${th('colorText')};
@@ -35,27 +36,32 @@ const DashboardLayout = ({
   urlFrag,
   children,
 }) => {
+  const config = useContext(ConfigContext)
   const history = useHistory()
   const location = useLocation()
   const applyQueryParams = useQueryParams()
 
   const uriQueryParams = new URLSearchParams(history.location.search)
   const currentSearchQuery = uriQueryParams.get(URI_SEARCH_PARAM)
+  const dashboardPages = []
 
-  const dashboardPages = [
-    {
+  if (config.dashboard?.showSections.includes('submission'))
+    dashboardPages.push({
       href: '/dashboard/submissions',
       label: 'My Submissions',
-    },
-    {
+    })
+
+  if (config.dashboard?.showSections.includes('review'))
+    dashboardPages.push({
       href: '/dashboard/reviews',
       label: 'To Review',
-    },
-    {
+    })
+
+  if (config.dashboard?.showSections.includes('editor'))
+    dashboardPages.push({
       href: '/dashboard/edits',
       label: "Manuscripts I'm Editor of",
-    },
-  ]
+    })
 
   return (
     <Container>

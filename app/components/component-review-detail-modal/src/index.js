@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import styled from 'styled-components'
 import { get } from 'lodash'
 import { Checkbox } from '@pubsweet/ui/dist/atoms'
@@ -17,6 +17,7 @@ import recommendations from '../../../../config/journal/recommendations'
 import { UserAvatar } from '../../component-avatar/src'
 import DeleteReviewerModal from '../../component-review/src/components/reviewers/DeleteReviewerModal'
 import ReadonlyFieldData from '../../component-review/src/components/metadata/ReadonlyFieldData'
+import { ConfigContext } from '../../config/src'
 
 const Header = styled.div`
   font-size: 18px;
@@ -178,6 +179,8 @@ const CheckboxActions = ({
   manuscriptId,
   updateReview,
 }) => {
+  const config = useContext(ConfigContext)
+
   const toggleSharedStatus = async () => {
     if (isInvitation) {
       await updateSharedStatusForInvitedReviewer({
@@ -212,7 +215,7 @@ const CheckboxActions = ({
 
   return (
     <>
-      {review && (
+      {review && config.controlPanel?.hideReview && (
         <>
           <Checkbox
             checked={
@@ -230,11 +233,13 @@ const CheckboxActions = ({
           />
         </>
       )}
-      <Checkbox
-        checked={reviewerTeamMember.isShared}
-        label="Shared"
-        onChange={toggleSharedStatus}
-      />
+      {config.controlPanel?.sharedReview && (
+        <Checkbox
+          checked={reviewerTeamMember.isShared}
+          label="Shared"
+          onChange={toggleSharedStatus}
+        />
+      )}
     </>
   )
 }

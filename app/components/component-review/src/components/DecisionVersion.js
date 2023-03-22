@@ -501,13 +501,7 @@ const DecisionVersion = ({
     <HiddenTabs
       defaultActiveKey={locationState}
       onChange={refetch}
-      sections={[
-        teamSection(),
-        decisionSection(),
-        editorSection,
-        metadataSection(),
-        tasksAndNotificationsSection(),
-      ]}
+      sections={sections}
     />
   )
 }
