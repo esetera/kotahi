@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { v4 as uuid } from 'uuid'
 import { useMutation, useQuery, gql } from '@apollo/client'
 import { Redirect } from 'react-router-dom'
 import ReactRouterPropTypes from 'react-router-prop-types'
@@ -258,7 +259,15 @@ const ReviewPage = ({ currentUser, history, match }) => {
   const reviewOrInitial = manuscript =>
     manuscript?.reviews?.find(
       review => review?.user?.id === currentUser?.id && !review.isDecision,
-    ) || {}
+    ) || {
+      // Usually a blank review is created when the user accepts the review invite.
+      // Creating a new review object here is a fallback for unknown error situations
+      // when the blank review was not created in advance for some reason.
+      id: uuid(),
+      isDecision: false,
+      isHiddenReviewerName: true,
+      jsonData: {},
+    }
 
   const versions = data
     ? manuscriptVersions(data.manuscript).map(v => ({
