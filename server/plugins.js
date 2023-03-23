@@ -39,10 +39,12 @@ const getEmptySubmission = async () => {
 const importWorkers = []
 
 const getBroker = name => ({
-  addImporter: (importType, doImport) => {
+  addManuscriptImporter: (importType, doImport) => {
     assertArgTypes([importType, doImport], 'string', 'function')
     importWorkers.push({ name, importType, doImport })
   },
+  findManuscriptWithDoi: async doi =>
+    doi ? models.Manuscript.query().findOne({ doi }) : null,
   findManuscriptWithUri: async uri =>
     uri
       ? models.Manuscript.query().findOne(builder =>
@@ -53,8 +55,6 @@ const getBroker = name => ({
             .orWhereRaw("submission->>'uri'", '=', uri),
         )
       : null,
-  findManuscriptWithDoi: async doi =>
-    doi ? models.Manuscript.query().findOne({ doi }) : null,
   getStubManuscriptObject: async () => ({
     status: 'new',
     isImported: false,
@@ -75,15 +75,19 @@ const getBroker = name => ({
     teams: [],
   }),
   getSubmissionForm,
+  logger: console,
 })
 
 const runImports = async (submitterId = null) => {
+  const importType = submitterId ? 'manual' : 'automatic'
   const allNewManuscripts = []
   const urisAlreadyImporting = []
   const doisAlreadyImporting = []
 
   for (let i = 0; i < importWorkers.length; i += 1) {
     const worker = importWorkers[i]
+    if (![importType, 'any'].includes(worker.importType)) continue
+
     console.info(`Importing manuscripts using plugin ${worker.name}`)
     let importSource, lastImportDate
 
@@ -119,7 +123,6 @@ const runImports = async (submitterId = null) => {
         urisAlreadyImporting: [...urisAlreadyImporting],
         doisAlreadyImporting: [...doisAlreadyImporting],
         lastImportDate: lastImportDate ? new Date(lastImportDate) : null,
-        logger: console,
       })
     } catch (error) {
       console.error(`Import plugin ${worker.name} failed. Skipping.`)
