@@ -13,6 +13,7 @@
   "./server/model-channel/src",
   "./server/model-message/src",
   "./server/reports/src",
+  "./server/reference/src",
   "./server/profile-upload",
   "./server/auth-orcid",
   "@coko/server/src/models/file",

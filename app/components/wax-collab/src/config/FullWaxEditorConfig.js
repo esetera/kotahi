@@ -1,9 +1,10 @@
+// import { WaxSelectionPlugin } from 'wax-prosemirror-plugins'
 import { emDash, ellipsis } from 'prosemirror-inputrules'
 import { columnResizing, tableEditing } from 'prosemirror-tables'
 import {
   InlineAnnotationsService,
   AnnotationToolGroupService,
-  ImageService,
+  // ImageService,
   ImageToolGroupService,
   LinkService,
   ListsService,
@@ -30,28 +31,36 @@ import {
   BottomInfoService,
   TrackOptionsToolGroupService,
   TrackCommentOptionsToolGroupService,
+  // EditingSuggestingService,
   TrackingAndEditingToolGroupService,
-  EditingSuggestingService,
 } from 'wax-prosemirror-services'
-import { KotahiBlockDropDownToolGroupService } from '../CustomWaxToolGroups'
+
+import {
+  KotahiBlockDropDownToolGroupService,
+  JatsSideMenuToolGroupService,
+  JatsAnnotationListTooolGroupService,
+  ExternalToolGroupService,
+  LinkTagService,
+  ImageService,
+  CustomTagService,
+  EditingSuggestingService,
+} from '../CustomWaxToolGroups'
+
 import JatsTagsService from '../JatsTags'
 import CharactersList from './CharactersList'
 import KotahiSchema from './KotahiSchema'
 
-const updateTrackStatus = change => {
-  // this returns "true" when Suggesting Mode is turned on.
-  // eslint-disable-next-line no-console
-  // console.log(change)
-}
-
 const updateTitle = title => {
   // this gets fired when the title is changed in original version of this—not called now, but might still be needed
-  // eslint-disable-next-line no-console
   // console.log(`Title changed: ${title}`)
 }
 
-const fullWaxEditorConfig = handleAssetManager => ({
-  EnableTrackChangeService: { enabled: false, toggle: true, updateTrackStatus },
+const fullWaxEditorConfig = (readOnlyComments, handleAssetManager) => ({
+  EnableTrackChangeService: {
+    enabled: false,
+    toggle: true,
+    updateTrackStatus: () => true,
+  },
   AcceptTrackChangeService: {
     own: {
       accept: true,
@@ -101,8 +110,16 @@ const fullWaxEditorConfig = handleAssetManager => ({
       ],
     },
     {
+      templateArea: 'leftSideBar',
+      toolGroups: ['JatsSideMenu'],
+    },
+    {
       templateArea: 'commentTrackToolBar',
       toolGroups: ['TrackCommentOptions'],
+    },
+    {
+      templateArea: 'externalMenuToolBar',
+      toolGroups: ['ExternalToolGroup'],
     },
     {
       templateArea: 'bottomRightInfo',
@@ -110,7 +127,7 @@ const fullWaxEditorConfig = handleAssetManager => ({
     },
   ],
 
-  PmPlugins: [columnResizing(), tableEditing()],
+  PmPlugins: [columnResizing(), tableEditing() /* WaxSelectionPlugin */],
 
   RulesService: [emDash, ellipsis],
 
@@ -122,9 +139,9 @@ const fullWaxEditorConfig = handleAssetManager => ({
 
   ImageService: handleAssetManager ? { handleAssetManager } : {},
 
-  // end insertion
-
   services: [
+    new CustomTagService(),
+    new LinkTagService(),
     new AnnotationToolGroupService(),
     new BaseService(),
     new BaseToolGroupService(),
@@ -161,7 +178,12 @@ const fullWaxEditorConfig = handleAssetManager => ({
     new CommentsService(),
     new TrackCommentOptionsToolGroupService(),
     new TrackOptionsToolGroupService(),
+    // for side menu
     new JatsTagsService(),
+    new JatsSideMenuToolGroupService(),
+    new JatsAnnotationListTooolGroupService(),
+    // for external top menu
+    new ExternalToolGroupService(),
   ],
 })
 

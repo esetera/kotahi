@@ -4,7 +4,7 @@ import { columnResizing, tableEditing } from 'prosemirror-tables'
 import {
   InlineAnnotationsService,
   AnnotationToolGroupService,
-  ImageService,
+  // ImageService,
   ImageToolGroupService,
   LinkService,
   ListsService,
@@ -31,13 +31,18 @@ import {
   BottomInfoService,
   TrackOptionsToolGroupService,
   TrackCommentOptionsToolGroupService,
-  EditingSuggestingService,
+  // EditingSuggestingService,
   TrackingAndEditingToolGroupService,
 } from 'wax-prosemirror-services'
 import {
   KotahiBlockDropDownToolGroupService,
   JatsSideMenuToolGroupService,
   JatsAnnotationListTooolGroupService,
+  ExternalToolGroupService,
+  LinkTagService,
+  ImageService,
+  CustomTagService,
+  EditingSuggestingService,
 } from '../CustomWaxToolGroups'
 import JatsTagsService from '../JatsTags'
 import CharactersList from './CharactersList'
@@ -110,6 +115,10 @@ const productionWaxEditorConfig = (readOnlyComments, handleAssetManager) => ({
       toolGroups: ['TrackCommentOptions'],
     },
     {
+      templateArea: 'externalMenuToolBar',
+      toolGroups: ['ExternalToolGroup'],
+    },
+    {
       templateArea: 'bottomRightInfo',
       toolGroups: [{ name: 'InfoToolGroup', exclude: ['ShortCutsInfo'] }],
     },
@@ -125,6 +134,8 @@ const productionWaxEditorConfig = (readOnlyComments, handleAssetManager) => ({
   TitleService: { updateTitle },
   ImageService: handleAssetManager ? { handleAssetManager } : {},
   services: [
+    new CustomTagService(),
+    new LinkTagService(),
     new AnnotationToolGroupService(),
     new BaseService(),
     new BaseToolGroupService(),
@@ -165,6 +176,8 @@ const productionWaxEditorConfig = (readOnlyComments, handleAssetManager) => ({
     new JatsTagsService(),
     new JatsSideMenuToolGroupService(),
     new JatsAnnotationListTooolGroupService(),
+    // for external top menu
+    new ExternalToolGroupService(),
   ],
 })
 

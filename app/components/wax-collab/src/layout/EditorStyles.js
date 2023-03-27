@@ -327,3 +327,12 @@ export const WaxSurfaceScroll = styled.div`
   /* stylelint-disable-next-line order/properties-alphabetical-order */
   ${EditorElements}
 `
+
+export const ExternalMenu = styled.div`
+  display: flex;
+  height: 36px;
+  justify-content: end;
+  user-select: none;
+  background: ${th('colorBackgroundToolBar')};
+  border-bottom: ${th('borderWidth')} ${th('borderStyle')} ${th('colorBorder')};
+`

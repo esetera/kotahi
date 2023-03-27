@@ -425,3 +425,21 @@ export const UPDATE_TASK = gql`
     }
   }
 `
+
+export const UPDATE_VALIDATION = gql`
+  mutation getreferencevalidation($reference: String!) {
+    createReferenceValidation(reference: $reference) {
+      responseData
+      succeeded
+      errorMessage
+    }
+  }
+`
+
+export const GET_REFERENCE_STRUCTURING = gql`
+  mutation getreferencestructuring($references: [String]!) {
+    createReferenceStructuring(references: $references) {
+      response
+    }
+  }
+`

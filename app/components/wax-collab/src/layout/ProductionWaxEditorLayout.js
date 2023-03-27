@@ -18,6 +18,7 @@ import {
   SideMenu,
   EditorArea,
   WaxSurfaceScroll,
+  ExternalMenu,
 } from './EditorStyles'
 import {
   CommentsContainer,
@@ -45,6 +46,7 @@ const RightArea = ComponentPlugin('rightArea')
 const CounterInfo = ComponentPlugin('bottomRightInfo')
 const CommentTrackToolBar = ComponentPlugin('commentTrackToolBar')
 const LeftSideBar = ComponentPlugin('leftSideBar')
+const ExternalMenuToolBar = ComponentPlugin('externalMenuToolBar')
 
 const ProductionWaxEditorLayout = (readOnly, readOnlyComments) => ({
   editor,
@@ -122,6 +124,9 @@ const ProductionWaxEditorLayout = (readOnly, readOnlyComments) => ({
             <Menu className="waxmenu">
               <TopBar />
             </Menu>
+            <ExternalMenu>
+              <ExternalMenuToolBar />
+            </ExternalMenu>
             <ProductionEditorDiv>
               <SideMenu>
                 <LeftSideBar />

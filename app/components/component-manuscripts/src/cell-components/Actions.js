@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { UserAction as Action } from '../style'
 import { articleStatuses } from '../../../../globals'
 import { ConfirmationModal } from '../../../component-modal/src'
+import { MetadataModal } from '../../../components-metadataModal'
 
 const Actions = ({
   manuscript,
@@ -13,6 +14,8 @@ const Actions = ({
   const [confirmArchiveModalIsOpen, setConfirmArchiveModalIsOpen] = useState(
     false,
   )
+
+  const [MetadataModalIsOpen, setMetadataModalIsOpen] = useState(false)
 
   return (
     <>
@@ -41,6 +44,13 @@ const Actions = ({
       <Action to={`${urlFrag}/versions/${manuscript.id}/production`}>
         Production
       </Action>
+      <Action
+        onClick={() => {
+          setMetadataModalIsOpen(true)
+        }}
+      >
+        Save MetaData
+      </Action>
       {['elife', 'ncrc'].includes(process.env.INSTANCE_NAME) &&
         manuscript.status === articleStatuses.evaluated && (
           <Action
@@ -55,6 +65,10 @@ const Actions = ({
         confirmationAction={() => archiveManuscript(manuscript.id)}
         isOpen={confirmArchiveModalIsOpen}
         message="Please confirm you would like to archive this manuscript"
+      />
+      <MetadataModal
+        closeModal={() => setMetadataModalIsOpen(false)}
+        isOpen={MetadataModalIsOpen}
       />
     </>
   )

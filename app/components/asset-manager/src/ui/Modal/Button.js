@@ -4,8 +4,11 @@ import styled from 'styled-components'
 import RootButton from './RootButton'
 
 const StyledIcon = styled.i`
-  display: block;
+  align-items: center;
+  display: flex;
   height: 24px;
+  justify-content: center;
+  margin: 0 5px;
   width: 24px;
 `
 
