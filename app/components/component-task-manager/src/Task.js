@@ -483,7 +483,7 @@ const Task = ({
             updateTask={updateTask}
             updateTaskNotification={updateTaskNotification}
           />
-          <TaskRowContainer>
+          <TaskRowContainer key={task.id}>
             <TaskRow
               isOverdue={isOverdue}
               ref={provided.innerRef}
