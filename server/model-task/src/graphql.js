@@ -72,6 +72,7 @@ const resolvers = {
 
       return Task.query()
         .findById(task.id)
+        .orderBySequence()
         .withGraphFetched(
           '[assignee, emailNotifications(orderByCreated).recipientUser, notificationLogs]',
         )

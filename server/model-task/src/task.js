@@ -11,6 +11,9 @@ class Task extends BaseModel {
       orderBySequence(builder) {
         builder.orderBy('sequenceIndex')
       },
+      orderByCreated(builder) {
+        builder.orderBy('created', 'asc')
+      },
     }
   }
 
