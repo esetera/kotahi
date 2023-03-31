@@ -1248,86 +1248,93 @@ const resolvers = {
       },
       ctx,
     ) {
-      const submissionForm = await Form.findOneByField('purpose', 'submit')
+      try {
+        const submissionForm = await Form.findOneByField('purpose', 'submit')
 
-      // Get IDs of the top-level manuscripts
-      const topLevelManuscripts = await models.Manuscript.query()
-        .distinct(
-          raw(
-            'coalesce(manuscripts.parent_id, manuscripts.id) AS top_level_id',
-          ),
-        )
-        .join('teams', 'manuscripts.id', '=', 'teams.object_id')
-        .join('team_members', 'teams.id', '=', 'team_members.team_id')
-        .where('team_members.user_id', ctx.user)
-        .where('is_hidden', false)
-
-      // Get those top-level manuscripts with all versions, all with teams and members
-      const allManuscriptsWithInfo = await models.Manuscript.query()
-        .withGraphFetched(
-          '[teams.[members], tasks, invitations, manuscriptVersions(orderByCreated).[teams.[members], tasks, invitations]]',
-        )
-        .whereIn(
-          'id',
-          topLevelManuscripts.map(m => m.topLevelId),
-        )
-        .orderBy('created', 'desc')
-
-      // Get the latest version of each manuscript, and check the users role in that version
-      const userManuscriptsWithInfo = {}
-
-      allManuscriptsWithInfo.forEach(m => {
-        const latestVersion =
-          m.manuscriptVersions && m.manuscriptVersions.length > 0
-            ? m.manuscriptVersions[0]
-            : m
-
-        if (
-          latestVersion.teams.some(t =>
-            t.members.some(member => {
-              return (
-                member.userId === ctx.user &&
-                wantedRoles.includes(t.role) &&
-                (!reviewerStatus || member.status === reviewerStatus)
-              )
-            }),
+        // Get IDs of the top-level manuscripts
+        const topLevelManuscripts = await models.Manuscript.query()
+          .distinct(
+            raw(
+              'coalesce(manuscripts.parent_id, manuscripts.id) AS top_level_id',
+            ),
           )
-        ) {
-          // eslint-disable-next-line no-param-reassign
-          latestVersion.hasOverdueTasksForUser = manuscriptHasOverdueTasksForUser(
-            latestVersion,
-            ctx.user,
+          .join('teams', 'manuscripts.id', '=', 'teams.object_id')
+          .join('team_members', 'teams.id', '=', 'team_members.team_id')
+          .where('team_members.user_id', ctx.user)
+          .where('is_hidden', false)
+
+        // Get those top-level manuscripts with all versions, all with teams and members
+        const allManuscriptsWithInfo = await models.Manuscript.query()
+          .withGraphFetched(
+            '[teams.[members], tasks, invitations, manuscriptVersions(orderByCreated).[teams.[members], tasks, invitations]]',
           )
+          .whereIn(
+            'id',
+            topLevelManuscripts.map(m => m.topLevelId),
+          )
+          .orderBy('created', 'desc')
 
-          userManuscriptsWithInfo[m.id] = m
-        }
-      })
+        // Get the latest version of each manuscript, and check the users role in that version
+        const userManuscriptsWithInfo = {}
 
-      // Apply filters to the manuscripts, limiting results to those the user has a role in
-      const [rawQuery, rawParams] = buildQueryForManuscriptSearchFilterAndOrder(
-        sort,
-        offset,
-        limit,
-        filters,
-        submissionForm,
-        timezoneOffsetMinutes || 0,
-        Object.keys(userManuscriptsWithInfo),
-      )
+        allManuscriptsWithInfo.forEach(m => {
+          const latestVersion =
+            m.manuscriptVersions && m.manuscriptVersions.length > 0
+              ? m.manuscriptVersions[0]
+              : m
 
-      const knex = models.Manuscript.knex()
-      const rawQResult = await knex.raw(rawQuery, rawParams)
-      let totalCount = 0
-      if (rawQResult.rowCount)
-        totalCount = parseInt(rawQResult.rows[0].full_count, 10)
+          if (
+            latestVersion.teams.some(t =>
+              t.members.some(member => {
+                return (
+                  member.userId === ctx.user &&
+                  wantedRoles.includes(t.role) &&
+                  (!reviewerStatus || member.status === reviewerStatus)
+                )
+              }),
+            )
+          ) {
+            // eslint-disable-next-line no-param-reassign
+            latestVersion.hasOverdueTasksForUser = manuscriptHasOverdueTasksForUser(
+              latestVersion,
+              ctx.user,
+            )
 
-      // Add in searchRank and searchSnippet
-      const result = rawQResult.rows.map(row => ({
-        ...userManuscriptsWithInfo[row.id],
-        searchRank: row.rank,
-        searchSnippet: row.snippet,
-      }))
+            userManuscriptsWithInfo[m.id] = m
+          }
+        })
 
-      return { totalCount, manuscripts: result }
+        // Apply filters to the manuscripts, limiting results to those the user has a role in
+        const [
+          rawQuery,
+          rawParams,
+        ] = buildQueryForManuscriptSearchFilterAndOrder(
+          sort,
+          offset,
+          limit,
+          filters,
+          submissionForm,
+          timezoneOffsetMinutes || 0,
+          Object.keys(userManuscriptsWithInfo),
+        )
+
+        const knex = models.Manuscript.knex()
+        const rawQResult = await knex.raw(rawQuery, rawParams)
+        let totalCount = 0
+        if (rawQResult.rowCount)
+          totalCount = parseInt(rawQResult.rows[0].full_count, 10)
+
+        // Add in searchRank and searchSnippet
+        const result = rawQResult.rows.map(row => ({
+          ...userManuscriptsWithInfo[row.id],
+          searchRank: row.rank,
+          searchSnippet: row.snippet,
+        }))
+
+        return { totalCount, manuscripts: result }
+      } catch (err) {
+        throw new Error(`${err.message}: ${err.stack}`)
+      }
     },
     async manuscripts(_, { where }, ctx) {
       const manuscripts = models.Manuscript.query()

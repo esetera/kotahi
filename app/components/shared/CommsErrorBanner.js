@@ -15,7 +15,10 @@ const ErrorBox = styled.div`
 const CommsErrorBanner = ({ error }) => {
   if (error) console.error('Comms error: ', error)
   return (
-    <ErrorBox>Communications error! Please try refreshing the page.</ErrorBox>
+    <ErrorBox>
+      Communications error! Please try refreshing the page.
+      <div style={{ fontSize: '12px' }}>{`${error}`}</div>
+    </ErrorBox>
   )
 }
 
