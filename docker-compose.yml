@@ -141,8 +141,6 @@ services:
       - SERVICE_XSWEET_HOST=${SERVICE_XSWEET_HOST:-xsweet}
       - SERVICE_XSWEET_PORT=${SERVICE_XSWEET_PORT:-3004}
 
-
-
     volumes:
       - ./config:/home/node/app/config
       - ./server:/home/node/app/server
@@ -188,42 +186,38 @@ services:
 
   xsweet:
     depends_on:
-      - db-xsweet    
-    image: cokoapps/xsweet:2.1.2    
-    ports:      
-      - ${SERVICE_XSWEET_PORT:-3004}:${SERVICE_XSWEET_PORT:-3004}    
-    environment:      
-      - PUBSWEET_SECRET=xsweet_dev_secret      
-      - POSTGRES_USER=xsweet_user_dev      
-      - POSTGRES_PASSWORD=xsweet_user_password      
-      - POSTGRES_HOST=db-xsweet      
-      - POSTGRES_DB=xsweet_dev      
-      - POSTGRES_PORT=5432      
-      - SERVER_PORT=${SERVICE_XSWEET_PORT:-3004}      
-      - NODE_ENV=development    
-    entrypoint:      
-      [        
-        'sh',        
-        'scripts/wait-for-it',        
-        'db-xsweet:5432',        
-        '--',        
-        'sh',        
-        'scripts/setupDevServer.sh'      
-      ]    
-    command: 
-      [ 
-        'node', 
-        'server/startServer.js' 
+      - db-xsweet
+    image: cokoapps/xsweet:2.1.2
+    ports:
+      - ${SERVICE_XSWEET_PORT:-3004}:${SERVICE_XSWEET_PORT:-3004}
+    environment:
+      - PUBSWEET_SECRET=xsweet_dev_secret
+      - POSTGRES_USER=xsweet_user_dev
+      - POSTGRES_PASSWORD=xsweet_user_password
+      - POSTGRES_HOST=db-xsweet
+      - POSTGRES_DB=xsweet_dev
+      - POSTGRES_PORT=5432
+      - SERVER_PORT=${SERVICE_XSWEET_PORT:-3004}
+      - NODE_ENV=development
+    entrypoint:
+      [
+        'sh',
+        'scripts/wait-for-it',
+        'db-xsweet:5432',
+        '--',
+        'sh',
+        'scripts/setupDevServer.sh',
       ]
+    command: ['node', 'server/startServer.js']
 
-  db-xsweet:    
-    image: postgres:14.4-alpine    
-    environment:      
-      - POSTGRES_USER=xsweet_user_dev      
-      - POSTGRES_DB=xsweet_dev      
-      - POSTGRES_PASSWORD=xsweet_user_password    
-    volumes:      
-    - ./scripts/init-pgboss.sql:/docker-entrypoint-initdb.d/init-pgboss.sql
+  db-xsweet:
+    image: postgres:14.4-alpine
+    environment:
+      - POSTGRES_USER=xsweet_user_dev
+      - POSTGRES_DB=xsweet_dev
+      - POSTGRES_PASSWORD=xsweet_user_password
+    volumes:
+      - ./scripts/init-pgboss.sql:/docker-entrypoint-initdb.d/init-pgboss.sql
 
   db:
     image: postgres:10-alpine
@@ -332,8 +326,6 @@ services:
       - POSTGRES_PASSWORD=anystyle_user_password
     volumes:
       - ./scripts/init-pgboss.sql:/docker-entrypoint-initdb.d/init-pgboss.sql
-
-
 
 volumes:
   minio_storage:
