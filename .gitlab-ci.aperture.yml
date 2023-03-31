@@ -19,6 +19,7 @@ variables:
   MINIO_ROOT_PASSWORD: superSecretAdminPassword
   MINIO_CONSOLE_PORT: 9001
   FF_NETWORK_PER_BUILD: 'true'
+  CYPRESS_RECORD_KEY: 'dedcd2b9-58b4-4938-a4cd-e0f043994817'
 
 stages:
   - build
@@ -104,7 +105,7 @@ lint style:
 
 .test_script: &run_test_script
   - cd ${HOME}
-  - sh ./scripts/setupProdServer.sh &
+  - sh ./scripts/setupDevServer.sh &
   - node ./startServer.js &
   - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
 
