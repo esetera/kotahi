@@ -3,11 +3,6 @@ const omit = require('lodash/omit')
 const cloneDeep = require('lodash/cloneDeep')
 const sortBy = require('lodash/sortBy')
 
-const {
-  populateTemplatedTasksForManuscript,
-  deleteAlertsForManuscript,
-} = require('../../model-task/src/taskCommsUtils')
-
 class Manuscript extends BaseModel {
   static get tableName() {
     return 'manuscripts'
@@ -159,6 +154,12 @@ class Manuscript extends BaseModel {
   }
 
   async createNewVersion() {
+    const {
+      populateTemplatedTasksForManuscript,
+      deleteAlertsForManuscript,
+      // eslint-disable-next-line global-require
+    } = require('../../model-task/src/taskCommsUtils')
+
     // Copy authors and editors to the new version
     const teams = await this.$relatedQuery('teams')
       .whereIn('role', ['author', 'editor', 'seniorEditor', 'handlingEditor'])
