@@ -10,7 +10,7 @@ const config = require('config')
 // To test:
 // POST http://localhost:3004/healthCheck
 // POST http://localhost:3004/api/auth with clientId/clientSecret in Basic Auth – returns access token
-// POST http://localhost:3004/api/docxToHTML with access token in Bearer Auth and docx in body – returns HTML
+// POST http://localhost:3004/api/v1/sync/DOCXToHTML with access token in Bearer Auth and docx in body – returns HTML
 
 const randomBytes = promisify(crypto.randomBytes)
 
@@ -100,17 +100,13 @@ const getXsweet = async url => {
         authorization: `Bearer ${xsweetAccessToken}`,
         ...form.getHeaders(),
       },
-      // responseType: 'stream',
       data: form,
-      // timeout: 1000, // adding this because it's failing
     })
       .then(async res => {
         // should get: {html, msg}
         // eslint-disable-next-line
-        console.log('Result from XSweet:', res.data)
-
+        // console.log('Result from XSweet:', res.data)
         const htmledResult = res.data.html
-
         resolve(htmledResult)
       })
       .catch(async err => {
