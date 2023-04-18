@@ -23,6 +23,6 @@
   "./server/model-published-artifact/src",
   "./server/model-docmap/src",
   "./server/config/src",
-	"./server/anystyle",
-	"./server/xsweet"
+  "./server/anystyle",
+  "./server/xsweet"
 ]
