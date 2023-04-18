@@ -304,18 +304,40 @@ const uploadPromise = (files, client) => {
   })
 }
 
-const DocxToHTMLPromise = (file, data, config) => {
-  const body = new FormData()
-  body.append('docx', file)
+const getHtmlFromDocxQuery = gql`
+  query($url: String!) {
+    docxToHtml(url: $url) {
+      html
+      error
+    }
+  }
+`
 
-  const url = `${config.baseUrl}/convertDocxToHTML`
+const DocxToHTMLPromise = (file, data, client) => {
+  const theUrl = data.uploadFile.storedObjects[0].url
 
-  return request(url, { method: 'POST', body }).then(response =>
-    Promise.resolve({
-      fileURL: data.uploadFile.storedObjects[0].url,
-      response,
-    }),
-  )
+  return client
+    .query({
+      query: getHtmlFromDocxQuery,
+      variables: {
+        url: theUrl,
+      },
+      fetchPolicy: 'network-only',
+    })
+    .then(result => {
+      // eslint-disable-next-line no-console
+      // console.log('Result:', result?.data?.docxToHtml?.html)
+
+      if (result?.data?.docxToHtml?.html && !result?.data?.docxToHtml?.error) {
+        return {
+          response: `<container id="main">${result.data.docxToHtml.html}</container>`,
+          fileURL: theUrl,
+        }
+      }
+
+      console.error('Server-side error: ', result.data.docxToHtml.error)
+      return file
+    })
 }
 
 const createManuscriptPromise = (
@@ -434,11 +456,11 @@ export default ({
 
       if (skipXSweet(file)) {
         uploadResponse = {
-          fileURL: data.uploadFile.url,
+          fileURL: data.uploadFile.url, // I think this should be data.uploadFile[0].url if this is actually used?
           response: true,
         }
       } else {
-        uploadResponse = await DocxToHTMLPromise(file, data, config)
+        uploadResponse = await DocxToHTMLPromise(file, data, client)
         uploadResponse.response = cleanMath(
           stripTags(
             stripTrackChanges(checkForEmptyBlocks(uploadResponse.response)),
