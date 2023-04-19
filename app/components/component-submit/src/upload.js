@@ -19,6 +19,15 @@ const stripTags = file => {
   return file.match(reg)[1]
 }
 
+const cleanOutWmfs = file => {
+  const wmfRegex = /"data:image\/wmf;base64,[0-9a-zA-Z/+=]*"/g
+
+  return file.replaceAll(
+    wmfRegex,
+    '"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAABYlAAAWJQFJUiTwAAAADElEQVQImWP4//8/AAX+Av5Y8msOAAAAAElFTkSuQmCC" data-original-name="broken-image.png"',
+  )
+}
+
 const checkForEmptyBlocks = file => {
   // what we want is inside container#main
   const parser = new DOMParser()
@@ -325,9 +334,6 @@ const DocxToHTMLPromise = (file, data, client) => {
       fetchPolicy: 'network-only',
     })
     .then(result => {
-      // eslint-disable-next-line no-console
-      // console.log('Result:', result?.data?.docxToHtml?.html)
-
       if (result?.data?.docxToHtml?.html && !result?.data?.docxToHtml?.error) {
         return {
           response: `<container id="main">${result.data.docxToHtml.html}</container>`,
@@ -461,9 +467,11 @@ export default ({
         }
       } else {
         uploadResponse = await DocxToHTMLPromise(file, data, client)
-        uploadResponse.response = cleanMath(
-          stripTags(
-            stripTrackChanges(checkForEmptyBlocks(uploadResponse.response)),
+        uploadResponse.response = cleanOutWmfs(
+          cleanMath(
+            stripTags(
+              stripTrackChanges(checkForEmptyBlocks(uploadResponse.response)),
+            ),
           ),
         )
         images = base64Images(uploadResponse.response)
