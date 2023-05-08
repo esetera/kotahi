@@ -1,8 +1,7 @@
 import React from 'react'
 import { decorate, injectable } from 'inversify'
 import { isEmpty } from 'lodash'
-import { LeftSideButton } from 'wax-prosemirror-components'
-import { Commands } from 'wax-prosemirror-utilities'
+import { LeftSideButton, Commands } from 'wax-prosemirror-core'
 import { Tools } from 'wax-prosemirror-services'
 
 class AwardId extends Tools {

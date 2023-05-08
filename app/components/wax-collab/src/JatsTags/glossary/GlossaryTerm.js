@@ -1,6 +1,6 @@
 import { decorate, injectable } from 'inversify'
 import { toggleMark } from 'prosemirror-commands'
-import { Commands } from 'wax-prosemirror-utilities'
+import { Commands } from 'wax-prosemirror-core'
 import { Tools } from 'wax-prosemirror-services'
 
 class GlossaryTerm extends Tools {
