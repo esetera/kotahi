@@ -1,8 +1,7 @@
 import React from 'react'
 import { decorate, injectable } from 'inversify'
 import { isEmpty } from 'lodash'
-import { LeftSideButton, Commands } from 'wax-prosemirror-core'
-import { Tools } from 'wax-prosemirror-services'
+import { LeftSideButton, Commands, Tools } from 'wax-prosemirror-core'
 import { wrapIn } from 'prosemirror-commands'
 
 class GlossarySection extends Tools {
