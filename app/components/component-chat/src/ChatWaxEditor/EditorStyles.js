@@ -233,7 +233,7 @@ export const SimpleEditorDiv = styled.div`
 
   p {
     /* stylelint-disable-next-line declaration-no-important */
-    margin-bottom: 0 !important;
+    margin: 0 !important;
   }
 
   &:focus-within {
@@ -250,8 +250,12 @@ export const SimpleEditorDiv = styled.div`
 
 export const ReadOnlySimpleEditorDiv = styled.div`
   grid-area: editor;
-  overflow: auto;
   position: relative;
+
+  p {
+    /* stylelint-disable-next-line declaration-no-important */
+    margin: 0 !important;
+  }
 
   /* stylelint-disable-next-line order/properties-alphabetical-order */
   ${EditorElements}
