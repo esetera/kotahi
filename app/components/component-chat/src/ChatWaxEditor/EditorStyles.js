@@ -181,10 +181,16 @@ export const SimpleGrid = styled.div`
 export const SimpleMenu = styled.div`
   border-top: 1px solid ${th('colorFurniture')};
   display: flex;
-
   flex-wrap: wrap;
   left: -12px;
   user-select: none;
+  /* _______________________                                              */
+  /* |__100%_MENU__|_______|                                              */
+  /* |             | SEND  | <- Send Button                               */
+  /* |             | 50px  |                                              */
+  /* |---------------------|                                              */
+  /* |_____________________|                                              */
+  /*     ^-- Adding 50px to 100% Menu Makes it occupy the whole container */
   width: calc(100% + 50px);
   z-index: 1;
 
