@@ -31,6 +31,7 @@ import {
 } from './CommentsStyles'
 import 'wax-prosemirror-core/dist/index.css'
 import 'wax-prosemirror-services/dist/index.css'
+import { PluginToolComponents } from '../plugins/index'
 
 const getNotes = main => {
   const notes = DocumentHelpers.findChildrenByType(
@@ -116,6 +117,10 @@ const ProductionWaxEditorLayout = (readOnly, readOnlyComments) => ({
           <>
             <Menu className="waxmenu">
               <TopBar />
+              {PluginToolComponents.map((PluginComponent, index) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <PluginComponent key={`plugin_${index}`} />
+              ))}
             </Menu>
             <ProductionEditorDiv>
               <SideMenu>
