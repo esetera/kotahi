@@ -328,5 +328,12 @@ services:
     volumes:
       - ./scripts/init-pgboss.sql:/docker-entrypoint-initdb.d/init-pgboss.sql
 
+  kotahi-flax-site:
+    image: kotahi-flax-site
+    ports:
+      - 8080:8080
+    volumes:
+      - /Users/pankajagrawal/Projects/Coko/aperture-neuro-pub:/app
+
 volumes:
   minio_storage:
