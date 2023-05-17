@@ -25,5 +25,5 @@
   "./server/config/src",
   "./server/anystyle",
   "./server/xsweet",
-  "/server/references/"
+  "./server/references"
 ]

@@ -43,7 +43,7 @@ import JatsTagsService from '../JatsTags'
 import CharactersList from './CharactersList'
 import KotahiSchema from './KotahiSchema'
 import AnyStyleService from '../CustomWaxToolGroups/AnystyleService/AnyStyleService'
-import { PluginServices, PluginTemplateAreas } from '../plugins/index'
+import { PluginServices, PluginLayoutElements } from '../plugins/index'
 
 const updateTitle = title => {
   // this gets fired when the title is changed in original version of this—not called now, but might still be needed
@@ -119,7 +119,7 @@ const productionWaxEditorConfig = (
       templateArea: 'bottomRightInfo',
       toolGroups: [{ name: 'InfoToolGroup', exclude: ['ShortCutsInfo'] }],
     },
-    ...PluginTemplateAreas,
+    ...PluginLayoutElements,
   ],
 
   PmPlugins: [columnResizing(), tableEditing() /* WaxSelectionPlugin */],
