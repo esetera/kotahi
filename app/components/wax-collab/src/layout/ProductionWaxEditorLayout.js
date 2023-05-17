@@ -117,10 +117,7 @@ const ProductionWaxEditorLayout = (readOnly, readOnlyComments) => ({
           <>
             <Menu className="waxmenu">
               <TopBar />
-              {PluginToolComponents.map((PluginComponent, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <PluginComponent key={`plugin_${index}`} />
-              ))}
+              {PluginToolComponents.map(PluginComponent => PluginComponent)}
             </Menu>
             <ProductionEditorDiv>
               <SideMenu>
