@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components'
+
 import { th, grid } from '@pubsweet/ui-toolkit'
 
 const activeStyles = css`

@@ -97,7 +97,7 @@ const FilterCardContent = ({
   selectRule,
 }) => {
   const isRunDisabled = !(selectRule?.length > 0)
-  console.log(selectRule)
+  console.log('Selected rule: ', selectRule)
   return (
     <FilterContent>
       <Wrapper>
