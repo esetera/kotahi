@@ -28,6 +28,7 @@ import ReviewPreviewPage from './component-review/src/components/ReviewPreviewPa
 import NewSubmissionPage from './component-submit/src/components/NewSubmissionPage'
 import SubmitPage from './component-submit/src/components/SubmitPage'
 import TasksTemplatePage from './component-task-manager/src/TasksTemplatePage'
+import FlaxTemplatePage from './component-flax/src/FlaxTemplatePage'
 import UsersManager from './component-users-manager/src/UsersManager'
 import ConfigManagerPage from './component-config-manager/src/ConfigManagerPage'
 
@@ -151,6 +152,7 @@ const AdminPage = () => {
   const reportsLink = `${urlFrag}/admin/reports`
   const userAdminLink = `${urlFrag}/admin/users`
   const tasksTemplateLink = `${urlFrag}/admin/tasks`
+  const flaxLink = `${urlFrag}/admin/flax`
   const loginLink = `/login?next=${homeLink}`
   const path = `${urlFrag}/versions/:version`
   const redirectLink = `/login?next=${homeLink}`
@@ -206,6 +208,7 @@ const AdminPage = () => {
           ],
         },
         { link: tasksTemplateLink, name: 'Tasks', icon: 'list' },
+        { link: flaxLink, name: 'Flax', icon: 'globe' },
         { link: userAdminLink, name: 'Users', icon: 'users' },
         { link: configurationLink, name: 'Configuration', icon: 'sliders' },
       ],
@@ -404,6 +407,13 @@ const AdminPage = () => {
             path={`${urlFrag}/admin/tasks`}
             redirectLink={redirectLink}
           />,
+          <PrivateRoute
+            component={FlaxTemplatePage}
+            key="flax"
+            path={flaxLink}
+            redirectLink={redirectLink}
+          />,
+
           <PrivateRoute
             component={ConfigManagerPage}
             key="configuration"
