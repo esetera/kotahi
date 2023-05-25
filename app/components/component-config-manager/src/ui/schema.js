@@ -569,63 +569,6 @@ const schema = {
                 },
               },
             },
-            flax: {
-              type: 'object',
-              title: 'Flax page',
-              properties: {
-                tableColumns: {
-                  type: 'string',
-                  description:
-                    'List columns to display on the Manuscripts page',
-                  default:
-                    'shortId, meta.title, created, updated, status, submission.labels, author',
-                },
-                paginationCount: {
-                  type: 'number',
-                  description:
-                    'Number of manuscripts listed per page on the Manucripts page',
-                  enum: [10, 20, 50, 100],
-                  default: 10,
-                },
-                autoImportHourUtc: {
-                  type: 'integer',
-                  description: 'Hour when manuscripts are imported daily (UTC)',
-                  $ref: '#/definitions/hours',
-                },
-                archivePeriodDays: {
-                  type: 'integer',
-                  description:
-                    'Number of days a manuscript should remain in the Manuscripts page before being automatically archived',
-                  minimum: 1,
-                  maximum: 90,
-                },
-                semanticScholarImportsRecencyPeriodDays: {
-                  type: 'integer',
-                  description:
-                    'Import manuscripts from Sematic Scholar no older than ‘x’ number of days',
-                  minimum: 1,
-                  maximum: 90,
-                },
-                newSubmission: {
-                  type: 'boolean',
-                  title:
-                    "'Add new submission' action visible on the Manuscripts page",
-                  default: true,
-                },
-                labelColumn: {
-                  type: 'boolean',
-                  title:
-                    'Display action to ‘Select’ manuscripts for review from the Manuscripts page',
-                  default: false,
-                },
-                manualImport: {
-                  type: 'boolean',
-                  title:
-                    "Import manuscripts manually using the 'Refresh' action",
-                  default: false,
-                },
-              },
-            },
             controlPanel: {
               type: 'object',
               title: 'Control panel',
@@ -960,63 +903,6 @@ const schema = {
             manuscript: {
               type: 'object',
               title: 'Manuscripts page',
-              properties: {
-                tableColumns: {
-                  type: 'string',
-                  description:
-                    'List columns to display on the Manuscripts page',
-                  default:
-                    'shortId, meta.title, created, updated, status, submission.labels, author',
-                },
-                paginationCount: {
-                  type: 'number',
-                  description:
-                    'Number of manuscripts listed per page on the Manucripts page',
-                  enum: [10, 20, 50, 100],
-                  default: 10,
-                },
-                autoImportHourUtc: {
-                  type: 'integer',
-                  description: 'Hour when manuscripts are imported daily (UTC)',
-                  $ref: '#/definitions/hours',
-                },
-                archivePeriodDays: {
-                  type: 'integer',
-                  description:
-                    'Number of days a manuscript should remain in the Manuscripts page before being automatically archived',
-                  minimum: 1,
-                  maximum: 90,
-                },
-                semanticScholarImportsRecencyPeriodDays: {
-                  type: 'integer',
-                  description:
-                    'Import manuscripts from Sematic Scholar no older than ‘x’ number of days',
-                  minimum: 1,
-                  maximum: 90,
-                },
-                newSubmission: {
-                  type: 'boolean',
-                  title:
-                    "'Add new submission' action visible on the Manuscripts page",
-                  default: true,
-                },
-                labelColumn: {
-                  type: 'boolean',
-                  title:
-                    'Display action to ‘Select’ manuscripts for review from the Manuscripts page',
-                  default: false,
-                },
-                manualImport: {
-                  type: 'boolean',
-                  title:
-                    "Import manuscripts manually using the 'Refresh' action",
-                  default: false,
-                },
-              },
-            },
-            flax: {
-              type: 'object',
-              title: 'Flax page',
               properties: {
                 tableColumns: {
                   type: 'string',
@@ -1458,63 +1344,6 @@ const schema = {
                 },
               },
             },
-            flax: {
-              type: 'object',
-              title: 'Flax page',
-              properties: {
-                tableColumns: {
-                  type: 'string',
-                  description:
-                    'List columns to display on the Manuscripts page',
-                  default:
-                    'shortId, meta.title, created, updated, status, submission.labels, author',
-                },
-                paginationCount: {
-                  type: 'number',
-                  description:
-                    'Number of manuscripts listed per page on the Manucripts page',
-                  enum: [10, 20, 50, 100],
-                  default: 10,
-                },
-                autoImportHourUtc: {
-                  type: 'integer',
-                  description: 'Hour when manuscripts are imported daily (UTC)',
-                  $ref: '#/definitions/hours',
-                },
-                archivePeriodDays: {
-                  type: 'integer',
-                  description:
-                    'Number of days a manuscript should remain in the Manuscripts page before being automatically archived',
-                  minimum: 1,
-                  maximum: 90,
-                },
-                semanticScholarImportsRecencyPeriodDays: {
-                  type: 'integer',
-                  description:
-                    'Import manuscripts from Sematic Scholar no older than ‘x’ number of days',
-                  minimum: 1,
-                  maximum: 90,
-                },
-                newSubmission: {
-                  type: 'boolean',
-                  title:
-                    "'Add new submission' action visible on the Manuscripts page",
-                  default: false,
-                },
-                labelColumn: {
-                  type: 'boolean',
-                  title:
-                    'Display action to ‘Select’ manuscripts for review from the Manuscripts page',
-                  default: false,
-                },
-                manualImport: {
-                  type: 'boolean',
-                  title:
-                    "Import manuscripts manually using the 'Refresh' action",
-                  default: false,
-                },
-              },
-            },
             controlPanel: {
               type: 'object',
               title: 'Control panel',
@@ -1844,63 +1673,6 @@ const schema = {
             manuscript: {
               type: 'object',
               title: 'Manuscripts page',
-              properties: {
-                tableColumns: {
-                  type: 'string',
-                  description:
-                    'List columns to display on the Manuscripts page',
-                  default:
-                    'shortId, meta.title, created, updated, status, submission.labels, author',
-                },
-                paginationCount: {
-                  type: 'number',
-                  description:
-                    'Number of manuscripts listed per page on the Manucripts page',
-                  enum: [10, 20, 50, 100],
-                  default: 10,
-                },
-                autoImportHourUtc: {
-                  type: 'integer',
-                  description: 'Hour when manuscripts are imported daily (UTC)',
-                  $ref: '#/definitions/hours',
-                },
-                archivePeriodDays: {
-                  type: 'integer',
-                  description:
-                    'Number of days a manuscript should remain in the Manuscripts page before being automatically archived',
-                  minimum: 1,
-                  maximum: 90,
-                },
-                semanticScholarImportsRecencyPeriodDays: {
-                  type: 'integer',
-                  description:
-                    'Import manuscripts from Sematic Scholar no older than ‘x’ number of days',
-                  minimum: 1,
-                  maximum: 90,
-                },
-                newSubmission: {
-                  type: 'boolean',
-                  title:
-                    "'Add new submission' action visible on the Manuscripts page",
-                  default: false,
-                },
-                labelColumn: {
-                  type: 'boolean',
-                  title:
-                    'Display action to ‘Select’ manuscripts for review from the Manuscripts page',
-                  default: false,
-                },
-                manualImport: {
-                  type: 'boolean',
-                  title:
-                    "Import manuscripts manually using the 'Refresh' action",
-                  default: false,
-                },
-              },
-            },
-            flax: {
-              type: 'object',
-              title: 'Flax page',
               properties: {
                 tableColumns: {
                   type: 'string',

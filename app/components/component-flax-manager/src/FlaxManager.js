@@ -1,7 +1,6 @@
 import React from 'react'
 import gql from 'graphql-tag'
-import { useQuery, useMutation } from '@apollo/client'
-// import { Heading } from '@pubsweet/ui'
+import { useQuery } from '@apollo/client'
 
 import Flax from './Flax'
 import {
@@ -43,24 +42,6 @@ const GET_USERS = gql`
         isOnline
         lastOnline
       }
-    }
-  }
-`
-
-const DELETE_USER = gql`
-  mutation($id: ID) {
-    deleteUser(id: $id) {
-      id
-    }
-  }
-`
-
-const SET_GROUP_ROLE = gql`
-  mutation($userId: ID!, $role: String!, $shouldEnable: Boolean!) {
-    setGroupRole(userId: $userId, role: $role, shouldEnable: $shouldEnable) {
-      id
-      groupRoles
-      globalRoles
     }
   }
 `
@@ -114,7 +95,7 @@ const FlaxManager = ({ history, currentUser }) => {
   const limit = 10
   const sort = sortName && sortDirection && `${sortName}_${sortDirection}`
 
-  const { loading, error, data, refetch } = useQuery(GET_USERS, {
+  const { loading, error, data } = useQuery(GET_USERS, {
     variables: {
       sort,
       offset: (page - 1) * limit,
@@ -123,17 +104,16 @@ const FlaxManager = ({ history, currentUser }) => {
     fetchPolicy: 'cache-and-network',
   })
 
-  const [deleteUser] = useMutation(DELETE_USER, { onCompleted: refetch })
-  const [setGroupRole] = useMutation(SET_GROUP_ROLE)
-
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
   const { users, totalCount } = data.paginatedUsers
 
+  const user = users[0]
+
   return (
     <Container>
-      <Heading>Users</Heading>
+      <Heading>Flax</Heading>
       <Content>
         <Table>
           <Header>
@@ -149,15 +129,7 @@ const FlaxManager = ({ history, currentUser }) => {
             </tr>
           </Header>
           <tbody>
-            {users.map(user => (
-              <Flax
-                currentUser={currentUser}
-                deleteUser={deleteUser}
-                key={user.id}
-                setGroupRole={setGroupRole}
-                user={user}
-              />
-            ))}
+            <Flax key={user.id} currentUser={currentUser} user={user} />
           </tbody>
         </Table>
 
