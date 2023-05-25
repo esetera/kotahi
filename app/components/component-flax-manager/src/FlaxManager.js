@@ -46,7 +46,7 @@ const GET_USERS = gql`
   }
 `
 
-const FlaxManager = ({ history, currentUser }) => {
+const FlaxManager = ({ history }) => {
   const SortHeader = ({ thisSortName, defaultSortDirection, children }) => {
     const changeSort = () => {
       let newSortDirection
@@ -109,7 +109,7 @@ const FlaxManager = ({ history, currentUser }) => {
 
   const { users, totalCount } = data.paginatedUsers
 
-  const user = users[0]
+  const flaxPage = users[0]
 
   return (
     <Container>
@@ -129,7 +129,7 @@ const FlaxManager = ({ history, currentUser }) => {
             </tr>
           </Header>
           <tbody>
-            <Flax key={user.id} currentUser={currentUser} user={user} />
+            <Flax flaxPage={flaxPage} />
           </tbody>
         </Table>
 
