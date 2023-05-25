@@ -423,11 +423,3 @@ export const UPDATE_VALIDATION = gql`
     }
   }
 `
-
-export const GET_REFERENCE_STRUCTURING = gql`
-  mutation getreferencestructuring($references: [String]!) {
-    createReferenceStructuring(references: $references) {
-      response
-    }
-  }
-`

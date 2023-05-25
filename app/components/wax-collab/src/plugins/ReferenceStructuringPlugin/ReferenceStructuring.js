@@ -23,7 +23,7 @@ import {
   Replacetags,
   ReplacetagsList,
 } from './ReferenceStructureHelper/constants'
-import { GET_REFERENCE_STRUCTURING } from '../../../../../queries'
+import GET_REFERENCE_STRUCTURING from './queries'
 
 const ReferenceStructuring = () => {
   const {
@@ -79,7 +79,7 @@ const ReferenceStructuring = () => {
   }
 
   const referenceDetailsList = () => {
-    const allBlockNodes = DocumentHelpers.findBlockNodes(main.state.doc)
+    const allBlockNodes = DocumentHelpers.findBlockNodes(main.state.doc) || []
     const referenceBlock = []
     allBlockNodes.forEach((node, pos) => {
       if (node.node.isBlock && node.node.attrs.class === 'reference') {
@@ -122,10 +122,10 @@ const ReferenceStructuring = () => {
     setIsStructure(false)
   }
 
-  const getKeys = predArry => {
+  const getKeys = predArray => {
     const keyArr = []
     // eslint-disable-next-line no-unused-expressions
-    predArry?.prediction[0].map((el, i) => {
+    predArray?.prediction[0].map((el, i) => {
       keyArr.push(Object.keys(el)[0])
     })
     return keyArr.join(' ')
@@ -133,13 +133,16 @@ const ReferenceStructuring = () => {
 
   const handleDataStr = response => {
     const newRes = []
-    referenceDetails.forEach((el, refInd) => {
-      response.forEach((refEl, i) => {
-        el.text.replace(/\u00a0/g, ' ') == getKeys(refEl) &&
-          (newRes[refInd] = refEl)
+
+    if (referenceDetails.length > 0) {
+      referenceDetails.forEach((el, refInd) => {
+        response.forEach((refEl, i) => {
+          el.text.replace(/\u00a0/g, ' ') === getKeys(refEl) &&
+            (newRes[refInd] = refEl)
+        })
       })
-    })
-    setRestructuredList(newRes)
+      setRestructuredList(newRes)
+    }
   }
 
   const onReStructure = response => {
@@ -148,7 +151,7 @@ const ReferenceStructuring = () => {
   }
 
   const onUpdateReference = async props => {
-    const allBlockNodes = DocumentHelpers.findBlockNodes(main.state.doc)
+    const allBlockNodes = DocumentHelpers.findBlockNodes(main.state.doc) || []
     const multipleNode = []
 
     const {
@@ -159,94 +162,94 @@ const ReferenceStructuring = () => {
       items.map((item, index) => {
         for (const key in item) {
           if (
-            item[key] == 'I-ATL' ||
-            item[key] == 'I-TIT' ||
-            item[key] == 'B-TIT'
+            item[key] === 'I-ATL' ||
+            item[key] === 'I-TIT' ||
+            item[key] === 'B-TIT'
           ) {
             const node = schema.text(`${key} `, [schema.marks.atl.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-COL') {
+          } else if (item[key] === 'I-COL') {
             const node = schema.text(`${key} `, [schema.marks.collab.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-CMD' || item[key] == 'I-CON') {
+          } else if (item[key] === 'I-CMD' || item[key] === 'I-CON') {
             const node = schema.text(`${key} `, [schema.marks.cmd.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-DOI') {
+          } else if (item[key] === 'I-DOI') {
             const node = schema.text(`${key} `, [schema.marks.doi.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-EID') {
+          } else if (item[key] === 'I-EID') {
             const node = schema.text(`${key} `, [schema.marks.email.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-ISS') {
+          } else if (item[key] === 'I-ISS') {
             const node = schema.text(`${key} `, [schema.marks.iss.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-JTL') {
+          } else if (item[key] === 'I-JTL') {
             const node = schema.text(`${key} `, [schema.marks.jtl.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-PER') {
+          } else if (item[key] === 'I-PER') {
             const node = schema.text(`${key} `, [schema.marks.per.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-PN') {
+          } else if (item[key] === 'I-PN') {
             const node = schema.text(`${key} `, [schema.marks.pub.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-PGS') {
+          } else if (item[key] === 'I-PGS') {
             const node = schema.text(`${key} `, [schema.marks.pg.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-SRC') {
+          } else if (item[key] === 'I-SRC') {
             const node = schema.text(`${key} `, [schema.marks.src.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-URL') {
+          } else if (item[key] === 'I-URL') {
             const node = schema.text(`${key} `, [schema.marks.url.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-VOL') {
+          } else if (item[key] === 'I-VOL') {
             const node = schema.text(`${key} `, [schema.marks.vol.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-YR') {
+          } else if (item[key] === 'I-YR') {
             const node = schema.text(`${key} `, [schema.marks.yr.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-VIP') {
+          } else if (item[key] === 'I-VIP') {
             const node = schema.text(`${key} `, [schema.marks.vip.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-AU') {
+          } else if (item[key] === 'I-AU') {
             const node = schema.text(`${key} `, [schema.marks.au.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-AUG') {
+          } else if (item[key] === 'I-AUG') {
             const node = schema.text(`${key} `, [schema.marks.aug.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-SNM') {
+          } else if (item[key] === 'I-SNM') {
             const node = schema.text(`${key} `, [schema.marks.snm.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-FNM') {
+          } else if (item[key] === 'I-FNM') {
             const node = schema.text(`${key} `, [schema.marks.fnm.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-COLLAB') {
+          } else if (item[key] === 'I-COLLAB') {
             const node = schema.text(`${key} `, [schema.marks.vip.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-PUB') {
+          } else if (item[key] === 'I-PUB') {
             const node = schema.text(`${key} `, [schema.marks.pub.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-LOC') {
+          } else if (item[key] === 'I-LOC') {
             const node = schema.text(`${key} `, [schema.marks.loc.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-ED') {
+          } else if (item[key] === 'I-ED') {
             const node = schema.text(`${key} `, [schema.marks.ed.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-EDN') {
+          } else if (item[key] === 'I-EDN') {
             const node = schema.text(`${key} `, [schema.marks.edn.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-EDGB') {
+          } else if (item[key] === 'I-EDGB') {
             const node = schema.text(`${key} `, [schema.marks.edgb.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-EDS') {
+          } else if (item[key] === 'I-EDS') {
             const node = schema.text(`${key} `, [schema.marks.eds.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-BTL') {
+          } else if (item[key] === 'I-BTL') {
             const node = schema.text(`${key} `, [schema.marks.btl.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-CTL') {
+          } else if (item[key] === 'I-CTL') {
             const node = schema.text(`${key} `, [schema.marks.ctl.create()])
             multipleNode.push(node)
-          } else if (item[key] == 'I-SRC') {
+          } else if (item[key] === 'I-SRC') {
             const node = schema.text(`${key} `, [schema.marks.src.create()])
             multipleNode.push(node)
           }
@@ -262,19 +265,22 @@ const ReferenceStructuring = () => {
 
     const p = schema.nodes.customTagBlock.create(attr, multipleNode)
 
-    allBlockNodes.forEach((node, pos) => {
-      if (node.node.isBlock && node.node.attrs.class === 'reference') {
-        if (node.node.attrs.refId == referenceData[isResInd].data_id) {
-          const tr = main.state.tr.replaceWith(
-            node.pos,
-            node.pos + node.node.nodeSize,
-            p,
-          )
+    if (Array.isArray(allBlockNodes)) {
+      allBlockNodes.forEach((node, pos) => {
+        if (node.node.isBlock && node.node.attrs.class === 'reference') {
+          if (node.node.attrs.refId === referenceData[isResInd].data_id) {
+            const tr = main.state.tr.replaceWith(
+              node.pos,
+              node.pos + node.node.nodeSize,
+              p,
+            )
 
-          'true', main.dispatch(tr)
+            // 'true',
+            main.dispatch(tr)
+          }
         }
-      }
-    })
+      })
+    }
 
     setShowModal(false)
     setEdit(false)
@@ -333,9 +339,9 @@ const ReferenceStructuring = () => {
       return Replacetags[matched]
     })
     console.log(copyText)
-    const CopyTexArray = copyText.split(' ')
+    const copyTextArray = copyText.split(' ')
 
-    CopyTexArray.forEach((item, index) => {
+    copyTextArray.forEach((item, index) => {
       handleChangeTag(item, index, item, tag)
     })
   }
@@ -368,7 +374,8 @@ const ReferenceStructuring = () => {
         <WrapperItem width="30%">
           <ButtonStyle
             onClick={() => {
-              selectedCopyTextTag(''), setDropdownValue(null)
+              selectedCopyTextTag('')
+              setDropdownValue(null)
             }}
             style={{ height: 'fit-content', marginLeft: '5px', width: '50%' }}
           >
@@ -380,8 +387,13 @@ const ReferenceStructuring = () => {
     )
   }
 
-  const ReferenceList = ({ referenceDetails }) => {
-    return referenceDetails.map((ref, index) => (
+  const ReferenceList = ({ refDetails }) => {
+    if (!refDetails) {
+      console.log('refDetails', refDetails)
+      return null
+    }
+
+    return refDetails.map((ref, index) => (
       <ContentWrapper key={`${ref}-${index}`}>
         <div>
           <span
@@ -416,8 +428,7 @@ const ReferenceStructuring = () => {
           </div>
         </div>
 
-        {referenceDetails.length > 1 &&
-          referenceDetails.length !== index + 1 && <hr />}
+        {refDetails.length > 1 && refDetails.length !== index + 1 && <hr />}
       </ContentWrapper>
     ))
   }
@@ -498,19 +509,22 @@ const ReferenceStructuring = () => {
   const handleChangeTag = (item, index, key, tag) => {
     const newData = isEditList
     const tagupdate = tag || isTag
-    newData.prediction[0].forEach((el, i) => {
-      // el[key] = agupdate;
 
-      const newItem = item.replace('undefined', 'i')
+    if (newData?.prediction[0]?.length) {
+      newData.prediction[0].forEach((el, i) => {
+        // el[key] = agupdate;
 
-      if (Object.keys(el)[0] == newItem) {
-        el[Object.keys(el)[0]] = tagupdate
-      }
-    })
-    const restructed = [...reStructuredList]
-    restructed[isResInd].prediction = newData.prediction
-    setRestructuredList(restructed)
-    setIsEditList(newData)
+        const newItem = item.replace('undefined', 'i')
+
+        if (Object.keys(el)[0] === newItem) {
+          el[Object.keys(el)[0]] = tagupdate
+        }
+      })
+      const restructed = [...reStructuredList]
+      restructed[isResInd].prediction = newData.prediction
+      setRestructuredList(restructed)
+      setIsEditList(newData)
+    }
   }
 
   const HandleTagColor = (item, key) => {
@@ -529,10 +543,10 @@ const ReferenceStructuring = () => {
     return tagColor
   }
 
-  const ReStructuredList = ({ reStructuredList }) => {
+  const ReStructuredList = ({ newList }) => {
     return (
       !showModal &&
-      reStructuredList.map((items, index) => (
+      newList.map((items, index) => (
         <ContentWrapper key={index} style={{ wordBreak: 'break-all' }}>
           <FlexContainer>
             <div style={{ width: '90%' }}>
@@ -542,7 +556,7 @@ const ReferenceStructuring = () => {
                     const tagColor = HandleTagColor(item, key)
                     return (
                       <SpanWrapper style={{ color: tagColor }}>
-                        {key} {tagColor == '#000000' ? item[key] : ''}
+                        {key} {tagColor === '#000000' ? item[key] : ''}
                       </SpanWrapper>
                     )
                   }
@@ -562,8 +576,7 @@ const ReferenceStructuring = () => {
               Edit
             </ButtonStyle>
           </FlexContainer>
-          {reStructuredList.length > 1 &&
-            reStructuredList.length !== index + 1 && <hr />}
+          {newList.length > 1 && newList.length !== index + 1 && <hr />}
         </ContentWrapper>
       ))
     )

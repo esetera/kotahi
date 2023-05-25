@@ -64,7 +64,7 @@ const PluginLayoutElements = [
   TableCitationToolGroup,
   TableUncitationToolGroup,
   CleanupUtilsToolGroup,
-  // ReferenceStructuringToolGroup,
+  ReferenceStructuringToolGroup,
 ]
 
 // Plugin services need to be added to add the plugin functionality. This is not required.
@@ -79,7 +79,7 @@ const PluginServices = [
   new ImageUncitationToolGroupService(),
   new TableCitationToolGroupService(),
   new TableUncitationToolGroupService(),
-  // new ReferenceStructuringToolGroupService(),
+  new ReferenceStructuringToolGroupService(),
 ]
 
 // These things get exported; they are imported by the config and layout of the editors.
