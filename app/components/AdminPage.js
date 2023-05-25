@@ -28,7 +28,7 @@ import ReviewPreviewPage from './component-review/src/components/ReviewPreviewPa
 import NewSubmissionPage from './component-submit/src/components/NewSubmissionPage'
 import SubmitPage from './component-submit/src/components/SubmitPage'
 import TasksTemplatePage from './component-task-manager/src/TasksTemplatePage'
-import FlaxTemplatePage from './component-flax/src/FlaxTemplatePage'
+import FlaxManager from './component-flax-manager/src/FlaxManager'
 import UsersManager from './component-users-manager/src/UsersManager'
 import ConfigManagerPage from './component-config-manager/src/ConfigManagerPage'
 
@@ -408,7 +408,8 @@ const AdminPage = () => {
             redirectLink={redirectLink}
           />,
           <PrivateRoute
-            component={FlaxTemplatePage}
+            component={FlaxManager}
+            currentUser={currentUser}
             key="flax"
             path={flaxLink}
             redirectLink={redirectLink}
