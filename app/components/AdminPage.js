@@ -28,9 +28,11 @@ import ReviewPreviewPage from './component-review/src/components/ReviewPreviewPa
 import NewSubmissionPage from './component-submit/src/components/NewSubmissionPage'
 import SubmitPage from './component-submit/src/components/SubmitPage'
 import TasksTemplatePage from './component-task-manager/src/TasksTemplatePage'
-import FlaxManager from './component-flax-manager/src/FlaxManager'
 import UsersManager from './component-users-manager/src/UsersManager'
 import ConfigManagerPage from './component-config-manager/src/ConfigManagerPage'
+
+import FlaxManager from './component-flax-manager/src/FlaxManager'
+import FlaxPageEditor from './component-flax-manager/src/FlaxPageEditor'
 
 import QUERY from './adminPageQueries'
 
@@ -152,7 +154,8 @@ const AdminPage = () => {
   const reportsLink = `${urlFrag}/admin/reports`
   const userAdminLink = `${urlFrag}/admin/users`
   const tasksTemplateLink = `${urlFrag}/admin/tasks`
-  const flaxLink = `${urlFrag}/admin/flax`
+  const flaxLink = `${urlFrag}/admin/flax/flax-manager`
+  const FlaxPageEditorLink = `${urlFrag}/admin/flax/flax-edit/:pageId`
   const loginLink = `/login?next=${homeLink}`
   const path = `${urlFrag}/versions/:version`
   const redirectLink = `/login?next=${homeLink}`
@@ -412,6 +415,14 @@ const AdminPage = () => {
             currentUser={currentUser}
             key="flax"
             path={flaxLink}
+            redirectLink={redirectLink}
+          />,
+
+          <PrivateRoute
+            component={FlaxPageEditor}
+            currentUser={currentUser}
+            key="FlaxPageEditor"
+            path={FlaxPageEditorLink}
             redirectLink={redirectLink}
           />,
 

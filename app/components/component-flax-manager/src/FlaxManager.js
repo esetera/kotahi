@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/client'
+import FlaxPageRow from './FlaxPageRow'
 
-import Flax from './Flax'
 import {
   Container,
   Table,
@@ -10,12 +10,11 @@ import {
   Heading,
   Content,
   Spinner,
-  Pagination,
   CaretUp,
   CaretDown,
   Carets,
 } from './style'
-import { CommsErrorBanner, PaginationContainer } from '../../shared'
+import { CommsErrorBanner } from '../../shared'
 import {
   extractSortData,
   URI_PAGENUM_PARAM,
@@ -23,24 +22,17 @@ import {
   useQueryParams,
 } from '../../../shared/urlParamUtils'
 
-const GET_USERS = gql`
-  query Users($sort: UsersSort, $offset: Int, $limit: Int) {
-    paginatedUsers(sort: $sort, offset: $offset, limit: $limit) {
-      totalCount
-      users {
-        id
-        username
-        globalRoles
-        groupRoles
-        email
-        profilePicture
-        defaultIdentity {
-          id
-          identifier
-        }
-        created
-        isOnline
-        lastOnline
+import { ConfigContext } from '../../config/src'
+
+const GET_FLAX_PAGES = gql`
+  query FlaxPages {
+    flaxPages {
+      id
+      title
+      created
+      content {
+        title
+        header
       }
     }
   }
@@ -89,31 +81,30 @@ const FlaxManager = ({ history }) => {
   const applyQueryParams = useQueryParams()
 
   const params = new URLSearchParams(history.location.search)
-  const page = params.get(URI_PAGENUM_PARAM) || 1
   const sortName = extractSortData(params).name || 'created'
   const sortDirection = extractSortData(params).direction || 'DESC'
-  const limit = 10
-  const sort = sortName && sortDirection && `${sortName}_${sortDirection}`
 
-  const { loading, error, data } = useQuery(GET_USERS, {
-    variables: {
-      sort,
-      offset: (page - 1) * limit,
-      limit,
-    },
+  const config = useContext(ConfigContext)
+  const urlFrag = config.journal.metadata.toplevel_urlfragment
+
+  const { loading, error, data } = useQuery(GET_FLAX_PAGES, {
     fetchPolicy: 'cache-and-network',
   })
+
+  const showManagePage = currentFlaxPage => {
+    let link = `${urlFrag}/admin/flax/flax-edit/${currentFlaxPage.id}`
+    history.push(link)
+    return
+  }
 
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const { users, totalCount } = data.paginatedUsers
-
-  const flaxPage = users[0]
+  const { flaxPages } = data
 
   return (
     <Container>
-      <Heading>Flax</Heading>
+      <Heading>Flax Pages</Heading>
       <Content>
         <Table>
           <Header>
@@ -129,19 +120,17 @@ const FlaxManager = ({ history }) => {
             </tr>
           </Header>
           <tbody>
-            <Flax flaxPage={flaxPage} />
+            {flaxPages.map(flaxPage => (
+              <FlaxPageRow
+                key={flaxPage.id}
+                flaxPage={flaxPage}
+                onManageClick={currentFlaxPage =>
+                  showManagePage(currentFlaxPage)
+                }
+              />
+            ))}
           </tbody>
         </Table>
-
-        <Pagination
-          limit={limit}
-          page={page}
-          PaginationContainer={PaginationContainer}
-          setPage={newPage =>
-            applyQueryParams({ [URI_PAGENUM_PARAM]: newPage })
-          }
-          totalCount={totalCount}
-        />
       </Content>
     </Container>
   )
