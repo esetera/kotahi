@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { cloneDeep, omitBy } from 'lodash'
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { ConfigContext } from '../../../config/src'
 import FormBuilderLayout from './FormBuilderLayout'
 import { Spinner, CommsErrorBanner } from '../../../shared'
@@ -237,35 +236,25 @@ const FormBuilderPage = ({ category }) => {
   if (error) return <CommsErrorBanner error={error} />
 
   return (
-    <div style={{ overflowY: 'scroll', height: '100vh' }}>
-      <DragDropContext onDragEnd={dragField}>
-        <Droppable droppableId="droppable">
-          {(provided, snapshot) => (
-            <div {...provided.droppableProps} ref={provided.innerRef}>
-              <FormBuilderLayout
-                activeFieldId={activeFieldId}
-                activeFormId={activeFormId}
-                category={category}
-                createForm={createForm}
-                deleteField={deleteFormElement}
-                deleteForm={deleteForm}
-                forms={formFeilds}
-                moveFieldDown={moveFieldDown}
-                moveFieldUp={moveFieldUp}
-                setActiveFieldId={setActiveFieldId}
-                setActiveFormId={setActiveFormId}
-                shouldAllowHypothesisTagging={
-                  config?.publishing?.hypothesis?.shouldAllowTagging
-                }
-                updateField={updateFormElement}
-                updateForm={updateForm}
-              />
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </div>
+    <FormBuilderLayout
+      activeFieldId={activeFieldId}
+      activeFormId={activeFormId}
+      category={category}
+      createForm={createForm}
+      deleteField={deleteFormElement}
+      deleteForm={deleteForm}
+      dragField={dragField}
+      forms={formFeilds}
+      moveFieldDown={moveFieldDown}
+      moveFieldUp={moveFieldUp}
+      setActiveFieldId={setActiveFieldId}
+      setActiveFormId={setActiveFormId}
+      shouldAllowHypothesisTagging={
+        config?.publishing?.hypothesis?.shouldAllowTagging
+      }
+      updateField={updateFormElement}
+      updateForm={updateForm}
+    />
   )
 }
 
