@@ -153,7 +153,7 @@ const BuilderElement = ({
 
   const getItemStyle = (isDragging, draggableStyle) => ({
     ...draggableStyle,
-    margin: `0px 0px calc(8px * 3)`,
+    margin: `0px 0px 8px`,
   })
 
   return (
