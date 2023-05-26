@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import PropTypes from 'prop-types'
 import { forEach } from 'lodash'
 import styled, { withTheme } from 'styled-components'
@@ -100,6 +99,7 @@ const FormBuilderLayout = ({
               activeFieldId={activeFieldId}
               addField={updateField}
               deleteField={deleteField}
+              dragField={dragField}
               form={form}
               moveFieldDown={fieldId => moveFieldDown(form, fieldId)}
               moveFieldUp={fieldId => moveFieldUp(form, fieldId)}
@@ -156,82 +156,68 @@ const FormBuilderLayout = ({
 
   return (
     <div style={{ overflowY: 'scroll', height: '100vh' }}>
-      <DragDropContext onDragEnd={dragField}>
-        <Droppable droppableId="droppable">
-          {(provided, snapshot) => (
-            <div {...provided.droppableProps} ref={provided.innerRef}>
-              <Container style={{ height: '100vh' }}>
-                <HeadingWithAction>
-                  <Heading>
-                    {category.charAt(0).toUpperCase() + category.slice(1)} Form
-                    Builder
-                  </Heading>
-                </HeadingWithAction>
-                <Columns>
-                  <Form>
-                    <Tabs
-                      activeKey={activeFormId ?? 'new'}
-                      key={activeFormId}
-                      onChange={tab => {
-                        setActiveFormId(tab)
-                        setActiveFieldId(null)
-                      }}
-                      sections={sections}
-                    />
-                  </Form>
-                  <Details>
-                    <SectionContent>
-                      <SectionRow>
-                        {activeField ? (
-                          <ComponentProperties
-                            category={category}
-                            field={activeField}
-                            formId={activeForm.id}
-                            key={activeField.id}
-                            shouldAllowHypothesisTagging={
-                              shouldAllowHypothesisTagging
-                            }
-                            updateField={updateField}
-                          />
-                        ) : (
-                          <FormProperties
-                            createForm={createForm}
-                            form={activeForm}
-                            key={activeForm.id}
-                            updateForm={updateForm}
-                          />
-                        )}
-                      </SectionRow>
-                    </SectionContent>
-                  </Details>
-                </Columns>
-              </Container>
+      <Container style={{ height: '100vh' }}>
+        <HeadingWithAction>
+          <Heading>
+            {category.charAt(0).toUpperCase() + category.slice(1)} Form Builder
+          </Heading>
+        </HeadingWithAction>
+        <Columns>
+          <Form>
+            <Tabs
+              activeKey={activeFormId ?? 'new'}
+              key={activeFormId}
+              onChange={tab => {
+                setActiveFormId(tab)
+                setActiveFieldId(null)
+              }}
+              sections={sections}
+            />
+          </Form>
+          <Details>
+            <SectionContent>
+              <SectionRow>
+                {activeField ? (
+                  <ComponentProperties
+                    category={category}
+                    field={activeField}
+                    formId={activeForm.id}
+                    key={activeField.id}
+                    shouldAllowHypothesisTagging={shouldAllowHypothesisTagging}
+                    updateField={updateField}
+                  />
+                ) : (
+                  <FormProperties
+                    createForm={createForm}
+                    form={activeForm}
+                    key={activeForm.id}
+                    updateForm={updateForm}
+                  />
+                )}
+              </SectionRow>
+            </SectionContent>
+          </Details>
+        </Columns>
+      </Container>
 
-              <Modal isOpen={openModal}>
-                <ModalContainer>
-                  <ConfrimationString>
-                    Permanently delete this form?
-                  </ConfrimationString>
-                  <Button
-                    onClick={event => {
-                      deleteForm(formId)
-                      closeModalHandler()
-                    }}
-                    primary
-                  >
-                    Ok
-                  </Button>
-                  &nbsp;
-                  <CancelButton onClick={() => closeModalHandler()}>
-                    Cancel
-                  </CancelButton>
-                </ModalContainer>
-              </Modal>
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <Modal isOpen={openModal}>
+        <ModalContainer>
+          <ConfrimationString>Permanently delete this form?</ConfrimationString>
+          <Button
+            onClick={event => {
+              deleteForm(formId)
+              closeModalHandler()
+            }}
+            primary
+          >
+            Ok
+          </Button>
+          &nbsp;
+          <CancelButton onClick={() => closeModalHandler()}>
+            Cancel
+          </CancelButton>
+        </ModalContainer>
+      </Modal>
     </div>
   )
 }

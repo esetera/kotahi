@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import styled, { withTheme } from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
 import { Icon, Action, Button } from '@pubsweet/ui'
 import { v4 as uuid } from 'uuid'
-import { Draggable } from 'react-beautiful-dnd'
 
 import { Page, Heading } from './style'
 import { DragVerticalIcon } from '../../../shared/Icons'
@@ -268,25 +268,35 @@ const FormBuilder = ({
   setActiveFieldId,
   addField,
   deleteField,
+  dragField,
   moveFieldUp,
   moveFieldDown,
 }) => {
   return (
     <Page>
-      {form.structure.children?.map((element, index) => (
-        <BuilderElement
-          deleteField={deleteField}
-          element={element}
-          formFeildId={element.id}
-          formId={form.id}
-          index={index}
-          isActive={activeFieldId === element.id}
-          key={`element-${element.id}`}
-          moveFieldDown={moveFieldDown}
-          moveFieldUp={moveFieldUp}
-          setActiveFieldId={setActiveFieldId}
-        />
-      ))}
+      <DragDropContext onDragEnd={dragField}>
+        <Droppable droppableId="droppable">
+          {(provided, snapshot) => (
+            <div {...provided.droppableProps} ref={provided.innerRef}>
+              {form.structure.children?.map((element, index) => (
+                <BuilderElement
+                  deleteField={deleteField}
+                  element={element}
+                  formFeildId={element.id}
+                  formId={form.id}
+                  index={index}
+                  isActive={activeFieldId === element.id}
+                  key={`element-${element.id}`}
+                  moveFieldDown={moveFieldDown}
+                  moveFieldUp={moveFieldUp}
+                  setActiveFieldId={setActiveFieldId}
+                />
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
       <AddElementButton
         addElement={newElement => {
           addField({
