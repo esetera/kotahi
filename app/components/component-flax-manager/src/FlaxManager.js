@@ -92,9 +92,8 @@ const FlaxManager = ({ history }) => {
   })
 
   const showManagePage = currentFlaxPage => {
-    let link = `${urlFrag}/admin/flax/flax-edit/${currentFlaxPage.id}`
+    const link = `${urlFrag}/admin/flax/flax-edit/${currentFlaxPage.id}`
     history.push(link)
-    return
   }
 
   if (loading) return <Spinner />
@@ -122,8 +121,8 @@ const FlaxManager = ({ history }) => {
           <tbody>
             {flaxPages.map(flaxPage => (
               <FlaxPageRow
-                key={flaxPage.id}
                 flaxPage={flaxPage}
+                key={flaxPage.id}
                 onManageClick={currentFlaxPage =>
                   showManagePage(currentFlaxPage)
                 }
