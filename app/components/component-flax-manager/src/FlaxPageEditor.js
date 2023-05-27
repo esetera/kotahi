@@ -1,115 +1,74 @@
 import React from 'react'
-import { set } from 'lodash'
+
+import { useMutation, useQuery } from '@apollo/client'
 
 import { Formik } from 'formik'
-import { ValidatedFieldFormik, Button } from '@pubsweet/ui'
 
-import FormWaxEditor from '../../component-formbuilder/src/components/FormWaxEditor'
+import { Heading, Container, Content } from './style'
 
-import { Section, Legend, Heading, Container, Content, Page } from './style'
+import { Spinner, CommsErrorBanner } from '../../shared'
 
-import { TextInput } from '../../shared'
+import { getFlaxPage, updatePageDataMutation } from './queries'
 
-import { hasValue } from '../../../shared/htmlUtils'
+import FormView from './FormView'
 
-import styled from 'styled-components'
-
-const SubmitButton = styled(Button)`
-  margin: 16px;
-`
-
-const inputComponents = {
-  TextField: TextInput,
-}
-
-inputComponents.AbstractEditor = ({
-  validationStatus,
-  setTouched,
-  onChange,
-  ...rest
-}) => {
-  return (
-    <FormWaxEditor
-      validationStatus={validationStatus}
-      {...rest}
-      onBlur={() => {
-        setTouched(set({}, rest.name, true))
-      }}
-      onChange={val => {
-        setTouched(set({}, rest.name, true))
-        const cleanedVal = hasValue(val) ? val : ''
-        onChange(cleanedVal)
-      }}
-    />
+const FlaxPageEditor = ({ match }) => {
+  const { loading, data, error, refetch: refetchPageData } = useQuery(
+    getFlaxPage,
+    {
+      variables: {
+        id: match.params.pageId,
+      },
+    },
   )
-}
 
-const inputFields = [
-  {
-    component: inputComponents.AbstractEditor,
-    label: 'Header',
-    name: 'header',
-  },
-  {
-    component: inputComponents.AbstractEditor,
-    label: 'Body',
-    name: 'body',
-  },
-  {
-    component: inputComponents.AbstractEditor,
-    label: 'Footer',
-    name: 'footer',
-  },
-]
+  const [updatePageDataQuery] = useMutation(updatePageDataMutation)
 
-const FormView = ({ onSubmit, setFieldValue, setTouched, key }) => {
-  return (
-    <Page>
-      <form key={key} onSubmit={onSubmit}>
-        {inputFields.map(item => {
-          return (
-            <Section key={item.name}>
-              <Legend space>{item.label}</Legend>
-              <ValidatedFieldFormik
-                component={item.component}
-                name={item.name}
-                setTouched={setTouched}
-                onChange={value => {
-                  setFieldValue(item.name, value)
-                }}
-              />
-            </Section>
-          )
-        })}
-        <SubmitButton primary type="submit">
-          Save Page
-        </SubmitButton>
-      </form>
-    </Page>
-  )
-}
+  const updatePageData = formData => {
+    let inputData = {
+      title: formData.title,
+      content: {
+        header: formData.header,
+        footer: formData.footer,
+        body: formData.body,
+      },
+    }
+    return updatePageDataQuery({
+      variables: {
+        id: match.params.pageId,
+        input: inputData,
+      },
+    })
+  }
 
-const FlaxPageEditor = () => {
+  if (loading) return <Spinner />
+  if (error) return <CommsErrorBanner error={error} />
+
+  const { flaxPage } = data
+  const { content } = flaxPage
+
   return (
     <Container>
-      <Heading>Flax Pages Editor</Heading>
+      <Heading>{flaxPage.title}</Heading>
       <Content>
         <Formik
           initialValues={{
-            header: '',
-            footer: '',
-            body: '',
+            title: flaxPage.title,
+            header: content.header,
+            footer: content.footer,
+            body: content.body,
           }}
-          // onSubmit={(values, actions) => {
-          //   console.log({ values, actions })
-          // }}
+          onSubmit={async (values, actions) => {
+            await updatePageData(values)
+            refetchPageData()
+          }}
         >
           {formikProps => {
             return (
               <FormView
+                formErrors={formikProps.errors}
                 onSubmit={formikProps.handleSubmit}
                 setFieldValue={formikProps.setFieldValue}
-                formErrors={formikProps.errors}
                 setTouched={formikProps.setTouched}
               />
             )
