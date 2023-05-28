@@ -81,6 +81,7 @@ const FormView = ({ onSubmit, setFieldValue, setTouched, key }) => {
                 onChange={value => {
                   if (item.type === 'text-input') {
                     let val = value
+
                     if (value.target) {
                       val = value.target.value
                     } else if (value.value) {

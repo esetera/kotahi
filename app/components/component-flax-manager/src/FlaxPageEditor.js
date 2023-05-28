@@ -8,7 +8,11 @@ import { Heading, Container, Content } from './style'
 
 import { Spinner, CommsErrorBanner } from '../../shared'
 
-import { getFlaxPage, updatePageDataMutation } from './queries'
+import {
+  getFlaxPage,
+  updatePageDataMutation,
+  rebuildFlaxSiteMutation,
+} from './queries'
 
 import FormView from './FormView'
 
@@ -23,6 +27,7 @@ const FlaxPageEditor = ({ match }) => {
   )
 
   const [updatePageDataQuery] = useMutation(updatePageDataMutation)
+  const [rebuildFlaxSiteQuery] = useMutation(rebuildFlaxSiteMutation)
 
   const updatePageData = formData => {
     const inputData = {
@@ -41,6 +46,8 @@ const FlaxPageEditor = ({ match }) => {
       },
     })
   }
+
+  const rebuildingTheSite = () => rebuildFlaxSiteQuery()
 
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
@@ -62,6 +69,7 @@ const FlaxPageEditor = ({ match }) => {
           onSubmit={async (values, actions) => {
             await updatePageData(values)
             refetchPageData()
+            await rebuildingTheSite()
           }}
         >
           {formikProps => {

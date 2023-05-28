@@ -27,3 +27,12 @@ export const updatePageDataMutation = gql`
     }
   }
 `
+
+export const rebuildFlaxSiteMutation = gql`
+  mutation rebuildFlaxSite {
+    rebuildFlaxSite {
+      status
+      error
+    }
+  }
+`
