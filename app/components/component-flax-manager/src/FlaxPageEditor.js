@@ -84,8 +84,8 @@ const FlaxPageEditor = ({ match }) => {
                 onSubmit={formikProps.handleSubmit}
                 setFieldValue={formikProps.setFieldValue}
                 setTouched={formikProps.setTouched}
-                updatePageStatus={updatePageStatus}
                 submitButtonText={submitButtonText}
+                updatePageStatus={updatePageStatus}
               />
             )
           }}
