@@ -6,10 +6,10 @@ const axios = require('axios')
 
 const serverUrl = `https://1399-2409-4053-d9d-59b-74c6-894-20cb-2a07.ngrok-free.app`
 const currentAppUrl = `https://1d67-2409-4053-d9d-59b-74c6-894-20cb-2a07.ngrok-free.app/graphql`
-let flaxSiteAccessToken = '' // maybe this should be saved somewhere?
+const flaxSiteAccessToken = '' // maybe this should be saved somewhere?
 
 const rebuild = async url => {
-  let requestData = JSON.stringify({
+  const requestData = JSON.stringify({
     updatedConfig: {
       url: currentAppUrl,
     },
@@ -31,6 +31,7 @@ const rebuild = async url => {
       })
       .catch(async err => {
         const { response } = err
+
         if (!response) {
           return reject(
             new Error(
@@ -74,7 +75,7 @@ const resolvers = {
   Query: {
     flaxHealthCheck: async (_, vars, ctx) => {
       let status = 'Nothing'
-      let error = 'Nothing'
+      const error = 'Nothing'
       status = await healthCheck()
       status = JSON.stringify(status)
       return { status, error }

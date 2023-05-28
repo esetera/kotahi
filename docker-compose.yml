@@ -333,7 +333,6 @@ services:
     volumes:
       - ./scripts/init-pgboss.sql:/docker-entrypoint-initdb.d/init-pgboss.sql
 
-
   kotahi-flax-site:
     image: pankajag/kotahi-flax-site:0.0.2
     ports:
