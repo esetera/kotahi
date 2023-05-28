@@ -25,7 +25,7 @@ const FlaxPageEditor = ({ match }) => {
   const [updatePageDataQuery] = useMutation(updatePageDataMutation)
 
   const updatePageData = formData => {
-    let inputData = {
+    const inputData = {
       title: formData.title,
       content: {
         header: formData.header,
@@ -33,6 +33,7 @@ const FlaxPageEditor = ({ match }) => {
         body: formData.body,
       },
     }
+
     return updatePageDataQuery({
       variables: {
         id: match.params.pageId,

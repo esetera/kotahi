@@ -86,9 +86,11 @@ const FormView = ({ onSubmit, setFieldValue, setTouched, key }) => {
                     } else if (value.value) {
                       val = value.value
                     }
+
                     setFieldValue(item.name, val, false)
                     return
                   }
+
                   setFieldValue(item.name, value)
                 }}
                 setTouched={setTouched}
