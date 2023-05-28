@@ -70,6 +70,7 @@ const FlaxPageEditor = ({ match }) => {
             await updatePageData(values)
             refetchPageData()
             await rebuildingTheSite()
+            // alert('Site has been updated.')
           }}
         >
           {formikProps => {

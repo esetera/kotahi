@@ -1,77 +1,19 @@
 const axios = require('axios')
 // const config = require('config')
-
-// To test:
-// POST http://localhost:3004/healthCheck
-// POST http://localhost:3004/api/auth with clientId/clientSecret in Basic Auth – returns access token
-// POST http://localhost:3004/api/v1/sync/DOCXToHTML with access token in Bearer Auth and docx in body – returns HTML
-
 // const { port, protocol, host } = config['flax-site']
-
-// console.log('flax config', config['flax-site'], config['auth-orcid'])
-
 // const serverUrl = `${protocol}://${host}${port ? `:${port}` : ''}`
-const serverUrl = `https://51ad-2409-4053-d9d-59b-bd98-8b50-b319-4dd4.ngrok-free.app`
+// const serverUrl = `http://kotahi-flax-site:8081`
 
+const serverUrl = `https://1399-2409-4053-d9d-59b-74c6-894-20cb-2a07.ngrok-free.app`
+const currentAppUrl = `https://1d67-2409-4053-d9d-59b-74c6-894-20cb-2a07.ngrok-free.app/graphql`
 let flaxSiteAccessToken = '' // maybe this should be saved somewhere?
 
-// const serviceHandshake = async () => {
-//   const buff = Buffer.from(`${clientId}:${clientSecret}`, 'utf8')
-//   const base64data = buff.toString('base64')
-
-//   const serviceHealthCheck = await axios({
-//     method: 'get',
-//     url: `${serverUrl}/healthcheck`,
-//   })
-
-//   const { data: healthCheckData } = serviceHealthCheck
-//   const { message } = healthCheckData
-
-//   if (message !== 'Coolio') {
-//     throw new Error(`XSweet service is down`)
-//   }
-
-//   return new Promise((resolve, reject) => {
-//     axios({
-//       method: 'post',
-//       url: `${serverUrl}/api/auth`,
-//       headers: { authorization: `Basic ${base64data}` },
-//     })
-//       .then(async ({ data }) => {
-//         resolve(data.accessToken)
-//       })
-//       .catch(err => {
-//         const { response } = err
-
-//         if (!response) {
-//           return reject(new Error(`Request failed with message: ${err.code}`))
-//         }
-
-//         const { status, data } = response
-//         const { msg } = data
-
-//         return reject(
-//           new Error(`Request failed with status ${status} and message: ${msg}`),
-//         )
-//       })
-//   })
-// }
-
 const rebuild = async url => {
-  // eslint-disable-next-line
-  // console.log('DOCX path: ', docxPath)
-
-  // const serviceHealthCheck = await axios({
-  //   method: 'get',
-  //   url: `${serverUrl}/health`,
-  // })
-
-  // console.log('serviceHealthCheck.data', serviceHealthCheck.data)
-
-  // // const { data: healthCheckData } = serviceHealthCheck
-  // // const { message } = healthCheckData
-
-  // return
+  let requestData = JSON.stringify({
+    updatedConfig: {
+      url: currentAppUrl,
+    },
+  })
 
   return new Promise((resolve, reject) => {
     axios({
@@ -79,8 +21,9 @@ const rebuild = async url => {
       url: `${serverUrl}/rebuild`,
       headers: {
         authorization: `Bearer ${flaxSiteAccessToken}`,
+        'Content-Type': 'application/json',
       },
-      data: {},
+      data: requestData,
     })
       .then(async res => {
         const htmledResult = res.data
@@ -108,7 +51,36 @@ const rebuild = async url => {
   })
 }
 
+const healthCheck = async () => {
+  try {
+    const serviceHealthCheck = await axios({
+      method: 'get',
+      url: `${serverUrl}/health`,
+    })
+
+    return {
+      data: serviceHealthCheck.data,
+      url: `${serverUrl}/health`,
+    }
+  } catch (err) {
+    return {
+      err,
+      url: `${serverUrl}/health`,
+    }
+  }
+}
+
 const resolvers = {
+  Query: {
+    flaxHealthCheck: async (_, vars, ctx) => {
+      let status = 'Nothing'
+      let error = 'Nothing'
+      status = await healthCheck()
+      status = JSON.stringify(status)
+      return { status, error }
+    },
+  },
+
   Mutation: {
     rebuildFlaxSite: async (_, { url }, ctx) => {
       let status = ''
@@ -129,6 +101,11 @@ const resolvers = {
 }
 
 const typeDefs = `
+
+  extend type Query {
+    flaxHealthCheck : rebuildFlaxSiteResponse
+  }
+
   extend type Mutation {
 		rebuildFlaxSite : rebuildFlaxSiteResponse
 	}
