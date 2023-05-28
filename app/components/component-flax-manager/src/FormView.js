@@ -1,20 +1,15 @@
 import React from 'react'
 import { set } from 'lodash'
 
-import { ValidatedFieldFormik, Button } from '@pubsweet/ui'
+import { ValidatedFieldFormik } from '@pubsweet/ui'
 
-import styled from 'styled-components'
 import FormWaxEditor from '../../component-formbuilder/src/components/FormWaxEditor'
 
 import { Section, Legend, Page } from './style'
 
-import { TextInput } from '../../shared'
+import { TextInput, ActionButton, PaddedContent } from '../../shared'
 
 import { hasValue } from '../../../shared/htmlUtils'
-
-const SubmitButton = styled(Button)`
-  margin: 16px;
-`
 
 const inputComponents = {
   TextField: TextInput,
@@ -67,7 +62,14 @@ const inputFields = [
   },
 ]
 
-const FormView = ({ onSubmit, setFieldValue, setTouched, key }) => {
+const FormView = ({
+  onSubmit,
+  setFieldValue,
+  setTouched,
+  key,
+  updatePageStatus,
+  submitButtonText,
+}) => {
   return (
     <Page>
       <form key={key} onSubmit={onSubmit}>
@@ -99,9 +101,14 @@ const FormView = ({ onSubmit, setFieldValue, setTouched, key }) => {
             </Section>
           )
         })}
-        <SubmitButton primary type="submit">
+        {/* <SubmitButton primary type="submit">
           Save Page
-        </SubmitButton>
+        </SubmitButton> */}
+        <PaddedContent>
+          <ActionButton primary status={updatePageStatus} type="submit">
+            {submitButtonText}
+          </ActionButton>
+        </PaddedContent>
       </form>
     </Page>
   )

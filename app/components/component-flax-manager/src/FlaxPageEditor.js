@@ -17,14 +17,14 @@ import {
 import FormView from './FormView'
 
 const FlaxPageEditor = ({ match }) => {
-  const { loading, data, error, refetch: refetchPageData } = useQuery(
-    getFlaxPage,
-    {
-      variables: {
-        id: match.params.pageId,
-      },
+  const [updatePageStatus, setUpdatePageStatus] = React.useState(null)
+  const [submitButtonText, setSubmitButtonText] = React.useState('Save Page')
+
+  const { loading, data, error } = useQuery(getFlaxPage, {
+    variables: {
+      id: match.params.pageId,
     },
-  )
+  })
 
   const [updatePageDataQuery] = useMutation(updatePageDataMutation)
   const [rebuildFlaxSiteQuery] = useMutation(rebuildFlaxSiteMutation)
@@ -67,10 +67,14 @@ const FlaxPageEditor = ({ match }) => {
             body: content.body,
           }}
           onSubmit={async (values, actions) => {
+            setUpdatePageStatus('pending')
+            setSubmitButtonText('Saving Page data...')
             await updatePageData(values)
-            refetchPageData()
+            setSubmitButtonText('Rebuilding Site...')
+            // refetchPageData()
             await rebuildingTheSite()
-            // alert('Site has been updated.')
+            setUpdatePageStatus('success')
+            setSubmitButtonText('Save Page')
           }}
         >
           {formikProps => {
@@ -80,6 +84,8 @@ const FlaxPageEditor = ({ match }) => {
                 onSubmit={formikProps.handleSubmit}
                 setFieldValue={formikProps.setFieldValue}
                 setTouched={formikProps.setTouched}
+                updatePageStatus={updatePageStatus}
+                submitButtonText={submitButtonText}
               />
             )
           }}
