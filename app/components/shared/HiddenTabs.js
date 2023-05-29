@@ -24,7 +24,7 @@ export const Tab = styled.div`
   padding-bottom: 0;
   position: relative;
 
-  div {
+  & > div {
     border-bottom: 3px solid
       ${({ active }) => (active ? th('colorPrimary') : 'none')};
     margin-bottom: -2px;

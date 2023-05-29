@@ -277,7 +277,11 @@ const FormBuilder = ({
       <DragDropContext onDragEnd={dragField}>
         <Droppable droppableId="droppable">
           {(provided, snapshot) => (
-            <div {...provided.droppableProps} ref={provided.innerRef}>
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={{ overflowY: 'scroll' }}
+            >
               {form.structure.children?.map((element, index) => (
                 <BuilderElement
                   deleteField={deleteField}

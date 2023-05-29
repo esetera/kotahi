@@ -13,23 +13,6 @@ export const Legend = styled.div`
   margin-bottom: ${({ space, theme }) => space && theme.gridUnit};
 `
 
-const Columns = styled.div`
-  display: grid;
-  grid-column-gap: 2em;
-  grid-template-areas: 'form details';
-  grid-template-columns: 1fr 1fr;
-  justify-content: center;
-`
-
-const Form = styled.div`
-  grid-area: form;
-`
-
-const Details = styled.div`
-  grid-area: details;
-  margin-top: 48px;
-`
-
 const Page = styled.div`
   position: relative;
   z-index: 0;
@@ -202,9 +185,6 @@ const CommentContainer = styled.div`
 `
 
 export {
-  Columns,
-  Form,
-  Details,
   Page,
   Heading,
   UploadContainer,

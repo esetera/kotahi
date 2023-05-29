@@ -2,18 +2,18 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { forEach } from 'lodash'
 import styled, { withTheme } from 'styled-components'
-import { Tabs, Action, Icon, Button } from '@pubsweet/ui'
+import { Action, Icon, Button } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
-import { Columns, Details, Form } from './style'
 import ComponentProperties from './ComponentProperties'
 import FormProperties from './FormProperties'
 import FormBuilder from './FormBuilder'
 import {
   Container,
-  HeadingWithAction,
   Heading,
+  HiddenTabs,
   SectionContent,
   SectionRow,
+  TightRow,
 } from '../../../shared'
 import Modal from '../../../component-modal/src/ConfirmationModal'
 
@@ -26,10 +26,6 @@ const ModalContainer = styled.div`
 const IconAction = styled(Action)`
   line-height: 1.15;
   vertical-align: text-top;
-`
-
-const RightIconAction = styled(IconAction)`
-  margin-left: 10px;
 `
 
 const UnpaddedIcon = styled(Icon)`
@@ -89,54 +85,91 @@ const FormBuilderLayout = ({
     setOpenModal(false)
   }
 
+  const formsPlusNew = [
+    ...forms,
+    {
+      id: 'asdf',
+      purpose: 'submit',
+      category: 'submission',
+      structure: { children: [] },
+    },
+  ]
+
   const sections = []
-  forEach(forms, form => {
+  forEach(formsPlusNew, form => {
     sections.push({
       content: (
-        <SectionContent>
-          <SectionRow>
-            <FormBuilder
-              activeFieldId={activeFieldId}
-              addField={updateField}
-              deleteField={deleteField}
-              dragField={dragField}
-              form={form}
-              moveFieldDown={fieldId => moveFieldDown(form, fieldId)}
-              moveFieldUp={fieldId => moveFieldUp(form, fieldId)}
-              setActiveFieldId={setActiveFieldId}
-            />
+        <>
+          <SectionRow
+            style={{ display: 'flex', flexDirection: 'row', gap: '16px' }}
+          >
+            <div style={{ flex: '1 1 50%' }}>
+              <FormBuilder
+                activeFieldId={activeFieldId}
+                addField={updateField}
+                deleteField={deleteField}
+                dragField={dragField}
+                form={form}
+                moveFieldDown={fieldId => moveFieldDown(form, fieldId)}
+                moveFieldUp={fieldId => moveFieldUp(form, fieldId)}
+                setActiveFieldId={setActiveFieldId}
+              />
+            </div>
+            <div style={{ flex: '1 1 50%' }}>
+              {activeField ? (
+                <ComponentProperties
+                  category={category}
+                  field={activeField}
+                  formId={activeFormId}
+                  key={activeFieldId}
+                  shouldAllowHypothesisTagging={shouldAllowHypothesisTagging}
+                  updateField={updateField}
+                />
+              ) : (
+                <FormProperties
+                  createForm={createForm}
+                  form={form}
+                  key={activeFormId}
+                  updateForm={updateForm}
+                />
+              )}
+            </div>
           </SectionRow>
-        </SectionContent>
+        </>
       ),
-      key: `${form.id}`,
-      label: [
-        form.structure.name || 'Unnamed form',
-        <RightIconAction
-          key="delete-form"
-          onClick={e => {
-            e.preventDefault()
-            e.stopPropagation()
-            openModalHandler({
-              variables: { formId: form.id },
-            })
-            setActiveFormId(forms.find(f => f.id !== form.id)?.id ?? 'new')
-          }}
-        >
-          <ControlIcon size={2.5}>x</ControlIcon>
-        </RightIconAction>,
-      ],
+      key: `${activeFormId}`,
+      label: (
+        <TightRow>
+          {form.structure.name || 'Unnamed form'}
+          <IconAction
+            key="delete-form"
+            onClick={e => {
+              e.preventDefault()
+              e.stopPropagation()
+              openModalHandler({
+                variables: { formId: activeFormId },
+              })
+              setActiveFormId(forms.find(f => f.id !== form.id)?.id ?? 'new')
+            }}
+          >
+            <ControlIcon size={2.5}>x</ControlIcon>
+          </IconAction>
+        </TightRow>
+      ),
     })
   })
 
   sections.push({
     content: <SectionContent />,
     key: 'new',
-    label: [
-      <ControlIcon key="new-form" size={2.5}>
-        plus
-      </ControlIcon>,
-      ' New Form',
-    ],
+    label: (
+      <TightRow>
+        <ControlIcon key="new-form" size={2.5}>
+          plus
+        </ControlIcon>
+        New Form
+      </TightRow>
+    ),
   })
 
   const activeForm = forms.find(f => f.id === activeFormId) ?? {
@@ -155,49 +188,27 @@ const FormBuilderLayout = ({
   )
 
   return (
-    <div style={{ overflowY: 'scroll', height: '100vh' }}>
-      <Container style={{ height: '100vh' }}>
-        <HeadingWithAction>
-          <Heading>
-            {category.charAt(0).toUpperCase() + category.slice(1)} Form Builder
-          </Heading>
-        </HeadingWithAction>
-        <Columns>
-          <Form>
-            <Tabs
-              activeKey={activeFormId ?? 'new'}
-              key={activeFormId}
-              onChange={tab => {
-                setActiveFormId(tab)
-                setActiveFieldId(null)
-              }}
-              sections={sections}
-            />
-          </Form>
-          <Details>
-            <SectionContent>
-              <SectionRow>
-                {activeField ? (
-                  <ComponentProperties
-                    category={category}
-                    field={activeField}
-                    formId={activeForm.id}
-                    key={activeField.id}
-                    shouldAllowHypothesisTagging={shouldAllowHypothesisTagging}
-                    updateField={updateField}
-                  />
-                ) : (
-                  <FormProperties
-                    createForm={createForm}
-                    form={activeForm}
-                    key={activeForm.id}
-                    updateForm={updateForm}
-                  />
-                )}
-              </SectionRow>
-            </SectionContent>
-          </Details>
-        </Columns>
+    <>
+      <Container
+        style={{
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          overflowY: 'hidden',
+        }}
+      >
+        <Heading>
+          {category.charAt(0).toUpperCase() + category.slice(1)} Form Builder
+        </Heading>
+        <HiddenTabs
+          defaultActiveKey={activeFormId ?? 'new'}
+          key={activeFormId}
+          onChange={tab => {
+            setActiveFormId(tab)
+            setActiveFieldId(null)
+          }}
+          sections={sections}
+        />
       </Container>
 
       <Modal isOpen={openModal}>
@@ -218,7 +229,7 @@ const FormBuilderLayout = ({
           </CancelButton>
         </ModalContainer>
       </Modal>
-    </div>
+    </>
   )
 }
 
