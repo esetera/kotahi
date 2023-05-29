@@ -12,7 +12,7 @@ class AuthorCitationToolGroup extends ToolGroup {
 
   /* eslint-disable-next-line */
   renderTools() {
-    return <AuthorCitationTool />
+    return <AuthorCitationTool key="authorcitationtool" />
   }
 }
 

@@ -12,7 +12,7 @@ class TableCitationToolGroup extends ToolGroup {
 
   /* eslint-disable-next-line */
   renderTools() {
-    return <TableCitationTool />
+    return <TableCitationTool key="tablecitationtool" />
   }
 }
 

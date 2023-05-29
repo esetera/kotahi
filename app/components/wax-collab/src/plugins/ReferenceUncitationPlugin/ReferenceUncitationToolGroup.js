@@ -12,7 +12,7 @@ class ReferenceUncitationToolGroup extends ToolGroup {
 
   /* eslint-disable-next-line */
   renderTools() {
-    return <ReferenceUncitationTool />
+    return <ReferenceUncitationTool key="referenceuncitationtool" />
   }
 }
 

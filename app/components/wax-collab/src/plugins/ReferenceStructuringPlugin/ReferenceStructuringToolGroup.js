@@ -21,7 +21,7 @@ class ReferenceStructuringToolGroup extends ToolGroup {
   /* eslint-disable-next-line */
   renderTools() {
     return (
-      <Wrapper>
+      <Wrapper key="referencestructuring">
         <ReferenceStructuring />
       </Wrapper>
     )

@@ -12,7 +12,7 @@ class ImageUncitationToolGroup extends ToolGroup {
 
   /* eslint-disable-next-line */
   renderTools() {
-    return <ImageUncitationTool />
+    return <ImageUncitationTool key="imageeuncitationtool" />
   }
 }
 

@@ -12,7 +12,7 @@ class TableUncitationToolGroup extends ToolGroup {
 
   /* eslint-disable-next-line */
   renderTools() {
-    return <TableUncitation />
+    return <TableUncitation key="tableuncitationtool" />
   }
 }
 

@@ -12,7 +12,7 @@ class ReferenceValidationToolGroup extends ToolGroup {
 
   /* eslint-disable-next-line */
   renderTools() {
-    return <ReferenceValidationTool />
+    return <ReferenceValidationTool key="referencevalidationtool" />
   }
 }
 

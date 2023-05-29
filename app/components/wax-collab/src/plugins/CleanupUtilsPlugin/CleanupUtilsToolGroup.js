@@ -22,7 +22,7 @@ class CleanupUtilsToolGroup extends ToolGroup {
   /* eslint-disable-next-line */
   renderTools() {
     return (
-      <Wrapper>
+      <Wrapper key="cleanuputils">
         <CleanupUtils />
       </Wrapper>
     )

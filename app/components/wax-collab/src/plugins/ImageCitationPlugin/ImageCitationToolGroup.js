@@ -12,7 +12,7 @@ class ImageCitationToolGroup extends ToolGroup {
 
   /* eslint-disable-next-line */
   renderTools() {
-    return <ImageCitationTool />
+    return <ImageCitationTool key="imagecitationtool" />
   }
 }
 
