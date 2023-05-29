@@ -52,22 +52,22 @@ const rebuild = async url => {
 }
 
 const healthCheck = async () => {
-  let url = `${serverUrl}/healthcheck`
+  const url = `${serverUrl}/healthcheck`
 
   try {
     const serviceHealthCheck = await axios({
       method: 'get',
-      url: url,
+      url,
     })
 
     return {
       data: serviceHealthCheck.data,
-      url: url,
+      url,
     }
   } catch (err) {
     return {
       err,
-      url: url,
+      url,
     }
   }
 }
