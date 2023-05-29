@@ -8,6 +8,7 @@ class FlaxPage extends BaseModel {
   static get schema() {
     return {
       properties: {
+        shortcode: { type: 'string' },
         title: { type: 'string' },
         content: {
           type: 'object',

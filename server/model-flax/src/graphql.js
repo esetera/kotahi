@@ -13,6 +13,14 @@ const resolvers = {
       }
       return null
     },
+
+    async flaxPageByShortcode(_, { shortcode }, ctx) {
+      if (shortcode) {
+        const flaxPage = await models.FlaxPage.query().findOne({ shortcode })
+        return flaxPage
+      }
+      return null
+    },
   },
   Mutation: {
     async updateFlaxPage(_, { id, input }, ctx) {
@@ -24,6 +32,7 @@ const resolvers = {
 const typeDefs = `
   extend type Query {
     flaxPage(id: ID): FlaxPage
+    flaxPageByShortcode(shortcode: String!): FlaxPage
     flaxPages: [FlaxPage]
   }
 
@@ -34,6 +43,7 @@ const typeDefs = `
   type FlaxPage {
     id: ID!
     title: String!
+    shortcode: String!
     content: Content
     created: DateTime!
     updated: DateTime

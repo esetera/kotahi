@@ -20,6 +20,14 @@ export const getFlaxPage = gql`
   }
 `
 
+export const getFlaxPageByShortcode = gql`
+  query flaxPageByShortcode($shortcode: String!) {
+    flaxPageByShortcode(shortcode: $shortcode) {
+      ${flaxPageFields}
+    }
+  }
+`
+
 export const updatePageDataMutation = gql`
   mutation updateFlaxPage($id: ID, $input: FlaxPageInput) {
     updateFlaxPage(id: $id, input: $input) {
