@@ -335,7 +335,9 @@ services:
       - ./scripts/init-pgboss.sql:/docker-entrypoint-initdb.d/init-pgboss.sql
 
   kotahi-flax-site:
-    image: pankajag/kotahi-flax-site:0.0.2
+    image: pankajag/kotahi-flax-site:0.1.0
+    depends_on:
+      - client
     ports:
       - ${FLAX_EXPRESS_PORT:-8082}:3000
       - ${FLAX_PORT:-8081}:80
