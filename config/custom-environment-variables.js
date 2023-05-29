@@ -120,6 +120,6 @@ module.exports = {
     clientSecret: 'SERVICE_FLAX_SITE_SECRET',
     protocol: 'SERVICE_FLAX_SITE_PROTOCOL',
     host: 'SERVICE_FLAX_SITE_HOST',
-    port: 'SERVICE_FLAX_SITE_EXPRESS_PORT',
+    port: 'SERVICE_FLAX_EXPRESS_HOST',
   },
 }

@@ -1,12 +1,10 @@
 const axios = require('axios')
-// const config = require('config')
-// const { port, protocol, host } = config['flax-site']
-// const serverUrl = `${protocol}://${host}${port ? `:${port}` : ''}`
-// const serverUrl = `http://kotahi-flax-site:8081`
+const config = require('config')
+const { port, protocol, host } = config['flax-site']
+const serverUrl = `${protocol}://${host}${port ? `:${port}` : ''}`
 
-const serverUrl = `https://1399-2409-4053-d9d-59b-74c6-894-20cb-2a07.ngrok-free.app`
-const currentAppUrl = `https://1d67-2409-4053-d9d-59b-74c6-894-20cb-2a07.ngrok-free.app/graphql`
-const flaxSiteAccessToken = '' // maybe this should be saved somewhere?
+const currentAppUrl = `http://client:4000/graphql`
+const flaxSiteAccessToken = ''
 
 const rebuild = async url => {
   const requestData = JSON.stringify({
