@@ -147,7 +147,6 @@ services:
       - SERVICE_FLAX_SITE_PROTOCOL=${SERVICE_FLAX_SITE_PROTOCOL:-http}
       - SERVICE_FLAX_SITE_HOST=${SERVICE_FLAX_SITE_HOST:-kotahi-flax-site}
       - SERVICE_FLAX_EXPRESS_HOST=${SERVICE_FLAX_EXPRESS_HOST:-3000}
-     
 
     volumes:
       - ./config:/home/node/app/config

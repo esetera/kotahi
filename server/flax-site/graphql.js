@@ -1,5 +1,6 @@
 const axios = require('axios')
 const config = require('config')
+
 const { port, protocol, host } = config['flax-site']
 const serverUrl = `${protocol}://${host}${port ? `:${port}` : ''}`
 
