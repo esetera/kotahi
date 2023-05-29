@@ -5,6 +5,7 @@ const axios = require('axios')
 // Note that SSL certificate verification needs to be turned off for this to work.
 
 const getReferenceStructure = async arrayOfStrings => {
+  console.log('in get reference structure!')
   // input is an array of strings, each a single reference
   const data = arrayOfStrings
 
@@ -23,6 +24,7 @@ const getReferenceStructure = async arrayOfStrings => {
           payload: [data1],
         }
 
+        console.log('Sending data: ', data1)
         await axios.post(url, inputData).then(response => {
           res.push(response.data)
         })
