@@ -4,13 +4,17 @@ const config = require('config')
 const { port, protocol, host } = config['flax-site']
 const serverUrl = `${protocol}://${host}${port ? `:${port}` : ''}`
 
-const currentAppUrl = `http://client:4000/graphql`
+const { clientPort, clientHost, clientProtocol } = config['flax-site']
+const currentAppUrl = `${clientProtocol}://${clientHost}${
+  clientPort ? `:${clientPort}` : ''
+}`
+
 const flaxSiteAccessToken = ''
 
 const rebuild = async url => {
   const requestData = JSON.stringify({
     updatedConfig: {
-      url: currentAppUrl,
+      url: `${currentAppUrl}/graphql`,
     },
   })
 
@@ -62,12 +66,10 @@ const healthCheck = async () => {
 
     return {
       data: serviceHealthCheck.data,
-      url,
     }
   } catch (err) {
     return {
       err,
-      url,
     }
   }
 }

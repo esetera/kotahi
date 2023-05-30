@@ -118,6 +118,9 @@ module.exports = {
   'flax-site': {
     clientId: 'SERVICE_FLAX_SITE_CLIENT_ID',
     clientSecret: 'SERVICE_FLAX_SITE_SECRET',
+    clientPort: 'FLAX_CLIENT_PORT',
+    clientHost: 'FLAX_CLIENT_HOST',
+    clientProtocol: 'FLAX_CLIENT_PROTOCOL',
     protocol: 'SERVICE_FLAX_SITE_PROTOCOL',
     host: 'SERVICE_FLAX_SITE_HOST',
     port: 'SERVICE_FLAX_EXPRESS_HOST',
