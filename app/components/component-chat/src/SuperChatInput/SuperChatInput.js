@@ -18,6 +18,7 @@ import {
 import ChatWaxEditor from '../ChatWaxEditor'
 
 import { useAppScroller } from '../../../../hooks/useAppScroller'
+import { MEDIA_BREAK } from '../../../layout'
 
 const QuotedMessage = styled.div``
 
@@ -38,16 +39,29 @@ export const cleanSuggestionUserObject = user => {
 }
 
 const SuperChatInput = props => {
-  const { sendChannelMessages, searchUsers } = props
+  const { sendChannelMessages, searchUsers, users } = props
+  const [showUserFilter, setShowUserFilter] = React.useState(false)
 
   const cacheKey = `last-content-${props.channelId}`
   const [text, changeText] = React.useState('')
   // key to clear ChatWaxEditor input on submit
   const [messageSentCount, setMessageSentCount] = React.useState(0)
   const [photoSizeError, setPhotoSizeError] = React.useState('')
-  const [chatInputFocus, setChatInputFocus] = React.useState(false)
+  const [inputRef, setInputRef] = React.useState(null)
   const { scrollToBottom } = useAppScroller()
   const editorRef = React.useRef()
+
+  const setUserFilter = () => {
+    setShowUserFilter(true)
+  }
+
+  const resetUserFilter = () => {
+    setShowUserFilter(false)
+  }
+
+  React.useEffect(() => {
+    changeText(text)
+  }, [messageSentCount])
 
   // On mount, set the text state to the cached value if one exists
   // $FlowFixMe
@@ -62,8 +76,66 @@ const SuperChatInput = props => {
     localStorage.setItem(cacheKey, text)
   }, [text])
 
+  // Focus chatInput when quoted message changes
+  // $FlowFixMe
+  React.useEffect(() => {
+    if (inputRef) inputRef.focus()
+  }, [props.quotedMessage && props.quotedMessage.messageId])
+
+  React.useEffect(() => {
+    // autofocus the chat input on desktop
+    if (inputRef && window && window.innerWidth > MEDIA_BREAK) inputRef.focus()
+  }, [inputRef])
+
+  const removeAttachments = () => {
+    removeQuotedMessage()
+    setMediaPreview(null)
+  }
+
+  const handleKeyPress = e => {
+    // We shouldn't do anything during composition of IME.
+    // `keyCode === 229` is a fallback for old browsers like IE.
+    if (e.isComposing || e.keyCode === 229) {
+      return
+    }
+
+    switch (e.key) {
+      // Submit on Enter unless Shift is pressed
+      case 'Enter': {
+        if (e.shiftKey) return
+        e.preventDefault()
+        submit()
+        return
+      }
+
+      // If backspace is pressed on the empty
+      case 'Backspace': {
+        if (text.length === 0) removeAttachments()
+        break
+      }
+
+      default:
+    }
+  }
+
+  const onChange = textValue => {
+    changeText(textValue)
+  }
+
   const onEnterPress = source => {
     submit()
+  }
+
+  const addUserName = userName => {
+    const atIndex = text.lastIndexOf('@')
+
+    const newText = `${text.slice(
+      0,
+      atIndex,
+    )}<span style="color:blue">@${userName}</span>${text.slice(atIndex + 1)}`
+
+    changeText(newText)
+    setShowUserFilter(false)
   }
 
   const sendMessage = ({ file, body }) =>
@@ -133,11 +205,24 @@ const SuperChatInput = props => {
     // workaround react-mentions bug by replacing @[username] with @username
     // @see withspectrum/spectrum#4587
     sendMessage({ body: msg.replace(/@\[([a-z0-9_-]+)\]/g, '@$1') })
+    // .then(() => {
+    //   // If we're viewing a thread and the user sends a message as a non-member, we need to refetch the thread data
+    //   if (
+    //     props.threadType === 'story' &&
+    //     props.threadId &&
+    //     props.refetchThread
+    //   ) {
+    //     return props.refetchThread();
+    //   }
+    // })
+    // .catch(err => {
+    // props.dispatch(addToastWithTimeout('error', err.message));
+    // })
 
     // Clear the chat input now that we're sending a message for sure
     setMessageSentCount(messageSentCount + 1)
     removeQuotedMessage()
-    setChatInputFocus(true)
+    inputRef && inputRef.focus()
   }
 
   // $FlowFixMe
@@ -150,6 +235,23 @@ const SuperChatInput = props => {
   const [mediaPreview, setMediaPreview] = React.useState(null)
   // $FlowFixMe
   const [mediaFile, setAttachedMediaFile] = React.useState(null)
+
+  // const previewMedia = blob => {
+  //   if (isSendingMediaMessage) return
+  //   setIsSendingMediaMessage(true)
+  //   setAttachedMediaFile(blob)
+  //   inputRef && inputRef.focus()
+
+  //   const reader = new FileReader()
+  //   reader.onload = () => {
+  //     setMediaPreview(reader.result.toString())
+  //     setIsSendingMediaMessage(false)
+  //   }
+
+  //   if (blob) {
+  //     reader.readAsDataURL(blob)
+  //   }
+  // }
 
   const removeQuotedMessage = () => {
     // if (props.quotedMessage)
@@ -214,16 +316,27 @@ const SuperChatInput = props => {
                 </PreviewWrapper>
               )}
               <ChatWaxEditor
-                autoFocus={chatInputFocus}
+                addUserName={addUserName}
+                autoFocus={false}
                 editorRef={editorRef}
                 hasAttachment={!!props.quotedMessage || !!mediaPreview}
+                inputRef={node => {
+                  if (props.onRef) props.onRef(node)
+                  setInputRef(node)
+                }}
                 key={messageSentCount}
                 networkDisabled={networkDisabled}
+                onChange={onChange}
                 onEnterPress={onEnterPress}
+                onKeyDown={handleKeyPress}
                 placeholder="Your message here..."
+                resetUserFilter={resetUserFilter}
                 searchUsersCallBack={searchUsers} // props.participants is currently undefined
+                setUserFilter={setUserFilter}
+                showUserFilter={showUserFilter}
                 staticSuggestions={props.participants}
-                value=""
+                users={users}
+                value={text}
               />
             </InputWrapper>
             <SendButton

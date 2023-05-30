@@ -1,4 +1,5 @@
 import React from 'react'
+import { useQuery, gql } from '@apollo/client'
 import ChatInput from './SuperChatInput/SuperChatInput'
 import Messages from './Messages/Messages'
 
@@ -12,6 +13,25 @@ const Chat = ({
   queryData,
   manuscriptId = null,
 }) => {
+  const GET_USER = gql`
+    query {
+      users {
+        id
+        username
+      }
+    }
+  `
+
+  const { loading, error, data } = useQuery(GET_USER)
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>
+  }
+
   return (
     <>
       <Messages
@@ -26,6 +46,7 @@ const Chat = ({
         currentUser={currentUser}
         searchUsers={searchUsers}
         sendChannelMessages={sendChannelMessages}
+        users={data.users}
       />
     </>
   )

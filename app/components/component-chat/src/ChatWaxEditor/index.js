@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Wax } from 'wax-prosemirror-core'
 import chatWaxEditorConfig from './ChatWaxEditorConfig'
 import chatWaxEditorLayout from './ChatWaxEditorLayout'
+import SelectUserDropdown from '../../../component-task-manager/src/SelectUserDropdown'
+// import CustomMentionsInput from '../MentionsInput/MentionsInput'
 
 const ChatWaxEditor = ({
   value,
@@ -10,15 +12,86 @@ const ChatWaxEditor = ({
   readonly,
   autoFocus,
   onBlur,
-  onChange,
   placeholder,
   spellCheck,
+  showUserFilter,
+  setUserFilter,
+  resetUserFilter,
+  users,
+  searchUsersCallBack,
+  addUserName,
   onEnterPress,
   editorRef,
   ...rest
 }) => {
+  const [queryString, setQueryString] = useState('')
+  const [filteredUsers, setFilteredUsers] = useState(users)
+  const [lastIndexOfAtSymbol, setlastIndexOfAtSymbol] = useState(-1)
+
+  const setUserSelectionItem = item => {
+    addUserName(item)
+  }
+
+  const filterUsers = query => {
+    if (!query || !users) {
+      return users
+    }
+
+    return users.filter(user => {
+      const username = user.username.toLowerCase()
+      const search = query.toLowerCase()
+      return username.startsWith(search)
+    })
+  }
+
+  useEffect(() => {
+    const parser = new DOMParser()
+    const parsedHtml = parser.parseFromString(value, 'text/html')
+    const targetElement = parsedHtml.querySelector('p')
+
+    if (targetElement) {
+      const textvalue = targetElement.textContent
+      const lastIndex = textvalue.lastIndexOf('@')
+
+      if (textvalue[textvalue.length - 1] === '@') {
+        if (textvalue.length === 1 || textvalue[textvalue.length - 2] === ' ') {
+          setlastIndexOfAtSymbol(lastIndex)
+
+          if (typeof setUserFilter === 'function') {
+            setUserFilter()
+          }
+        } else if (showUserFilter) {
+          resetUserFilter()
+        }
+      }
+
+      if (textvalue.length === 0 || lastIndexOfAtSymbol === -1) {
+        if (typeof resetUserFilter === 'function') {
+          resetUserFilter()
+        }
+      }
+
+      if (lastIndexOfAtSymbol >= 0) {
+        setQueryString(
+          textvalue.substring(lastIndexOfAtSymbol + 1, textvalue.length),
+        )
+      }
+    }
+  }, [value])
+
+  useEffect(() => {
+    setFilteredUsers(filterUsers(queryString))
+  }, [queryString])
+
   return (
     <div className={validationStatus}>
+      {!!showUserFilter && (
+        <SelectUserDropdown
+          lastIndexOfAtSymbol={lastIndexOfAtSymbol}
+          setUserSelectionItem={setUserSelectionItem}
+          users={filteredUsers}
+        />
+      )}
       <Wax
         autoFocus={autoFocus}
         browserSpellCheck={spellCheck}
