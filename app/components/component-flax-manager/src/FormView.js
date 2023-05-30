@@ -101,9 +101,6 @@ const FormView = ({
             </Section>
           )
         })}
-        {/* <SubmitButton primary type="submit">
-          Save Page
-        </SubmitButton> */}
         <PaddedContent>
           <ActionButton primary status={updatePageStatus} type="submit">
             {submitButtonText}

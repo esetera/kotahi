@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import gql from 'graphql-tag'
 import { useQuery } from '@apollo/client'
 import FlaxPageRow from './FlaxPageRow'
 
@@ -24,19 +23,7 @@ import {
 
 import { ConfigContext } from '../../config/src'
 
-const GET_FLAX_PAGES = gql`
-  query FlaxPages {
-    flaxPages {
-      id
-      title
-      created
-      content {
-        title
-        header
-      }
-    }
-  }
-`
+import { getFlaxPages } from './queries'
 
 const FlaxManager = ({ history }) => {
   const SortHeader = ({ thisSortName, defaultSortDirection, children }) => {
@@ -87,7 +74,7 @@ const FlaxManager = ({ history }) => {
   const config = useContext(ConfigContext)
   const urlFrag = config.journal.metadata.toplevel_urlfragment
 
-  const { loading, error, data } = useQuery(GET_FLAX_PAGES, {
+  const { loading, error, data } = useQuery(getFlaxPages, {
     fetchPolicy: 'cache-and-network',
   })
 

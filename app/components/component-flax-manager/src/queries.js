@@ -12,6 +12,14 @@ const flaxPageFields = `
     }
 `
 
+export const getFlaxPages = gql`
+  query FlaxPages {
+    flaxPages {
+      ${flaxPageFields}
+    }
+  }
+`
+
 export const getFlaxPage = gql`
   query flaxPage($id: ID) {
     flaxPage(id: $id) {

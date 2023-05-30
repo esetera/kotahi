@@ -17,8 +17,10 @@ import {
 import FormView from './FormView'
 
 const FlaxPageEditor = ({ match }) => {
-  const [updatePageStatus, setUpdatePageStatus] = React.useState(null)
-  const [submitButtonText, setSubmitButtonText] = React.useState('Save Page')
+  const [submitButtonState, setSubmitButtonState] = React.useState({
+    state: null,
+    text: 'Save Page',
+  })
 
   const { loading, data, error } = useQuery(getFlaxPage, {
     variables: {
@@ -67,14 +69,11 @@ const FlaxPageEditor = ({ match }) => {
             body: content.body,
           }}
           onSubmit={async (values, actions) => {
-            setUpdatePageStatus('pending')
-            setSubmitButtonText('Saving Page data...')
+            setSubmitButtonState({ state: 'pending', text: 'Saving data' })
             await updatePageData(values)
-            setSubmitButtonText('Rebuilding Site...')
-            // refetchPageData()
+            setSubmitButtonState({ state: 'pending', text: 'Rebuilding...' })
             await rebuildingTheSite()
-            setUpdatePageStatus('success')
-            setSubmitButtonText('Save Page')
+            setSubmitButtonState({ state: 'success', text: 'Save Page' })
           }}
         >
           {formikProps => {
@@ -84,8 +83,8 @@ const FlaxPageEditor = ({ match }) => {
                 onSubmit={formikProps.handleSubmit}
                 setFieldValue={formikProps.setFieldValue}
                 setTouched={formikProps.setTouched}
-                submitButtonText={submitButtonText}
-                updatePageStatus={updatePageStatus}
+                submitButtonText={submitButtonState.text}
+                updatePageStatus={submitButtonState.state}
               />
             )
           }}
