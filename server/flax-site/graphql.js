@@ -5,6 +5,7 @@ const { port, protocol, host } = config['flax-site']
 const serverUrl = `${protocol}://${host}${port ? `:${port}` : ''}`
 
 const { clientPort, clientHost, clientProtocol } = config['flax-site']
+
 const currentAppUrl = `${clientProtocol}://${clientHost}${
   clientPort ? `:${clientPort}` : ''
 }`
