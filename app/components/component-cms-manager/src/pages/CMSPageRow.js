@@ -1,21 +1,24 @@
 import React from 'react'
-import { Cell } from '../style'
-import { Primary, UserInfo } from '../../../shared'
-import { convertTimestampToDateString } from '../../../../shared/dateUtils'
+import {
+  Cell,
+  CMSPageListRow,
+  CMSPagesLeftPane,
+  CMSPagesRightPane,
+} from '../style'
+import { convertTimestampToDateWithoutTimeString } from '../../../../shared/dateUtils'
 
 const CMSPageRow = ({ flaxPage, onManageClick }) => {
   return (
-    <>
-      <Cell key={flaxPage.id}>
-        <UserInfo>
-          <Primary>{flaxPage.title}</Primary>
-        </UserInfo>
-      </Cell>
-      <Cell>{convertTimestampToDateString(flaxPage.created)}</Cell>
-      {/* <LastCell>
-        <Action onClick={() => onManageClick(flaxPage)}>Manage</Action>
-      </LastCell> */}
-    </>
+    <CMSPageListRow key={flaxPage.id}>
+      <CMSPagesLeftPane>
+        <Cell onClick={() => onManageClick(flaxPage)}>Page title</Cell>
+      </CMSPagesLeftPane>
+      <CMSPagesRightPane>
+        <Cell>Username</Cell>
+        <Cell>{convertTimestampToDateWithoutTimeString(flaxPage.created)}</Cell>
+        <Cell>{convertTimestampToDateWithoutTimeString(flaxPage.created)}</Cell>
+      </CMSPagesRightPane>
+    </CMSPageListRow>
   )
 }
 

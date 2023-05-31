@@ -16,7 +16,7 @@ export const Page = styled.div`
   z-index: 0;
 `
 
-export const CMSPageRow = styled.div`
+export const CMSPageListRow = styled.div`
   align-items: center;
   background-color: ${th('colorBackground')};
   border-top: 1px solid ${th('colorFurniture')};
@@ -38,21 +38,20 @@ export const CMSPageRow = styled.div`
   }
 `
 
-export const CMSPageHeaderRow = styled(CMSPageRow)`
-  align-items: center;
+export const CMSPageHeaderRow = styled(CMSPageListRow)`
   background-color: ${th('colorSecondaryBackground')};
   border-radius: 8px 8px 0px 0px;
-  justify-content: space-between;
   line-height: 1.25em;
 `
 
 export const CMSPagesLeftPane = styled.div`
-  flex-grow: 5;
+  flex-grow: 2;
 `
 
 export const CMSPagesRightPane = styled.div`
   display: flex;
   flex-grow: 1;
+  justify-content: flex-end;
 `
 
 export const CMSPageTableStyled = styled.div`

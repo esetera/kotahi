@@ -15,7 +15,6 @@ import {
 
 import {
   extractSortData,
-  URI_PAGENUM_PARAM,
   URI_SORT_PARAM,
   useQueryParams,
 } from '../../../../shared/urlParamUtils'
@@ -35,7 +34,6 @@ const CMSPagesTable = ({ flaxPages, history, onClickTitle }) => {
 
       applyQueryParams({
         [URI_SORT_PARAM]: `${thisSortName}_${newSortDirection}`,
-        [URI_PAGENUM_PARAM]: 1,
       })
     }
 
@@ -66,8 +64,8 @@ const CMSPagesTable = ({ flaxPages, history, onClickTitle }) => {
   const sortName = extractSortData(params).name || 'created'
   const sortDirection = extractSortData(params).direction || 'DESC'
 
-  return (
-    <CMSPageTableStyled>
+  const renderHeaderRow = () => {
+    return (
       <CMSPageHeaderRow>
         <CMSPagesLeftPane>
           <SortHeader defaultSortDirection="ASC" thisSortName="username">
@@ -75,17 +73,23 @@ const CMSPagesTable = ({ flaxPages, history, onClickTitle }) => {
           </SortHeader>
         </CMSPagesLeftPane>
         <CMSPagesRightPane>
-          <SortHeader defaultSortDirection="DESC" thisSortName="created">
+          <SortHeader defaultSortDirection="DESC" thisSortName="createdBy">
             <Legend>Created by</Legend>
           </SortHeader>
-          <SortHeader defaultSortDirection="DESC" thisSortName="created">
+          <SortHeader defaultSortDirection="DESC" thisSortName="lastUpdated">
             <Legend>Last Updated</Legend>
           </SortHeader>
-          <SortHeader defaultSortDirection="DESC" thisSortName="created">
+          <SortHeader defaultSortDirection="DESC" thisSortName="createdOn">
             <Legend>Created on</Legend>
           </SortHeader>
         </CMSPagesRightPane>
       </CMSPageHeaderRow>
+    )
+  }
+
+  return (
+    <CMSPageTableStyled>
+      {renderHeaderRow()}
       {flaxPages.map(flaxPage => (
         <CMSPageRow
           flaxPage={flaxPage}
