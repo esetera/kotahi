@@ -1,7 +1,7 @@
 import React from 'react'
 import CMSPageRow from './CMSPageRow'
 
-import { Table, Header, CaretUp, CaretDown, Carets } from './../style'
+import { Table, Header, CaretUp, CaretDown, Carets } from '../style'
 
 import {
   extractSortData,

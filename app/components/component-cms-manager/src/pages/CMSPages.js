@@ -1,12 +1,12 @@
 import React, { useContext } from 'react'
 import { useQuery } from '@apollo/client'
 
-import { Container, Heading, Content, Spinner } from './../style'
+import { Container, Heading, Content, Spinner } from '../style'
 import { CommsErrorBanner } from '../../../shared'
 
 import { ConfigContext } from '../../../config/src'
 
-import { getFlaxPages } from './../queries'
+import { getFlaxPages } from '../queries'
 
 import CMSPagesTable from './CMSPagesTable'
 
@@ -33,8 +33,8 @@ const CMSPages = ({ history }) => {
       <Heading>Pages</Heading>
       <Content>
         <CMSPagesTable
-          history={history}
           flaxPages={flaxPages}
+          history={history}
           onClickTitle={currentFlaxPage => showManagePage(currentFlaxPage)}
         />
       </Content>
