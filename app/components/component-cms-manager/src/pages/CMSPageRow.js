@@ -1,10 +1,10 @@
 import React from 'react'
 import { Action } from '@pubsweet/ui'
-import { Row, Cell, LastCell } from './style'
-import { Primary, UserInfo } from '../../shared'
-import { convertTimestampToDateString } from '../../../shared/dateUtils'
+import { Row, Cell, LastCell } from '../style'
+import { Primary, UserInfo } from '../../../shared'
+import { convertTimestampToDateString } from '../../../../shared/dateUtils'
 
-const FlaxPageRow = ({ flaxPage, onManageClick }) => {
+const CMSPageRow = ({ flaxPage, onManageClick }) => {
   return (
     <Row>
       <Cell>
@@ -20,4 +20,4 @@ const FlaxPageRow = ({ flaxPage, onManageClick }) => {
   )
 }
 
-export default FlaxPageRow
+export default CMSPageRow

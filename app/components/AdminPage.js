@@ -31,8 +31,8 @@ import TasksTemplatePage from './component-task-manager/src/TasksTemplatePage'
 import UsersManager from './component-users-manager/src/UsersManager'
 import ConfigManagerPage from './component-config-manager/src/ConfigManagerPage'
 
-import FlaxManager from './component-flax-manager/src/FlaxManager'
-import FlaxPageEditor from './component-flax-manager/src/FlaxPageEditor'
+import CMSManager from './component-cms-manager/src/CMSManager'
+import FlaxPageEditor from './component-cms-manager/src/CMSPageEditor'
 
 import QUERY from './adminPageQueries'
 
@@ -154,7 +154,7 @@ const AdminPage = () => {
   const reportsLink = `${urlFrag}/admin/reports`
   const userAdminLink = `${urlFrag}/admin/users`
   const tasksTemplateLink = `${urlFrag}/admin/tasks`
-  const flaxLink = `${urlFrag}/admin/flax/flax-manager`
+  const CMSManagerLink = `${urlFrag}/admin/flax/flax-manager`
   const FlaxPageEditorLink = `${urlFrag}/admin/flax/flax-edit/:pageId`
   const loginLink = `/login?next=${homeLink}`
   const path = `${urlFrag}/versions/:version`
@@ -196,6 +196,13 @@ const AdminPage = () => {
 
   if (isGroupManager || isAdmin) {
     links.push({
+      menu: 'CMS',
+      name: 'CMS',
+      icon: 'layout',
+      links: [{ link: CMSManagerLink, name: 'Pages', icon: '' }],
+    })
+
+    links.push({
       menu: 'Settings',
       name: 'Settings',
       icon: 'settings',
@@ -211,7 +218,6 @@ const AdminPage = () => {
           ],
         },
         { link: tasksTemplateLink, name: 'Tasks', icon: 'list' },
-        { link: flaxLink, name: 'Flax', icon: 'globe' },
         { link: userAdminLink, name: 'Users', icon: 'users' },
         { link: configurationLink, name: 'Configuration', icon: 'sliders' },
       ],
@@ -411,10 +417,10 @@ const AdminPage = () => {
             redirectLink={redirectLink}
           />,
           <PrivateRoute
-            component={FlaxManager}
+            component={CMSManager}
             currentUser={currentUser}
-            key="flax"
-            path={flaxLink}
+            key="cms"
+            path={CMSManagerLink}
             redirectLink={redirectLink}
           />,
 
