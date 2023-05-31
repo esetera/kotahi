@@ -1,7 +1,9 @@
 import React, { useContext } from 'react'
 import { useQuery } from '@apollo/client'
+import styled from 'styled-components'
+import { grid } from '@pubsweet/ui-toolkit'
 
-import { Container, Heading, Content, Spinner } from '../style'
+import { Container, Heading, Spinner, PageTableContainer } from '../style'
 import { CommsErrorBanner } from '../../../shared'
 
 import { ConfigContext } from '../../../config/src'
@@ -9,6 +11,22 @@ import { ConfigContext } from '../../../config/src'
 import { getFlaxPages } from '../queries'
 
 import CMSPagesTable from './CMSPagesTable'
+
+const OuterContainer = styled(Container)`
+  overflow: hidden;
+  padding: 0;
+`
+
+const CMSPagesPane = styled.div`
+  overflow-y: scroll;
+  padding: 16px 16px 0 16px;
+`
+
+const FlexRow = styled.div`
+  display: flex;
+  gap: ${grid(1)};
+  justify-content: space-between;
+`
 
 const CMSPages = ({ history }) => {
   const config = useContext(ConfigContext)
@@ -29,16 +47,21 @@ const CMSPages = ({ history }) => {
   const { flaxPages } = data
 
   return (
-    <Container>
-      <Heading>Pages</Heading>
-      <Content>
-        <CMSPagesTable
-          flaxPages={flaxPages}
-          history={history}
-          onClickTitle={currentFlaxPage => showManagePage(currentFlaxPage)}
-        />
-      </Content>
-    </Container>
+    <OuterContainer>
+      <CMSPagesPane>
+        <FlexRow>
+          <Heading>Pages</Heading>
+          {/* {topRightControls} */}
+        </FlexRow>
+        <PageTableContainer>
+          <CMSPagesTable
+            flaxPages={flaxPages}
+            history={history}
+            onClickTitle={currentFlaxPage => showManagePage(currentFlaxPage)}
+          />
+        </PageTableContainer>
+      </CMSPagesPane>
+    </OuterContainer>
   )
 }
 

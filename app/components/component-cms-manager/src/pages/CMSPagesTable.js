@@ -1,7 +1,17 @@
 import React from 'react'
 import CMSPageRow from './CMSPageRow'
 
-import { Table, Header, CaretUp, CaretDown, Carets } from '../style'
+import {
+  CaretUp,
+  CaretDown,
+  Carets,
+  CMSPageTableStyled,
+  CMSPageHeaderRow,
+  Cell,
+  Legend,
+  CMSPagesLeftPane,
+  CMSPagesRightPane,
+} from '../style'
 
 import {
   extractSortData,
@@ -44,9 +54,9 @@ const CMSPagesTable = ({ flaxPages, history, onClickTitle }) => {
     }
 
     return (
-      <th onClick={changeSort}>
+      <Cell onClick={changeSort}>
         {children} {UpDown()}
-      </th>
+      </Cell>
     )
   }
 
@@ -57,29 +67,33 @@ const CMSPagesTable = ({ flaxPages, history, onClickTitle }) => {
   const sortDirection = extractSortData(params).direction || 'DESC'
 
   return (
-    <Table>
-      <Header>
-        <tr>
+    <CMSPageTableStyled>
+      <CMSPageHeaderRow>
+        <CMSPagesLeftPane>
           <SortHeader defaultSortDirection="ASC" thisSortName="username">
-            Page Title
+            <Legend>Page title</Legend>
+          </SortHeader>
+        </CMSPagesLeftPane>
+        <CMSPagesRightPane>
+          <SortHeader defaultSortDirection="DESC" thisSortName="created">
+            <Legend>Created by</Legend>
           </SortHeader>
           <SortHeader defaultSortDirection="DESC" thisSortName="created">
-            Created
+            <Legend>Last Updated</Legend>
           </SortHeader>
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-          <th />
-        </tr>
-      </Header>
-      <tbody>
-        {flaxPages.map(flaxPage => (
-          <CMSPageRow
-            flaxPage={flaxPage}
-            key={flaxPage.id}
-            onManageClick={currentFlaxPage => onClickTitle(currentFlaxPage)}
-          />
-        ))}
-      </tbody>
-    </Table>
+          <SortHeader defaultSortDirection="DESC" thisSortName="created">
+            <Legend>Created on</Legend>
+          </SortHeader>
+        </CMSPagesRightPane>
+      </CMSPageHeaderRow>
+      {flaxPages.map(flaxPage => (
+        <CMSPageRow
+          flaxPage={flaxPage}
+          key={flaxPage.id}
+          onManageClick={currentFlaxPage => onClickTitle(currentFlaxPage)}
+        />
+      ))}
+    </CMSPageTableStyled>
   )
 }
 
