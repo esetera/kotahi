@@ -1,19 +1,19 @@
 /* stylelint-disable selector-type-no-unknown */
-import { css } from 'styled-components'
-import { darken, grid, th } from '@pubsweet/ui-toolkit'
-import lightenBy from '../../../../shared/lightenBy'
+import { css } from "styled-components";
+import { darken, grid, th } from "@pubsweet/ui-toolkit";
+import lightenBy from "../../../../shared/lightenBy";
 
 // This should only include styles specific to the editor */
 /* Styles that are purely presentational for text should be in textStyles.css */
 
 const EditorStyles = css`
   /* include textStyles here */
-  ${props => props.theme.textStyles}
+  ${(props) => props.theme.textStyles}
 
   .ProseMirror {
     background: unset;
     counter-reset: footnote;
-    font-family: ${props => props.theme.fontReading};
+    font-family: ${(props) => props.theme.fontReading};
     white-space: pre-wrap;
 
     &:focus {
@@ -33,9 +33,9 @@ const EditorStyles = css`
 
   .ProseMirror footnote {
     align-items: center;
-    background: ${lightenBy('colorPrimary', 0.7)};
+    background: ${lightenBy("colorPrimary", 0.7)};
     border-radius: ${grid(2)};
-    color: ${darken('colorPrimary', 0.5)};
+    color: ${darken("colorPrimary", 0.5)};
     cursor: pointer;
     display: inline-flex;
     height: ${grid(4)};
@@ -45,7 +45,7 @@ const EditorStyles = css`
     vertical-align: top;
 
     &:hover {
-      background: ${lightenBy('colorPrimary', 0.3)};
+      background: ${lightenBy("colorPrimary", 0.3)};
     }
 
     ::after {
@@ -76,7 +76,7 @@ const EditorStyles = css`
   .selectedCell:after {
     background: rgba(200, 200, 255, 0.4);
     bottom: 0;
-    content: '';
+    content: "";
     left: 0;
     pointer-events: none;
     position: absolute;
@@ -115,15 +115,15 @@ const EditorStyles = css`
   }
 
   .invisible--space:before {
-    content: '·';
+    content: "·";
   }
 
   .invisible--break:before {
-    content: '¬';
+    content: "¬";
   }
 
   .invisible--par:after {
-    content: '¶';
+    content: "¶";
   }
 
   span.deletion {
@@ -152,7 +152,7 @@ const EditorStyles = css`
 
   [data-track]::before {
     border-left: 2px solid blue;
-    content: '';
+    content: "";
     height: 100%;
     left: -10px;
     position: absolute;
@@ -164,7 +164,7 @@ const EditorStyles = css`
   }
 
   .insertion .show-insertion {
-    color: ${th('colorText')};
+    color: ${th("colorText")};
   }
 
   .deletion .hide-deletion {
@@ -192,7 +192,7 @@ const EditorStyles = css`
 
   .math-node {
     cursor: auto;
-    font-family: 'Consolas', 'Ubuntu Mono', monospace;
+    font-family: "Consolas", "Ubuntu Mono", monospace;
     font-size: 0.95em;
     min-height: 1em;
     min-width: 1em;
@@ -208,12 +208,12 @@ const EditorStyles = css`
 
   .math-node.empty-math .math-render::before {
     color: red;
-    content: '(empty)';
+    content: "(empty)";
   }
 
   .math-node .math-render.parse-error::before {
     color: red;
-    content: '(math error)';
+    content: "(math error)";
     cursor: help;
   }
 
@@ -237,7 +237,7 @@ const EditorStyles = css`
   math-inline .math-src::after,
   math-inline .math-src::before {
     color: #b0b0b0;
-    content: '$';
+    content: "$";
   }
 
   /* -- Block Math ---------------------------------------- */
@@ -263,7 +263,7 @@ const EditorStyles = css`
   math-display .math-src::after,
   math-display .math-src::before {
     color: #b0b0b0;
-    content: '$$';
+    content: "$$";
     text-align: left;
   }
 
@@ -311,33 +311,33 @@ const EditorStyles = css`
     background-color: #c0c0c0ff;
   }
 
-  span[data-type='inline'] {
+  span[data-type="inline"] {
     display: inline;
     font-weight: 500;
   }
 
-  span[data-type='inline']:before {
+  span[data-type="inline"]:before {
     color: #006f19;
-    content: ' | ';
+    content: " | ";
     font-weight: 600;
     margin-left: 0;
   }
 
-  span[data-type='inline']:after {
+  span[data-type="inline"]:after {
     color: #006f19;
-    content: ' | ';
+    content: " | ";
     display: inline;
     font-weight: 600;
   }
 
-  p[data-type='block'] {
+  p[data-type="block"] {
     display: block;
     margin-top: 1em;
   }
 
-  p[data-type='block']:before {
+  p[data-type="block"]:before {
     color: #006f19;
-    content: '⌜';
+    content: "⌜";
     display: inline;
     font-size: 22px;
     font-weight: 600;
@@ -346,9 +346,9 @@ const EditorStyles = css`
     top: 2px;
   }
 
-  p[data-type='block']:after {
+  p[data-type="block"]:after {
     color: #006f19;
-    content: '⌟';
+    content: "⌟";
     display: inline;
     font-size: 22px;
     font-weight: 600;
@@ -372,10 +372,10 @@ const EditorStyles = css`
     position: relative;
 
     &:before {
-      background-color: ${th('colorFrontMatter')};
+      background-color: ${th("colorFrontMatter")};
       border: 1px solid #ccc;
       border-radius: 4px;
-      content: '';
+      content: "";
       height: calc(100% + 2px);
       left: -4px;
       position: absolute;
@@ -397,10 +397,10 @@ const EditorStyles = css`
     position: relative;
 
     &:before {
-      background-color: ${th('colorAbstract')};
+      background-color: ${th("colorAbstract")};
       border: 1px solid #ccc;
       border-radius: 4px;
-      content: '';
+      content: "";
       height: calc(100% + 2px);
       left: -4px;
       position: absolute;
@@ -422,10 +422,10 @@ const EditorStyles = css`
     position: relative;
 
     &:before {
-      background-color: ${th('colorCitation')};
+      background-color: ${th("colorCitation")};
       border: 1px solid #ccc;
       border-radius: 4px;
-      content: '';
+      content: "";
       height: calc(100% + 2px);
       left: -4px;
       position: absolute;
@@ -438,7 +438,7 @@ const EditorStyles = css`
     }
 
     & p {
-      --citationColorValues: ${th('colorCitation')};
+      --citationColorValues: ${th("colorCitation")};
       --citationTextColor: black;
       --citationOffset: 2px;
       border-radius: 2px;
@@ -477,10 +477,10 @@ const EditorStyles = css`
     position: relative;
 
     &:before {
-      background-color: ${th('colorAcknowledgements')};
+      background-color: ${th("colorAcknowledgements")};
       border: 1px solid #ccc;
       border-radius: 4px;
-      content: '';
+      content: "";
       height: calc(100% + 2px);
       left: -4px;
       position: absolute;
@@ -502,10 +502,10 @@ const EditorStyles = css`
     position: relative;
 
     &:before {
-      background-color: ${th('colorAppendix')};
+      background-color: ${th("colorAppendix")};
       border: 1px solid #ccc;
       border-radius: 4px;
-      content: '';
+      content: "";
       height: calc(100% + 2px);
       left: -4px;
       position: absolute;
@@ -532,15 +532,15 @@ const EditorStyles = css`
   /* added for figure weirdness */
 
   figure {
-    border: 1px solid ${darken('colorPrimary', 1)};
+    border: 1px solid ${darken("colorPrimary", 1)};
     margin-bottom: 1rem;
     padding: 1rem;
     position: relative;
   }
 
   figure::before {
-    color: ${darken('colorPrimary', 1)};
-    content: 'Figure:';
+    color: ${darken("colorPrimary", 1)};
+    content: "Figure:";
     font-size: 75%;
     left: 0;
     letter-spacing: 0.5px;
@@ -550,11 +550,11 @@ const EditorStyles = css`
   }
 
   figure:hover:before {
-    content: 'Click to add a caption';
+    content: "Click to add a caption";
   }
 
   figcaption {
-    border: 1px solid ${darken('colorPrimary', 1)};
+    border: 1px solid ${darken("colorPrimary", 1)};
     margin-top: 1rem;
     min-width: 600px; /* in case there's no image, so the caption doesn't get squished */
     padding: 1rem;
@@ -562,8 +562,8 @@ const EditorStyles = css`
   }
 
   figcaption::before {
-    color: ${darken('colorPrimary', 1)};
-    content: 'Caption:';
+    color: ${darken("colorPrimary", 1)};
+    content: "Caption:";
     font-size: 75%;
     left: 0;
     letter-spacing: 0.5px;
@@ -577,16 +577,16 @@ const EditorStyles = css`
   .fundingsource,
   .fundingstatement,
   .awardid {
-    --fundingColorValues: ${th('colorFunding')};
+    --fundingColorValues: ${th("colorFunding")};
     --fundingOffset: 2px;
     border-radius: 2px;
-    outline: ${th('colorFunding')} 1px solid;
+    outline: ${th("colorFunding")} 1px solid;
     outline-offset: var(--fundingOffset);
     transition: 0.25;
   }
 
   .fundingsource {
-    --fundingColorValues: ${th('colorFundingSource')};
+    --fundingColorValues: ${th("colorFundingSource")};
 
     &:hover {
       outline-color: var(--fundingColorValues);
@@ -594,7 +594,7 @@ const EditorStyles = css`
   }
 
   .fundingstatement {
-    --fundingColorValues: ${th('colorFundingStatement')};
+    --fundingColorValues: ${th("colorFundingStatement")};
 
     &:hover {
       outline-color: var(--fundingColorValues);
@@ -602,7 +602,7 @@ const EditorStyles = css`
   }
 
   .awardid {
-    --fundingColorValues: ${th('colorAwardId')};
+    --fundingColorValues: ${th("colorAwardId")};
 
     &:hover {
       outline-color: var(--fundingColorValues);
@@ -624,7 +624,7 @@ const EditorStyles = css`
   /* CITATIONS */
 
   span.mixed-citation {
-    --citationColorValues: ${th('colorCitation')};
+    --citationColorValues: ${th("colorCitation")};
     --citationTextColor: black;
     --citationOffset: 2px;
     border-radius: 2px;
@@ -636,59 +636,59 @@ const EditorStyles = css`
   }
 
   span.citation-label {
-    --citationColorValues: ${th('colorCitationLabel')};
+    --citationColorValues: ${th("colorCitationLabel")};
     --citationTextColor: white;
   }
 
   span.article-title {
-    --citationColorValues: ${th('colorArticleTitle')};
+    --citationColorValues: ${th("colorArticleTitle")};
     --citationTextColor: white;
   }
 
   span.journal-title {
-    --citationColorValues: ${th('colorJournalTitle')};
+    --citationColorValues: ${th("colorJournalTitle")};
     --citationTextColor: white;
     font-style: italic;
   }
 
   span.author-group {
-    --citationColorValues: ${th('colorAuthorGroup')};
+    --citationColorValues: ${th("colorAuthorGroup")};
     --citationOffset: 4px;
     --citationTextColor: white;
   }
 
   span.author-name {
-    --citationColorValues: ${th('colorAuthorName')};
+    --citationColorValues: ${th("colorAuthorName")};
     --citationTextColor: white;
   }
 
   a.doi {
-    --citationColorValues: ${th('colorDoi')};
+    --citationColorValues: ${th("colorDoi")};
     --citationTextColor: white;
   }
 
   span.volume {
-    --citationColorValues: ${th('colorVolume')};
+    --citationColorValues: ${th("colorVolume")};
     --citationTextColor: white;
   }
 
   span.issue {
-    --citationColorValues: ${th('colorIssue')};
+    --citationColorValues: ${th("colorIssue")};
     --citationTextColor: white;
   }
 
   span.first-page {
-    --citationColorValues: ${th('colorFirstPage')};
+    --citationColorValues: ${th("colorFirstPage")};
     --citationTextColor: white;
   }
 
   span.last-page {
-    --citationColorValues: ${th('colorLastPage')};
+    --citationColorValues: ${th("colorLastPage")};
     --citationTextColor: white;
   }
 
   span.year {
-    --citationColorValues: ${th('colorYear')};
+    --citationColorValues: ${th("colorYear")};
     --citationTextColor: white;
   }
 
@@ -707,14 +707,14 @@ const EditorStyles = css`
     --citationTextColor: black;
     --citationOffset: 2px;
     border-radius: 2px;
-    outline: ${th('colorCitation')} 1px solid;
+    outline: ${th("colorCitation")} 1px solid;
     outline-offset: var(--citationOffset);
     position: relative;
 
     &:before {
       background-color: var(--citationColorValues);
       border-radius: 100%;
-      content: '';
+      content: "";
       display: none;
       height: 4px;
       left: -2px;
@@ -737,47 +737,47 @@ const EditorStyles = css`
   }
 
   .show-article-title .article-title {
-    outline: ${th('colorArticleTitle')} 2px solid;
+    outline: ${th("colorArticleTitle")} 2px solid;
   }
 
   .show-journal-title .journal-title {
-    outline: ${th('colorJournalTitle')} 2px solid;
+    outline: ${th("colorJournalTitle")} 2px solid;
   }
 
   .show-citation-label .citation-label {
-    outline: ${th('colorCitationLabel')} 2px solid;
+    outline: ${th("colorCitationLabel")} 2px solid;
   }
 
   .show-author-group .author-group {
-    outline: ${th('colorAuthorGroup')} 2px solid;
+    outline: ${th("colorAuthorGroup")} 2px solid;
   }
 
   .show-author-name .author-name {
-    outline: ${th('colorAuthorName')} 2px solid;
+    outline: ${th("colorAuthorName")} 2px solid;
   }
 
   .show-volume .volume {
-    outline: ${th('colorVolume')} 2px solid;
+    outline: ${th("colorVolume")} 2px solid;
   }
 
   .show-issue .issue {
-    outline: ${th('colorIssue')} 2px solid;
+    outline: ${th("colorIssue")} 2px solid;
   }
 
   .show-year .year {
-    outline: ${th('colorYear')} 2px solid;
+    outline: ${th("colorYear")} 2px solid;
   }
 
   .show-first-page .first-page {
-    outline: ${th('colorFirstPage')} 2px solid;
+    outline: ${th("colorFirstPage")} 2px solid;
   }
 
   .show-last-page .last-page {
-    outline: ${th('colorLastPage')} 2px solid;
+    outline: ${th("colorLastPage")} 2px solid;
   }
 
   .show-doi a.doi {
-    outline: ${th('colorDoi')} 2px solid;
+    outline: ${th("colorDoi")} 2px solid;
   }
 
   /* keywords */
@@ -786,7 +786,7 @@ const EditorStyles = css`
     --keywordColorValues: transparent;
     --keywordOffset: 2px;
     border-radius: 2px;
-    outline: ${th('colorKeyword')} 1px solid;
+    outline: ${th("colorKeyword")} 1px solid;
     outline-offset: var(--fundingOffset);
     transition: 0.25;
   }
@@ -797,14 +797,14 @@ const EditorStyles = css`
     --keywordOffset: 2px;
     border-radius: 2px;
     font-weight: bold;
-    outline: ${th('colorKeyword')} 1px solid;
+    outline: ${th("colorKeyword")} 1px solid;
     outline-offset: var(--keywordOffset);
     position: relative;
 
     &:before {
       background-color: var(--keywordColorValues);
       border-radius: 100%;
-      content: '';
+      content: "";
       display: none;
       height: 4px;
       left: -2px;
@@ -829,10 +829,10 @@ const EditorStyles = css`
     position: relative;
 
     &:before {
-      background-color: ${th('colorGlossary')};
+      background-color: ${th("colorGlossary")};
       border: 1px solid #ccc;
       border-radius: 4px;
-      content: '';
+      content: "";
       height: calc(100% + 2px);
       left: -4px;
       position: absolute;
@@ -859,6 +859,19 @@ const EditorStyles = css`
   .glossary-term {
     font-weight: bold;
   }
-`
 
-export default EditorStyles
+  p.ref {
+    --fundingColorValues: ${th("colorAwardId")};
+    --fundingOffset: 2px;
+    border-radius: 2px;
+    outline: ${th("colorFunding")} 1px solid;
+    outline-offset: var(--fundingOffset);
+    transition: 0.25;
+
+    &:hover {
+      outline-color: var(--fundingColorValues);
+    }
+  }
+`;
+
+export default EditorStyles;
