@@ -45,9 +45,14 @@ export const CMSPageHeaderRow = styled(CMSPageListRow)`
 `
 
 export const CMSPagesLeftPane = styled.div`
-
+display:flex;
   flex-grow: 2;
-`
+`;
+
+
+export const CheckboxInput = styled.input`
+  margin-right: 5px;
+`;
 export const Status = styled.span`
     
     font-size:11px;

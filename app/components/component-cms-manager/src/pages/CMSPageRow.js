@@ -6,6 +6,8 @@ import {
   CMSPagesLeftPane,
   CMSPagesRightPane,
   Status,
+ 
+  CheckboxInput
 } from '../style'
 import { convertTimestampToDateWithoutTimeString } from '../../../../shared/dateUtils'
 
@@ -14,7 +16,10 @@ const CMSPageRow = ({ flaxPage, onManageClick }) => {
    
     <CMSPageListRow key={flaxPage.id}>
       <CMSPagesLeftPane>
+       
+        <CheckboxInput type="checkbox" />
         <CellPageTitle onClick={() => onManageClick(flaxPage)} >Homepage  <Status>  --Published</Status></CellPageTitle>
+        
       </CMSPagesLeftPane>
       <CMSPagesRightPane>
         <Cell>Username</Cell>
