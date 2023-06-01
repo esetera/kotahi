@@ -23,5 +23,6 @@
   "./server/model-docmap/src",
   "./server/config/src",
   "./server/anystyle",
-  "./server/xsweet"
+  "./server/xsweet",
+  "./server/reference/src"
 ]
