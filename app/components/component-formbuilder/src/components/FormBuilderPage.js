@@ -6,6 +6,56 @@ import FormBuilderLayout from './FormBuilderLayout'
 import { Spinner, CommsErrorBanner } from '../../../shared'
 import pruneEmpty from '../../../../shared/pruneEmpty'
 
+const formFieldsSegment = `
+id
+created
+updated
+purpose
+category
+structure {
+  name
+  description
+  haspopup
+  popuptitle
+  popupdescription
+  children {
+    title
+    shortDescription
+    id
+    component
+    name
+    description
+    doiValidation
+    doiUniqueSuffixValidation
+    placeholder
+    inline
+    sectioncss
+    parse
+    format
+    options {
+      id
+      label
+      labelColor
+      value
+    }
+    validate {
+      id
+      label
+      value
+    }
+    validateValue {
+      minChars
+      maxChars
+      minSize
+    }
+    hideFromReviewers
+    hideFromAuthors
+    permitPublishing
+    publishingTag
+  }
+}
+`
+
 const createFormMutation = gql`
   mutation($form: CreateFormInput!) {
     createForm(form: $form) {
@@ -17,13 +67,13 @@ const createFormMutation = gql`
 const updateFormMutation = gql`
   mutation($form: FormInput!) {
     updateForm(form: $form) {
-      id
+      ${formFieldsSegment}
     }
   }
 `
 
 const updateFormElementMutation = gql`
-  mutation($element: FormElementInput!, $formId: String!) {
+  mutation($element: FormElementInput!, $formId: ID!) {
     updateFormElement(element: $element, formId: $formId) {
       id
     }
@@ -53,53 +103,7 @@ const deleteFormMutation = gql`
 const query = gql`
   query GET_FORM($category: String!) {
     formsByCategory(category: $category) {
-      id
-      created
-      updated
-      purpose
-      category
-      structure {
-        name
-        description
-        haspopup
-        popuptitle
-        popupdescription
-        children {
-          title
-          shortDescription
-          id
-          component
-          name
-          description
-          doiValidation
-          doiUniqueSuffixValidation
-          placeholder
-          inline
-          sectioncss
-          parse
-          format
-          options {
-            id
-            label
-            labelColor
-            value
-          }
-          validate {
-            id
-            label
-            value
-          }
-          validateValue {
-            minChars
-            maxChars
-            minSize
-          }
-          hideFromReviewers
-          hideFromAuthors
-          permitPublishing
-          publishingTag
-        }
-      }
+      ${formFieldsSegment}
     }
   }
 `
@@ -139,12 +143,12 @@ const FormBuilderPage = ({ category }) => {
     refetchQueries: [{ query, variables: { category } }],
   })
 
-  const [activeFormId, setActiveFormId] = useState()
-  const [activeFieldId, setActiveFieldId] = useState()
-  const [formFeilds, setFormFeilds] = useState(cleanedForms)
+  const [selectedFormId, setSelectedFormId] = useState()
+  const [selectedFieldId, setSelectedFieldId] = useState()
+  const [formFields, setFormFields] = useState(cleanedForms)
 
   useEffect(() => {
-    setFormFeilds(cleanedForms)
+    setFormFields(cleanedForms)
   }, [data?.formsByCategory])
 
   const moveFieldUp = (form, fieldId) => {
@@ -187,68 +191,77 @@ const FormBuilderPage = ({ category }) => {
     })
   }
 
-  const dragField = form => {
-    const forms = pruneEmpty(data.formsByCategory)[0]
+  const dragField = event => {
+    const form = pruneEmpty(
+      data.formsByCategory.find(f => f.id === selectedFormId),
+    )
 
-    const fields = forms.structure.children
-
-    const fromIndex = form.source.index
-
-    const toIndex = form.destination.index
-
+    const fields = form.structure.children
+    const fromIndex = event.source.index
+    const toIndex = event.destination.index
     const draggedField = fields[fromIndex]
     const newFields = [...fields]
     newFields.splice(fromIndex, 1)
     newFields.splice(toIndex, 0, draggedField)
-    setFormFeilds([
-      { ...forms, structure: { ...forms.structure, children: newFields } },
+    setFormFields([
+      { ...form, structure: { ...form.structure, children: newFields } },
     ])
 
     updateForm({
       variables: {
         form: prepareForSubmit({
-          ...forms,
-          structure: { ...forms.structure, children: newFields },
+          ...form,
+          structure: { ...form.structure, children: newFields },
         }),
       },
       optimisticResponse: {
         __typename: 'Mutation',
         updateForm: {
-          id: forms.id,
+          id: form.id,
           __typename: 'FormStructure',
-          structure: { ...forms.structure, children: newFields },
+          structure: { ...form.structure, children: newFields },
         },
       },
     })
   }
 
   useEffect(() => {
-    if (!loading && data) {
-      if (data.formsByCategory.length) {
-        setActiveFormId(prevFormId => prevFormId ?? data.formsByCategory[0].id)
-      } else {
-        setActiveFormId('new')
-      }
+    if (data?.formsByCategory?.length) {
+      setSelectedFormId(
+        prevFormId =>
+          prevFormId ??
+          data.formsByCategory.find(
+            f =>
+              f.purpose ===
+              (f.category === 'submission' ? 'submit' : f.category),
+          ).id ??
+          data.formsByCategory[0].id,
+      )
+    } else {
+      setSelectedFormId(null)
     }
-  }, [loading, data])
+  }, [data])
 
-  if (loading || !activeFormId) return <Spinner />
+  if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
   return (
     <FormBuilderLayout
-      activeFieldId={activeFieldId}
-      activeFormId={activeFormId}
       category={category}
-      createForm={createForm}
+      createForm={async payload => {
+        const result = await createForm(payload)
+        setSelectedFormId(result.data.createForm.id)
+      }}
       deleteField={deleteFormElement}
       deleteForm={deleteForm}
       dragField={dragField}
-      forms={formFeilds}
+      forms={formFields}
       moveFieldDown={moveFieldDown}
       moveFieldUp={moveFieldUp}
-      setActiveFieldId={setActiveFieldId}
-      setActiveFormId={setActiveFormId}
+      selectedFieldId={selectedFieldId}
+      selectedFormId={selectedFormId}
+      setSelectedFieldId={setSelectedFieldId}
+      setSelectedFormId={setSelectedFormId}
       shouldAllowHypothesisTagging={
         config?.publishing?.hypothesis?.shouldAllowTagging
       }

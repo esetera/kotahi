@@ -76,6 +76,7 @@ const HiddenTabs = ({
   tabsContainerGridArea,
   background,
   hideChat,
+  shouldFillFlex,
 }) => {
   const config = useContext(ConfigContext)
   const [activeKey, setActiveKey] = useState(defaultActiveKey)
@@ -129,7 +130,9 @@ const HiddenTabs = ({
           style={{
             display: section.key === activeKey ? 'flex' : 'none',
             height: '100%',
+            flex: shouldFillFlex ? '1' : undefined,
             flexDirection: 'column',
+            minHeight: shouldFillFlex ? '0' : undefined,
           }}
         >
           {section.content}

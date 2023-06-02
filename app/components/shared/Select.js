@@ -95,6 +95,7 @@ export const Select = ({
       options={options}
       {...otherProps}
       menuPlacement="auto"
+      menuPortalTarget={document.querySelector('body')}
       styles={myStyles}
       value={selectedOption}
     />

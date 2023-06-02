@@ -60,7 +60,7 @@ const submissionNameField = {
 }
 
 const validateText = {
-  component: 'Menu',
+  component: 'Select',
   props: {
     isMulti: true,
     isClearable: true,
@@ -83,7 +83,7 @@ const validateText = {
 }
 
 const validateCollection = {
-  component: 'Menu',
+  component: 'Select',
   props: {
     isMulti: true,
     isClearable: true,
@@ -102,7 +102,7 @@ const validateCollection = {
 }
 
 const validateOther = {
-  component: 'Menu',
+  component: 'Select',
   props: {
     isMulti: true,
     isClearable: true,
@@ -222,193 +222,6 @@ const doiUniqueSuffixValidationField = {
   defaultValue: 'false',
 }
 
-const submissionElements = {
-  ManuscriptFile: {
-    id: textfield,
-    title: requiredTextField,
-    name: submissionNameField,
-    description: editorfield,
-    shortDescription: shortDescriptionField,
-    hideFromReviewers: hideFromReviewersField,
-    hideFromAuthors: hideFromAuthorsField,
-  },
-  SupplementaryFiles: {
-    id: textfield,
-    title: requiredTextField,
-    name: submissionNameField,
-    description: editorfield,
-    shortDescription: shortDescriptionField,
-    validate: validateOther,
-    hideFromReviewers: hideFromReviewersField,
-    hideFromAuthors: hideFromAuthorsField,
-  },
-  VisualAbstract: {
-    id: textfield,
-    title: requiredTextField,
-    name: submissionNameField,
-    description: editorfield,
-    shortDescription: shortDescriptionField,
-    validate: validateOther,
-    hideFromReviewers: hideFromReviewersField,
-    hideFromAuthors: hideFromAuthorsField,
-  },
-  AuthorsInput: {
-    id: textfield,
-    title: requiredTextField,
-    name: submissionNameField,
-    description: editorfield,
-    shortDescription: shortDescriptionField,
-    validate: validateOther,
-    hideFromReviewers: hideFromReviewersField,
-    hideFromAuthors: hideFromAuthorsField,
-    permitPublishing: permitPublishingField,
-    publishingTag: publishingTagField,
-  },
-  LinksInput: {
-    id: textfield,
-    title: requiredTextField,
-    name: submissionNameField,
-    description: editorfield,
-    shortDescription: shortDescriptionField,
-    validate: validateCollection,
-    hideFromReviewers: hideFromReviewersField,
-    hideFromAuthors: hideFromAuthorsField,
-    permitPublishing: permitPublishingField,
-    publishingTag: publishingTagField,
-  },
-  AbstractEditor: {
-    id: textfield,
-    title: requiredTextField,
-    name: submissionNameField,
-    placeholder: textfield,
-    description: editorfield,
-    shortDescription: shortDescriptionField,
-    validate: validateText,
-    hideFromReviewers: hideFromReviewersField,
-    hideFromAuthors: hideFromAuthorsField,
-    permitPublishing: permitPublishingField,
-    publishingTag: publishingTagField,
-  },
-  ThreadedDiscussion: {
-    id: textfield,
-    title: requiredTextField,
-    name: submissionNameField,
-    description: editorfield,
-    shortDescription: shortDescriptionField,
-    validate: validateOther,
-    hideFromReviewers: hideFromReviewersField,
-    hideFromAuthors: hideFromAuthorsField,
-    permitPublishing: permitPublishingField,
-    publishingTag: publishingTagField,
-  },
-  TextField: {
-    id: textfield,
-    title: requiredTextField,
-    name: submissionNameField,
-    placeholder: textfield,
-    description: editorfield,
-    shortDescription: shortDescriptionField,
-    validate: validateText,
-    parse: {
-      component: 'Menu',
-      props: {
-        label: 'Special parsing',
-        options: [
-          {
-            value: 'false',
-            label: 'None',
-          },
-          {
-            value: 'split',
-            label: 'Split at commas',
-          },
-        ],
-      },
-    },
-    format: {
-      component: 'Menu',
-      props: {
-        label: 'Special formatting',
-        options: [
-          {
-            value: 'false',
-            label: 'None',
-          },
-          {
-            value: 'join',
-            label: 'Join with commas',
-          },
-        ],
-      },
-    },
-    doiValidation: {
-      component: 'RadioBox',
-      props: {
-        inline: true,
-        options: [
-          {
-            value: 'true',
-            label: 'Yes',
-          },
-          {
-            value: 'false',
-            label: 'No',
-          },
-        ],
-        label: 'Validate as a DOI?',
-      },
-      defaultValue: 'false',
-    },
-    doiUniqueSuffixValidation: doiUniqueSuffixValidationField,
-    hideFromReviewers: hideFromReviewersField,
-    hideFromAuthors: hideFromAuthorsField,
-    permitPublishing: permitPublishingField,
-    publishingTag: publishingTagField,
-  },
-  CheckboxGroup: {
-    id: textfield,
-    title: requiredTextField,
-    name: submissionNameField,
-    description: editorfield,
-    options: optionfield,
-    shortDescription: shortDescriptionField,
-    validate: validateCollection,
-    hideFromReviewers: hideFromReviewersField,
-    hideFromAuthors: hideFromAuthorsField,
-    permitPublishing: permitPublishingField,
-    publishingTag: publishingTagField,
-  },
-  Select: {
-    id: textfield,
-    title: requiredTextField,
-    name: submissionNameField,
-    placeholder: textfield,
-    description: editorfield,
-    options: optionfield,
-    shortDescription: shortDescriptionField,
-    validate: validateOther,
-    hideFromReviewers: hideFromReviewersField,
-    hideFromAuthors: hideFromAuthorsField,
-    permitPublishing: permitPublishingField,
-    publishingTag: publishingTagField,
-  },
-  RadioGroup: {
-    id: textfield,
-    title: requiredTextField,
-    name: submissionNameField,
-    description: editorfield,
-    options: optionfield,
-    inline: radiofield,
-    sectioncss: textarea,
-    shortDescription: shortDescriptionField,
-    validate: validateOther,
-    hideFromReviewers: hideFromReviewersField,
-    hideFromAuthors: hideFromAuthorsField,
-    permitPublishing: permitPublishingField,
-    publishingTag: publishingTagField,
-  },
-}
-
 const elements = {
   ManuscriptFile: {
     id: textfield,
@@ -492,7 +305,7 @@ const elements = {
     shortDescription: shortDescriptionField,
     validate: validateText,
     parse: {
-      component: 'Menu',
+      component: 'Select',
       props: {
         label: 'Special parsing',
         options: [
@@ -508,7 +321,7 @@ const elements = {
       },
     },
     format: {
-      component: 'Menu',
+      component: 'Select',
       props: {
         label: 'Special formatting',
         options: [
@@ -587,4 +400,63 @@ const elements = {
   },
 }
 
-export { elements, submissionElements }
+const fieldTypes = [
+  { label: 'Plain text', value: 'TextField', definition: elements.TextField },
+  {
+    label: 'Rich text editor (Wax)',
+    value: 'AbstractEditor',
+    definition: elements.AbstractEditor,
+  },
+  { label: 'Dropdown selection', value: 'Select', definition: elements.Select },
+  {
+    label: 'Radio button selection',
+    value: 'RadioGroup',
+    definition: elements.RadioGroup,
+  },
+  {
+    label: 'Checkbox selection',
+    value: 'CheckboxGroup',
+    definition: elements.CheckboxGroup,
+  },
+  {
+    label: 'Add authors/contributors',
+    value: 'AuthorsInput',
+    definition: elements.AuthorsInput,
+  },
+  {
+    label: 'Threaded Discussion',
+    value: 'ThreadedDiscussion',
+    definition: elements.ThreadedDiscussion,
+  },
+  {
+    label: 'Include links (URLs)',
+    value: 'LinksInput',
+    definition: elements.LinksInput,
+  },
+  {
+    label: 'Add attachments',
+    value: 'SupplementaryFiles',
+    definition: elements.SupplementaryFiles,
+  },
+  {
+    label: 'Add a single image attachment',
+    value: 'VisualAbstract',
+    definition: elements.VisualAbstract,
+  },
+  {
+    label: 'Attached Manuscript',
+    value: 'ManuscriptFile',
+    definition: elements.ManuscriptFile,
+  },
+]
+
+const submissionFieldTypes = fieldTypes.map(et => ({
+  ...et,
+  definition: {
+    ...et.definition,
+    name: submissionNameField,
+    hideFromReviewers: hideFromReviewersField,
+  },
+}))
+
+export { fieldTypes, submissionFieldTypes }

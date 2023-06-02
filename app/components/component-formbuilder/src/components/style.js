@@ -4,7 +4,11 @@ import { Button } from '@pubsweet/ui'
 import lightenBy from '../../../../shared/lightenBy'
 
 export const Section = styled.div`
-  margin: calc(${th('gridUnit')} * 6) 0;
+  margin: ${grid(4)} 0;
+
+  &:first-child {
+    margin-top: 0;
+  }
 `
 
 export const Legend = styled.div`

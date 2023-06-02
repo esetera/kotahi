@@ -2,10 +2,9 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { forEach } from 'lodash'
 import styled, { withTheme } from 'styled-components'
-import { Action, Icon, Button } from '@pubsweet/ui'
-import { th } from '@pubsweet/ui-toolkit'
-import ComponentProperties from './ComponentProperties'
-import FormProperties from './FormProperties'
+import { Action, Icon } from '@pubsweet/ui'
+import FormSettingsModal from './FormSettingsModal'
+import FieldSettingsModal from './FieldSettingsModal'
 import FormBuilder from './FormBuilder'
 import {
   Container,
@@ -14,14 +13,10 @@ import {
   SectionContent,
   SectionRow,
   TightRow,
+  ActionButton,
 } from '../../../shared'
-import Modal from '../../../component-modal/src/ConfirmationModal'
-
-const ModalContainer = styled.div`
-  background: ${th('colorBackground')};
-  padding: 20px 24px;
-  z-index: 100;
-`
+import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
+import FormSummary from './FormSummary'
 
 const IconAction = styled(Action)`
   line-height: 1.15;
@@ -38,28 +33,35 @@ const ControlIcon = withTheme(({ children, theme }) => (
   <UnpaddedIcon color={theme.colorPrimary}>{children}</UnpaddedIcon>
 ))
 
-const CancelButton = styled(Button)`
-  background: #e9ebe8;
-  padding: 8px;
-  text-decoration: none;
-
-  &:hover {
-    background: #dbdbdb;
-  }
+const AddFormButton = styled(ActionButton)`
+  position: absolute;
+  right: 0;
 `
 
-const ConfrimationString = styled.p`
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  width: 100%;
-`
+const formIsActive = form => {
+  if (!form.category) return false
+
+  if (form.category === 'submission') {
+    if (form.purpose === 'submit') return true
+  } else if (form.purpose === form.category) return true
+
+  return false
+}
+
+const getFormsOrderedActiveFirstThenAlphabetical = forms =>
+  forms?.toSorted((a, b) => {
+    if (formIsActive(a)) return -1
+    if (formIsActive(b)) return 1
+    const nameA = a?.structure?.name?.toUpperCase()
+    const nameB = b?.structure?.name?.toUpperCase()
+    // eslint-disable-next-line no-nested-ternary
+    return nameA < nameB ? -1 : nameA > nameB ? 1 : 0
+  })
 
 const FormBuilderLayout = ({
   forms,
-  activeFormId,
-  activeFieldId,
+  selectedFormId,
+  selectedFieldId,
   category,
   deleteForm,
   deleteField,
@@ -69,12 +71,14 @@ const FormBuilderLayout = ({
   updateForm,
   createForm,
   updateField,
-  setActiveFieldId,
-  setActiveFormId,
+  setSelectedFieldId,
+  setSelectedFormId,
   shouldAllowHypothesisTagging,
 }) => {
   const [openModal, setOpenModal] = useState(false)
   const [formId, setFormId] = useState()
+  const [isEditingFormSettings, setIsEditingFormSettings] = useState(false)
+  const [isEditingFieldSettings, setIsEditingFieldSettings] = useState(false)
 
   const openModalHandler = id => {
     setOpenModal(true)
@@ -85,94 +89,91 @@ const FormBuilderLayout = ({
     setOpenModal(false)
   }
 
-  const formsPlusNew = [
-    ...forms,
-    {
-      id: 'asdf',
-      purpose: 'submit',
-      category: 'submission',
-      structure: { children: [] },
-    },
-  ]
+  const makeFormActive = async form => {
+    let purpose = form.category
+    if (purpose === 'submission') purpose = 'submit'
+
+    await updateForm({ variables: { form: { ...form, purpose } } })
+    // The server will enforce that other forms of the same category are not simultaneously active
+  }
+
+  const orderedForms = getFormsOrderedActiveFirstThenAlphabetical(forms)
 
   const sections = []
-  forEach(formsPlusNew, form => {
+  forEach(orderedForms, form => {
+    const isActive = formIsActive(form)
+
     sections.push({
       content: (
-        <>
+        <SectionContent
+          style={{ display: 'flex', flexDirection: 'column', minHeight: '0' }}
+        >
           <SectionRow
-            style={{ display: 'flex', flexDirection: 'row', gap: '16px' }}
+            style={{
+              display: 'flex',
+              flex: '1 1 0%',
+              flexDirection: 'row',
+              gap: '16px',
+              minHeight: '0',
+              width: '100%',
+            }}
           >
-            <div style={{ flex: '1 1 50%' }}>
+            <div
+              style={{
+                flex: '1 1 100%',
+                minHeight: '0',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <FormSummary
+                form={form}
+                isActive={isActive}
+                makeFormActive={() => makeFormActive(form)}
+                openFormSettingsDialog={() => setIsEditingFormSettings(true)}
+              />
               <FormBuilder
-                activeFieldId={activeFieldId}
                 addField={updateField}
                 deleteField={deleteField}
                 dragField={dragField}
                 form={form}
                 moveFieldDown={fieldId => moveFieldDown(form, fieldId)}
                 moveFieldUp={fieldId => moveFieldUp(form, fieldId)}
-                setActiveFieldId={setActiveFieldId}
+                selectedFieldId={selectedFieldId}
+                setSelectedFieldId={id => {
+                  setSelectedFieldId(id)
+                  if (id) setIsEditingFieldSettings(true)
+                }}
               />
             </div>
-            <div style={{ flex: '1 1 50%' }}>
-              {activeField ? (
-                <ComponentProperties
-                  category={category}
-                  field={activeField}
-                  formId={activeFormId}
-                  key={activeFieldId}
-                  shouldAllowHypothesisTagging={shouldAllowHypothesisTagging}
-                  updateField={updateField}
-                />
-              ) : (
-                <FormProperties
-                  createForm={createForm}
-                  form={form}
-                  key={activeFormId}
-                  updateForm={updateForm}
-                />
-              )}
-            </div>
           </SectionRow>
-        </>
+        </SectionContent>
       ),
-      key: `${activeFormId}`,
+      key: `${form.id}`,
       label: (
         <TightRow>
           {form.structure.name || 'Unnamed form'}
-          <IconAction
-            key="delete-form"
-            onClick={e => {
-              e.preventDefault()
-              e.stopPropagation()
-              openModalHandler({
-                variables: { formId: activeFormId },
-              })
-              setActiveFormId(forms.find(f => f.id !== form.id)?.id ?? 'new')
-            }}
-          >
-            <ControlIcon size={2.5}>x</ControlIcon>
-          </IconAction>
+          {!isActive && (
+            <IconAction
+              key="delete-form"
+              onClick={e => {
+                e.preventDefault()
+                e.stopPropagation()
+                openModalHandler({
+                  variables: { formId: form.id },
+                })
+                setSelectedFormId(forms.find(f => f.id !== form.id)?.id ?? null)
+              }}
+            >
+              <ControlIcon size={2.5}>x</ControlIcon>
+            </IconAction>
+          )}
         </TightRow>
       ),
     })
   })
 
-  sections.push({
-    content: <SectionContent />,
-    key: 'new',
-    label: (
-      <TightRow>
-        <ControlIcon key="new-form" size={2.5}>
-          plus
-        </ControlIcon>
-        New Form
-      </TightRow>
-    ),
-  })
-
-  const activeForm = forms.find(f => f.id === activeFormId) ?? {
+  const selectedForm = forms?.find(f => f.id === selectedFormId) ?? {
     purpose: '',
     category,
     structure: {
@@ -183,8 +184,8 @@ const FormBuilderLayout = ({
     },
   }
 
-  const activeField = activeForm.structure.children.find(
-    elem => elem.id === activeFieldId,
+  const selectedField = selectedForm.structure.children.find(
+    elem => elem.id === selectedFieldId,
   )
 
   return (
@@ -194,41 +195,78 @@ const FormBuilderLayout = ({
           height: '100vh',
           display: 'flex',
           flexDirection: 'column',
+          gap: '8px',
           overflowY: 'hidden',
         }}
       >
         <Heading>
           {category.charAt(0).toUpperCase() + category.slice(1)} Form Builder
         </Heading>
-        <HiddenTabs
-          defaultActiveKey={activeFormId ?? 'new'}
-          key={activeFormId}
-          onChange={tab => {
-            setActiveFormId(tab)
-            setActiveFieldId(null)
+        <div
+          style={{
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '0',
+            overflow: 'hidden',
+            flex: '1',
           }}
-          sections={sections}
-        />
+        >
+          <AddFormButton
+            isCompact
+            onClick={() => {
+              setSelectedFormId(null)
+              setIsEditingFormSettings(true)
+            }}
+          >
+            Add new form
+          </AddFormButton>
+          <HiddenTabs
+            defaultActiveKey={selectedFormId ?? null}
+            onChange={tab => {
+              setSelectedFormId(tab)
+              setSelectedFieldId(null)
+            }}
+            sections={sections}
+            shouldFillFlex
+          />
+        </div>
       </Container>
 
-      <Modal isOpen={openModal}>
-        <ModalContainer>
-          <ConfrimationString>Permanently delete this form?</ConfrimationString>
-          <Button
-            onClick={event => {
-              deleteForm(formId)
-              closeModalHandler()
-            }}
-            primary
-          >
-            Ok
-          </Button>
-          &nbsp;
-          <CancelButton onClick={() => closeModalHandler()}>
-            Cancel
-          </CancelButton>
-        </ModalContainer>
-      </Modal>
+      <FormSettingsModal
+        form={selectedForm}
+        isOpen={isEditingFormSettings}
+        onClose={() => setIsEditingFormSettings(false)}
+        onSubmit={async updatedForm => {
+          const payload = { variables: { form: updatedForm } }
+          if (selectedForm.id) await updateForm(payload)
+          else await createForm(payload)
+        }}
+      />
+
+      <FieldSettingsModal
+        category={selectedForm.category}
+        field={selectedField}
+        isOpen={isEditingFieldSettings}
+        onClose={() => setIsEditingFieldSettings(false)}
+        onSubmit={element => {
+          updateField({
+            variables: {
+              formId: selectedForm.id,
+              element,
+            },
+          })
+        }}
+        shouldAllowHypothesisTagging={shouldAllowHypothesisTagging}
+      />
+
+      <ConfirmationModal
+        closeModal={closeModalHandler}
+        confirmationAction={() => deleteForm(formId)}
+        confirmationButtonText="Delete"
+        isOpen={openModal}
+        message="Permanently delete this form?"
+      />
     </>
   )
 }
@@ -247,9 +285,9 @@ FormBuilderLayout.propTypes = {
         ).isRequired,
       }).isRequired,
     }).isRequired,
-  ).isRequired,
-  activeFormId: PropTypes.string.isRequired,
-  activeFieldId: PropTypes.string,
+  ),
+  selectedFormId: PropTypes.string,
+  selectedFieldId: PropTypes.string,
   deleteForm: PropTypes.func.isRequired,
   deleteField: PropTypes.func.isRequired,
   moveFieldDown: PropTypes.func.isRequired,
@@ -257,12 +295,14 @@ FormBuilderLayout.propTypes = {
   updateForm: PropTypes.func.isRequired,
   createForm: PropTypes.func.isRequired,
   updateField: PropTypes.func.isRequired,
-  setActiveFieldId: PropTypes.func.isRequired,
-  setActiveFormId: PropTypes.func.isRequired,
+  setSelectedFieldId: PropTypes.func.isRequired,
+  setSelectedFormId: PropTypes.func.isRequired,
 }
 
 FormBuilderLayout.defaultProps = {
-  activeFieldId: null,
+  forms: [],
+  selectedFormId: null,
+  selectedFieldId: null,
 }
 
 export default FormBuilderLayout

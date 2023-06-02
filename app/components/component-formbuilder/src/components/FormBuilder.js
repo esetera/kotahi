@@ -10,6 +10,7 @@ import { Page, Heading } from './style'
 import { DragVerticalIcon } from '../../../shared/Icons'
 import lightenBy from '../../../../shared/lightenBy'
 import Modal from '../../../component-modal/src/ConfirmationModal'
+import { fieldTypes } from './config/Elements'
 
 const ModalContainer = styled.div`
   background: ${th('colorBackground')};
@@ -128,12 +129,18 @@ const ConfirmationString = styled.p`
   width: 100%;
 `
 
+const FieldTypeLabel = styled.span`
+  color: ${th('colorBorder')};
+  font-size: ${th('fontSizeBaseSmall')};
+  margin-left: 1.2em;
+`
+
 const BuilderElement = ({
   element,
-  isActive,
+  isSelected,
   moveFieldDown,
   moveFieldUp,
-  setActiveFieldId,
+  setSelectedFieldId,
   deleteField,
   formId,
   formFeildId,
@@ -169,7 +176,7 @@ const BuilderElement = ({
           )}
         >
           <FeildWrapper
-            className={isActive || snapshot.isDragging ? 'active' : undefined}
+            className={isSelected || snapshot.isDragging ? 'active' : undefined}
             id={formFeildId}
             style={{
               display: 'flex',
@@ -178,13 +185,17 @@ const BuilderElement = ({
           >
             <DragIcon />
             <Element
-              className={isActive || snapshot.isDragging ? 'active' : undefined}
+              className={
+                isSelected || snapshot.isDragging ? 'active' : undefined
+              }
               key={`element-${element.id}`}
-              onClick={() => setActiveFieldId(element.id)}
+              onClick={() => setSelectedFieldId(element.id)}
             >
               <MainAction>
-                {element.shortDescription ?? element.title} ({element.component}
-                )
+                {element.shortDescription ?? element.title}{' '}
+                <FieldTypeLabel>
+                  {fieldTypes.find(x => x.value === element.component)?.label}
+                </FieldTypeLabel>
               </MainAction>
               <IconAction
                 onClick={() =>
@@ -230,7 +241,7 @@ BuilderElement.propTypes = {
     title: PropTypes.string.isRequired,
     component: PropTypes.string,
   }).isRequired,
-  isActive: PropTypes.bool.isRequired,
+  isSelected: PropTypes.bool.isRequired,
   moveFieldUp: PropTypes.func.isRequired,
   moveFieldDown: PropTypes.func.isRequired,
   setActiveFieldId: PropTypes.func.isRequired,
@@ -263,9 +274,9 @@ AddElementButton.propTypes = {
 }
 
 const FormBuilder = ({
-  activeFieldId,
+  selectedFieldId,
   form,
-  setActiveFieldId,
+  setSelectedFieldId,
   addField,
   deleteField,
   dragField,
@@ -273,14 +284,14 @@ const FormBuilder = ({
   moveFieldDown,
 }) => {
   return (
-    <Page>
+    <Page style={{ display: 'flex', flexDirection: 'column', minHeight: '0' }}>
       <DragDropContext onDragEnd={dragField}>
         <Droppable droppableId="droppable">
           {(provided, snapshot) => (
             <div
               {...provided.droppableProps}
               ref={provided.innerRef}
-              style={{ overflowY: 'scroll' }}
+              style={{ overflowY: 'scroll', flex: '1 1 0%', minHeight: '0' }}
             >
               {form.structure.children?.map((element, index) => (
                 <BuilderElement
@@ -289,11 +300,11 @@ const FormBuilder = ({
                   formFeildId={element.id}
                   formId={form.id}
                   index={index}
-                  isActive={activeFieldId === element.id}
+                  isSelected={selectedFieldId === element.id}
                   key={`element-${element.id}`}
                   moveFieldDown={moveFieldDown}
                   moveFieldUp={moveFieldUp}
-                  setActiveFieldId={setActiveFieldId}
+                  setSelectedFieldId={setSelectedFieldId}
                 />
               ))}
               {provided.placeholder}
@@ -306,7 +317,7 @@ const FormBuilder = ({
           addField({
             variables: { element: newElement, formId: form.id },
           })
-          setActiveFieldId(newElement.id)
+          setSelectedFieldId(newElement.id)
         }}
       />
     </Page>
@@ -314,7 +325,7 @@ const FormBuilder = ({
 }
 
 FormBuilder.propTypes = {
-  activeFieldId: PropTypes.string,
+  selectedFieldId: PropTypes.string,
   form: PropTypes.shape({
     id: PropTypes.string,
     purpose: PropTypes.string,
@@ -328,7 +339,7 @@ FormBuilder.propTypes = {
       ).isRequired,
     }),
   }).isRequired,
-  setActiveFieldId: PropTypes.func.isRequired,
+  setSelectedFieldId: PropTypes.func.isRequired,
   addField: PropTypes.func.isRequired,
   deleteField: PropTypes.func.isRequired,
   moveFieldUp: PropTypes.func.isRequired,
@@ -336,7 +347,7 @@ FormBuilder.propTypes = {
 }
 
 FormBuilder.defaultProps = {
-  activeFieldId: null,
+  selectedFieldId: null,
 }
 
 export default FormBuilder

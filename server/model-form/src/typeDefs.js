@@ -119,7 +119,7 @@ const typeDefs = `
   }
 
   extend type Query {
-    form(formId: String!): Form
+    form(formId: ID!): Form
     forms: [Form]
     formsByCategory(category: String!): [Form]
     formForPurposeAndCategory(purpose: String!, category: String!): Form
@@ -128,7 +128,7 @@ const typeDefs = `
   extend type Mutation {
     createForm(form: CreateFormInput!): Form
     updateForm(form: FormInput!): Form
-    updateFormElement(element: FormElementInput!, formId: String!): Form
+    updateFormElement(element: FormElementInput!, formId: ID!): Form
     deleteFormElement(formId: ID!, elementId: ID!): Form
     deleteForm(formId: ID!): DeleteFormPayload
   }
