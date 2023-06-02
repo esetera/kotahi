@@ -50,6 +50,7 @@ const CMSPages = ({ history }) => {
     <OuterContainer>
       <CMSPagesPane>
         <FlexRow>
+         
           <Heading>Pages</Heading>
           {/* {topRightControls} */}
         </FlexRow>

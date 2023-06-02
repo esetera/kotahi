@@ -45,19 +45,25 @@ export const CMSPageHeaderRow = styled(CMSPageListRow)`
 `
 
 export const CMSPagesLeftPane = styled.div`
-display:flex;
+  display:flex;
   flex-grow: 2;
 `;
 
 
 export const CheckboxInput = styled.input`
   margin-right: 5px;
+
+`;
+export const Hrstyle = styled.hr`
+width: '35px';
+ margin: '7px 0 0 1px';
+ color:${props => props.theme.colors.additional.green};
 `;
 export const Status = styled.span`
     
     font-size:11px;
     color:${props => props.theme.colors.additional.green};
-    padding-left: 10px;
+    font-weight:400
 `;
 
 export const CMSPagesRightPane = styled.div`
@@ -90,6 +96,7 @@ export const Cell = styled.div`
 `
 export const CellPageTitle = styled.div`
   display: flex;
+  font-weight:600;
   color: ${props => props.theme.colorPrimary};
  
   ${props =>

@@ -11,6 +11,7 @@ import {
   Legend,
   CMSPagesLeftPane,
   CMSPagesRightPane,
+  CheckboxInput,
 } from '../style'
 
 import {
@@ -69,6 +70,7 @@ const CMSPagesTable = ({ flaxPages, history, onClickTitle }) => {
       <CMSPageHeaderRow>
         <CMSPagesLeftPane>
           <SortHeader defaultSortDirection="ASC" thisSortName="username">
+          <CheckboxInput type="checkbox" />
             <Legend>Page title</Legend>
           </SortHeader>
         </CMSPagesLeftPane>
