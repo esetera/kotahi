@@ -45,7 +45,17 @@ export const CMSPageHeaderRow = styled(CMSPageListRow)`
 `
 
 export const CMSPagesLeftPane = styled.div`
+  display: flex;
   flex-grow: 2;
+`
+
+export const CheckboxInput = styled.input`
+  margin-right: 5px;
+`
+export const Status = styled.span`
+  color: ${props => props.theme.colors.additional.green};
+  font-size: 11px;
+  padding-left: 10px;
 `
 
 export const CMSPagesRightPane = styled.div`
@@ -61,6 +71,7 @@ export const CMSPageTableStyled = styled.div`
 
 export const Cell = styled.div`
   display: flex;
+
   flex: ${({ flex }) => flex ?? '0 1 12em'};
   flex-direction: row;
   ${props =>
@@ -73,6 +84,19 @@ export const Cell = styled.div`
     css`
       justify-content: center;
     `}
+  overflow-wrap: anywhere;
+`
+
+export const CellPageTitle = styled.div`
+  color: ${props => props.theme.colorPrimary};
+  display: flex;
+
+  ${props =>
+    props.onClick &&
+    css`
+      cursor: pointer;
+    `}
+
   overflow-wrap: anywhere;
 `
 
