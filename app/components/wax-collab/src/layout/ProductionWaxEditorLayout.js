@@ -31,7 +31,7 @@ import {
 } from './CommentsStyles'
 import 'wax-prosemirror-core/dist/index.css'
 import 'wax-prosemirror-services/dist/index.css'
-import { PluginToolComponents } from '../plugins/index'
+import { ProductionPluginToolComponents } from '../plugins/index'
 
 const getNotes = main => {
   const notes = DocumentHelpers.findChildrenByType(
@@ -117,7 +117,9 @@ const ProductionWaxEditorLayout = (readOnly, readOnlyComments) => ({
           <>
             <Menu className="waxmenu">
               <TopBar />
-              {PluginToolComponents.map(PluginComponent => PluginComponent)}
+              {ProductionPluginToolComponents.map(
+                PluginComponent => PluginComponent,
+              )}
             </Menu>
             <ProductionEditorDiv>
               <SideMenu>

@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useMutation } from '@apollo/client'
+import { WaxContext, DocumentHelpers } from 'wax-prosemirror-core'
+import axios from 'axios'
+import config from 'config'
 import ValidateModal from './validateModal'
 import {
   Modal,
@@ -10,49 +13,20 @@ import {
   ModalHeader,
   ModalFooter,
 } from './style'
-import { UPDATE_VALIDATION } from '../../../../../../queries'
+import UPDATE_VALIDATION from './queries'
 
 const RefModal = ({ isOpen, closeModal }) => {
   const [isValidateModalOpen, SetValidateModalOpen] = useState(false)
   const [referenceText, setRefText] = useState([])
-  const [referenceArray, setRefernceArray] = useState([])
+  const [referenceArray, setReferenceArray] = useState([])
   const [validatedText, setvalidatedText] = useState([])
-  const axios = require('axios')
-  const config = require('config')
-  const { clientId, clientSecret, port, protocol, host } = config.pagedjs
+  const { port, protocol, host } = config.pagedjs
   const serverUrl = `${protocol}://${host}${port ? `:${port}` : ''}`
   const [createReferenceValidation] = useMutation(UPDATE_VALIDATION)
 
-  const Titles = [
-    {
-      id: 1,
-      reference:
-        'Trying to style a modal in ReactJS and would like some help. Im facing difficulty in trying to center align the content modal. In addition, when styling the modal, is it possible to assign a className and style it in the css page',
-    },
-    {
-      id: 2,
-      reference: 'This book has been almost a decade in the making.',
-    },
-    {
-      id: 3,
-      reference:
-        'Article 2020: Immigrant Health-Care Workers in the United States,” Migration Policy Institute',
-    },
-    {
-      id: 4,
-      reference:
-        'Emmigrants are at the heart of healthcare in the United States. In 2018 alone, healthcare workers in the United States comprised 2.6 million immigrants, of which 314,000 were refugees',
-    },
-    {
-      id: 5,
-      reference:
-        'The connections between education and healthcare, the latter a thriving industry in the United States that has always relied on immigrants',
-    },
-  ]
-
-  useEffect(() => {
-    setRefernceArray(Titles)
-  }, [])
+  const {
+    pmViews: { main },
+  } = useContext(WaxContext)
 
   const openValidatePopup = refrenceTexts => {
     if (refrenceTexts.status !== undefined) {
@@ -63,7 +37,7 @@ const RefModal = ({ isOpen, closeModal }) => {
 
   const getRefTextId = refText => {
     let id = -1
-    Titles.findIndex(ele => {
+    referenceArray.findIndex(ele => {
       if (ele.text === refText) {
         id = ele.id
       }
@@ -72,6 +46,8 @@ const RefModal = ({ isOpen, closeModal }) => {
   }
 
   const onValidate = async validateText => {
+    console.log('running onValidate, validateText: ', validateText)
+
     const response = await createReferenceValidation({
       variables: { reference: validateText },
     })
@@ -86,7 +62,7 @@ const RefModal = ({ isOpen, closeModal }) => {
 
   const handleClose = () => {
     closeModal()
-    setRefernceArray(Titles)
+    // setReferenceArray(Titles)
   }
 
   const getAxios = newRef => {
@@ -123,7 +99,7 @@ const RefModal = ({ isOpen, closeModal }) => {
     {
       response &&
         response.map(ele => {
-          if (responseData.reference.match(ele.DOI) && ele.DOI != undefined)
+          if (responseData.reference.match(ele.DOI) && ele.DOI !== undefined)
             return true
         })
     }
@@ -132,14 +108,15 @@ const RefModal = ({ isOpen, closeModal }) => {
   }
 
   const validateAll = async () => {
+    console.log('running validateAll')
     const axiosValue = []
-    Titles.forEach(ele => {
+    referenceArray.forEach(ele => {
       axiosValue.push(getAxios(ele.reference))
     })
     Promise.all(axiosValue).then(result => {
       const response = []
       result.forEach((element, index) => {
-        element = element != 'Error' ? element : referenceArray[index]
+        element = element !== 'Error' ? element : referenceArray[index]
         response.push({
           index: `${index}`,
           reference: `${element.reference}`,
@@ -148,11 +125,61 @@ const RefModal = ({ isOpen, closeModal }) => {
           isValidated: isValidated(element),
         })
       })
-      setRefernceArray(response)
+      setReferenceArray(response)
     })
   }
 
-  return (
+  useEffect(() => {
+    if (isOpen) {
+      console.log('modal opened, finding references')
+
+      // TODO: this will need to change
+
+      const allBlockNodes = DocumentHelpers.findBlockNodes(main.state.doc) || []
+
+      const referenceBlock = []
+
+      // TODO: if we're using things inside of reference lists, we need to modify the schema to include data_id, valid, and structurevalid attributes
+
+      // 0 TODO: make sure to find all mixed_citation marks
+
+      // 1 go through all reference nodes, find children of type paragraph and list_item
+      // MAKE SURE THEY HAVE NOT BEEN FOUND AS MIXED_CITATIONS!
+
+      allBlockNodes.forEach((node, pos) => {
+        if (node.node.isBlock && node.node.attrs.class === 'reflist') {
+          const refListParagraphs = DocumentHelpers.findChildrenByType(
+            node.node,
+            main.state.schema.nodes.paragraph,
+            true,
+          )
+
+          const refListListItems = DocumentHelpers.findChildrenByType(
+            node.node,
+            main.state.schema.nodes.list_item,
+            true,
+          )
+
+          refListParagraphs.forEach((nnode, ppos) => {
+            referenceBlock.push({
+              id: referenceBlock.length,
+              reference: nnode.node.textContent,
+            })
+          })
+          refListListItems.forEach((nnode, ppos) => {
+            referenceBlock.push({
+              id: referenceBlock.length,
+              reference: nnode.node.textContent,
+            })
+          })
+        }
+      })
+      console.log('References found in document: ', referenceBlock)
+      setReferenceArray(referenceBlock)
+    }
+  }, [isOpen])
+
+  return referenceArray.length ? (
     <>
       <Modal isOpen={isOpen} onAfterOpen={validateAll}>
         <ModalContainer>
@@ -185,9 +212,13 @@ const RefModal = ({ isOpen, closeModal }) => {
         }}
         onValidate={onValidate}
         referenceText={referenceText}
+        setReferenceVersion={ref => {
+          // TODO: should this be onValidate?
+          console.log('Version chosen: ', ref)
+        }}
       />
     </>
-  )
+  ) : null
 }
 
 export default RefModal

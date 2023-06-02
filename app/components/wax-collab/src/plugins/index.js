@@ -48,13 +48,21 @@ import {
   CleanupUtilsToolGroup,
 } from './CleanupUtilsPlugin'
 
+import { ImageService } from './ImageServicePlugin'
+
+// import { LinkTagService } from './LinkingTagPlugin'
+// import { CustomTagService } from './CustomTagBlockPlugin'
+
 // Plugin components are React elements added to the Wax layout. They are not strictly necessary.
 
-const PluginToolComponents = [] // ExternalMenuComponent]
+const FullPluginToolComponents = []
+const ProductionPluginToolComponents = [] // ExternalMenuComponent]
 
 // Plugin layout elements are added into the Wax layout. This is required; this one just attaches the block dropdown to the right side of the menu.
 
-const PluginLayoutElements = [
+const FullPluginLayoutElements = []
+
+const ProductionPluginLayoutElements = [
   ExampleBlockDropDownToolGroup,
   AuthorCitationToolGroup,
   ReferenceUncitationToolGroup,
@@ -69,7 +77,9 @@ const PluginLayoutElements = [
 
 // Plugin services need to be added to add the plugin functionality. This is not required.
 
-const PluginServices = [
+const ProductionPluginServices = [
+  // new LinkTagService(),
+  // new CustomTagService(),
   new ExampleBlockDropDownToolGroupService(),
   new CleanupUtilsToolGroupService(),
   new AuthorCitationToolGroupService(),
@@ -80,8 +90,20 @@ const PluginServices = [
   new TableCitationToolGroupService(),
   new TableUncitationToolGroupService(),
   new ReferenceStructuringToolGroupService(),
+  new ImageService(),
 ]
+
+const FullPluginServices = [new ImageService()]
 
 // These things get exported; they are imported by the config and layout of the editors.
 
-export { PluginToolComponents, PluginLayoutElements, PluginServices }
+export {
+  ProductionPluginToolComponents,
+  ProductionPluginLayoutElements,
+  ProductionPluginServices,
+  FullPluginServices,
+  FullPluginToolComponents,
+  FullPluginLayoutElements,
+}
+
+// TODO: We need to

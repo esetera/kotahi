@@ -31,7 +31,7 @@ const getReferenceStructure = async arrayOfStrings => {
       }),
     )
 
-    // console.log('Reference structuring response: ', res)
+    console.log('Reference structuring response: ', res)
     // This sends back a stringified array of prediction objects.
     return { response: JSON.stringify(res) }
   } catch (e) {

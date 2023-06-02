@@ -11,17 +11,17 @@ import {
 } from './styles'
 import tick from '../tick.svg'
 
-export const RowContainer = ({ ...props }) => {
+export const RowContainer = ({ title, isSelected, index, onClick }) => {
   return (
-    <RowDiv style={{ background: props.isSelected && 'azure' }}>
-      <SubRow onClick={() => props.onClick(props.index)}>
+    <RowDiv style={{ background: isSelected && 'azure' }}>
+      <SubRow onClick={() => onClick(index)}>
         <ParagraphContainer>
-          <Paragraph>{props.title.title}</Paragraph>
-          <Paragraph>{props.title.DOI}</Paragraph>
+          <Paragraph>{title.title}</Paragraph>
+          <Paragraph>{title.DOI}</Paragraph>
         </ParagraphContainer>
-        {props.isSelected && (
+        {isSelected && (
           <ButtonContainer>
-            <img src={tick} />
+            <img alt="tick" src={tick} />
           </ButtonContainer>
         )}
       </SubRow>

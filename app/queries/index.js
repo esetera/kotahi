@@ -410,16 +410,3 @@ export const UPDATE_CONFIG = gql`
     }
   }
 `
-
-// below two queries are used for the amnet citation work. Not 100% sure if they should be here
-// if they are to be part of a plugin? Need to figure this out.
-
-export const UPDATE_VALIDATION = gql`
-  mutation getreferencevalidation($reference: String!) {
-    createReferenceValidation(reference: $reference) {
-      responseData
-      succeeded
-      errorMessage
-    }
-  }
-`

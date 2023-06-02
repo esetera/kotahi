@@ -43,11 +43,76 @@ import JatsTagsService from '../JatsTags'
 import CharactersList from './CharactersList'
 import KotahiSchema from './KotahiSchema'
 import AnyStyleService from '../CustomWaxToolGroups/AnystyleService/AnyStyleService'
-import { PluginServices, PluginLayoutElements } from '../plugins/index'
+import {
+  ProductionPluginServices,
+  ProductionPluginLayoutElements,
+} from '../plugins/index'
 
 const updateTitle = title => {
   // this gets fired when the title is changed in original version of this—not called now, but might still be needed
   // console.log(`Title changed: ${title}`)
+}
+
+const serviceList = [
+  new AnnotationToolGroupService(),
+  new BaseService(),
+  new BaseToolGroupService(),
+  new BottomInfoService(),
+  new DisplayToolGroupService(),
+  new EditorInfoToolGroupServices(),
+  new FindAndReplaceService(),
+  new ImageToolGroupService(),
+  new InlineAnnotationsService(),
+  new LinkService(),
+  new ListsService(),
+  new ListToolGroupService(),
+  new MathService(),
+  new NoteService(),
+  new ImageService(),
+  new NoteToolGroupService(),
+  new SpecialCharactersService(),
+  new SpecialCharactersToolGroupService(),
+  new TablesService(),
+  new TableToolGroupService(),
+  new TextBlockLevelService(),
+  new TextToolGroupService(),
+  // needed for track changes
+  new EditingSuggestingService(),
+  new TrackingAndEditingToolGroupService(),
+  // these are added for paragraph dropdown:
+  new KotahiBlockDropDownToolGroupService(),
+  new DisplayBlockLevelService(),
+  // these are added for full screen
+  new FullScreenService(),
+  new FullScreenToolGroupService(),
+  // needed for comments
+  new TrackChangeService(),
+  new CommentsService(),
+  new TrackCommentOptionsToolGroupService(),
+  new TrackOptionsToolGroupService(),
+  // for side menu
+  new JatsTagsService(),
+  new JatsSideMenuToolGroupService(),
+  new JatsAnnotationListTooolGroupService(),
+  new AnyStyleService(),
+]
+
+// generate a list which replaces any service in serviceList with a service of the same name from PluginServices
+
+for (let i = 0; i < serviceList.length; i += 1) {
+  const service = serviceList[i]
+
+  if (service.name) {
+    const index = ProductionPluginServices.findIndex(
+      x => x.name === service.name,
+    )
+
+    if (index > -1) {
+      console.log('Replacing default Wax Production service: ', service.name)
+      serviceList[i] = ProductionPluginServices[index]
+      ProductionPluginServices.splice(index, 1)
+    }
+  }
 }
 
 const productionWaxEditorConfig = (
@@ -119,7 +184,7 @@ const productionWaxEditorConfig = (
       templateArea: 'bottomRightInfo',
       toolGroups: [{ name: 'InfoToolGroup', exclude: ['ShortCutsInfo'] }],
     },
-    ...PluginLayoutElements,
+    ...ProductionPluginLayoutElements,
   ],
 
   PmPlugins: [columnResizing(), tableEditing() /* WaxSelectionPlugin */],
@@ -132,50 +197,7 @@ const productionWaxEditorConfig = (
   TitleService: { updateTitle },
   AnyStyleService: { AnyStyleTransformation: updateAnystyle },
   ImageService: handleAssetManager ? { handleAssetManager } : {},
-  services: [
-    new AnnotationToolGroupService(),
-    new BaseService(),
-    new BaseToolGroupService(),
-    new BottomInfoService(),
-    new DisplayToolGroupService(),
-    new EditorInfoToolGroupServices(),
-    new FindAndReplaceService(),
-    new ImageService(),
-    new ImageToolGroupService(),
-    new InlineAnnotationsService(),
-    new LinkService(),
-    new ListsService(),
-    new ListToolGroupService(),
-    new MathService(),
-    new NoteService(),
-    new NoteToolGroupService(),
-    new SpecialCharactersService(),
-    new SpecialCharactersToolGroupService(),
-    new TablesService(),
-    new TableToolGroupService(),
-    new TextBlockLevelService(),
-    new TextToolGroupService(),
-    // needed for track changes
-    new EditingSuggestingService(),
-    new TrackingAndEditingToolGroupService(),
-    // these are added for paragraph dropdown:
-    new KotahiBlockDropDownToolGroupService(),
-    new DisplayBlockLevelService(),
-    // these are added for full screen
-    new FullScreenService(),
-    new FullScreenToolGroupService(),
-    // needed for comments
-    new TrackChangeService(),
-    new CommentsService(),
-    new TrackCommentOptionsToolGroupService(),
-    new TrackOptionsToolGroupService(),
-    // for side menu
-    new JatsTagsService(),
-    new JatsSideMenuToolGroupService(),
-    new JatsAnnotationListTooolGroupService(),
-    new AnyStyleService(),
-    ...PluginServices,
-  ],
+  services: [...serviceList, ...ProductionPluginServices],
 })
 
 export default productionWaxEditorConfig
