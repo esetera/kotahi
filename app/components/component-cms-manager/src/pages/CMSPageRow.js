@@ -6,20 +6,18 @@ import {
   CMSPagesLeftPane,
   CMSPagesRightPane,
   Status,
- 
-  CheckboxInput
+  CheckboxInput,
 } from '../style'
 import { convertTimestampToDateWithoutTimeString } from '../../../../shared/dateUtils'
 
 const CMSPageRow = ({ flaxPage, onManageClick }) => {
   return (
-   
     <CMSPageListRow key={flaxPage.id}>
       <CMSPagesLeftPane>
-       
         <CheckboxInput type="checkbox" />
-        <CellPageTitle onClick={() => onManageClick(flaxPage)} >Homepage  <Status>  --Published</Status></CellPageTitle>
-        
+        <CellPageTitle onClick={() => onManageClick(flaxPage)}>
+          Homepage <Status> --Published</Status>
+        </CellPageTitle>
       </CMSPagesLeftPane>
       <CMSPagesRightPane>
         <Cell>Username</Cell>
@@ -27,7 +25,6 @@ const CMSPageRow = ({ flaxPage, onManageClick }) => {
         <Cell>{convertTimestampToDateWithoutTimeString(flaxPage.created)}</Cell>
       </CMSPagesRightPane>
     </CMSPageListRow>
-    
   )
 }
 
