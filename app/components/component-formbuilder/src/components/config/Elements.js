@@ -401,50 +401,50 @@ const elements = {
 }
 
 const fieldTypes = [
-  { label: 'Plain text', value: 'TextField', definition: elements.TextField },
+  { label: 'Text', value: 'TextField', definition: elements.TextField },
   {
-    label: 'Rich text editor (Wax)',
+    label: 'Rich text',
     value: 'AbstractEditor',
     definition: elements.AbstractEditor,
   },
   { label: 'Dropdown selection', value: 'Select', definition: elements.Select },
   {
-    label: 'Radio button selection',
+    label: 'Radio buttons',
     value: 'RadioGroup',
     definition: elements.RadioGroup,
   },
   {
-    label: 'Checkbox selection',
+    label: 'Checkboxes',
     value: 'CheckboxGroup',
     definition: elements.CheckboxGroup,
   },
   {
-    label: 'Add authors/contributors',
+    label: 'List of contributors',
     value: 'AuthorsInput',
     definition: elements.AuthorsInput,
   },
   {
-    label: 'Threaded Discussion',
+    label: 'Discussion',
     value: 'ThreadedDiscussion',
     definition: elements.ThreadedDiscussion,
   },
   {
-    label: 'Include links (URLs)',
+    label: 'List of links (URLs)',
     value: 'LinksInput',
     definition: elements.LinksInput,
   },
   {
-    label: 'Add attachments',
+    label: 'Attachments',
     value: 'SupplementaryFiles',
     definition: elements.SupplementaryFiles,
   },
   {
-    label: 'Add a single image attachment',
+    label: 'Single image attachment',
     value: 'VisualAbstract',
     definition: elements.VisualAbstract,
   },
   {
-    label: 'Attached Manuscript',
+    label: 'Attached manuscript',
     value: 'ManuscriptFile',
     definition: elements.ManuscriptFile,
   },

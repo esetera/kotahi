@@ -130,9 +130,9 @@ const ConfirmationString = styled.p`
 `
 
 const FieldTypeLabel = styled.span`
-  color: ${th('colorBorder')};
+  color: ${lightenBy('colorPrimary', 0.5)};
   font-size: ${th('fontSizeBaseSmall')};
-  margin-left: 1.2em;
+  margin-left: 0.5em;
 `
 
 const BuilderElement = ({
@@ -194,7 +194,7 @@ const BuilderElement = ({
               <MainAction>
                 {element.shortDescription ?? element.title}{' '}
                 <FieldTypeLabel>
-                  {fieldTypes.find(x => x.value === element.component)?.label}
+                  ({fieldTypes.find(x => x.value === element.component)?.label})
                 </FieldTypeLabel>
               </MainAction>
               <IconAction
