@@ -69,21 +69,21 @@ export const ModalContainer = styled.div`
   overflow: hidden;
 `;
 export const CloseButton = styled(Button)`
-  background-color: ${th("colorPrimary")};
-  color: ${th("colorBackground")};
+  background:${th("configColor")};
+  color:white;
   width: 100%;
   height: 100%;
   text-decoration: none;
   &:hover {
-    background-color: ${darken("colorPrimary", 0.1)};
-    color: ${th("colorBackground")};
+    background-color: ${darken("configColor", 0.1)};
+    color: white;
   }
   cursor: pointer;
 `;
 export const ModalHeader = styled.h4`
   text-align: center;
-  background-color: lightgray;
-  color: ${th("colorPrimary")};
+  background: ${th("configColor")};
+  color: white;
   font-family: ${th("fontReading")};
   font-size: ${th("fontSizeHeading3")};
   line-height: 1.25em;
@@ -151,6 +151,7 @@ export const ReferenceContainer = ({
   needsReview,
   index,
   onValidate,
+  onValidation,
   onError,
   structure,
   validate = false,
@@ -187,6 +188,7 @@ export const ReferenceContainer = ({
       onClick={() => {
         SetValidateModalOpen(true);
       }}
+      style={{cursor: 'pointer'}}
     >
       <img
         width="24"
@@ -245,8 +247,10 @@ export const ReferenceContainer = ({
             SetValidateModalOpen(false);
           }}
           referenceText={text}
-          onValidate={() => ""}
+          index={index}
+          onValidate={onValidation}
           refBlock={structure}
+          refId={refId}
         />
       )}
     </Rule>

@@ -8,8 +8,9 @@ export const RowContainer = ({ ...props }) => {
         <RowDiv style={{ background: props.isSelected && 'azure' }}>
             <SubRow onClick={() => props.onClick(props.index)} >
                 <ParagraphContainer>
-                    <Paragraph>{props.title.title}</Paragraph>
-                    <Paragraph>{props.title.DOI}</Paragraph>
+                    {props.title.doi && <Paragraph>DOI: {props.title.doi}</Paragraph>}
+                    {props.title.title &&  <Paragraph>Title: {props.title.title}</Paragraph>}
+                    {props.title.journalTitle && <Paragraph>Author: {props.title.journalTitle}</Paragraph>}
                 </ParagraphContainer>
                 {props.isSelected && <ButtonContainer>
                     <img src={tick} />

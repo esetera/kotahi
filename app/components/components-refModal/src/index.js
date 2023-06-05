@@ -63,7 +63,7 @@ export const RefModal = ({ isOpen, closeModal }) => {
     setWaxRefBlocks(referenceBlocks);
   }, [isOpen]);
 
-  const persistReference = (refBlock) => {
+  const persistReference = (refBlock, Id ,manually) => {
     const allNodes = DocumentHelpers.findBlockNodes(main.state.doc);
     const refNode = allNodes.find((node) => {
       const {
@@ -71,18 +71,30 @@ export const RefModal = ({ isOpen, closeModal }) => {
           attrs: { refId },
         },
       } = node;
-      return refId == refBlock.dataId;
+      return manually ? refId == Id : refId == refBlock.dataId;
     });
-    const { valid, needsReview, structure, needsValidation } = refBlock;
-    const attrs = {
-      ...refNode.node.attrs,
-      valid,
-      needsReview,
-      needsValidation,
-      structure,
-    };
+    
+    let attrs;
+    if(manually){
+      let dataindex = refBlock.index;
+      waxRefBlocks[dataindex].valid = true;
+      waxRefBlocks[dataindex].needsReview=false;
+      attrs = { ...refNode.node.attrs, needsReview: false, valid: true }
+    }
+    else{
+      const { valid, needsReview, structure, needsValidation } = refBlock;
+      attrs = {
+        ...refNode.node.attrs,
+        valid,
+        needsReview,
+        needsValidation,
+        structure,
+      };
+    }
+   
     const tr = main.state.tr.setNodeMarkup(refNode.pos, undefined, attrs);
     main.dispatch(tr);
+    setWaxRefBlocks(waxRefBlocks)
   };
 
   const handleClose = () => {
@@ -177,11 +189,13 @@ export const RefModal = ({ isOpen, closeModal }) => {
           <ReferenceContainer
             text={text}
             key={index}
+            index={index}
             validate={validate}
             valid={valid}
             refId={dataId}
             needsReview={needsReview}
             onValidate={onRefValidate}
+            onValidation={persistReference}
             onError={onError}
             structure={structure}
           />

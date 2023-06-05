@@ -57,23 +57,23 @@ export const ModalFooter = styled.div`
 
 
 export const FooterButton = styled(Button)`
-    background-color: ${th('colorPrimaryCustom')};
-    color: ${th('colorBackground')};
+    background-color: ${th('configColor')};
+    color: white;
     width: 48%;
     height: 100%;
     margin:5px;
     text-decoration: none;
     &:disabled
     {
-        background-color: ${th('colorPrimaryCustom')};
-        color: ${th('colorBackground')};
+        background-color: ${th('configColor')};
+        color: white;
     }
     &:hover: enabled {
-        background-color: ${darken('colorPrimaryHueCustom', 0.1)};
-        color: ${th('colorBackground')};
+        background-color: ${darken('configColor', 0.1)};
+        color: white;
     }  
     &:hover: disabled {
-        background-color: ${th('colorPrimaryCustom')};
+        background-color: ${th('configColor')};
     }
     cursor:pointer;
 `

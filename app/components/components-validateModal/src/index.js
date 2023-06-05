@@ -14,7 +14,7 @@ const ValidateModal = ({ ...props }) => {
   const [apiCall, setApiCall] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [refData, setRefData] = useState([]);
-
+ 
   const handleClose = () => {
     props.onClose();
     onReferenceSelected(-1);
@@ -26,7 +26,8 @@ const ValidateModal = ({ ...props }) => {
   const onValidate = () => {
     setApiCall(false);
     onReferenceSelected(-1);
-    props.onValidate(props.referenceText, true);
+    props.onValidate({index:props.index},props.refId,true);
+    props.onClose();
   };
   const ModalOpened = () => {
     if (props.referenceText.response !== "undefined")

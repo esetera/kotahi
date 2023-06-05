@@ -9,6 +9,7 @@ import { JournalContext } from '../../xpub-journal/src'
 import productionWaxEditorConfig from './config/ProductionWaxEditorConfig'
 import ProductionWaxEditorLayout from './layout/ProductionWaxEditorLayout'
 import ProductionWaxEditorNoCommentsLayout from './layout/ProductionWaxEditorNoCommentsLayout'
+import { ConfigContext } from '../../config/src'
 
 const getAnystyleQuery = gql`
   query($textReferences: String!) {
@@ -50,7 +51,11 @@ const ProductionWaxEditor = ({
 }) => {
   const handleAssetManager = () => onAssetManager(manuscriptId)
   const journal = useContext(JournalContext)
+  const config = useContext(ConfigContext)
 
+  const configTheme = {
+    configColor:config.groupIdentity.primaryColor
+  }
   const waxUser = {
     userId: user.id || '-',
     userColor: {
@@ -99,7 +104,7 @@ const ProductionWaxEditor = ({
   }
 
   return (
-    <ThemeProvider theme={{ textStyles: journal.textStyles, ...waxTheme }}>
+    <ThemeProvider theme={{ textStyles: journal.textStyles, ...waxTheme, ...configTheme}}>
       <div className={validationStatus}>
         <Wax
           autoFocus={autoFocus}
