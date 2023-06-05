@@ -2,9 +2,6 @@ import React from 'react'
 import CMSPageRow from './CMSPageRow'
 
 import {
-  CaretUp,
-  CaretDown,
-  Carets,
   CMSPageTableStyled,
   CMSPageHeaderRow,
   Cell,
@@ -38,15 +35,15 @@ const CMSPagesTable = ({ flaxPages, history, onClickTitle }) => {
     }
 
     const UpDown = () => {
-      if (thisSortName === sortName) {
-        return (
-          <Carets>
-            <CaretUp active={sortDirection === 'ASC'} />
-            <CaretDown active={sortDirection === 'DESC'} />
-          </Carets>
-        )
-        // return sortDirection
-      }
+      // if (thisSortName === sortName) {
+      //   return (
+      //     <Carets>
+      //       <CaretUp active={sortDirection === 'ASC'} />
+      //       <CaretDown active={sortDirection === 'DESC'} />
+      //     </Carets>
+      //   )
+      //   // return sortDirection
+      // }
 
       return null
     }
@@ -69,6 +66,7 @@ const CMSPagesTable = ({ flaxPages, history, onClickTitle }) => {
       <CMSPageHeaderRow>
         <CMSPagesLeftPane>
           <SortHeader defaultSortDirection="ASC" thisSortName="username">
+            {/* <CheckboxInput type="checkbox" /> */}
             <Legend>Page title</Legend>
           </SortHeader>
         </CMSPagesLeftPane>

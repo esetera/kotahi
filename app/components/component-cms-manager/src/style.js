@@ -47,15 +47,25 @@ export const CMSPageHeaderRow = styled(CMSPageListRow)`
 export const CMSPagesLeftPane = styled.div`
   display: flex;
   flex-grow: 2;
+  max-width: 50%;
 `
 
 export const CheckboxInput = styled.input`
   margin-right: 5px;
 `
-export const Status = styled.span`
+
+export const Hrstyle = styled.hr`
+  margin-top: 7px;
+  width: 35px;
+
+  ::after {
+    background-color: ${props => props.theme.colors.additional.green};
+  }
+`
+export const Status = styled.p`
   color: ${props => props.theme.colors.additional.green};
-  font-size: 11px;
-  padding-left: 10px;
+  font-size: 10px;
+  font-weight: 400;
 `
 
 export const CMSPagesRightPane = styled.div`
@@ -90,7 +100,7 @@ export const Cell = styled.div`
 export const CellPageTitle = styled.div`
   color: ${props => props.theme.colorPrimary};
   display: flex;
-
+  font-weight: 600;
   ${props =>
     props.onClick &&
     css`
@@ -120,9 +130,6 @@ export {
   Table,
   Content,
   Heading,
-  Carets,
-  CaretUp,
-  CaretDown,
   Spinner,
   Pagination,
   Title,
