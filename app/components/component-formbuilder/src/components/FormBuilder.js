@@ -138,8 +138,6 @@ const FieldTypeLabel = styled.span`
 const BuilderElement = ({
   element,
   isSelected,
-  moveFieldDown,
-  moveFieldUp,
   setSelectedFieldId,
   deleteField,
   formId,
@@ -242,9 +240,7 @@ BuilderElement.propTypes = {
     component: PropTypes.string,
   }).isRequired,
   isSelected: PropTypes.bool.isRequired,
-  moveFieldUp: PropTypes.func.isRequired,
-  moveFieldDown: PropTypes.func.isRequired,
-  setActiveFieldId: PropTypes.func.isRequired,
+  setSelectedFieldId: PropTypes.func.isRequired,
   deleteField: PropTypes.func.isRequired,
   formId: PropTypes.string.isRequired,
 }

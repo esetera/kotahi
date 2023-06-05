@@ -123,7 +123,8 @@ const FieldSettingsModal = ({
                     setFieldValue('component', option.value)
                     populateDefaultValues(option.value)
                   }}
-                  options={[
+                  options={
+                    componentTypeOptions /* [
                     {
                       label: 'Standard fields',
                       options: componentTypeOptions.filter(x => !x.isCustom),
@@ -132,7 +133,8 @@ const FieldSettingsModal = ({
                       label: 'Custom field types',
                       options: componentTypeOptions.filter(x => x.isCustom),
                     },
-                  ]}
+                  ] */
+                  }
                   required
                 />
               </Section>
@@ -175,15 +177,11 @@ const FieldSettingsModal = ({
 }
 
 FieldSettingsModal.propTypes = {
+  category: PropTypes.oneOf(['submission', 'review', 'decision']).isRequired,
   onSubmit: PropTypes.func.isRequired,
-  selectedComponent: PropTypes.string,
-  setComponentType: PropTypes.func.isRequired,
-  setFieldValue: PropTypes.func.isRequired,
 }
 
-FieldSettingsModal.defaultProps = {
-  selectedComponent: null,
-}
+FieldSettingsModal.defaultProps = {}
 
 const prepareForSubmit = values => {
   const cleanedValues = omitBy(values, value => value === '')
