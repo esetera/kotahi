@@ -14,6 +14,7 @@ import {
   FieldPublishingSelector,
   TextInput,
   CheckboxGroup,
+  RichTextEditor,
 } from '../../../shared'
 import { Heading1, Section, Legend, SubNote } from '../style'
 import AuthorsInput from './AuthorsInput'
@@ -25,7 +26,6 @@ import { validateFormField } from '../../../../shared/formValidation'
 import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
 import ActionButton from '../../../shared/ActionButton'
 import { hasValue } from '../../../../shared/htmlUtils'
-import FormWaxEditor from '../../../component-formbuilder/src/components/FormWaxEditor'
 import { ConfigContext } from '../../../config/src'
 import Modal from '../../../component-modal/src/Modal'
 import PublishingResponse from '../../../component-review/src/components/publishing/PublishingResponse'
@@ -116,44 +116,18 @@ const filterFileManuscript = files =>
 
 /** Definitions for available field types */
 const elements = {
+  Title: TextInput,
+  Authors: AuthorsInput,
+  Abstract: RichTextEditor,
+  Keywords: TextInput,
   TextField: TextInput,
+  AbstractEditor: RichTextEditor,
   RadioGroup: SafeRadioGroup,
   CheckboxGroup,
   AuthorsInput,
   Select,
   LinksInput,
   ThreadedDiscussion,
-}
-
-elements.AbstractEditor = ({
-  validationStatus,
-  setTouched,
-  onChange,
-  ...rest
-}) => {
-  return (
-    <FormWaxEditor
-      validationStatus={validationStatus}
-      {...rest}
-      onBlur={() => {
-        setTouched(set({}, rest.name, true))
-      }}
-      onChange={val => {
-        setTouched(set({}, rest.name, true))
-        const cleanedVal = hasValue(val) ? val : ''
-        onChange(cleanedVal)
-      }}
-    />
-  )
-}
-
-elements.AbstractEditor.propTypes = {
-  validationStatus: PropTypes.string,
-  setTouched: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-}
-elements.AbstractEditor.defaultProps = {
-  validationStatus: undefined,
 }
 
 /** Shallow clone props, leaving out all specified keys, and also stripping all keys with (string) value 'false'. */

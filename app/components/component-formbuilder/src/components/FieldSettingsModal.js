@@ -16,13 +16,12 @@ const InvalidWarning = styled.div`
   color: ${th('colorError')};
 `
 
-const getEditableComponentProperties = (
+const getSettableComponentProperties = (
   component,
   shouldAllowHypothesisTagging,
 ) =>
   Object.entries(component).filter(
-    ([key]) =>
-      key !== 'id' && (key !== 'publishingTag' || shouldAllowHypothesisTagging),
+    ([key]) => key !== 'publishingTag' || shouldAllowHypothesisTagging,
   )
 
 const FieldSettingsModal = ({
@@ -52,12 +51,12 @@ const FieldSettingsModal = ({
     )
 
   const component =
-    componentTypeOptions.find(x => x.value === componentType)?.definition || {}
+    componentTypeOptions.find(x => x.value === componentType)?.properties || {}
 
-  const editableProperties = getEditableComponentProperties(
+  const editableProperties = getSettableComponentProperties(
     component,
     shouldAllowHypothesisTagging,
-  )
+  ).filter(([key, value]) => value.component !== 'Hidden')
 
   const defaults = {}
   Object.entries(component).forEach(([key, value]) => {
@@ -80,7 +79,7 @@ const FieldSettingsModal = ({
     >
       {({ errors, handleSubmit, setFieldValue, values }) => {
         const populateDefaultValues = compType => {
-          getEditableComponentProperties(
+          getSettableComponentProperties(
             component,
             shouldAllowHypothesisTagging,
           ).forEach(([key, value]) => {
@@ -124,7 +123,16 @@ const FieldSettingsModal = ({
                     setFieldValue('component', option.value)
                     populateDefaultValues(option.value)
                   }}
-                  options={componentTypeOptions}
+                  options={[
+                    {
+                      label: 'Standard fields',
+                      options: componentTypeOptions.filter(x => !x.isCustom),
+                    },
+                    {
+                      label: 'Custom field types',
+                      options: componentTypeOptions.filter(x => x.isCustom),
+                    },
+                  ]}
                   required
                 />
               </Section>
