@@ -3,13 +3,13 @@ import { set } from 'lodash'
 
 import { ValidatedFieldFormik } from '@pubsweet/ui'
 
-import FormWaxEditor from '../../component-formbuilder/src/components/FormWaxEditor'
+import FormWaxEditor from '../../../component-formbuilder/src/components/FormWaxEditor'
 
-import { Section, Legend, Page } from './style'
+import { Section, Legend, Page } from '../style'
 
-import { TextInput, ActionButton, PaddedContent } from '../../shared'
+import { TextInput, ActionButton, PaddedContent } from '../../../shared'
 
-import { hasValue } from '../../../shared/htmlUtils'
+import { hasValue } from '../../../../shared/htmlUtils'
 
 const inputComponents = {
   TextField: TextInput,
@@ -52,7 +52,7 @@ const inputFields = [
   },
 ]
 
-const FormView = ({
+const CMSPageEditForm = ({
   onSubmit,
   setFieldValue,
   setTouched,
@@ -101,4 +101,4 @@ const FormView = ({
   )
 }
 
-export default FormView
+export default CMSPageEditForm
