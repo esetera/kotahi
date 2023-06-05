@@ -40,25 +40,15 @@ inputComponents.AbstractEditor = ({
 const inputFields = [
   {
     component: inputComponents.TextField,
-    label: 'Label',
+    label: 'Page title',
     name: 'title',
     type: 'text-input',
   },
 
   {
     component: inputComponents.AbstractEditor,
-    label: 'Header',
-    name: 'header',
-  },
-  {
-    component: inputComponents.AbstractEditor,
-    label: 'Body',
-    name: 'body',
-  },
-  {
-    component: inputComponents.AbstractEditor,
-    label: 'Footer',
-    name: 'footer',
+    label: '',
+    name: 'content',
   },
 ]
 

@@ -37,7 +37,7 @@ const CMSPages = ({ history }) => {
   })
 
   const showManagePage = currentCMSPage => {
-    const link = `${urlFrag}/admin/flax/flax-edit/${currentCMSPage.id}`
+    const link = `${urlFrag}/admin/cms/page-edit/${currentCMSPage.id}`
     history.push(link)
   }
 

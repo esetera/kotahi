@@ -20,8 +20,8 @@ export const getCMSPages = gql`
 `
 
 export const getCMSPage = gql`
-  query cmsPages($id: ID) {
-    cmsPages(id: $id) {
+  query cmsPage($id: ID) {
+    cmsPage(id: $id) {
       ${cmsPageFields}
     }
   }

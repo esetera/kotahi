@@ -32,7 +32,7 @@ import UsersPage from './component-users-manager/src/UsersPage'
 import ConfigManagerPage from './component-config-manager/src/ConfigManagerPage'
 
 import CMSManager from './component-cms-manager/src/CMSManager'
-import FlaxPageEditor from './component-cms-manager/src/CMSPageEditor'
+import CMSPageEditor from './component-cms-manager/src/CMSPageEditor'
 
 import QUERY from './adminPageQueries'
 
@@ -154,8 +154,8 @@ const AdminPage = () => {
   const reportsLink = `${urlFrag}/admin/reports`
   const userAdminLink = `${urlFrag}/admin/users`
   const tasksTemplateLink = `${urlFrag}/admin/tasks`
-  const CMSManagerLink = `${urlFrag}/admin/flax/flax-manager`
-  const FlaxPageEditorLink = `${urlFrag}/admin/flax/flax-edit/:pageId`
+  const CMSManagerLink = `${urlFrag}/admin/cms/manage`
+  const CMSPageEditorLink = `${urlFrag}/admin/cms/page-edit/:pageId`
   const loginLink = `/login?next=${homeLink}`
   const path = `${urlFrag}/versions/:version`
   const redirectLink = `/login?next=${homeLink}`
@@ -425,10 +425,10 @@ const AdminPage = () => {
           />,
 
           <PrivateRoute
-            component={FlaxPageEditor}
+            component={CMSPageEditor}
             currentUser={currentUser}
-            key="FlaxPageEditor"
-            path={FlaxPageEditorLink}
+            key="CMSPageEditor"
+            path={CMSPageEditorLink}
             redirectLink={redirectLink}
           />,
 

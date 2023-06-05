@@ -64,8 +64,6 @@ const CMSPageEditor = ({ match }) => {
         <Formik
           initialValues={{
             title: cmsPage.title,
-            header: '',
-            footer: '',
             body: content,
           }}
           onSubmit={async (values, actions) => {
