@@ -11,6 +11,7 @@ const resolvers = {
         const cmsPage = await models.CMSPage.query().findById(id)
         return cmsPage
       }
+
       return null
     },
 
@@ -19,6 +20,7 @@ const resolvers = {
         const cmsPage = await models.CMSPage.query().findOne({ shortcode })
         return cmsPage
       }
+
       return null
     },
   },

@@ -36,8 +36,8 @@ const CMSPages = ({ history }) => {
     fetchPolicy: 'cache-and-network',
   })
 
-  const showManagePage = currentFlaxPage => {
-    const link = `${urlFrag}/admin/flax/flax-edit/${currentFlaxPage.id}`
+  const showManagePage = currentCMSPage => {
+    const link = `${urlFrag}/admin/flax/flax-edit/${currentCMSPage.id}`
     history.push(link)
   }
 
@@ -57,7 +57,7 @@ const CMSPages = ({ history }) => {
           <CMSPagesTable
             cmsPages={cmsPages}
             history={history}
-            onClickTitle={currentFlaxPage => showManagePage(currentFlaxPage)}
+            onClickTitle={currentCMSPage => showManagePage(currentCMSPage)}
           />
         </PageTableContainer>
       </CMSPagesPane>

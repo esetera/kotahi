@@ -36,8 +36,8 @@ export const getCMSPageByShortcode = gql`
 `
 
 export const updateCMSPageDataMutation = gql`
-  mutation updateFlaxPage($id: ID, $input: FlaxPageInput) {
-    updateFlaxPage(id: $id, input: $input) {
+  mutation updateCMSPage($id: ID, $input: CMSPageInput) {
+    updateCMSPage(id: $id, input: $input) {
         ${cmsPageFields}
     }
   }

@@ -16,7 +16,7 @@ import {
 
 import FormView from './FormView'
 
-const FlaxPageEditor = ({ match }) => {
+const CMSPageEditor = ({ match }) => {
   const [submitButtonState, setSubmitButtonState] = React.useState({
     state: null,
     text: 'Save Page',
@@ -54,19 +54,19 @@ const FlaxPageEditor = ({ match }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const { flaxPage } = data
-  const { content } = flaxPage
+  const { cmsPage } = data
+  const { content } = cmsPage
 
   return (
     <Container>
-      <Heading>{flaxPage.title}</Heading>
+      <Heading>{cmsPage.title}</Heading>
       <Content>
         <Formik
           initialValues={{
-            title: flaxPage.title,
-            header: content.header,
-            footer: content.footer,
-            body: content.body,
+            title: cmsPage.title,
+            header: '',
+            footer: '',
+            body: content,
           }}
           onSubmit={async (values, actions) => {
             setSubmitButtonState({ state: 'pending', text: 'Saving data' })
@@ -94,4 +94,4 @@ const FlaxPageEditor = ({ match }) => {
   )
 }
 
-export default FlaxPageEditor
+export default CMSPageEditor
