@@ -30,8 +30,8 @@ const CMSPageEditor = ({ match }) => {
   return (
     <CMSPageEditForm
       cmsPage={cmsPage}
-      updatePageDataQuery={updatePageDataQuery}
       rebuildFlaxSiteQuery={rebuildFlaxSiteQuery}
+      updatePageDataQuery={updatePageDataQuery}
     />
   )
 }
