@@ -8,7 +8,7 @@ import { CommsErrorBanner } from '../../../shared'
 
 import { ConfigContext } from '../../../config/src'
 
-import { getFlaxPages } from '../queries'
+import { getCMSPages } from '../queries'
 
 import CMSPagesTable from './CMSPagesTable'
 
@@ -32,7 +32,7 @@ const CMSPages = ({ history }) => {
   const config = useContext(ConfigContext)
   const urlFrag = config.journal.metadata.toplevel_urlfragment
 
-  const { loading, error, data } = useQuery(getFlaxPages, {
+  const { loading, error, data } = useQuery(getCMSPages, {
     fetchPolicy: 'cache-and-network',
   })
 
@@ -44,19 +44,18 @@ const CMSPages = ({ history }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const { flaxPages } = data
+  const { cmsPages } = data
 
   return (
     <OuterContainer>
       <CMSPagesPane>
         <FlexRow>
-         
           <Heading>Pages</Heading>
           {/* {topRightControls} */}
         </FlexRow>
         <PageTableContainer>
           <CMSPagesTable
-            flaxPages={flaxPages}
+            cmsPages={cmsPages}
             history={history}
             onClickTitle={currentFlaxPage => showManagePage(currentFlaxPage)}
           />

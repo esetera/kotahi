@@ -9,8 +9,8 @@ import { Heading, Container, Content } from './style'
 import { Spinner, CommsErrorBanner } from '../../shared'
 
 import {
-  getFlaxPage,
-  updatePageDataMutation,
+  getCMSPage,
+  updateCMSPageDataMutation,
   rebuildFlaxSiteMutation,
 } from './queries'
 
@@ -22,13 +22,13 @@ const FlaxPageEditor = ({ match }) => {
     text: 'Save Page',
   })
 
-  const { loading, data, error } = useQuery(getFlaxPage, {
+  const { loading, data, error } = useQuery(getCMSPage, {
     variables: {
       id: match.params.pageId,
     },
   })
 
-  const [updatePageDataQuery] = useMutation(updatePageDataMutation)
+  const [updatePageDataQuery] = useMutation(updateCMSPageDataMutation)
   const [rebuildFlaxSiteQuery] = useMutation(rebuildFlaxSiteMutation)
 
   const updatePageData = formData => {

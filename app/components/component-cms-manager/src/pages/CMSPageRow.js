@@ -10,21 +10,21 @@ import {
 } from '../style'
 import { convertTimestampToDateWithoutTimeString } from '../../../../shared/dateUtils'
 
-const CMSPageRow = ({ flaxPage, onManageClick }) => {
+const CMSPageRow = ({ cmsPage, onManageClick }) => {
   return (
-    <CMSPageListRow key={flaxPage.id}>
+    <CMSPageListRow key={cmsPage.id}>
       <CMSPagesLeftPane>
         {/* <CheckboxInput type="checkbox" /> */}
-        <CellPageTitle onClick={() => onManageClick(flaxPage)}>
-          {flaxPage.title}
+        <CellPageTitle onClick={() => onManageClick(cmsPage)}>
+          {cmsPage.title}
         </CellPageTitle>
         <Hrstyle />
         <Status> Published</Status>
       </CMSPagesLeftPane>
       <CMSPagesRightPane>
-        <Cell>Username</Cell>
-        <Cell>{convertTimestampToDateWithoutTimeString(flaxPage.created)}</Cell>
-        <Cell>{convertTimestampToDateWithoutTimeString(flaxPage.created)}</Cell>
+        <Cell>Admin</Cell>
+        <Cell>{convertTimestampToDateWithoutTimeString(cmsPage.updated)}</Cell>
+        <Cell>{convertTimestampToDateWithoutTimeString(cmsPage.created)}</Cell>
       </CMSPagesRightPane>
     </CMSPageListRow>
   )

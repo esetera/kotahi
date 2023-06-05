@@ -16,7 +16,7 @@ import {
   useQueryParams,
 } from '../../../../shared/urlParamUtils'
 
-const CMSPagesTable = ({ flaxPages, history, onClickTitle }) => {
+const CMSPagesTable = ({ cmsPages, history, onClickTitle }) => {
   const SortHeader = ({ thisSortName, defaultSortDirection, children }) => {
     const changeSort = () => {
       let newSortDirection
@@ -88,11 +88,11 @@ const CMSPagesTable = ({ flaxPages, history, onClickTitle }) => {
   return (
     <CMSPageTableStyled>
       {renderHeaderRow()}
-      {flaxPages.map(flaxPage => (
+      {cmsPages.map(cmsPage => (
         <CMSPageRow
-          flaxPage={flaxPage}
-          key={flaxPage.id}
-          onManageClick={currentFlaxPage => onClickTitle(currentFlaxPage)}
+          cmsPage={cmsPage}
+          key={cmsPage.id}
+          onManageClick={currentCMSPage => onClickTitle(currentCMSPage)}
         />
       ))}
     </CMSPageTableStyled>

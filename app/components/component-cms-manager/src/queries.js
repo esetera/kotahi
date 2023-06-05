@@ -1,45 +1,44 @@
 import { gql } from '@apollo/client'
 
-const flaxPageFields = `
+const cmsPageFields = `
     id
-    title
+    content
     created
-    content {
-        title
-        header
-        footer
-        body
-    }
+    meta
+    shortcode
+    status
+    title
+    updated
 `
 
-export const getFlaxPages = gql`
-  query FlaxPages {
-    flaxPages {
-      ${flaxPageFields}
-    }
-  }
-`
-
-export const getFlaxPage = gql`
-  query flaxPage($id: ID) {
-    flaxPage(id: $id) {
-      ${flaxPageFields}
+export const getCMSPages = gql`
+  query cmsPages {
+    cmsPages {
+      ${cmsPageFields}
     }
   }
 `
 
-export const getFlaxPageByShortcode = gql`
-  query flaxPageByShortcode($shortcode: String!) {
-    flaxPageByShortcode(shortcode: $shortcode) {
-      ${flaxPageFields}
+export const getCMSPage = gql`
+  query cmsPages($id: ID) {
+    cmsPages(id: $id) {
+      ${cmsPageFields}
     }
   }
 `
 
-export const updatePageDataMutation = gql`
+export const getCMSPageByShortcode = gql`
+  query cmsPageByShortcode($shortcode: String!) {
+    cmsPageByShortcode(shortcode: $shortcode) {
+      ${cmsPageFields}
+    }
+  }
+`
+
+export const updateCMSPageDataMutation = gql`
   mutation updateFlaxPage($id: ID, $input: FlaxPageInput) {
     updateFlaxPage(id: $id, input: $input) {
-        ${flaxPageFields}
+        ${cmsPageFields}
     }
   }
 `
