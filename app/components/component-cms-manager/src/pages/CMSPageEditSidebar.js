@@ -2,7 +2,7 @@ import React from 'react'
 
 const CMSPageEditSidebar = ({ cmsPages, currentCMSPage }) => {
   return (
-    <div>
+    <div style={{ background: 'red', height: '100%' }}>
       {cmsPages.map(cmsPage => (
         <div
           key={cmsPage.id}

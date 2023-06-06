@@ -1,15 +1,17 @@
 import React from 'react'
-import { set } from 'lodash'
+// import { set } from 'lodash'
 
 import { ValidatedFieldFormik } from '@pubsweet/ui'
 
-import FormWaxEditor from '../../../component-formbuilder/src/components/FormWaxEditor'
+// import FormWaxEditor from '../../../component-formbuilder/src/components/FormWaxEditor'
+// import FullWaxEditor from '../../../wax-collab/src/FullWaxEditor'
+import ContentWaxEditor from '../editor/ContentWaxEditor'
 
 import { Section, Legend, Page } from '../style'
 
 import { TextInput, ActionButton, PaddedContent } from '../../../shared'
 
-import { hasValue } from '../../../../shared/htmlUtils'
+// import { hasValue } from '../../../../shared/htmlUtils'
 
 const inputComponents = {
   TextField: TextInput,
@@ -21,20 +23,7 @@ inputComponents.AbstractEditor = ({
   onChange,
   ...rest
 }) => {
-  return (
-    <FormWaxEditor
-      validationStatus={validationStatus}
-      {...rest}
-      onBlur={() => {
-        setTouched(set({}, rest.name, true))
-      }}
-      onChange={val => {
-        setTouched(set({}, rest.name, true))
-        const cleanedVal = hasValue(val) ? val : ''
-        onChange(cleanedVal)
-      }}
-    />
-  )
+  return <ContentWaxEditor value={''} />
 }
 
 const inputFields = [
