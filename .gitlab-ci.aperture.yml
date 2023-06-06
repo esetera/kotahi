@@ -21,6 +21,9 @@ variables:
   FF_NETWORK_PER_BUILD: 'true'
   SERVICE_XSWEET_CLIENT_ID: 59a3392b-0c4f-4318-bbe2-f86eff6d3de4
   SERVICE_XSWEET_SECRET: asldkjLKJLaslkdf897kjhKUJH
+  SERVICE_XSWEET_PROTOCOL: http
+  SERVICE_XSWEET_HOST: xsweet
+  SERVICE_XSWEET_PORT: 3004
   CYPRESS_RECORD_KEY: 'dedcd2b9-58b4-4938-a4cd-e0f043994817'
 
 stages:
@@ -83,7 +86,6 @@ lint style:
     GIT_STRATEGY: none
   services:
     - postgres
-    - xsweet
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
