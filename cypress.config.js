@@ -12,6 +12,7 @@ const dumpFile = name => path.join(__dirname, 'cypress', 'dumps', `${name}.sql`)
 
 module.exports = defineConfig({
   defaultCommandTimeout: 20000,
+  projectId: 'e4txbi',
   viewportWidth: 1200,
   e2e: {
     setupNodeEvents(on, config) {

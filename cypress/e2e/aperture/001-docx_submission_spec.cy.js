@@ -10,7 +10,7 @@ import { dashboard } from '../../support/routes'
 
 describe('Upload manuscript test', () => {
   // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('can upload a manuscript and some metadata', () => {
+  it('can upload a manuscript and some metadata', () => {
     // task to restore the database as per the  dumps/initialState.sql
     cy.task('restore', 'commons/bootstrap')
     cy.task('seedForms')
@@ -26,7 +26,7 @@ describe('Upload manuscript test', () => {
       { force: true },
     ) // Upload manuscript
     // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(10000)
+    cy.wait(50000)
     cy.url().should('contain', '/submit')
     // complete the submission form
     cy.fixture('submission_form_data').then(data => {
