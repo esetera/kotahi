@@ -119,6 +119,18 @@ export const PageTableContainer = styled(ScrollableContent)`
   margin-top: 25px;
 `
 
+export const EditPageContainer = styled.div`
+  display: flex;
+`
+
+export const EditPageLeft = styled.div`
+  width: 13rem;
+`
+
+export const EditPageRight = styled.div`
+  flex-grow: 1;
+`
+
 export {
   Row,
   LastCell,

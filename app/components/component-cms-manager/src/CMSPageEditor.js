@@ -6,18 +6,20 @@ import { Spinner, CommsErrorBanner } from '../../shared'
 
 import CMSPageEditForm from './pages/CMSPageEdit'
 
+import CMSPageEditSidebar from './pages/CMSPageEditSidebar'
+
+import { EditPageContainer, EditPageLeft, EditPageRight } from './style'
+
 import {
-  getCMSPage,
+  getCMSPages,
   updateCMSPageDataMutation,
   rebuildFlaxSiteMutation,
 } from './queries'
 
 const CMSPageEditor = ({ match }) => {
-  const { loading, data, error } = useQuery(getCMSPage, {
-    variables: {
-      id: match.params.pageId,
-    },
-  })
+  const currentCMSPageId = match.params.pageId
+
+  const { loading, data, error } = useQuery(getCMSPages)
 
   const [updatePageDataQuery] = useMutation(updateCMSPageDataMutation)
   const [rebuildFlaxSiteQuery] = useMutation(rebuildFlaxSiteMutation)
@@ -25,14 +27,25 @@ const CMSPageEditor = ({ match }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const { cmsPage } = data
+  const { cmsPages } = data
+
+  const cmsPage = cmsPages.find(obj => {
+    return obj.id === currentCMSPageId
+  })
 
   return (
-    <CMSPageEditForm
-      cmsPage={cmsPage}
-      rebuildFlaxSiteQuery={rebuildFlaxSiteQuery}
-      updatePageDataQuery={updatePageDataQuery}
-    />
+    <EditPageContainer>
+      <EditPageLeft>
+        <CMSPageEditSidebar cmsPages={cmsPages} currentCMSPage={cmsPage} />
+      </EditPageLeft>
+      <EditPageRight>
+        <CMSPageEditForm
+          cmsPage={cmsPage}
+          rebuildFlaxSiteQuery={rebuildFlaxSiteQuery}
+          updatePageDataQuery={updatePageDataQuery}
+        />
+      </EditPageRight>
+    </EditPageContainer>
   )
 }
 

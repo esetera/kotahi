@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Formik } from 'formik'
 
-import { Heading, Container, Content } from '../style'
+import { Heading, Content } from '../style'
 
 import CMSPageEditForm from './CMSPageEditForm'
 
@@ -39,7 +39,7 @@ const CMSPageEdit = ({
   const { content } = cmsPage
 
   return (
-    <Container>
+    <div>
       <Heading>Pages</Heading>
       <Content>
         <Formik
@@ -69,7 +69,7 @@ const CMSPageEdit = ({
           }}
         </Formik>
       </Content>
-    </Container>
+    </div>
   )
 }
 
