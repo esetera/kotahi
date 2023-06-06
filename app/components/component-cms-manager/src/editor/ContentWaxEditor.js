@@ -28,6 +28,7 @@ const ContentWaxEditor = ({
   ...rest
 }) => {
   const handleAssetManager = () => {}
+
   const journal = useContext(JournalContext)
 
   const waxUser = {

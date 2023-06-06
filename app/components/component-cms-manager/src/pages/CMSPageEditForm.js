@@ -23,7 +23,7 @@ inputComponents.AbstractEditor = ({
   onChange,
   ...rest
 }) => {
-  return <ContentWaxEditor value={''} />
+  return <ContentWaxEditor value="" />
 }
 
 const inputFields = [
