@@ -86,6 +86,7 @@ lint style:
     GIT_STRATEGY: none
   services:
     - postgres
+    - pubsweet/job-xsweet
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
