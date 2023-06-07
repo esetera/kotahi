@@ -16,17 +16,16 @@ const CMSPageEdit = ({
     text: 'Publish',
   })
 
-  const updatePageData = formData => {
+  const updatePageData = async formData => {
     const inputData = {
       title: formData.title,
-      content: {
-        header: formData.header,
-        footer: formData.footer,
-        body: formData.body,
-      },
+      content: formData.content,
+      meta: JSON.stringify({
+        url: formData.url,
+      }),
     }
 
-    return updatePageDataQuery({
+    updatePageDataQuery({
       variables: {
         id: cmsPage.id,
         input: inputData,
@@ -36,7 +35,7 @@ const CMSPageEdit = ({
 
   const rebuildingTheSite = () => rebuildFlaxSiteQuery()
 
-  const { content } = cmsPage
+  const meta = JSON.parse(cmsPage.meta)
 
   return (
     <>
@@ -45,13 +44,15 @@ const CMSPageEdit = ({
         <Formik
           initialValues={{
             title: cmsPage.title,
-            body: content,
+            content: cmsPage.content,
+            url: meta.url || '',
           }}
           onSubmit={async (values, actions) => {
             setSubmitButtonState({ state: 'pending', text: 'Saving data' })
             await updatePageData(values)
-            setSubmitButtonState({ state: 'pending', text: 'Rebuilding...' })
-            await rebuildingTheSite()
+            // setSubmitButtonState({ state: 'pending', text: 'Rebuilding...' })
+            // await rebuildingTheSite()
+            rebuildingTheSite()
             setSubmitButtonState({ state: 'success', text: 'Save Page' })
           }}
         >

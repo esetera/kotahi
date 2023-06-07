@@ -1,24 +1,36 @@
 const models = require('@pubsweet/models')
 
+const stringifyResponse = cmsPage => {
+  let data = cmsPage
+
+  if (data) {
+    data.meta = JSON.stringify(cmsPage.meta)
+  }
+  return data
+}
+
 const resolvers = {
   Query: {
     async cmsPages(_, vars, ctx) {
-      return models.CMSPage.query()
+      const pages = await models.CMSPage.query()
+      if (!pages) {
+        return pages
+      }
+      return pages.map(page => stringifyResponse(page))
     },
 
     async cmsPage(_, { id }, ctx) {
       if (id) {
         const cmsPage = await models.CMSPage.query().findById(id)
-        return cmsPage
+        return stringifyResponse(cmsPage)
       }
-
       return null
     },
 
     async cmsPageByShortcode(_, { shortcode }, ctx) {
       if (shortcode) {
         const cmsPage = await models.CMSPage.query().findOne({ shortcode })
-        return cmsPage
+        return stringifyResponse(cmsPage)
       }
 
       return null
@@ -26,7 +38,12 @@ const resolvers = {
   },
   Mutation: {
     async updateCMSPage(_, { id, input }, ctx) {
-      return models.CMSPage.query().updateAndFetchById(id, input)
+      let attrs = input
+      if (attrs?.meta) {
+        attrs.meta = JSON.parse(input.meta)
+      }
+      const cmsPage = await models.CMSPage.query().updateAndFetchById(id, input)
+      return stringifyResponse(cmsPage)
     },
   },
 }
@@ -64,9 +81,9 @@ const typeDefs = `
   input CMSPageInput {
     title: String
     content: String
+    meta: String
   }
 
- 
 `
 
 module.exports = { resolvers, typeDefs }
