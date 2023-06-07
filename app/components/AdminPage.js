@@ -218,7 +218,6 @@ const AdminPage = () => {
           ],
         },
         { link: tasksTemplateLink, name: 'Tasks', icon: 'list' },
-        // { link: flaxLink, name: 'Flax', icon: 'globe' },
         { link: userAdminLink, name: 'Users', icon: 'users' },
         { link: configurationLink, name: 'Configuration', icon: 'sliders' },
       ],
@@ -327,6 +326,7 @@ const AdminPage = () => {
           }`}
           redirectLink={redirectLink}
         />
+
         <Route exact path={`${urlFrag}/dashboard/:path?`}>
           <DashboardLayout urlFrag={urlFrag}>
             <Switch>
@@ -367,6 +367,7 @@ const AdminPage = () => {
             </Switch>
           </DashboardLayout>
         </Route>
+
         {(isGroupManager || isAdmin) && [
           // We use array instead of <></> because of https://stackoverflow.com/a/68637108/6505513
           <PrivateRoute

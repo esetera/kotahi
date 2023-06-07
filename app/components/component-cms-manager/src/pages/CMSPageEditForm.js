@@ -7,14 +7,21 @@ import { ValidatedFieldFormik } from '@pubsweet/ui'
 // import FullWaxEditor from '../../../wax-collab/src/FullWaxEditor'
 import ContentWaxEditor from '../editor/ContentWaxEditor'
 
-import { Section, Legend, Page } from '../style'
+import {
+  Section,
+  Page,
+  EditorForm,
+  ActionButtonContainer,
+  FormTextInput,
+  FormActionButton,
+} from '../style'
 
-import { TextInput, ActionButton, PaddedContent } from '../../../shared'
+// import { ActionButton } from '../../../shared'
 
 // import { hasValue } from '../../../../shared/htmlUtils'
 
 const inputComponents = {
-  TextField: TextInput,
+  TextField: FormTextInput,
 }
 
 inputComponents.AbstractEditor = ({
@@ -35,9 +42,17 @@ const inputFields = [
   },
 
   {
+    component: inputComponents.TextField,
+    label: 'URL',
+    name: 'url',
+    type: 'text-input',
+  },
+
+  {
     component: inputComponents.AbstractEditor,
     label: '',
     name: 'content',
+    flexGrow: true,
   },
 ]
 
@@ -51,12 +66,13 @@ const CMSPageEditForm = ({
 }) => {
   return (
     <Page>
-      <form key={key} onSubmit={onSubmit}>
+      <EditorForm key={key} onSubmit={onSubmit}>
         {inputFields.map(item => {
           return (
-            <Section key={item.name}>
-              <Legend space>{item.label}</Legend>
+            <Section key={item.name} flexGrow={item.flexGrow || false}>
+              <p style={{ fontSize: '10px' }}>{item.label}</p>
               <ValidatedFieldFormik
+                style={{ width: '100%' }}
                 component={item.component}
                 name={item.name}
                 onChange={value => {
@@ -80,12 +96,12 @@ const CMSPageEditForm = ({
             </Section>
           )
         })}
-        <PaddedContent>
-          <ActionButton primary status={updatePageStatus} type="submit">
+        <ActionButtonContainer>
+          <FormActionButton primary status={updatePageStatus} type="submit">
             {submitButtonText}
-          </ActionButton>
-        </PaddedContent>
-      </form>
+          </FormActionButton>
+        </ActionButtonContainer>
+      </EditorForm>
     </Page>
   )
 }

@@ -1,9 +1,22 @@
 import styled, { css } from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
-import { ScrollableContent } from '../../shared'
+import {
+  ScrollableContent,
+  TextInput,
+  Heading,
+  ActionButton,
+} from '../../shared'
 
 export const Section = styled.div`
-  margin: 16px;
+  margin: 16px 16px 0px 0px;
+  ${props =>
+    props.flexGrow &&
+    css`
+      flex-grow: 1;
+      & > div {
+        height: 100%;
+      }
+    `}
 `
 
 export const Legend = styled.div`
@@ -12,6 +25,7 @@ export const Legend = styled.div`
 `
 
 export const Page = styled.div`
+  height: 100%;
   position: relative;
   z-index: 0;
 `
@@ -115,8 +129,22 @@ export const HeadingCell = styled(Cell)`
   display: flex;
 `
 
+export const Heading2 = styled(Heading)`
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  padding-bottom: 12px;
+  padding-top: 12px;
+`
+
 export const PageTableContainer = styled(ScrollableContent)`
   margin-top: 25px;
+`
+
+export const FormTextInput = styled(TextInput)`
+  background: white;
+  padding: 10px;
 `
 
 export const EditPageContainer = styled.div`
@@ -124,11 +152,29 @@ export const EditPageContainer = styled.div`
 `
 
 export const EditPageLeft = styled.div`
-  width: 13rem;
+  min-width: 10rem;
+  padding-top: 16px;
 `
 
 export const EditPageRight = styled.div`
+  background-color: #f4f5f7;
   flex-grow: 1;
+  padding-left: 16px;
+  padding-top: 16px;
+`
+
+export const EditorForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`
+
+export const ActionButtonContainer = styled.div`
+  flex-grow: 1;
+`
+
+export const FormActionButton = styled(ActionButton)`
+  min-width: 0px;
 `
 
 export {

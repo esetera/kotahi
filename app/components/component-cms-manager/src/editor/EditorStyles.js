@@ -12,11 +12,9 @@ export const Grid = styled.div`
   grid-template-areas: 'menu' 'editor';
   grid-template-columns: 100%;
   grid-template-rows: ${props => (props.readonly ? 0 : 'minmax(40px,auto)')} 1fr;
+  height: 100%;
   ${props => props.production && 'min-height: calc(100vh - 108px);'}
   position: relative;
-  /* :focus-within {
-    z-index: 10000;
-  } */
 `
 
 export const Menu = styled.div`
@@ -25,7 +23,7 @@ export const Menu = styled.div`
   border: 1px solid ${theme.colors.neutral.gray80};
   display: flex;
   flex-wrap: wrap;
-  font-size: 80%;
+  font-size: 12.8px;
   grid-area: menu;
   height: fit-content;
   max-width: 100%;
@@ -71,25 +69,27 @@ export const ReadOnlyEditorWithCommentsEditor = styled.div`
 `
 
 export const FullWaxEditorGrid = styled.div`
-  display: grid;
   grid-area: editor;
   grid-template-columns: [editorCol] auto [commentsCol] ${props =>
       props.useComments ? 'auto' : 0};
   grid-template-rows: [editorRow] auto [notesRow] auto [infoRow] 40px;
+  height: 18rem;
   ${waxDefaultStyles}
+  overflow: scroll;
   position: relative;
   z-index: 0;
 `
 
 export const EditorDiv = styled.div`
   background-color: ${th('colorBackground')};
-  border: 1px solid ${th('colorBorder')};
-  border-radius: 0 0 ${th('borderRadius')} ${th('borderRadius')};
-  border-top: none;
+  border: 1px solid ${theme.colors.neutral.gray80};
+  border-width: 0px 1px 1px 1px;
   grid-column-start: editorCol;
   grid-row-start: editorRow;
+  height: 100%;
   ${props => !props.hideComments && 'min-width: 800px'};
-  padding: 16px;
+  overflow: scroll;
+  padding: 5px;
   position: relative;
 
   .error & {

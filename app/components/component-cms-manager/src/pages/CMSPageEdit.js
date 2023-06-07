@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Formik } from 'formik'
 
-import { Heading, Content } from '../style'
+import { Heading } from '../style'
 
 import CMSPageEditForm from './CMSPageEditForm'
 
@@ -13,7 +13,7 @@ const CMSPageEdit = ({
 }) => {
   const [submitButtonState, setSubmitButtonState] = React.useState({
     state: null,
-    text: 'Save Page',
+    text: 'Publish',
   })
 
   const updatePageData = formData => {
@@ -39,9 +39,9 @@ const CMSPageEdit = ({
   const { content } = cmsPage
 
   return (
-    <div>
+    <>
       <Heading>Pages</Heading>
-      <Content>
+      <>
         <Formik
           initialValues={{
             title: cmsPage.title,
@@ -68,8 +68,8 @@ const CMSPageEdit = ({
             )
           }}
         </Formik>
-      </Content>
-    </div>
+      </>
+    </>
   )
 }
 

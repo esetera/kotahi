@@ -1,7 +1,6 @@
-import React, { useRef, useContext } from 'react'
-import { ThemeProvider } from 'styled-components'
+import React, { useRef } from 'react'
+
 import { Wax } from 'wax-prosemirror-core'
-import { JournalContext } from '../../../xpub-journal/src'
 
 import ContentEditorLayout from './layout/ContentEditorLayout'
 import ContentEditorConfig from './config/ContentEditorConfig'
@@ -29,8 +28,6 @@ const ContentWaxEditor = ({
 }) => {
   const handleAssetManager = () => {}
 
-  const journal = useContext(JournalContext)
-
   const waxUser = {
     userId: user.id || '-',
     userColor: {
@@ -43,19 +40,17 @@ const ContentWaxEditor = ({
   const editorRef = useRef(null)
 
   return (
-    <ThemeProvider theme={{ textStyles: journal.textStyles }}>
-      <div style={{ width: '100%' }}>
-        <Wax
-          config={ContentEditorConfig(handleAssetManager)}
-          fileUpload={file => renderImage(file)}
-          layout={ContentEditorLayout(readonly)}
-          ref={editorRef}
-          user={waxUser}
-          value={value}
-          {...rest}
-        />
-      </div>
-    </ThemeProvider>
+    <div style={{ width: '100%', height: '100%' }}>
+      <Wax
+        config={ContentEditorConfig(handleAssetManager)}
+        fileUpload={file => renderImage(file)}
+        layout={ContentEditorLayout(readonly)}
+        ref={editorRef}
+        user={waxUser}
+        value={value}
+        {...rest}
+      />
+    </div>
   )
 }
 
