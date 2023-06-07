@@ -48,15 +48,15 @@ const CMSPageEditor = ({ match, history }) => {
     <EditPageContainer>
       <EditPageLeft>
         <CMSPageEditSidebar
-          onItemClick={selectedCmsPage => showPage(selectedCmsPage)}
           cmsPages={cmsPages}
           currentCMSPage={cmsPage}
+          onItemClick={selectedCmsPage => showPage(selectedCmsPage)}
         />
       </EditPageLeft>
       <EditPageRight>
         <CMSPageEditForm
-          key={cmsPage.id}
           cmsPage={cmsPage}
+          key={cmsPage.id}
           rebuildFlaxSiteQuery={rebuildFlaxSiteQuery}
           updatePageDataQuery={updatePageDataQuery}
         />

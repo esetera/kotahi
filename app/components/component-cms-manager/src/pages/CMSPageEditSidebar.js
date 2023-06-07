@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { Heading2 } from '../style'
 import { ChevronRight } from 'react-feather'
 import { th, grid } from '@pubsweet/ui-toolkit'
+import { Heading2 } from '../style'
 
 const RightArrow = styled(ChevronRight)`
   height: ${grid(2)};

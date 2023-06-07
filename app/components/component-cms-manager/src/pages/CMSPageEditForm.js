@@ -69,10 +69,9 @@ const CMSPageEditForm = ({
       <EditorForm key={key} onSubmit={onSubmit}>
         {inputFields.map(item => {
           return (
-            <Section key={item.name} flexGrow={item.flexGrow || false}>
+            <Section flexGrow={item.flexGrow || false} key={item.name}>
               <p style={{ fontSize: '10px' }}>{item.label}</p>
               <ValidatedFieldFormik
-                style={{ width: '100%' }}
                 component={item.component}
                 name={item.name}
                 onChange={value => {
@@ -92,6 +91,7 @@ const CMSPageEditForm = ({
                   setFieldValue(item.name, value)
                 }}
                 setTouched={setTouched}
+                style={{ width: '100%' }}
               />
             </Section>
           )
