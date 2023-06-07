@@ -1,11 +1,12 @@
 const models = require('@pubsweet/models')
 
 const stringifyResponse = cmsPage => {
-  let data = cmsPage
+  const data = cmsPage
 
   if (data) {
     data.meta = JSON.stringify(cmsPage.meta)
   }
+
   return data
 }
 
@@ -13,9 +14,11 @@ const resolvers = {
   Query: {
     async cmsPages(_, vars, ctx) {
       const pages = await models.CMSPage.query()
+
       if (!pages) {
         return pages
       }
+
       return pages.map(page => stringifyResponse(page))
     },
 
@@ -24,6 +27,7 @@ const resolvers = {
         const cmsPage = await models.CMSPage.query().findById(id)
         return stringifyResponse(cmsPage)
       }
+
       return null
     },
 
@@ -38,10 +42,12 @@ const resolvers = {
   },
   Mutation: {
     async updateCMSPage(_, { id, input }, ctx) {
-      let attrs = input
+      const attrs = input
+
       if (attrs?.meta) {
         attrs.meta = JSON.parse(input.meta)
       }
+
       const cmsPage = await models.CMSPage.query().updateAndFetchById(id, input)
       return stringifyResponse(cmsPage)
     },
