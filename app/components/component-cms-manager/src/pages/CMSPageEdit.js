@@ -50,9 +50,9 @@ const CMSPageEdit = ({
           onSubmit={async (values, actions) => {
             setSubmitButtonState({ state: 'pending', text: 'Saving data' })
             await updatePageData(values)
-            // setSubmitButtonState({ state: 'pending', text: 'Rebuilding...' })
-            // await rebuildingTheSite()
-            rebuildingTheSite()
+            setSubmitButtonState({ state: 'pending', text: 'Rebuilding...' })
+            await rebuildingTheSite()
+            // rebuildingTheSite()
             setSubmitButtonState({ state: 'success', text: 'Save Page' })
           }}
         >
