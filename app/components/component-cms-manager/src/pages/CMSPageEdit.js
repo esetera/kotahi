@@ -17,7 +17,7 @@ const CMSPageEdit = ({
   })
 
   const updatePageData = async (formData, currentCmsPage) => {
-    let currentMeta = JSON.parse(currentCmsPage.meta)
+    const currentMeta = JSON.parse(currentCmsPage.meta)
 
     const inputData = {
       title: formData.title,

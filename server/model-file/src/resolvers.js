@@ -115,6 +115,7 @@ const resolvers = {
 
       if (includeInUse) {
         const manuscript = await models.Manuscript.query().findById(entityId)
+
         if (manuscript) {
           imageFiles.forEach(file => {
             const foundIn = []

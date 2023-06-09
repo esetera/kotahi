@@ -1,7 +1,7 @@
 import React from 'react'
 import { ValidatedFieldFormik } from '@pubsweet/ui'
-import { inputFields } from '../formFields'
 import { adopt } from 'react-adopt'
+import { inputFields } from '../formFields'
 import { getSpecificFilesQuery } from '../../../asset-manager/src/queries'
 import withModal from '../../../asset-manager/src/ui/Modal/withModal'
 
@@ -75,17 +75,21 @@ const CMSPageEditForm = ({
 }) => {
   const getInputFieldSpecificProps = (item, { onAssetManager }) => {
     let props = {}
+
     switch (item.type) {
       case 'text-input':
         props.onChange = value => {
           let val = value
+
           if (value.target) {
             val = value.target.value
           } else if (value.value) {
             val = value.value
           }
+
           setFieldValue(item.name, val, false)
         }
+
         break
 
       case 'rich-editor':
@@ -99,6 +103,7 @@ const CMSPageEditForm = ({
 
     return props
   }
+
   return (
     <Composed>
       {({ onAssetManager }) => (
