@@ -68,6 +68,8 @@ const getUserRolesInManuscript = async (userId, manuscriptId) => {
  * If the current user isn't a 'shared' reviewer, return an empty array.
  */
 const getSharedReviewersIds = async (manuscriptId, currentUserId) => {
+  if (!currentUserId) return []
+
   const reviewers = await models.Team.relatedQuery('members')
     .for(
       models.Team.query().where({ objectId: manuscriptId, role: 'reviewer' }),
@@ -168,7 +170,6 @@ const sendEmailWithPreparedData = async (input, ctx, emailSender) => {
   const invitationContainingEmailTemplate = [
     'authorInvitationEmailTemplate',
     'reviewerInvitationEmailTemplate',
-    'reviewInvitationEmailTemplate',
     'reminderAuthorInvitationTemplate',
     'reminderReviewerInvitationTemplate',
     'reviewerInvitationRevisedPreprintTemplate',
