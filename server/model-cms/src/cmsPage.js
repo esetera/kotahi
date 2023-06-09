@@ -5,11 +5,6 @@ class CMSPage extends BaseModel {
     return 'cms_pages'
   }
 
-  constructor(properties) {
-    super(properties)
-    this.type = 'CMSPage'
-  }
-
   static get relationMappings() {
     /* eslint-disable-next-line global-require */
     const { User } = require('@pubsweet/models')
@@ -39,5 +34,4 @@ class CMSPage extends BaseModel {
   }
 }
 
-CMSPage.type = 'CMSPage'
 module.exports = CMSPage
