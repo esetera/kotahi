@@ -2,6 +2,8 @@ import React, { useRef } from 'react'
 
 import { Wax } from 'wax-prosemirror-core'
 
+import { FullWidthANDHeight } from './../style'
+
 import ContentEditorLayout from './layout/ContentEditorLayout'
 import ContentEditorConfig from './config/ContentEditorConfig'
 
@@ -39,7 +41,7 @@ const ContentWaxEditor = ({
   const editorRef = useRef(null)
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <FullWidthANDHeight>
       <Wax
         config={ContentEditorConfig(onAssetManager)}
         fileUpload={file => renderImage(file)}
@@ -49,7 +51,7 @@ const ContentWaxEditor = ({
         value={value}
         {...rest}
       />
-    </div>
+    </FullWidthANDHeight>
   )
 }
 

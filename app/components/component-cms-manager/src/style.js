@@ -124,11 +124,6 @@ export const CellPageTitle = styled.div`
   overflow-wrap: anywhere;
 `
 
-export const HeadingCell = styled(Cell)`
-  align-items: center;
-  display: flex;
-`
-
 export const Heading2 = styled(Heading)`
   cursor: pointer;
   font-size: 14px;
@@ -177,19 +172,7 @@ export const FormActionButton = styled(ActionButton)`
   min-width: 0px;
 `
 
-export {
-  Row,
-  LastCell,
-  UserCombo,
-  Primary,
-  Secondary,
-  UserInfo,
-  Container,
-  Table,
-  Content,
-  Heading,
-  Spinner,
-  Pagination,
-  Title,
-  Header,
-} from '../../shared'
+export const FullWidthANDHeight = styled.div`
+  height: 100%;
+  width: 100%;
+`

@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Formik } from 'formik'
 
-import { Heading } from '../style'
+import { Heading } from '../../../shared'
 
 import CMSPageEditForm from './CMSPageEditForm'
 

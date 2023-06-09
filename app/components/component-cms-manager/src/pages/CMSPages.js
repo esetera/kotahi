@@ -3,8 +3,8 @@ import { useQuery } from '@apollo/client'
 import styled from 'styled-components'
 import { grid } from '@pubsweet/ui-toolkit'
 
-import { Container, Heading, Spinner, PageTableContainer } from '../style'
-import { CommsErrorBanner } from '../../../shared'
+import { PageTableContainer } from '../style'
+import { CommsErrorBanner, Container, Heading, Spinner } from '../../../shared'
 
 import { ConfigContext } from '../../../config/src'
 

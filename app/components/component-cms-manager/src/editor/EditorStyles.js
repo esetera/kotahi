@@ -4,8 +4,6 @@ import waxDefaultStyles from '../../../wax-collab/src/layout/waxDefaultStyles'
 import EditorElements from '../../../wax-collab/src/layout/EditorElements'
 import theme from '../../../../theme'
 
-// app/components/wax-collab/src/layout/EditorElements.js
-
 // this grid goes around the menu and the editor area beneath it.
 export const Grid = styled.div`
   display: grid;
@@ -75,16 +73,4 @@ export const EditorDiv = styled.div`
   & .ProseMirror {
     height: inherit;
   }
-`
-
-export const WaxSurfaceScroll = styled.div`
-  box-sizing: border-box;
-  display: flex;
-  height: 100%;
-  overflow-y: auto;
-  position: relative;
-  width: 100%;
-
-  /* stylelint-disable-next-line order/properties-alphabetical-order */
-  ${EditorElements}
 `
