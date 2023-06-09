@@ -36,6 +36,7 @@ const resolvers = {
         const cmsPage = await models.CMSPage.query()
           .findOne({ shortcode })
           .withGraphFetched('creator')
+
         return stringifyResponse(cmsPage)
       }
 
@@ -45,6 +46,7 @@ const resolvers = {
   Mutation: {
     async updateCMSPage(_, { id, input }, ctx) {
       const attrs = input
+
       if (attrs?.meta) {
         attrs.meta = JSON.parse(input.meta)
       }
@@ -56,6 +58,7 @@ const resolvers = {
       const cmsPage = await models.CMSPage.query()
         .updateAndFetchById(id, attrs)
         .withGraphFetched('creator')
+
       return stringifyResponse(cmsPage)
     },
   },
