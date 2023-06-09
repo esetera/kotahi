@@ -27,6 +27,7 @@ const mapper = {
 
 const mapProps = args => ({
   files: get(args.getEntityFilesQuery, 'data.getEntityFiles'),
+
   uploadFiles: (manuscriptId, files) => {
     const {
       uploadFilesMutation: { uploadFiles },

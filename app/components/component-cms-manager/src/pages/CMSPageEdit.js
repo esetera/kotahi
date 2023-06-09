@@ -16,18 +16,18 @@ const CMSPageEdit = ({
     text: 'Publish',
   })
 
-  const updatePageData = async formData => {
+  const updatePageData = async (formData, currentCmsPage) => {
+    let currentMeta = JSON.parse(currentCmsPage.meta)
+
     const inputData = {
       title: formData.title,
       content: formData.content,
-      meta: JSON.stringify({
-        url: formData.url,
-      }),
+      meta: JSON.stringify({ ...currentMeta, url: formData.url }),
     }
 
     updatePageDataQuery({
       variables: {
-        id: cmsPage.id,
+        id: currentCmsPage.id,
         input: inputData,
       },
     })
@@ -49,16 +49,16 @@ const CMSPageEdit = ({
           }}
           onSubmit={async (values, actions) => {
             setSubmitButtonState({ state: 'pending', text: 'Saving data' })
-            await updatePageData(values)
+            await updatePageData(values, cmsPage)
             setSubmitButtonState({ state: 'pending', text: 'Rebuilding...' })
             await rebuildingTheSite()
-            // rebuildingTheSite()
             setSubmitButtonState({ state: 'success', text: 'Save Page' })
           }}
         >
           {formikProps => {
             return (
               <CMSPageEditForm
+                cmsPage={cmsPage}
                 formErrors={formikProps.errors}
                 onSubmit={formikProps.handleSubmit}
                 setFieldValue={formikProps.setFieldValue}

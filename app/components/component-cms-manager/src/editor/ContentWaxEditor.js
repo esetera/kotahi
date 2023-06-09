@@ -24,10 +24,9 @@ const ContentWaxEditor = ({
   fileUpload,
   readonly,
   user,
+  onAssetManager,
   ...rest
 }) => {
-  const handleAssetManager = () => {}
-
   const waxUser = {
     userId: user.id || '-',
     userColor: {
@@ -42,7 +41,7 @@ const ContentWaxEditor = ({
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <Wax
-        config={ContentEditorConfig(handleAssetManager)}
+        config={ContentEditorConfig(onAssetManager)}
         fileUpload={file => renderImage(file)}
         layout={ContentEditorLayout(readonly)}
         ref={editorRef}

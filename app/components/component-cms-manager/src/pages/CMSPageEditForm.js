@@ -1,70 +1,68 @@
 import React from 'react'
-import { set } from 'lodash'
-
 import { ValidatedFieldFormik } from '@pubsweet/ui'
-
-// import FormWaxEditor from '../../../component-formbuilder/src/components/FormWaxEditor'
-// import FullWaxEditor from '../../../wax-collab/src/FullWaxEditor'
-import ContentWaxEditor from '../editor/ContentWaxEditor'
+import { inputFields } from '../formFields'
+import { adopt } from 'react-adopt'
+import { getSpecificFilesQuery } from '../../../asset-manager/src/queries'
+import withModal from '../../../asset-manager/src/ui/Modal/withModal'
 
 import {
   Section,
   Page,
   EditorForm,
   ActionButtonContainer,
-  FormTextInput,
   FormActionButton,
 } from '../style'
 
-import { hasValue } from '../../../../shared/htmlUtils'
-
-const inputComponents = {
-  TextField: FormTextInput,
+const mapper = {
+  getSpecificFilesQuery,
+  withModal,
 }
 
-inputComponents.AbstractEditor = ({
-  validationStatus,
-  setTouched,
-  onChange,
-  ...rest
-}) => {
-  return (
-    <ContentWaxEditor
-      {...rest}
-      onBlur={() => {
-        setTouched(set({}, rest.name, true))
-      }}
-      onChange={val => {
-        setTouched(set({}, rest.name, true))
-        const cleanedVal = hasValue(val) ? val : ''
-        onChange(cleanedVal)
-      }}
-    />
-  )
-}
+const mapProps = args => ({
+  onAssetManager: manuscriptId => {
+    return new Promise((resolve, reject) => {
+      const {
+        withModal: { showModal, hideModal },
+      } = args
 
-const inputFields = [
-  {
-    component: inputComponents.TextField,
-    label: 'Page title',
-    name: 'title',
-    type: 'text-input',
-  },
+      const handleImport = async selectedFileIds => {
+        const {
+          getSpecificFilesQuery: { client, query },
+        } = args
 
-  {
-    component: inputComponents.TextField,
-    label: 'URL',
-    name: 'url',
-    type: 'text-input',
-  },
+        const { data } = await client.query({
+          query,
+          variables: { ids: selectedFileIds },
+        })
 
-  {
-    component: inputComponents.AbstractEditor,
-    label: '',
-    name: 'content',
-    flexGrow: true,
+        const { getSpecificFiles } = data
+
+        const alteredFiles = getSpecificFiles.map(getSpecificFile => {
+          const mediumSizeFile = getSpecificFile.storedObjects.find(
+            storedObject => storedObject.type === 'medium',
+          )
+
+          return {
+            source: mediumSizeFile.url,
+            mimetype: mediumSizeFile.mimetype,
+            ...getSpecificFile,
+          }
+        })
+
+        hideModal()
+        resolve(alteredFiles)
+      }
+
+      showModal('assetManagerEditor', {
+        manuscriptId,
+        withImport: true,
+        handleImport,
+      })
+    })
   },
-]
+})
+
+const Composed = adopt(mapper, mapProps)
 
 const CMSPageEditForm = ({
   onSubmit,
@@ -73,46 +71,62 @@ const CMSPageEditForm = ({
   key,
   updatePageStatus,
   submitButtonText,
+  cmsPage,
 }) => {
+  const getInputFieldSpecificProps = (item, { onAssetManager }) => {
+    let props = {}
+    switch (item.type) {
+      case 'text-input':
+        props.onChange = value => {
+          let val = value
+          if (value.target) {
+            val = value.target.value
+          } else if (value.value) {
+            val = value.value
+          }
+          setFieldValue(item.name, val, false)
+        }
+        break
+
+      case 'rich-editor':
+        props.onChange = value => setFieldValue(item.name, value)
+        props.onAssetManager = () => onAssetManager(cmsPage.id)
+        break
+
+      default:
+        props = {}
+    }
+
+    return props
+  }
   return (
-    <Page>
-      <EditorForm key={key} onSubmit={onSubmit}>
-        {inputFields.map(item => {
-          return (
-            <Section flexGrow={item.flexGrow || false} key={item.name}>
-              <p style={{ fontSize: '10px' }}>{item.label}</p>
-              <ValidatedFieldFormik
-                component={item.component}
-                name={item.name}
-                onChange={value => {
-                  if (item.type === 'text-input') {
-                    let val = value
-
-                    if (value.target) {
-                      val = value.target.value
-                    } else if (value.value) {
-                      val = value.value
-                    }
-
-                    setFieldValue(item.name, val, false)
-                    return
-                  }
-
-                  setFieldValue(item.name, value)
-                }}
-                setTouched={setTouched}
-                style={{ width: '100%' }}
-              />
-            </Section>
-          )
-        })}
-        <ActionButtonContainer>
-          <FormActionButton primary status={updatePageStatus} type="submit">
-            {submitButtonText}
-          </FormActionButton>
-        </ActionButtonContainer>
-      </EditorForm>
-    </Page>
+    <Composed>
+      {({ onAssetManager }) => (
+        <Page>
+          <EditorForm key={key} onSubmit={onSubmit}>
+            {inputFields.map(item => {
+              return (
+                <Section flexGrow={item.flexGrow || false} key={item.name}>
+                  <p style={{ fontSize: '10px' }}>{item.label}</p>
+                  <ValidatedFieldFormik
+                    component={item.component}
+                    name={item.name}
+                    setTouched={setTouched}
+                    style={{ width: '100%' }}
+                    {...getInputFieldSpecificProps(item, { onAssetManager })}
+                  />
+                </Section>
+              )
+            })}
+            <ActionButtonContainer>
+              <FormActionButton primary status={updatePageStatus} type="submit">
+                {submitButtonText}
+              </FormActionButton>
+            </ActionButtonContainer>
+          </EditorForm>
+        </Page>
+      )}
+    </Composed>
   )
 }
 
