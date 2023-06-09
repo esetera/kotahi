@@ -13,7 +13,7 @@ const stringifyResponse = cmsPage => {
 const resolvers = {
   Query: {
     async cmsPages(_, vars, ctx) {
-      const pages = await models.CMSPage.query()
+      const pages = await models.CMSPage.query().withGraphFetched('creator')
 
       if (!pages) {
         return pages
@@ -33,7 +33,9 @@ const resolvers = {
 
     async cmsPageByShortcode(_, { shortcode }, ctx) {
       if (shortcode) {
-        const cmsPage = await models.CMSPage.query().findOne({ shortcode })
+        const cmsPage = await models.CMSPage.query()
+          .findOne({ shortcode })
+          .withGraphFetched('creator')
         return stringifyResponse(cmsPage)
       }
 
@@ -43,12 +45,17 @@ const resolvers = {
   Mutation: {
     async updateCMSPage(_, { id, input }, ctx) {
       const attrs = input
-
       if (attrs?.meta) {
         attrs.meta = JSON.parse(input.meta)
       }
 
-      const cmsPage = await models.CMSPage.query().updateAndFetchById(id, input)
+      if (!input.creatorId) {
+        attrs.creatorId = ctx.user
+      }
+
+      const cmsPage = await models.CMSPage.query()
+        .updateAndFetchById(id, attrs)
+        .withGraphFetched('creator')
       return stringifyResponse(cmsPage)
     },
   },

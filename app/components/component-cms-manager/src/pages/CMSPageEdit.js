@@ -22,7 +22,7 @@ const CMSPageEdit = ({
     const inputData = {
       title: formData.title,
       content: formData.content,
-      meta: JSON.stringify({ ...currentMeta, url: formData.url }),
+      meta: JSON.stringify({ ...currentMeta, url: formData.url, menu: true }),
     }
 
     updatePageDataQuery({

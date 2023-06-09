@@ -11,6 +11,8 @@ import {
 import { convertTimestampToDateWithoutTimeString } from '../../../../shared/dateUtils'
 
 const CMSPageRow = ({ cmsPage, onManageClick }) => {
+  const creator = cmsPage.creator || { username: 'Admin' }
+
   return (
     <CMSPageListRow key={cmsPage.id}>
       <CMSPagesLeftPane>
@@ -22,7 +24,7 @@ const CMSPageRow = ({ cmsPage, onManageClick }) => {
         <Status> Published</Status>
       </CMSPagesLeftPane>
       <CMSPagesRightPane>
-        <Cell>Admin</Cell>
+        <Cell>{creator.username}</Cell>
         <Cell>{convertTimestampToDateWithoutTimeString(cmsPage.updated)}</Cell>
         <Cell>{convertTimestampToDateWithoutTimeString(cmsPage.created)}</Cell>
       </CMSPagesRightPane>

@@ -9,6 +9,10 @@ const cmsPageFields = `
     status
     title
     updated
+    creator {
+      id
+      username
+    }
 `
 
 export const getCMSPages = gql`
