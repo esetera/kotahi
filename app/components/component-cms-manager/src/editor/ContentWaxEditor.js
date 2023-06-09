@@ -2,7 +2,7 @@ import React, { useRef } from 'react'
 
 import { Wax } from 'wax-prosemirror-core'
 
-import { FullWidthANDHeight } from './../style'
+import { FullWidthANDHeight } from '../style'
 
 import ContentEditorLayout from './layout/ContentEditorLayout'
 import ContentEditorConfig from './config/ContentEditorConfig'
