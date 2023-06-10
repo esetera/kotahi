@@ -144,6 +144,7 @@ export const FormTextInput = styled(TextInput)`
 
 export const EditPageContainer = styled.div`
   display: flex;
+  overflow: scroll;
 `
 
 export const EditPageLeft = styled.div`
@@ -165,7 +166,7 @@ export const EditorForm = styled.form`
 `
 
 export const ActionButtonContainer = styled.div`
-  flex-grow: 1;
+  margin-top: 48px;
 `
 
 export const FormActionButton = styled(ActionButton)`
@@ -173,7 +174,7 @@ export const FormActionButton = styled(ActionButton)`
 `
 
 export const FullWidthANDHeight = styled.div`
-  height: 100%;
+  height: auto;
   width: 100%;
 `
 
