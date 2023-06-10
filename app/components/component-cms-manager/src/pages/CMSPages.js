@@ -20,6 +20,7 @@ export const ControlsContainer = styled.div`
   gap: ${grid(2)};
   justify-content: flex-end;
 `
+
 const OuterContainer = styled(Container)`
   overflow: hidden;
   padding: 0;
@@ -52,9 +53,9 @@ const CMSPages = ({ history }) => {
     <OuterContainer>
       <CMSPagesPane>
         <PageHeader
-          mainHeading={'Pages'}
           history={history}
-          newItemButtonText={'+ New page'}
+          mainHeading="Pages"
+          newItemButtonText="+ New page"
           onNewItemButtonClick={() => alert('Coming Soon.')}
         />
         <PageTableContainer>

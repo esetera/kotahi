@@ -40,7 +40,7 @@ const CMSPageEdit = ({
 
   return (
     <FullWidthANDHeight>
-      <PageHeader leftSideOnly={true} mainHeading={'Pages'} />
+      <PageHeader leftSideOnly mainHeading="Pages" />
       <FullWidthANDHeight>
         <Formik
           initialValues={{
