@@ -124,7 +124,7 @@ const CMSPageEditForm = ({
               )
             })}
             <ActionButtonContainer>
-              <FormActionButton primary status={updatePageStatus} type="submit">
+              <FormActionButton primary type="submit">
                 {submitButtonText}
               </FormActionButton>
             </ActionButtonContainer>

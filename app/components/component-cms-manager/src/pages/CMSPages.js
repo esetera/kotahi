@@ -3,8 +3,10 @@ import { useQuery } from '@apollo/client'
 import styled from 'styled-components'
 import { grid } from '@pubsweet/ui-toolkit'
 
+import PageHeader from '../components/PageHeader'
+
 import { PageTableContainer } from '../style'
-import { CommsErrorBanner, Container, Heading, Spinner } from '../../../shared'
+import { CommsErrorBanner, Container, Spinner } from '../../../shared'
 
 import { ConfigContext } from '../../../config/src'
 
@@ -12,6 +14,12 @@ import { getCMSPages } from '../queries'
 
 import CMSPagesTable from './CMSPagesTable'
 
+export const ControlsContainer = styled.div`
+  display: flex;
+  flex: 1 1;
+  gap: ${grid(2)};
+  justify-content: flex-end;
+`
 const OuterContainer = styled(Container)`
   overflow: hidden;
   padding: 0;
@@ -20,12 +28,6 @@ const OuterContainer = styled(Container)`
 const CMSPagesPane = styled.div`
   overflow-y: scroll;
   padding: 16px 16px 0 16px;
-`
-
-const FlexRow = styled.div`
-  display: flex;
-  gap: ${grid(1)};
-  justify-content: space-between;
 `
 
 const CMSPages = ({ history }) => {
@@ -49,10 +51,12 @@ const CMSPages = ({ history }) => {
   return (
     <OuterContainer>
       <CMSPagesPane>
-        <FlexRow>
-          <Heading>Pages</Heading>
-          {/* {topRightControls} */}
-        </FlexRow>
+        <PageHeader
+          mainHeading={'Pages'}
+          history={history}
+          newItemButtonText={'+ New page'}
+          onNewItemButtonClick={() => alert('Coming Soon.')}
+        />
         <PageTableContainer>
           <CMSPagesTable
             cmsPages={cmsPages}

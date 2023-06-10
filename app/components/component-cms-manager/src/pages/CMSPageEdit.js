@@ -2,9 +2,10 @@ import React from 'react'
 
 import { Formik } from 'formik'
 
-import { Heading } from '../../../shared'
-
 import CMSPageEditForm from './CMSPageEditForm'
+
+import PageHeader from '../components/PageHeader'
+import { FullWidthANDHeight } from '../style'
 
 const CMSPageEdit = ({
   cmsPage,
@@ -38,9 +39,9 @@ const CMSPageEdit = ({
   const meta = JSON.parse(cmsPage.meta)
 
   return (
-    <>
-      <Heading>Pages</Heading>
-      <>
+    <FullWidthANDHeight>
+      <PageHeader leftSideOnly={true} mainHeading={'Pages'} />
+      <FullWidthANDHeight>
         <Formik
           initialValues={{
             title: cmsPage.title,
@@ -52,7 +53,7 @@ const CMSPageEdit = ({
             await updatePageData(values, cmsPage)
             setSubmitButtonState({ state: 'pending', text: 'Rebuilding...' })
             await rebuildingTheSite()
-            setSubmitButtonState({ state: 'success', text: 'Save Page' })
+            setSubmitButtonState({ state: 'success', text: 'Published' })
           }}
         >
           {formikProps => {
@@ -69,8 +70,8 @@ const CMSPageEdit = ({
             )
           }}
         </Formik>
-      </>
-    </>
+      </FullWidthANDHeight>
+    </FullWidthANDHeight>
   )
 }
 

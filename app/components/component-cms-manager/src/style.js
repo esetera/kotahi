@@ -33,7 +33,7 @@ export const Page = styled.div`
 export const CMSPageListRow = styled.div`
   align-items: center;
   background-color: ${th('colorBackground')};
-  border-top: 1px solid ${th('colorFurniture')};
+  border-top: ${th('borderWidth')} ${th('borderStyle')} ${th('colorFurniture')};
   column-gap: ${grid(2)};
   display: flex;
   flex-direction: row;
@@ -126,9 +126,9 @@ export const CellPageTitle = styled.div`
 
 export const Heading2 = styled(Heading)`
   cursor: pointer;
-  font-size: 14px;
+  font-size: ${th('fontSizeBaseSmall')};
   font-weight: 600;
-  line-height: 16px;
+  line-height: ${th('lineHeightBaseSmall')};
   padding-bottom: 12px;
   padding-top: 12px;
 `
@@ -175,4 +175,17 @@ export const FormActionButton = styled(ActionButton)`
 export const FullWidthANDHeight = styled.div`
   height: 100%;
   width: 100%;
+`
+
+export const ControlsContainer = styled.div`
+  display: flex;
+  flex: 1 1;
+  gap: ${grid(2)};
+  justify-content: flex-end;
+`
+
+export const FlexRow = styled.div`
+  display: flex;
+  gap: ${grid(1)};
+  justify-content: space-between;
 `
