@@ -86,7 +86,6 @@ lint style:
     GIT_STRATEGY: none
   services:
     - postgres
-    - cokoapps/xsweet
 
 .test_before_script: &run_test_before_script
   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
@@ -106,8 +105,6 @@ lint style:
 
 .test_script: &run_test_script
   - cd ${HOME}
-  - sh ./scripts/setupProdServer.sh &
-  - node ./startServer.js &
   - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
 
 test-chrome:
