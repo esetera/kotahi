@@ -18,9 +18,9 @@ const CMSPageEdit = ({
   })
 
   const saveData = async (id, data) => {
-    let inputData = { ...data, edited: new Date() }
+    const inputData = { ...data, edited: new Date() }
     updatePageDataQuery({
-      variables: { id: id, input: inputData },
+      variables: { id, input: inputData },
     })
   }
 
@@ -28,6 +28,7 @@ const CMSPageEdit = ({
     setSubmitButtonState({ state: 'pending', text: 'Saving data' })
     const meta = JSON.parse(cmsPage.meta)
     const timeStamp = new Date()
+
     const inputData = {
       title: formData.title,
       content: formData.content,
@@ -67,10 +68,10 @@ const CMSPageEdit = ({
                 cmsPage={cmsPage}
                 formErrors={formikProps.errors}
                 onSubmit={formikProps.handleSubmit}
+                saveData={saveData}
                 setFieldValue={formikProps.setFieldValue}
                 setTouched={formikProps.setTouched}
                 submitButtonText={submitButtonState.text}
-                saveData={saveData}
               />
             )
           }}

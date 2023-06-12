@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect } from 'react'
 import { ValidatedFieldFormik } from '@pubsweet/ui'
 import { adopt } from 'react-adopt'
+import { debounce } from 'lodash'
 import { inputFields } from '../formFields'
 import { getSpecificFilesQuery } from '../../../asset-manager/src/queries'
 import withModal from '../../../asset-manager/src/ui/Modal/withModal'
 import { convertTimestampToDateString } from '../../../../shared/dateUtils'
-import { debounce } from 'lodash'
 
 import {
   Section,
@@ -86,7 +86,7 @@ const CMSPageEditForm = ({
   }, [])
 
   const onDataChanged = (itemKey, value) => {
-    let data = {}
+    const data = {}
     data[itemKey] = value
     autoSave(cmsPage.id, data)
   }
@@ -116,16 +116,18 @@ const CMSPageEditForm = ({
           setFieldValue(item.name, value)
           onDataChanged(item.name, value)
         }
+
         props.onAssetManager = () => onAssetManager(cmsPage.id)
         break
 
       default:
         props = {}
     }
+
     return props
   }
 
-  const isPublished = () => (cmsPage.published ? true : false)
+  const isPublished = () => !!cmsPage.published
 
   const isEdited = () => {
     if (!cmsPage.published) return true
@@ -153,7 +155,7 @@ const CMSPageEditForm = ({
               )
             })}
             <ActionButtonContainer>
-              <FormActionButton primary onClick={onSubmit}>
+              <FormActionButton onClick={onSubmit} primary>
                 {submitButtonText}
               </FormActionButton>
 
