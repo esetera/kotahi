@@ -195,17 +195,16 @@ const AdminPage = () => {
 
   if (isGroupManager || isAdmin) {
     links.push({
-      menu: 'CMS',
-      name: 'CMS',
-      icon: 'layout',
-      links: [{ link: CMSPageEditorLink, name: 'Pages', icon: '' }],
-    })
-
-    links.push({
       menu: 'Settings',
       name: 'Settings',
       icon: 'settings',
       links: [
+        {
+          menu: 'CMS',
+          name: 'CMS',
+          icon: 'layout',
+          links: [{ link: CMSPageEditorLink, name: 'Pages', icon: '' }],
+        },
         {
           menu: 'Forms',
           name: 'Forms',
