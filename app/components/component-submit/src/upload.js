@@ -337,7 +337,6 @@ const getHtmlFromDocxQuery = gql`
 
 const DocxToHTMLPromise = (file, data, client) => {
   const theUrl = data.uploadFile.storedObjects[0].url
-
   return client
     .query({
       query: getHtmlFromDocxQuery,

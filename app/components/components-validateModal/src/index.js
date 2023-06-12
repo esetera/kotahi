@@ -1,3 +1,5 @@
+import React, { useState } from 'react'
+
 import {
   FooterButton,
   LoaderText,
@@ -5,55 +7,66 @@ import {
   ModalContainer,
   ModalFooter,
   ModalHeader,
-} from "./styles";
-import React from "react";
-import { useState } from "react";
-import Modal, { RowContainer } from "./components";
+} from './styles'
+import { Modal, RowContainer } from './components'
 
-const ValidateModal = ({ ...props }) => {
-  const [apiCall, setApiCall] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [refData, setRefData] = useState([]);
- 
+const ValidateModal = ({
+  isOpen,
+  referenceText,
+  onClose,
+  onValidateProp,
+  index,
+  refId,
+  refBlock,
+}) => {
+  const [apiCall, setApiCall] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [refData, setRefData] = useState([])
+
   const handleClose = () => {
-    props.onClose();
-    onReferenceSelected(-1);
-    setApiCall(false);
-  };
-  const onReferenceSelected = (dataIndex) => {
-    setSelectedIndex(dataIndex);
-  };
+    onClose()
+    onReferenceSelected(-1)
+    setApiCall(false)
+  }
+
+  const onReferenceSelected = dataIndex => {
+    setSelectedIndex(dataIndex)
+  }
+
   const onValidate = () => {
-    setApiCall(false);
-    onReferenceSelected(-1);
-    props.onValidate({index:props.index},props.refId,true);
-    props.onClose();
-  };
+    setApiCall(false)
+    onReferenceSelected(-1)
+    onValidateProp({ index }, refId, true)
+    onClose()
+  }
+
   const ModalOpened = () => {
-    if (props.referenceText.response !== "undefined")
-      setRefData(JSON.parse(props.referenceText.response).items);
-    else setApiCall(true);
-  };
+    if (referenceText.response !== 'undefined')
+      setRefData(JSON.parse(referenceText.response).items)
+    else setApiCall(true)
+  }
+
   return (
-    <Modal isOpen={props.isOpen} onAfterOpen={ModalOpened}>
+    <Modal isOpen={isOpen} onAfterOpen={ModalOpened}>
       <ModalContainer>
         <ModalHeader>Reference Validation</ModalHeader>
         <ModalBody>
-          <div>{props?.referenceText}</div>
-          {props.refBlock?.length > 0 ? (
-            props.refBlock?.map((elem, index) => {
+          <div>{referenceText || null}</div>
+          {refBlock?.length > 0 ? (
+            refBlock?.map((elem, indexx) => {
               return (
                 <RowContainer
-                  index={index}
-                  title={elem}
+                  index={indexx}
+                  isSelected={selectedIndex === indexx}
+                  key={indexx}
                   onClick={onReferenceSelected}
-                  isSelected={selectedIndex === index}
+                  title={elem}
                 />
-              );
+              )
             })
           ) : (
             <>
-              {" "}
+              {' '}
               {apiCall && (
                 <LoaderText>
                   Reference Validation failed, Please try again after sometime
@@ -74,7 +87,7 @@ const ValidateModal = ({ ...props }) => {
         </ModalFooter>
       </ModalContainer>
     </Modal>
-  );
-};
+  )
+}
 
-export default ValidateModal;
+export default ValidateModal

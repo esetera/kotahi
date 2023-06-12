@@ -1,38 +1,40 @@
-import Modal, {
+import React, { useState, useEffect, useContext } from 'react'
+
+import { WaxContext, DocumentHelpers } from 'wax-prosemirror-core'
+import {
+  Modal,
   CloseButton,
   ModalBody,
   ModalContainer,
   ReferenceContainer,
   ModalHeader,
   ModalFooter,
-} from "./style";
-import React from "react";
-import { useState, useEffect, useContext } from "react";
-import { WaxContext, DocumentHelpers } from "wax-prosemirror-core";
-import { LinkingsNotFound } from "../../components-notFound/src";
+} from './style'
+import { LinkingsNotFound } from '../../components-notFound/src'
 
 export const RefModal = ({ isOpen, closeModal }) => {
-  const [waxRefBlocks, setWaxRefBlocks] = useState([]);
-  const concurrentValidations = 2;
+  const [waxRefBlocks, setWaxRefBlocks] = useState([])
+  const concurrentValidations = 2
+
   const {
     pmViews: { main },
-  } = useContext(WaxContext);
+  } = useContext(WaxContext)
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return
 
     const referenceBlocks = DocumentHelpers.findBlockNodes(main.state.doc)
-      .filter((block) => {
+      .filter(block => {
         const {
           node: {
             isBlock,
             attrs: { class: klass },
           },
-        } = block;
+        } = block
 
-        return isBlock && (klass === "ref-tx" || klass === "ref");
+        return isBlock && (klass === 'ref-tx' || klass === 'ref')
       })
-      .map((referenceBlock) => {
+      .map(referenceBlock => {
         const {
           node: {
             textContent,
@@ -46,7 +48,8 @@ export const RefModal = ({ isOpen, closeModal }) => {
             },
           },
           pos,
-        } = referenceBlock;
+        } = referenceBlock
+
         return {
           text: textContent,
           dataId: refId || id,
@@ -57,74 +60,80 @@ export const RefModal = ({ isOpen, closeModal }) => {
           needsValidation,
           structure,
           pos,
-        };
-      });
+        }
+      })
 
-    setWaxRefBlocks(referenceBlocks);
-  }, [isOpen]);
+    setWaxRefBlocks(referenceBlocks)
+  }, [isOpen])
 
-  const persistReference = (refBlock, Id ,manually) => {
-    const allNodes = DocumentHelpers.findBlockNodes(main.state.doc);
-    const refNode = allNodes.find((node) => {
+  const persistReference = (refBlock, Id, manually) => {
+    const allNodes = DocumentHelpers.findBlockNodes(main.state.doc)
+
+    const refNode = allNodes.find(node => {
       const {
         node: {
           attrs: { refId },
         },
-      } = node;
-      return manually ? refId == Id : refId == refBlock.dataId;
-    });
-    
-    let attrs;
-    if(manually){
-      let dataindex = refBlock.index;
-      waxRefBlocks[dataindex].valid = true;
-      waxRefBlocks[dataindex].needsReview=false;
+      } = node
+
+      return manually ? refId === Id : refId === refBlock.dataId
+    })
+
+    let attrs
+
+    if (manually) {
+      const dataindex = refBlock.index
+      waxRefBlocks[dataindex].valid = true
+      waxRefBlocks[dataindex].needsReview = false
       attrs = { ...refNode.node.attrs, needsReview: false, valid: true }
-    }
-    else{
-      const { valid, needsReview, structure, needsValidation } = refBlock;
+    } else {
+      const { valid, needsReview, structure, needsValidation } = refBlock
       attrs = {
         ...refNode.node.attrs,
         valid,
         needsReview,
         needsValidation,
         structure,
-      };
+      }
     }
-   
-    const tr = main.state.tr.setNodeMarkup(refNode.pos, undefined, attrs);
-    main.dispatch(tr);
+
+    const tr = main.state.tr.setNodeMarkup(refNode.pos, undefined, attrs)
+    main.dispatch(tr)
     setWaxRefBlocks(waxRefBlocks)
-  };
+  }
 
   const handleClose = () => {
-    closeModal();
-  };
+    closeModal()
+  }
 
   const findMostRelaventReference = (matchingReferences, referenceText) => {
-    const matchesTitle = (ref) => referenceText.includes(ref.title);
-    const matchesFirstAuthor = (ref) => {
-      let firstAuthor = ref?.author?.find(
-        (author) => author.sequence === "first"
-      );
+    const matchesTitle = ref => referenceText.includes(ref.title)
+
+    const matchesFirstAuthor = ref => {
+      const firstAuthor = ref?.author?.find(
+        author => author.sequence === 'first',
+      )
+
       return (
         referenceText.includes(firstAuthor?.family) ||
         referenceText.includes(firstAuthor?.given)
-      );
-    };
-    const matchesJournalTitle = (ref) =>
-      referenceText.includes(ref.journalTitle);
-    const matchesPage = (ref) => {
+      )
+    }
+
+    const matchesJournalTitle = ref => referenceText.includes(ref.journalTitle)
+
+    const matchesPage = ref => {
       return (
         referenceText.includes(ref.page) ||
-        referenceText.includes(ref.page?.replace("-", "\u2013")) ||
-        referenceText.includes(ref.page?.replace("-", "\u2014"))
-      );
-    };
-    const matchesIssue = (ref) => referenceText.includes(ref.issue);
-    const matchesVolume = (ref) => referenceText.includes(ref.volume);
+        referenceText.includes(ref.page?.replace('-', '\u2013')) ||
+        referenceText.includes(ref.page?.replace('-', '\u2014'))
+      )
+    }
 
-    return matchingReferences.find((reference) => {
+    const matchesIssue = ref => referenceText.includes(ref.issue)
+    const matchesVolume = ref => referenceText.includes(ref.volume)
+
+    return matchingReferences.find(reference => {
       return (
         matchesTitle(reference) &&
         matchesFirstAuthor(reference) &&
@@ -132,77 +141,82 @@ export const RefModal = ({ isOpen, closeModal }) => {
           matchesPage(reference) ||
           matchesIssue(reference) ||
           matchesVolume(reference))
-      );
-    });
-  };
+      )
+    })
+  }
 
   // Kick off initial set of validations. The rest will continue as each gets completed.
   const intiateValidation = () => {
     waxRefBlocks
-      .filter((refBlock) => refBlock.needsValidation)
+      .filter(refBlock => refBlock.needsValidation)
       .slice(0, concurrentValidations)
-      .forEach((refBlock) => {
-        refBlock.validate = true;
-      });
-  };
+      .forEach(refBlockProp => {
+        refBlockProp.validate = true
+      })
+  }
 
   const onRefValidate = ({ refId, data, match, text }) => {
-    const refBlock = waxRefBlocks.find((refBlock) => refBlock.dataId === refId);
+    const refBlock = waxRefBlocks.find(
+      refBlockProp => refBlockProp.dataId === refId,
+    )
+
     if (refBlock) {
-      if (match === "multiple") {
-        const refMatch = findMostRelaventReference(data, text);
-        refBlock.structure = refMatch || data;
-        refBlock.valid = refMatch ? true : false;
+      if (match === 'multiple') {
+        const refMatch = findMostRelaventReference(data, text)
+        refBlock.structure = refMatch || data
+        refBlock.valid = !!refMatch
       } else {
-        refBlock.structure = data;
-        refBlock.valid = true;
+        refBlock.structure = data
+        refBlock.valid = true
       }
 
       // We don't need another CrossRef check
-      refBlock.needsValidation = false;
+      refBlock.needsValidation = false
 
       // Needs human review only for references with multiple matches
-      refBlock.needsReview = Array.isArray(refBlock.structure);
+      refBlock.needsReview = Array.isArray(refBlock.structure)
 
       // Save the data to HTML
-      persistReference(refBlock);
+      persistReference(refBlock)
 
       // Initiate the next reference for validation
       const unvalidatedRefBlock = waxRefBlocks.find(
-        (refBlock) => refBlock.needsValidation
-      );
-      if (unvalidatedRefBlock) unvalidatedRefBlock.validate = true;
+        refBlockProp => refBlockProp.needsValidation,
+      )
 
-      setWaxRefBlocks([...waxRefBlocks]);
+      if (unvalidatedRefBlock) unvalidatedRefBlock.validate = true
+
+      setWaxRefBlocks([...waxRefBlocks])
     }
-  };
+  }
 
-  const onError = () => {};
+  const onError = () => {}
 
   const renderReferences = () => {
     if (waxRefBlocks.length === 0) {
-      return <LinkingsNotFound text={"No references found!"} />;
+      return <LinkingsNotFound text="No references found!" />
     }
+
     return waxRefBlocks.map(
       ({ text, validate, valid, dataId, needsReview, structure }, index) => {
         return (
           <ReferenceContainer
-            text={text}
-            key={index}
             index={index}
-            validate={validate}
-            valid={valid}
-            refId={dataId}
+            key={index}
             needsReview={needsReview}
+            onError={onError}
             onValidate={onRefValidate}
             onValidation={persistReference}
-            onError={onError}
+            refId={dataId}
             structure={structure}
+            text={text}
+            valid={valid}
+            validate={validate}
           />
-        );
-      }
-    );
-  };
+        )
+      },
+    )
+  }
 
   return (
     <>
@@ -216,5 +230,7 @@ export const RefModal = ({ isOpen, closeModal }) => {
         </ModalContainer>
       </Modal>
     </>
-  );
-};
+  )
+}
+
+export default RefModal

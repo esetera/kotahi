@@ -54,8 +54,9 @@ const ProductionWaxEditor = ({
   const config = useContext(ConfigContext)
 
   const configTheme = {
-    configColor:config.groupIdentity.primaryColor
+    configColor: config.groupIdentity.primaryColor,
   }
+
   const waxUser = {
     userId: user.id || '-',
     userColor: {
@@ -104,7 +105,9 @@ const ProductionWaxEditor = ({
   }
 
   return (
-    <ThemeProvider theme={{ textStyles: journal.textStyles, ...waxTheme, ...configTheme}}>
+    <ThemeProvider
+      theme={{ textStyles: journal.textStyles, ...waxTheme, ...configTheme }}
+    >
       <div className={validationStatus}>
         <Wax
           autoFocus={autoFocus}

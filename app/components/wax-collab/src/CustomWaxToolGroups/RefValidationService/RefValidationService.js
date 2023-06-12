@@ -1,14 +1,14 @@
-import { Service } from "wax-prosemirror-core";
-import RefValidationTool from "./RefValidationTool";
+import { Service } from 'wax-prosemirror-core'
+import RefValidationTool from './RefValidationTool'
 
 class ReferenceValidationToolGroupService extends Service {
-  name = "ReferenceValidationToolGroupService";
+  name = 'ReferenceValidationToolGroupService'
 
   boot() {}
 
   register() {
-    this.container.bind("RefValidationTool").to(RefValidationTool);
+    this.container.bind('RefValidationTool').to(RefValidationTool)
   }
 }
 
-export default ReferenceValidationToolGroupService;
+export default ReferenceValidationToolGroupService

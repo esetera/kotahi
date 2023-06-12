@@ -146,6 +146,7 @@ const resolvers = {
       try {
         outHtml = await getXsweet(url)
       } catch (e) {
+        console.log('Error!')
         error = e
       }
 
