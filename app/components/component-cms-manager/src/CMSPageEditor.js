@@ -22,15 +22,18 @@ const CMSPageEditor = ({ match, history }) => {
   const config = useContext(ConfigContext)
   const urlFrag = config.journal.metadata.toplevel_urlfragment
 
-  const currentCMSPageId = match.params.pageId
-
   const { loading, data, error } = useQuery(getCMSPages)
 
   const [updatePageDataQuery] = useMutation(updateCMSPageDataMutation)
   const [rebuildFlaxSiteQuery] = useMutation(rebuildFlaxSiteMutation)
 
+  let currentCMSPageId = null
+  if (match.params.pageId) {
+    currentCMSPageId = match.params.pageId
+  }
+
   const showPage = currentCMSPage => {
-    const link = `${urlFrag}/admin/cms/page-edit/${currentCMSPage.id}`
+    const link = `${urlFrag}/admin/cms/pages/${currentCMSPage.id}`
     history.push(link)
     return true
   }
@@ -40,9 +43,17 @@ const CMSPageEditor = ({ match, history }) => {
 
   const { cmsPages } = data
 
-  const cmsPage = cmsPages.find(obj => {
-    return obj.id === currentCMSPageId
-  })
+  let cmsPage = cmsPages.length > 0 ? cmsPages[0] : null
+
+  if (currentCMSPageId) {
+    cmsPage = cmsPages.find(obj => {
+      return obj.id === currentCMSPageId
+    })
+  }
+
+  if (!cmsPage) {
+    return <p>No CMS page found.</p>
+  }
 
   return (
     <EditPageContainer>
