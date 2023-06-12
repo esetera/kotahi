@@ -9,6 +9,8 @@ const cmsPageFields = `
     status
     title
     updated
+    published
+    edited
     creator {
       id
       username

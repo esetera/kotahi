@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { Formik } from 'formik'
 
@@ -12,29 +12,40 @@ const CMSPageEdit = ({
   updatePageDataQuery,
   rebuildFlaxSiteQuery,
 }) => {
-  const [submitButtonState, setSubmitButtonState] = React.useState({
+  const [submitButtonState, setSubmitButtonState] = useState({
     state: null,
     text: 'Publish',
   })
 
-  const updatePageData = async (formData, currentCmsPage) => {
-    const currentMeta = JSON.parse(currentCmsPage.meta)
-
-    const inputData = {
-      title: formData.title,
-      content: formData.content,
-      meta: JSON.stringify({ ...currentMeta, url: formData.url }),
-    }
-
+  const saveData = async (id, data) => {
+    let inputData = { ...data, edited: new Date() }
     updatePageDataQuery({
-      variables: {
-        id: currentCmsPage.id,
-        input: inputData,
-      },
+      variables: { id: id, input: inputData },
     })
   }
 
-  const rebuildingTheSite = () => rebuildFlaxSiteQuery()
+  const publish = async formData => {
+    setSubmitButtonState({ state: 'pending', text: 'Saving data' })
+    const meta = JSON.parse(cmsPage.meta)
+    const timeStamp = new Date()
+    const inputData = {
+      title: formData.title,
+      content: formData.content,
+      meta: JSON.stringify({ ...meta, url: formData.url }),
+      published: timeStamp,
+    }
+
+    await updatePageDataQuery({
+      variables: {
+        id: cmsPage.id,
+        input: inputData,
+      },
+    })
+
+    setSubmitButtonState({ state: 'pending', text: 'Rebuilding...' })
+    await rebuildFlaxSiteQuery()
+    setSubmitButtonState({ state: 'success', text: 'Published' })
+  }
 
   const meta = JSON.parse(cmsPage.meta)
 
@@ -48,13 +59,7 @@ const CMSPageEdit = ({
             content: cmsPage.content,
             url: meta.url || '',
           }}
-          onSubmit={async (values, actions) => {
-            setSubmitButtonState({ state: 'pending', text: 'Saving data' })
-            await updatePageData(values, cmsPage)
-            setSubmitButtonState({ state: 'pending', text: 'Rebuilding...' })
-            await rebuildingTheSite()
-            setSubmitButtonState({ state: 'success', text: 'Published' })
-          }}
+          onSubmit={async values => publish(values)}
         >
           {formikProps => {
             return (
@@ -65,7 +70,7 @@ const CMSPageEdit = ({
                 setFieldValue={formikProps.setFieldValue}
                 setTouched={formikProps.setTouched}
                 submitButtonText={submitButtonState.text}
-                updatePageStatus={submitButtonState.state}
+                saveData={saveData}
               />
             )
           }}

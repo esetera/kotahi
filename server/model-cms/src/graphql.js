@@ -83,21 +83,18 @@ const typeDefs = `
     content: String
     meta: String
     creator: User
+    published: DateTime
+    edited: DateTime
     created: DateTime!
     updated: DateTime
-  }
-
-  type Content {
-    title: String
-    header: String
-    body: String
-    footer: String
   }
 
   input CMSPageInput {
     title: String
     content: String
     meta: String
+    published: DateTime
+    edited: DateTime
   }
 
 `

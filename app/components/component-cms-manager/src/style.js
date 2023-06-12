@@ -76,10 +76,21 @@ export const Hrstyle = styled.hr`
     background-color: ${props => props.theme.colors.additional.green};
   }
 `
+
+export const VerticalBar = styled.div`
+  border-right: 1px solid #111111;
+  height: 16px;
+  margin: 0px 10px 0px 10px;
+`
+
 export const Status = styled.p`
   color: ${props => props.theme.colors.additional.green};
   font-size: 10px;
   font-weight: 400;
+`
+
+export const NewEditText = styled.p`
+  color: ${props => props.theme.colors.additional.green};
 `
 
 export const CMSPagesRightPane = styled.div`
@@ -166,6 +177,9 @@ export const EditorForm = styled.form`
 `
 
 export const ActionButtonContainer = styled.div`
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
   margin-top: 48px;
 `
 
@@ -189,4 +203,17 @@ export const FlexRow = styled.div`
   display: flex;
   gap: ${grid(1)};
   justify-content: space-between;
+`
+
+export const StatusInfoText = styled.div`
+  display: flex;
+  font-size: ${th('fontSizeBaseSmall')};
+  font-weight: 400;
+  margin-right: 16px;
+`
+
+export const FlaxCenter = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `

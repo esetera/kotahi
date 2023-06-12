@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { ValidatedFieldFormik } from '@pubsweet/ui'
 import { adopt } from 'react-adopt'
 import { inputFields } from '../formFields'
 import { getSpecificFilesQuery } from '../../../asset-manager/src/queries'
 import withModal from '../../../asset-manager/src/ui/Modal/withModal'
+import { convertTimestampToDateString } from '../../../../shared/dateUtils'
+import { debounce } from 'lodash'
 
 import {
   Section,
@@ -11,6 +13,10 @@ import {
   EditorForm,
   ActionButtonContainer,
   FormActionButton,
+  VerticalBar,
+  FlaxCenter,
+  StatusInfoText,
+  NewEditText,
 } from '../style'
 
 const mapper = {
@@ -69,10 +75,22 @@ const CMSPageEditForm = ({
   setFieldValue,
   setTouched,
   key,
-  updatePageStatus,
   submitButtonText,
   cmsPage,
+  saveData,
 }) => {
+  const autoSave = useCallback(debounce(saveData ?? (() => {}), 1000), [])
+
+  useEffect(() => {
+    return autoSave.flush
+  }, [])
+
+  const onDataChanged = (itemKey, value) => {
+    let data = {}
+    data[itemKey] = value
+    autoSave(cmsPage.id, data)
+  }
+
   const getInputFieldSpecificProps = (item, { onAssetManager }) => {
     let props = {}
 
@@ -88,20 +106,31 @@ const CMSPageEditForm = ({
           }
 
           setFieldValue(item.name, val, false)
+          onDataChanged(item.name, val)
         }
 
         break
 
       case 'rich-editor':
-        props.onChange = value => setFieldValue(item.name, value)
+        props.onChange = value => {
+          setFieldValue(item.name, value)
+          onDataChanged(item.name, value)
+        }
         props.onAssetManager = () => onAssetManager(cmsPage.id)
         break
 
       default:
         props = {}
     }
-
     return props
+  }
+
+  const isPublished = () => (cmsPage.published ? true : false)
+
+  const isEdited = () => {
+    if (!cmsPage.published) return true
+    if (cmsPage.published < cmsPage.edited) return true
+    return false
   }
 
   return (
@@ -124,9 +153,28 @@ const CMSPageEditForm = ({
               )
             })}
             <ActionButtonContainer>
-              <FormActionButton primary type="submit">
+              <FormActionButton primary onClick={onSubmit}>
                 {submitButtonText}
               </FormActionButton>
+
+              <StatusInfoText>
+                {isEdited() && (
+                  <FlaxCenter>
+                    <NewEditText>New edits on page!</NewEditText>{' '}
+                    <VerticalBar />
+                  </FlaxCenter>
+                )}
+                <FlaxCenter>
+                  Edited on: {convertTimestampToDateString(cmsPage.edited)}
+                  <VerticalBar />
+                </FlaxCenter>
+                <FlaxCenter>
+                  Published on:{' '}
+                  {isPublished()
+                    ? convertTimestampToDateString(cmsPage.published)
+                    : 'not published yet'}
+                </FlaxCenter>
+              </StatusInfoText>
             </ActionButtonContainer>
           </EditorForm>
         </Page>

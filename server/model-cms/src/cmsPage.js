@@ -29,6 +29,8 @@ class CMSPage extends BaseModel {
         content: { type: 'string' },
         meta: {},
         creatorId: { type: ['string', 'null'], format: 'uuid' },
+        published: { type: ['string', 'object', 'null'], format: 'date-time' },
+        edited: { type: ['string', 'object', 'null'], format: 'date-time' },
       },
     }
   }
