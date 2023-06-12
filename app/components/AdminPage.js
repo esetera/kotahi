@@ -31,7 +31,7 @@ import TasksTemplatePage from './component-task-manager/src/TasksTemplatePage'
 import UsersPage from './component-users-manager/src/UsersPage'
 import ConfigManagerPage from './component-config-manager/src/ConfigManagerPage'
 
-import CMSPageEditor from './component-cms-manager/src/CMSPageEditor'
+import CMSPageManager from './component-cms-manager/src/CMSPageManager'
 
 import QUERY from './adminPageQueries'
 
@@ -418,9 +418,9 @@ const AdminPage = () => {
           />,
 
           <PrivateRoute
-            component={CMSPageEditor}
+            component={CMSPageManager}
             currentUser={currentUser}
-            key="CMSPageEditor"
+            key="CMSPageManager"
             path={`${CMSPageEditorLink}/:pageId?`}
             redirectLink={redirectLink}
           />,

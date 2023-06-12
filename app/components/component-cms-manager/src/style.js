@@ -1,11 +1,6 @@
 import styled, { css } from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
-import {
-  ScrollableContent,
-  TextInput,
-  Heading,
-  ActionButton,
-} from '../../shared'
+import { TextInput, Heading, ActionButton } from '../../shared'
 
 export const Section = styled.div`
   margin: 16px 16px 0px 0px;
@@ -19,62 +14,10 @@ export const Section = styled.div`
     `}
 `
 
-export const Legend = styled.div`
-  font-weight: 600;
-  margin-bottom: ${({ space, theme }) => space && theme.gridUnit};
-`
-
 export const Page = styled.div`
   height: 100%;
   position: relative;
   z-index: 0;
-`
-
-export const CMSPageListRow = styled.div`
-  align-items: center;
-  background-color: ${th('colorBackground')};
-  border-top: ${th('borderWidth')} ${th('borderStyle')} ${th('colorFurniture')};
-  column-gap: ${grid(2)};
-  display: flex;
-  flex-direction: row;
-  height: 48px;
-  line-height: 1.4em;
-  text-align: left;
-  width: 100%;
-
-  &:first-child {
-    border-top: none;
-    padding: ${grid(0.5)} ${grid(2)};
-  }
-
-  &:not(:first-child) {
-    padding: ${grid(1.5)} ${grid(2)};
-  }
-`
-
-export const CMSPageHeaderRow = styled(CMSPageListRow)`
-  background-color: ${th('colorSecondaryBackground')};
-  border-radius: 8px 8px 0px 0px;
-  line-height: 1.25em;
-`
-
-export const CMSPagesLeftPane = styled.div`
-  display: flex;
-  flex-grow: 2;
-  max-width: 50%;
-`
-
-export const CheckboxInput = styled.input`
-  margin-right: 5px;
-`
-
-export const Hrstyle = styled.hr`
-  margin-top: 7px;
-  width: 35px;
-
-  ::after {
-    background-color: ${props => props.theme.colors.additional.green};
-  }
 `
 
 export const VerticalBar = styled.div`
@@ -83,56 +26,8 @@ export const VerticalBar = styled.div`
   margin: 0px 10px 0px 10px;
 `
 
-export const Status = styled.p`
-  color: ${props => props.theme.colors.additional.green};
-  font-size: 10px;
-  font-weight: 400;
-`
-
 export const NewEditText = styled.p`
   color: ${props => props.theme.colors.additional.green};
-`
-
-export const CMSPagesRightPane = styled.div`
-  display: flex;
-  flex-grow: 1;
-  justify-content: flex-end;
-`
-
-export const CMSPageTableStyled = styled.div`
-  font-size: ${th('fontSizeBaseSmall')};
-  width: 100%;
-`
-
-export const Cell = styled.div`
-  display: flex;
-
-  flex: ${({ flex }) => flex ?? '0 1 12em'};
-  flex-direction: row;
-  ${props =>
-    props.onClick &&
-    css`
-      cursor: pointer;
-    `}
-  ${props =>
-    props.centered &&
-    css`
-      justify-content: center;
-    `}
-  overflow-wrap: anywhere;
-`
-
-export const CellPageTitle = styled.div`
-  color: ${props => props.theme.colorPrimary};
-  display: flex;
-  font-weight: 600;
-  ${props =>
-    props.onClick &&
-    css`
-      cursor: pointer;
-    `}
-
-  overflow-wrap: anywhere;
 `
 
 export const Heading2 = styled(Heading)`
@@ -142,10 +37,6 @@ export const Heading2 = styled(Heading)`
   line-height: ${th('lineHeightBaseSmall')};
   padding-bottom: 12px;
   padding-top: 12px;
-`
-
-export const PageTableContainer = styled(ScrollableContent)`
-  margin-top: 25px;
 `
 
 export const FormTextInput = styled(TextInput)`

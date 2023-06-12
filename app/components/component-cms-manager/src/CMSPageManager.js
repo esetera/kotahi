@@ -18,7 +18,7 @@ import {
   rebuildFlaxSiteMutation,
 } from './queries'
 
-const CMSPageEditor = ({ match, history }) => {
+const CMSPageManager = ({ match, history }) => {
   const config = useContext(ConfigContext)
   const urlFrag = config.journal.metadata.toplevel_urlfragment
 
@@ -77,4 +77,4 @@ const CMSPageEditor = ({ match, history }) => {
   )
 }
 
-export default CMSPageEditor
+export default CMSPageManager
