@@ -79,52 +79,54 @@ lint style:
     - cd ${HOME}
     - yarn lint:style
 
-# .test_template: &run_test_template
-#   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-#   stage: test
-#   variables:
-#     GIT_STRATEGY: none
-#   services:
-#     - postgres
+.test_template: &run_test_template
+  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
+  stage: test
+  variables:
+    GIT_STRATEGY: none
+  services:
+    - postgres
 
-# .test_before_script: &run_test_before_script
-#   - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-#   - apt-get update --allow-releaseinfo-change
-#   - apt-get -y install postgresql-client
-#   - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
-#   - wget -q https://dl.min.io/server/minio/release/linux-amd64/minio
-#   - chmod +x minio
-#   - ./minio server --console-address :${MINIO_CONSOLE_PORT} /data &
-#   - wget -q https://dl.min.io/client/mc/release/linux-amd64/mc
-#   - chmod +x mc
-#   - ./mc config host add cokoServer http://localhost:$S3_PORT $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
-#   - ./mc admin user add cokoServer/  $S3_ACCESS_KEY_ID $S3_SECRET_ACCESS_KEY
-#   - ./mc admin user enable cokoServer/ $S3_ACCESS_KEY_ID
-#   - ./mc mb cokoServer/$S3_BUCKET
-#   - ./mc admin policy attach cokoServer/ readwrite --user=$S3_ACCESS_KEY_ID
+.test_before_script: &run_test_before_script
+  - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+  - apt-get update --allow-releaseinfo-change
+  - apt-get -y install postgresql-client
+  - psql -h postgres -U kotahidev -d kotahidev -c "create extension pgcrypto;"
+  - wget -q https://dl.min.io/server/minio/release/linux-amd64/minio
+  - chmod +x minio
+  - ./minio server --console-address :${MINIO_CONSOLE_PORT} /data &
+  - wget -q https://dl.min.io/client/mc/release/linux-amd64/mc
+  - chmod +x mc
+  - ./mc config host add cokoServer http://localhost:$S3_PORT $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+  - ./mc admin user add cokoServer/  $S3_ACCESS_KEY_ID $S3_SECRET_ACCESS_KEY
+  - ./mc admin user enable cokoServer/ $S3_ACCESS_KEY_ID
+  - ./mc mb cokoServer/$S3_BUCKET
+  - ./mc admin policy attach cokoServer/ readwrite --user=$S3_ACCESS_KEY_ID
 
-# .test_script: &run_test_script
-#   - cd ${HOME}
-#   - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
+.test_script: &run_test_script
+  - cd ${HOME}
+  - cp .env.example .env
+  - sh ./scripts/setupProdServer.sh &
+  - node ./startServer.js &
+  - POSTGRES_HOST=postgres yarn test:all:$TEST_ITEM
 
 test-chrome:
-  stage: test
-  image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
-  needs:
-    - build
+  before_script:
+    - *run_test_before_script
+  <<: *run_test_template
+  variables:
+    TEST_ITEM: 'chrome'
   script:
-    - cp .env.example .env
-    - docker compose --compatibility -f docker-compose.yml up -d
-    - yarn install --frozen-lockfile
-    - wait-on --timeout 30000 http://localhost:3000/healthcheck && yarn cypress run --spec 'cypress/e2e/aperture/**.js'
-# test-firefox:
-#   before_script:
-#     - *run_test_before_script
-#   <<: *run_test_template
-#   variables:
-#     TEST_ITEM: 'firefox'
-#   script:
-#     - *run_test_script
+    - *run_test_script
+
+test-firefox:
+  before_script:
+    - *run_test_before_script
+  <<: *run_test_template
+  variables:
+    TEST_ITEM: 'firefox'
+  script:
+    - *run_test_script
 # test-chrome:
 #   image: $IMAGE_ORG/$IMAGE_NAME:$CI_COMMIT_SHA
 #   stage: test
