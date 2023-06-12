@@ -28,6 +28,7 @@ const CMSPageEditor = ({ match, history }) => {
   const [rebuildFlaxSiteQuery] = useMutation(rebuildFlaxSiteMutation)
 
   let currentCMSPageId = null
+
   if (match.params.pageId) {
     currentCMSPageId = match.params.pageId
   }
