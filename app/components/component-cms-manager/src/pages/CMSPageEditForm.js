@@ -5,7 +5,7 @@ import { debounce } from 'lodash'
 import { inputFields } from '../formFields'
 import { getSpecificFilesQuery } from '../../../asset-manager/src/queries'
 import withModal from '../../../asset-manager/src/ui/Modal/withModal'
-import { convertTimestampToDateString } from '../../../../shared/dateUtils'
+import { convertTimestampToDateTimeString } from '../../../../shared/dateUtils'
 
 import {
   Section,
@@ -162,18 +162,17 @@ const CMSPageEditForm = ({
               <StatusInfoText>
                 {isEdited() && (
                   <FlaxCenter>
-                    <NewEditText>New edits on page!</NewEditText>{' '}
-                    <VerticalBar />
+                    <NewEditText>New edits on page</NewEditText> <VerticalBar />
                   </FlaxCenter>
                 )}
                 <FlaxCenter>
-                  Edited on: {convertTimestampToDateString(cmsPage.edited)}
+                  Edited on {convertTimestampToDateTimeString(cmsPage.edited)}
                   <VerticalBar />
                 </FlaxCenter>
                 <FlaxCenter>
-                  Published on:{' '}
+                  Published on{' '}
                   {isPublished()
-                    ? convertTimestampToDateString(cmsPage.published)
+                    ? convertTimestampToDateTimeString(cmsPage.published)
                     : 'not published yet'}
                 </FlaxCenter>
               </StatusInfoText>

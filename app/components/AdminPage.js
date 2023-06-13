@@ -200,12 +200,6 @@ const AdminPage = () => {
       icon: 'settings',
       links: [
         {
-          menu: 'CMS',
-          name: 'CMS',
-          icon: 'layout',
-          links: [{ link: CMSPageEditorLink, name: 'Pages', icon: '' }],
-        },
-        {
           menu: 'Forms',
           name: 'Forms',
           icon: 'check-square',
@@ -218,6 +212,12 @@ const AdminPage = () => {
         { link: tasksTemplateLink, name: 'Tasks', icon: 'list' },
         { link: userAdminLink, name: 'Users', icon: 'users' },
         { link: configurationLink, name: 'Configuration', icon: 'sliders' },
+        {
+          menu: 'CMS',
+          name: 'CMS',
+          icon: 'layout',
+          links: [{ link: CMSPageEditorLink, name: 'Pages', icon: '' }],
+        },
       ],
     })
   }
