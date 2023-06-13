@@ -1,8 +1,9 @@
+const { logger } = require('@coko/server')
+
 const {
   getMatchingReferencesFromCrossRef,
   getReferenceWithDoi,
-} = require("./validation");
-const { logger } = require("@coko/server");
+} = require('./validation')
 
 /* eslint-disable prefer-destructuring */
 const resolvers = {
@@ -11,25 +12,26 @@ const resolvers = {
       try {
         const matches = await getMatchingReferencesFromCrossRef(
           input.text,
-          input.count
-        );
-        return { matches, success: true, message: "" };
+          input.count,
+        )
+
+        return { matches, success: true, message: '' }
       } catch (error) {
-        logger.error("Response Error:", error.message);
-        return { matches: [], success: false, message: "error" };
+        logger.error('Response Error:', error.message)
+        return { matches: [], success: false, message: 'error' }
       }
     },
     async getReference(_, { doi }, ctx) {
       try {
-        const reference = await getReferenceWithDoi(doi);
-        return { reference, success: true, message: "" };
+        const reference = await getReferenceWithDoi(doi)
+        return { reference, success: true, message: '' }
       } catch (error) {
-        logger.error("Response Error:", error.message);
-        return { reference: {}, success: false, message: "error" };
+        logger.error('Response Error:', error.message)
+        return { reference: {}, success: false, message: 'error' }
       }
     },
   },
-};
+}
 
 const typeDefs = `
   input ReferenceInput {
@@ -69,9 +71,9 @@ const typeDefs = `
     volume: String
     journalTitle: String
   }
-`;
+`
 
 module.exports = {
   typeDefs,
   resolvers,
-};
+}

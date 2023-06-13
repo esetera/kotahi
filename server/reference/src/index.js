@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
 
 module.exports = {
-    ...require('./graphql'),
+  ...require('./graphql'),
 }
