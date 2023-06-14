@@ -170,7 +170,6 @@ const productionWaxEditorConfig = (
         'Images',
         'TrackingAndEditing',
         'FullScreen',
-        'RefValidationTool',
       ],
     },
     {

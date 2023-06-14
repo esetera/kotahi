@@ -1,4 +1,5 @@
 import { Service } from 'wax-prosemirror-core'
+import { v4 as uuidv4 } from 'uuid'
 import Appendix from './Appendix'
 import FrontMatter from './FrontMatter'
 import Abstract from './Abstract'
@@ -8,6 +9,7 @@ import ArticleTitle from './citations/ArticleTitle'
 import JournalTitle from './citations/JournalTitle'
 import CitationLabel from './citations/CitationLabel'
 import MixedCitationSpan from './citations/MixedCitationSpan'
+import Reference from './citations/Reference'
 import AuthorName from './citations/AuthorName'
 import AuthorGroup from './citations/AuthorGroup'
 import Volume from './citations/Volume'
@@ -52,6 +54,8 @@ class JatsTagsService extends Service {
     this.container.bind('Keyword').to(Keyword)
     this.container.bind('GlossarySection').to(GlossarySection)
     this.container.bind('GlossaryTerm').to(GlossaryTerm)
+    this.container.bind('Reference').to(Reference)
+
     const createNode = this.container.get('CreateNode')
     const createMark = this.container.get('CreateMark')
 
@@ -78,6 +82,74 @@ class JatsTagsService extends Service {
         toDOM(hook) {
           const attrs = { class: hook.node?.attrs?.class || 'reflist' }
           return ['section', attrs, 0]
+        },
+      },
+    })
+    createNode({
+      reference: {
+        content: 'inline*',
+        group: 'block',
+        priority: 0,
+        defining: true,
+        attrs: {
+          class: { default: 'ref' },
+          refId: { default: '' },
+          valid: { default: false },
+          needsReview: { default: false },
+          needsValidation: { default: true },
+          structure: { default: '{}' },
+        },
+        parseDOM: [
+          {
+            tag: 'p.ref',
+            getAttrs(hook, next) {
+              Object.assign(hook, {
+                class: hook?.dom?.getAttribute('class'),
+                refId: hook?.dom?.getAttribute('id'),
+                valid: hook?.dom?.getAttribute('data-valid') === 'true',
+                needsValidation: hook?.dom?.getAttribute(
+                  'data-needs-validation',
+                )
+                  ? hook?.dom?.getAttribute('data-needs-validation') === 'true'
+                  : true,
+                needsReview:
+                  hook?.dom?.getAttribute('data-needs-review') === 'true',
+                structure: JSON.parse(
+                  hook?.dom?.getAttribute('data-structure') || '{}',
+                ),
+              })
+              typeof next !== 'undefined' && next()
+            },
+          },
+        ],
+        toDOM(hook) {
+          console.log(hook)
+          const uuid = uuidv4()
+
+          const attrs = {
+            class: 'ref',
+            'data-valid': hook?.node?.attrs?.valid,
+            'data-needs-validation': hook?.node?.attrs?.needsValidation,
+            'data-needs-review': hook?.node?.attrs?.needsReview,
+            id: hook?.node?.attrs?.refId,
+          }
+
+          console.log(attrs)
+
+          if (hook?.node?.attrs?.structure) {
+            attrs['data-structure'] = JSON.stringify(
+              hook?.node?.attrs?.structure,
+            )
+          }
+
+          if (!hook?.node?.attrs?.refId) {
+            console.log('line 146', hook)
+            hook.attrs.refId = uuid
+            attrs.id = uuid
+          }
+
+          console.log('line 151')
+          return ['p', attrs, 0]
         },
       },
     })

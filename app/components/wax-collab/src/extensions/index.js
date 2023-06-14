@@ -4,11 +4,6 @@ import {
 } from './ExampleExtension'
 
 import {
-  ReferenceCitationToolGroup,
-  ReferenceCitationToolGroupService,
-} from './ReferenceCitationExtension'
-
-import {
   ReferenceValidationToolGroup,
   ReferenceValidationToolGroupService,
 } from './ReferenceValidationExtension'
@@ -28,17 +23,13 @@ const FullExtensionLayoutElements = []
 
 const ProductionExtensionLayoutElements = [
   ExampleBlockDropDownToolGroup,
-  ReferenceCitationToolGroup,
   ReferenceValidationToolGroup,
 ]
 
 // Extension services need to be added to add the extension functionality. This is not required.
 
 const ProductionExtensionServices = [
-  // new LinkTagService(),
-  // new CustomTagService(),
   new ExampleBlockDropDownToolGroupService(),
-  new ReferenceCitationToolGroupService(),
   new ReferenceValidationToolGroupService(),
   // new ImageService(),
 ]

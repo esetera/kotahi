@@ -2,7 +2,7 @@ import ReferenceValidationToolGroupService from './RefValidationService'
 
 const ReferenceValidationToolGroup = {
   templateArea: 'topBar',
-  toolGroups: ['ReferenceValidation'],
+  toolGroups: ['RefValidationTool'],
 }
 
 export { ReferenceValidationToolGroup, ReferenceValidationToolGroupService }

@@ -1,6 +1,6 @@
 import { Service } from 'wax-prosemirror-core'
 import { v4 as uuidv4 } from 'uuid'
-import Reference from './RefCitationTool'
+import Reference from './ReferenceElementTool'
 
 const refNode = {
   content: 'inline*',
@@ -61,8 +61,8 @@ const refNode = {
   },
 }
 
-class ReferenceCitationToolGroupService extends Service {
-  name = 'RefService'
+class ReferenceElementService extends Service {
+  name = 'ReferenceElement'
 
   boot() {}
 
@@ -78,4 +78,4 @@ class ReferenceCitationToolGroupService extends Service {
   }
 }
 
-export default ReferenceCitationToolGroupService
+export default ReferenceElementService

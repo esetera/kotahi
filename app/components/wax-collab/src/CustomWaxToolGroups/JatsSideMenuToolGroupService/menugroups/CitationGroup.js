@@ -1,30 +1,30 @@
-import React from "react";
+import React from 'react'
 // eslint-disable-next-line no-unused-vars
-import { decorate, injectable, inject } from "inversify";
-import { ToolGroup, LeftMenuTitle } from "wax-prosemirror-core";
+import { decorate, injectable, inject } from 'inversify'
+import { ToolGroup, LeftMenuTitle } from 'wax-prosemirror-core'
 
 class CitationGroup extends ToolGroup {
-  tools = [];
-  title = (<LeftMenuTitle title="Citations" />);
+  tools = []
+  title = (<LeftMenuTitle title="Citations" />)
 
   constructor(
-    @inject("RefList") refList,
-    @inject("Reference") reference,
-    @inject("ArticleTitle") articleTitle,
-    @inject("MixedCitationSpan") mixedCitationSpan,
+    @inject('RefList') refList,
+    @inject('Reference') reference,
+    @inject('ArticleTitle') articleTitle,
+    @inject('MixedCitationSpan') mixedCitationSpan,
     // @inject('AuthorGroup') authorGroup, // this isn't being shown currently
-    @inject("AuthorName") authorName,
-    @inject("JournalTitle") journalTitle,
-    @inject("Doi") doi,
-    @inject("FirstPage") firstPage,
-    @inject("LastPage") lastPage,
-    @inject("Volume") volume,
-    @inject("CitationLabel") citationLabel,
-    @inject("Issue") issue,
-    @inject("Year") year,
-    @inject("AnyStyleTool") anystyle
+    @inject('AuthorName') authorName,
+    @inject('JournalTitle') journalTitle,
+    @inject('Doi') doi,
+    @inject('FirstPage') firstPage,
+    @inject('LastPage') lastPage,
+    @inject('Volume') volume,
+    @inject('CitationLabel') citationLabel,
+    @inject('Issue') issue,
+    @inject('Year') year,
+    @inject('AnyStyleTool') anystyle,
   ) {
-    super();
+    super()
     this.tools = [
       refList,
       reference,
@@ -41,10 +41,10 @@ class CitationGroup extends ToolGroup {
       firstPage,
       lastPage,
       anystyle,
-    ];
+    ]
   }
 }
 
-decorate(injectable(), CitationGroup);
+decorate(injectable(), CitationGroup)
 
-export default CitationGroup;
+export default CitationGroup
