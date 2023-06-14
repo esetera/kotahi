@@ -41,8 +41,16 @@ export const getCMSPageByShortcode = gql`
   }
 `
 
+export const createCMSPageMutation = gql`
+  mutation createCMSPage($input: CMSPageInput!) {
+    createCMSPage(input: $input) {
+      ${cmsPageFields}
+    }
+  }
+`
+
 export const updateCMSPageDataMutation = gql`
-  mutation updateCMSPage($id: ID, $input: CMSPageInput) {
+  mutation updateCMSPage($id: ID, $input: CMSPageInput!) {
     updateCMSPage(id: $id, input: $input) {
         ${cmsPageFields}
     }

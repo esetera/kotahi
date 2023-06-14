@@ -31,16 +31,18 @@ export const inputComponents = {
 export const inputFields = [
   {
     component: inputComponents.TextField,
-    label: 'Page title',
+    label: 'Page title*',
     name: 'title',
     type: 'text-input',
+    isRequired: true,
   },
 
   {
     component: inputComponents.TextField,
-    label: 'URL',
+    label: 'URL*',
     name: 'url',
     type: 'text-input',
+    isRequired: true,
   },
 
   {
@@ -49,5 +51,6 @@ export const inputFields = [
     name: 'content',
     flexGrow: true,
     type: 'rich-editor',
+    isRequired: false,
   },
 ]

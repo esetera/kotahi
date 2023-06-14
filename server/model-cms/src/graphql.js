@@ -1,5 +1,7 @@
 const models = require('@pubsweet/models')
 
+// const CMSPage = require('./cmsPage')
+
 const stringifyResponse = cmsPage => {
   const data = cmsPage
 
@@ -44,6 +46,11 @@ const resolvers = {
     },
   },
   Mutation: {
+    async createCMSPage(_, { input }, ctx) {
+      const savedCmsPage = await new models.CMSPage(input).save()
+      const cmsPage = await models.CMSPage.query().findById(savedCmsPage.id)
+      return stringifyResponse(cmsPage)
+    },
     async updateCMSPage(_, { id, input }, ctx) {
       const attrs = input
 
@@ -72,7 +79,9 @@ const typeDefs = `
   }
 
   extend type Mutation {
-    updateCMSPage(id: ID, input: CMSPageInput): CMSPage
+    createCMSPage(input: CMSPageInput!): CMSPage
+    updateCMSPage(id: ID, input: CMSPageInput!): CMSPage
+    
   }
 
   type CMSPage {
@@ -91,10 +100,12 @@ const typeDefs = `
 
   input CMSPageInput {
     title: String
+    shortcode: String
     content: String
     meta: String
     published: DateTime
     edited: DateTime
+
   }
 
 `

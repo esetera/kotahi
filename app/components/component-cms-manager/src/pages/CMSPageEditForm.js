@@ -6,6 +6,7 @@ import { inputFields } from '../formFields'
 import { getSpecificFilesQuery } from '../../../asset-manager/src/queries'
 import withModal from '../../../asset-manager/src/ui/Modal/withModal'
 import { convertTimestampToDateTimeString } from '../../../../shared/dateUtils'
+import { required } from 'xpub-validators'
 
 import {
   Section,
@@ -71,6 +72,7 @@ const mapProps = args => ({
 const Composed = adopt(mapper, mapProps)
 
 const CMSPageEditForm = ({
+  isNewPage,
   onSubmit,
   setFieldValue,
   setTouched,
@@ -149,33 +151,37 @@ const CMSPageEditForm = ({
                     name={item.name}
                     setTouched={setTouched}
                     style={{ width: '100%' }}
+                    validate={item.isRequired ? required : null}
                     {...getInputFieldSpecificProps(item, { onAssetManager })}
                   />
                 </Section>
               )
             })}
             <ActionButtonContainer>
-              <FormActionButton onClick={onSubmit} primary>
+              <FormActionButton onClick={onSubmit} primary type="button">
                 {submitButtonText}
               </FormActionButton>
 
-              <StatusInfoText>
-                {isEdited() && (
+              {!isNewPage && (
+                <StatusInfoText>
+                  {isEdited() && (
+                    <FlaxCenter>
+                      <NewEditText>New edits on page</NewEditText>{' '}
+                      <VerticalBar />
+                    </FlaxCenter>
+                  )}
                   <FlaxCenter>
-                    <NewEditText>New edits on page</NewEditText> <VerticalBar />
+                    Edited on {convertTimestampToDateTimeString(cmsPage.edited)}
+                    <VerticalBar />
                   </FlaxCenter>
-                )}
-                <FlaxCenter>
-                  Edited on {convertTimestampToDateTimeString(cmsPage.edited)}
-                  <VerticalBar />
-                </FlaxCenter>
-                <FlaxCenter>
-                  Published on{' '}
-                  {isPublished()
-                    ? convertTimestampToDateTimeString(cmsPage.published)
-                    : 'not published yet'}
-                </FlaxCenter>
-              </StatusInfoText>
+                  <FlaxCenter>
+                    Published on{' '}
+                    {isPublished()
+                      ? convertTimestampToDateTimeString(cmsPage.published)
+                      : 'not published yet'}
+                  </FlaxCenter>
+                </StatusInfoText>
+              )}
             </ActionButtonContainer>
           </EditorForm>
         </Page>
