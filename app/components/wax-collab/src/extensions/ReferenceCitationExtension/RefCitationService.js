@@ -61,7 +61,7 @@ const refNode = {
   },
 }
 
-class RefService extends Service {
+class ReferenceCitationToolGroupService extends Service {
   name = 'RefService'
 
   boot() {}
@@ -78,4 +78,4 @@ class RefService extends Service {
   }
 }
 
-export default RefService
+export default ReferenceCitationToolGroupService

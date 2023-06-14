@@ -27,7 +27,7 @@ const ContainerNotFound = styled.div`
   }
 `
 
-export const LinkingsNotFound = ({ text }) => {
+const LinkingsNotFound = ({ text }) => {
   return (
     <ContainerNotFound>
       <img alt="not found" src={NotFoundIcon} />

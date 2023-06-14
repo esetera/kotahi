@@ -3,6 +3,7 @@ const axios = require('axios')
 const { logger } = require('@coko/server')
 
 // TODO: Presumably we should be picking up account name from config?
+// we have config.crossref.depositorEmail – can we use this? (see config/custom-environment-variables.js)
 // Question: why are we using two separate emails for this?
 
 const dummyEmail = 'test@gmail.com'

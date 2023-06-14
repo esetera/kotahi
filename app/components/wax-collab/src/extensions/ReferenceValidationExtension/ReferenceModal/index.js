@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react'
-
 import { WaxContext, DocumentHelpers } from 'wax-prosemirror-core'
 import {
   Modal,
@@ -10,7 +9,7 @@ import {
   ModalHeader,
   ModalFooter,
 } from './style'
-import { LinkingsNotFound } from '../../components-notFound/src'
+import LinkingsNotFound from '../NotFound'
 
 export const RefModal = ({ isOpen, closeModal }) => {
   const [waxRefBlocks, setWaxRefBlocks] = useState([])

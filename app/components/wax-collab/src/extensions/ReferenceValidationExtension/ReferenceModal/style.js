@@ -1,11 +1,11 @@
+import React, { useEffect, useState } from 'react'
 import ReactModal from 'react-modal'
+import { gql, useLazyQuery } from '@apollo/client'
 import styled from 'styled-components'
 import { th, darken } from '@pubsweet/ui-toolkit'
-import React, { useEffect, useState } from 'react'
 import { Button } from '@pubsweet/ui'
-import { gql, useLazyQuery } from '@apollo/client'
 import tick from './tick.svg'
-import ValidateModel from '../../components-validateModal/src/index'
+import ValidateModal from '../ValidateModal'
 
 const GET_REFERENCES_WITH_DOI = gql`
   query getReference($doi: String!) {
@@ -256,7 +256,7 @@ export const ReferenceContainer = ({
       {validIcon}
       {reviewBtn}
       {isValidateModalOpen && (
-        <ValidateModel
+        <ValidateModal
           index={index}
           isOpen={isValidateModalOpen}
           onClose={() => {

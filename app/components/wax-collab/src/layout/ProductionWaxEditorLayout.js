@@ -31,6 +31,7 @@ import {
 } from './CommentsStyles'
 import 'wax-prosemirror-core/dist/index.css'
 import 'wax-prosemirror-services/dist/index.css'
+import { ProductionExtensionToolComponents } from '../extensions'
 
 const getNotes = main => {
   const notes = DocumentHelpers.findChildrenByType(
@@ -116,6 +117,9 @@ const ProductionWaxEditorLayout = (readOnly, readOnlyComments) => ({
           <>
             <Menu className="waxmenu">
               <TopBar />
+              {ProductionExtensionToolComponents.map(
+                ExtensionComponent => ExtensionComponent,
+              )}
             </Menu>
             <ProductionEditorDiv>
               <SideMenu>

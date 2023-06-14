@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react'
 import { WaxContext } from 'wax-prosemirror-core'
 
 import styled from 'styled-components'
-import { RefModal } from '../../../../components-refModal/src'
+import { RefModal } from './ReferenceModal'
 import Button from '../../../../asset-manager/src/ui/Modal/Button'
 
 const Wrapper = styled.div`
