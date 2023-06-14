@@ -2,11 +2,11 @@ import React, { useCallback, useEffect } from 'react'
 import { ValidatedFieldFormik } from '@pubsweet/ui'
 import { adopt } from 'react-adopt'
 import { debounce } from 'lodash'
+import { required } from 'xpub-validators'
 import { inputFields } from '../formFields'
 import { getSpecificFilesQuery } from '../../../asset-manager/src/queries'
 import withModal from '../../../asset-manager/src/ui/Modal/withModal'
 import { convertTimestampToDateTimeString } from '../../../../shared/dateUtils'
-import { required } from 'xpub-validators'
 
 import {
   Section,

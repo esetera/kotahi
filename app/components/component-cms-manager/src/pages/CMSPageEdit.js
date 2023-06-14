@@ -26,11 +26,11 @@ const CMSPageEdit = ({
     if (isNewPage) {
       return
     }
+
     const inputData = { ...data, edited: new Date() }
     await updatePageDataQuery({
       variables: { id, input: inputData },
     })
-    return
   }
 
   const publish = async formData => {
@@ -76,6 +76,7 @@ const CMSPageEdit = ({
   }
 
   let meta = {}
+
   if (cmsPage.meta) {
     meta = JSON.parse(cmsPage.meta)
   }
@@ -96,9 +97,9 @@ const CMSPageEdit = ({
           {formikProps => {
             return (
               <CMSPageEditForm
-                isNewPage={isNewPage}
                 cmsPage={cmsPage}
                 formErrors={formikProps.errors}
+                isNewPage={isNewPage}
                 onSubmit={formikProps.handleSubmit}
                 saveData={saveData}
                 setFieldValue={formikProps.setFieldValue}

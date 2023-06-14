@@ -51,6 +51,7 @@ const CMSPageManager = ({ match, history }) => {
     if (isNewPage) {
       return
     }
+
     setIsNewPage(true)
   }
 
@@ -91,20 +92,20 @@ const CMSPageManager = ({ match, history }) => {
       </EditPageLeft>
       <EditPageRight>
         <PageHeader
-          hideSearch={true}
+          hideSearch
+          history={history}
           mainHeading={isNewPage ? 'New Page' : 'Pages'}
           newItemButtonText="+ New page"
           onNewItemButtonClick={() => addNewPage()}
-          history={history}
         />
         <CMSPageEdit
-          isNewPage={isNewPage}
           cmsPage={cmsPage}
+          createNewCMSPage={createNewCMSPage}
+          isNewPage={isNewPage}
           key={cmsPage.id}
           rebuildFlaxSiteQuery={rebuildFlaxSiteQuery}
-          updatePageDataQuery={updatePageDataQuery}
-          createNewCMSPage={createNewCMSPage}
           showPage={showPage}
+          updatePageDataQuery={updatePageDataQuery}
         />
       </EditPageRight>
     </EditPageContainer>
