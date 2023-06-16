@@ -456,7 +456,7 @@ CREATE TABLE "public"."users" (
     "online" bool,
     "last_online" timestamptz,
     "recent_tab" text,
-    "event_notifications_opt_in" bool DEFAULT true,
+    "chat_event_notifications_opt_in" bool DEFAULT true,
     PRIMARY KEY ("id")
 );
 

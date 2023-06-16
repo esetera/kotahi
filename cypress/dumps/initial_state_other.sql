@@ -380,7 +380,7 @@ CREATE TABLE public.users (
     type text NOT NULL,
     profile_picture text,
     online boolean,
-    event_notifications_opt_in boolean DEFAULT true,
+    chat_event_notifications_opt_in boolean DEFAULT true,
     last_online timestamp with time zone
 );
 

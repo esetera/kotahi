@@ -14,7 +14,7 @@ const sendAlerts = async () => {
 
   channelMembers.forEach(async channelMember => {
     // Check if notification preference is true for the user
-    if (!channelMember.user.eventNotificationsOptIn) {
+    if (!channelMember.user.chatEventNotificationsOptIn) {
       return
     }
 
