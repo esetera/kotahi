@@ -15,7 +15,7 @@ const GET_USER = gql`
       email
       globalRoles
       groupRoles
-      eventNotificationsOptIn
+      chatEventNotificationsOptIn
       defaultIdentity {
         identifier
         email
@@ -50,16 +50,16 @@ const UPDATE_USERNAME = gql`
 `
 
 const UPDATE_USER_NOTIFICATION_PREFERENCE = gql`
-  mutation updateEventNotificationsOptIn(
+  mutation updateChatEventNotificationsOptIn(
     $id: ID!
-    $eventNotificationsOptIn: Boolean!
+    $chatEventNotificationsOptIn: Boolean!
   ) {
-    updateEventNotificationsOptIn(
+    updateChatEventNotificationsOptIn(
       id: $id
-      event_notifications_opt_in: $eventNotificationsOptIn
+      chatEventNotificationsOptIn: $chatEventNotificationsOptIn
     ) {
       id
-      eventNotificationsOptIn
+      chatEventNotificationsOptIn
     }
   }
 `
@@ -89,7 +89,7 @@ const ProfilePage = ({ currentUser, match }) => {
   const [updateUserEmail] = useMutation(UPDATE_EMAIL)
   const [updateUsername] = useMutation(UPDATE_USERNAME)
 
-  const [updateEventNotificationsOptIn] = useMutation(
+  const [updateChatEventNotificationsOptIn] = useMutation(
     UPDATE_USER_NOTIFICATION_PREFERENCE,
   )
 
@@ -115,7 +115,7 @@ const ProfilePage = ({ currentUser, match }) => {
       logoutUser={logoutUser}
       match={match}
       replaceAvatarImage={replaceAvatarImage}
-      updateEventNotificationsOptIn={updateEventNotificationsOptIn}
+      updateChatEventNotificationsOptIn={updateChatEventNotificationsOptIn}
       updateProfilePicture={updateProfilePicture}
       updateUserEmail={updateUserEmail}
       updateUsername={updateUsername}

@@ -82,16 +82,17 @@ const Profile = ({
   updateProfilePicture,
   updateUserEmail,
   updateUsername,
-  updateEventNotificationsOptIn,
+  updateChatEventNotificationsOptIn,
   user,
 }) => {
-  const [isEventNotificationsOptIn, setEventNotificationsOptIn] = useState(
-    user?.eventNotificationsOptIn,
-  )
+  const [
+    chatEventNotificationsOptIn,
+    setChatEventNotificationsOptIn,
+  ] = useState(user?.chatEventNotificationsOptIn)
 
   useEffect(() => {
     if (user) {
-      setEventNotificationsOptIn(user.eventNotificationsOptIn)
+      setChatEventNotificationsOptIn(user.chatEventNotificationsOptIn)
     }
   }, [user])
 
@@ -103,13 +104,13 @@ const Profile = ({
     currentUser.globalRoles.includes('admin')
 
   const toggleEventNotificationsCheckbox = async () => {
-    const newEventNotificationsPreference = !isEventNotificationsOptIn
-    setEventNotificationsOptIn(newEventNotificationsPreference)
+    const updatedChatEventNotificationsOptIn = !chatEventNotificationsOptIn
+    setChatEventNotificationsOptIn(updatedChatEventNotificationsOptIn)
 
-    await updateEventNotificationsOptIn({
+    await updateChatEventNotificationsOptIn({
       variables: {
         id: user.id,
-        eventNotificationsOptIn: newEventNotificationsPreference,
+        chatEventNotificationsOptIn: updatedChatEventNotificationsOptIn,
       },
     })
   }
@@ -181,7 +182,7 @@ const Profile = ({
         </SectionContent>
         <SectionContent>
           <StyledCheckbox
-            checked={isEventNotificationsOptIn}
+            checked={chatEventNotificationsOptIn}
             label="Mute all discussion email notifications"
             onChange={toggleEventNotificationsCheckbox}
           />
