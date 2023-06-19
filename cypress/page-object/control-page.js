@@ -181,8 +181,8 @@ export const ControlPage = {
   getShowButton() {
     return cy.get(SHOW_BUTTON)
   },
-  clickShow() {
-    this.getShowButton().click()
+  clickShow(nth) {
+    this.getShowButton().eq(nth).click()
   },
   getReviewMessage() {
     return cy.get(REVIEW_MESSAGE)
@@ -220,8 +220,8 @@ export const ControlPage = {
   getInvitedReviewer() {
     return cy.get(INVITED_REVIEWERS)
   },
-  clickInvitedReviewer() {
-    return this.getInvitedReviewer().click()
+  clickInvitedReviewer(nth) {
+    return this.getInvitedReviewer().eq(nth).click()
   },
   getReviewerName() {
     return cy.get(REVIEWER_NAME)
