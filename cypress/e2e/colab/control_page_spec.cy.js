@@ -62,6 +62,7 @@ describe('control page tests', () => {
         ReviewPage.clickAcceptRadioButton()
         ReviewPage.clickSubmitButton()
         ReviewPage.clickConfirmSubmitButton()
+        cy.awaitDisappearSpinner()
         ReviewPage.waitThreeSec()
         cy.login(name.role.author, dashboard)
       })
@@ -100,10 +101,11 @@ describe('control page tests', () => {
         ReviewPage.clickSubmitButton()
         ReviewPage.clickConfirmSubmitButton()
         ReviewPage.waitThreeSec()
+        cy.awaitDisappearSpinner()
         cy.login(name.role.reviewers[0], dashboard)
       })
       cy.awaitDisappearSpinner()
-      DashboardPage.clickControlPanelDecision() //check funciton
+      DashboardPage.clickControlPanelDecision()
       ControlPage.clickShow(0)
       cy.fixture('submission_form_data').then(data => {
         cy.get('.DecisionReview__Root-sc-1azvco7-6').should(
@@ -258,7 +260,7 @@ describe('control page tests', () => {
     })
   })
 
-  context.skip('admin user can see the icons', () => {
+  context('admin user can see the icons', () => {
     beforeEach(() => {
       cy.task('restore', 'commons/colab_bootstrap')
       cy.task('seedForms')
