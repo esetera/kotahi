@@ -1,3 +1,4 @@
+/* eslint-disable cypress/no-unnecessary-waiting */
 /* eslint-disable jest/no-disabled-tests */
 /* eslint-disable jest/no-commented-out-tests */
 /* eslint-disable prettier/prettier,jest/valid-expect-in-promise */
@@ -58,11 +59,14 @@ describe('control page tests', () => {
         DashboardPage.clickDoReviewAndVerifyPageLoaded()
         cy.fixture('submission_form_data').then(data => {
           ReviewPage.fillInReviewComment(data.review1)
+          cy.wait(2000)
+          ReviewPage.clickAcceptRadioButton()
+          // eslint-disable-next-line cypress/no-unnecessary-waiting
+          cy.wait(3000)
+          cy.contains(data.review1)
         })
-        ReviewPage.clickAcceptRadioButton()
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
-        cy.wait(3000)
         ReviewPage.clickSubmitButton()
+        cy.wait(2000)
         ReviewPage.clickConfirmSubmitButton()
         cy.awaitDisappearSpinner()
         cy.contains('Completed')
@@ -83,7 +87,7 @@ describe('control page tests', () => {
         ControlPage.getReviewMessage().should('contain', data.review1)
       })
     })
-    it.skip('shared message is not visible', () => {
+    it('shared message is not visible', () => {
       ControlPage.waitThreeSec()
       cy.fixture('role_names').then(name => {
         cy.login(name.role.reviewers[3], dashboard)
