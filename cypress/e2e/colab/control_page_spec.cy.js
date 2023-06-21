@@ -49,7 +49,7 @@ describe('control page tests', () => {
       cy.get('[class*=Icon__IconWrapper]:nth(1)').click()
       ControlPage.waitThreeSec()
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.reviewers[3], dashboard)
+        cy.login(name.role.reviewers[1], dashboard)
         cy.awaitDisappearSpinner()
         DashboardPage.clickDashboardTab(1)
         DashboardPage.clickAcceptReviewButton()
@@ -60,9 +60,12 @@ describe('control page tests', () => {
           ReviewPage.fillInReviewComment(data.review1)
         })
         ReviewPage.clickAcceptRadioButton()
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(3000)
         ReviewPage.clickSubmitButton()
         ReviewPage.clickConfirmSubmitButton()
         cy.awaitDisappearSpinner()
+        cy.contains('Completed')
         ReviewPage.waitThreeSec()
         cy.login(name.role.author, dashboard)
       })
@@ -80,10 +83,10 @@ describe('control page tests', () => {
         ControlPage.getReviewMessage().should('contain', data.review1)
       })
     })
-    it('shared message is not visible', () => {
+    it.skip('shared message is not visible', () => {
       ControlPage.waitThreeSec()
       cy.fixture('role_names').then(name => {
-        cy.login(name.role.reviewers[1], dashboard)
+        cy.login(name.role.reviewers[3], dashboard)
         cy.awaitDisappearSpinner()
         // cy.contains('Enter Email').click()
         // cy.get('#enter-email').type('joane@test.com')

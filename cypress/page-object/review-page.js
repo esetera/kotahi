@@ -39,7 +39,7 @@ export const ReviewPage = {
     this.getReviewCommentField()
       .clear()
       .focus()
-      .type(reviewComment, { delay: 200 })
+      .type(reviewComment, { delay: 200, force: true })
   },
   getConfidentialCommentField() {
     return cy.get('[contenteditable="true"]:nth(1)')
