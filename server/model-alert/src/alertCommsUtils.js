@@ -2,6 +2,10 @@ const config = require('config')
 const models = require('@pubsweet/models')
 const sendEmailNotification = require('../../email-notifications')
 
+const {
+  getUserRolesInManuscript,
+} = require('../../model-user/src/userCommsUtils')
+
 const sendAlerts = async () => {
   const channelMembers = await models.ChannelMember.query()
     .whereNull('lastAlertTriggeredTime')
@@ -53,9 +57,38 @@ const sendAlertForMessage = async ({
   const urlFrag = config.journal.metadata.toplevel_urlfragment
   const baseUrl = config['pubsweet-client'].baseUrl + urlFrag
 
+  let discussionLink = baseUrl
+
+  if (!channel.manuscriptId) {
+    discussionLink += `/admin/manuscripts` // admin discussion
+  } else {
+    discussionLink += `/versions/${channel.manuscriptId}`
+    const roles = await getUserRolesInManuscript(user.id, channel.manuscriptId)
+
+    if (roles.groupManager || roles.anyEditor) {
+      discussionLink += '/decision'
+
+      if (channel.type === 'editorial') {
+        discussionLink += '?discussion=editorial'
+      }
+    } else if (roles.reviewer) {
+      discussionLink += '/review'
+    } else if (roles.author) {
+      discussionLink += '/submit'
+    } else {
+      discussionLink = `${baseUrl}/dashboard`
+    }
+
+    const canUserSeeBothManuscriptDiscussions = false
+
+    if (channel.type === 'editorial' && canUserSeeBothManuscriptDiscussions) {
+      discussionLink += '?discussion=editorial'
+    }
+  }
+
   const data = {
     receiverName: user.username,
-    manuscriptPageUrl: `${baseUrl}/versions/${channel.manuscriptId}`,
+    discussionLink,
   }
 
   await sendEmailNotification(
