@@ -79,8 +79,12 @@ const FieldSettingsModal = ({
     >
       {({ errors, handleSubmit, setFieldValue, values }) => {
         const populateDefaultValues = compType => {
+          const comp =
+            componentTypeOptions.find(x => x.value === compType)?.properties ||
+            {}
+
           getSettableComponentProperties(
-            component,
+            comp,
             shouldAllowHypothesisTagging,
           ).forEach(([key, value]) => {
             if (value.defaultValue) setFieldValue(key, value.defaultValue)
@@ -124,16 +128,16 @@ const FieldSettingsModal = ({
                     populateDefaultValues(option.value)
                   }}
                   options={
-                    componentTypeOptions /* [
-                    {
-                      label: 'Standard fields',
-                      options: componentTypeOptions.filter(x => !x.isCustom),
-                    },
-                    {
-                      label: 'Custom field types',
-                      options: componentTypeOptions.filter(x => x.isCustom),
-                    },
-                  ] */
+                    /* componentTypeOptions */ [
+                      {
+                        label: 'Standard fields',
+                        options: componentTypeOptions.filter(x => !x.isCustom),
+                      },
+                      {
+                        label: 'Custom field types',
+                        options: componentTypeOptions.filter(x => x.isCustom),
+                      },
+                    ]
                   }
                   required
                 />

@@ -33,6 +33,14 @@ const requiredTextField = {
   },
 }
 
+const requiredTextFieldWithDefault = defaultValue => ({
+  component: 'TextField',
+  props: {
+    validate: required,
+  },
+  defaultValue,
+})
+
 const shortDescriptionField = {
   component: 'TextField',
   props: { label: 'Short title (optional — used in concise listings)' },
@@ -458,7 +466,7 @@ const submissionStandardFields = {
     label: 'Title',
     properties: {
       id: hiddenfield,
-      title: requiredTextField,
+      title: requiredTextFieldWithDefault('Title'),
       name: presetNameField('meta.title'),
       description: editorfield,
       shortDescription: shortDescriptionField,
@@ -473,7 +481,7 @@ const submissionStandardFields = {
     label: 'Authors',
     properties: {
       id: hiddenfield,
-      title: requiredTextField,
+      title: requiredTextFieldWithDefault('Authors'),
       name: presetNameField('submission.authors'),
       description: editorfield,
       shortDescription: shortDescriptionField,
@@ -488,7 +496,7 @@ const submissionStandardFields = {
     label: 'Abstract',
     properties: {
       id: hiddenfield,
-      title: requiredTextField,
+      title: requiredTextFieldWithDefault('Abstract'),
       name: presetNameField('meta.abstract'),
       description: editorfield,
       shortDescription: shortDescriptionField,
@@ -503,7 +511,7 @@ const submissionStandardFields = {
     label: 'Keywords',
     properties: {
       id: hiddenfield,
-      title: requiredTextField,
+      title: requiredTextFieldWithDefault('Keywords'),
       name: presetNameField('submission.keywords'),
       description: editorfield,
       shortDescription: shortDescriptionField,

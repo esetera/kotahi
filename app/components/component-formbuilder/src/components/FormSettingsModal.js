@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { omitBy } from 'lodash'
 import styled from 'styled-components'
@@ -9,6 +9,7 @@ import { AbstractField, RadioBox } from './builderComponents'
 import { ActionButton } from '../../../shared'
 import ValidatedField from '../../../component-submit/src/components/ValidatedField'
 import Modal from '../../../component-modal/src/Modal'
+import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
 
 const InvalidWarning = styled.div`
   color: ${th('colorError')};
@@ -28,6 +29,12 @@ export const Section = styled.div`
   }
 `
 
+const MakeActiveButton = styled(ActionButton)`
+  float: right;
+  font-size: ${th('fontSizeBaseSmall')};
+  line-height: ${th('lineHeightBaseSmall')};
+`
+
 const prepareForSubmit = (form, values) => {
   const cleanedValues = omitBy(values, value => value === '')
 
@@ -43,7 +50,15 @@ const prepareForSubmit = (form, values) => {
   return updatedForm
 }
 
-const FormSettingsModal = ({ form, isOpen, onClose, onSubmit }) => {
+const FormSettingsModal = ({
+  form,
+  isActive,
+  isOpen,
+  makeFormActive,
+  onClose,
+  onSubmit,
+}) => {
+  const [isConfirmingMakeActive, setIsConfirmingMakeActive] = useState(false)
   if (!isOpen) return null // To ensure Formik gets new initialValues whenever this is reopened
 
   return (
@@ -88,6 +103,15 @@ const FormSettingsModal = ({ form, isOpen, onClose, onSubmit }) => {
               form.id ? `Update Form: ${form.structure.name}` : 'Create Form'
             }
           >
+            {!isActive && (
+              <MakeActiveButton
+                isCompact
+                onClick={() => setIsConfirmingMakeActive(true)}
+              >
+                Make this the active form
+              </MakeActiveButton>
+            )}
+
             <Section id="form.name" key="form.name">
               <Legend>Form title</Legend>
               <ValidatedField
@@ -144,6 +168,13 @@ const FormSettingsModal = ({ form, isOpen, onClose, onSubmit }) => {
                 />
               </Section>,
             ]}
+            <ConfirmationModal
+              closeModal={() => setIsConfirmingMakeActive(false)}
+              confirmationAction={makeFormActive}
+              confirmationButtonText="Confirm"
+              isOpen={isConfirmingMakeActive}
+              message={`Make this the active ${form.category} form?`}
+            />
           </Modal>
         </form>
       )}

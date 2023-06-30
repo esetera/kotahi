@@ -3,20 +3,12 @@ import PropTypes from 'prop-types'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import styled, { withTheme } from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
-import { Icon, Action, Button } from '@pubsweet/ui'
-import { v4 as uuid } from 'uuid'
-
-import { Page, Heading } from './style'
+import { Icon, Action } from '@pubsweet/ui'
+import { Page } from './style'
 import { DragVerticalIcon } from '../../../shared/Icons'
 import lightenBy from '../../../../shared/lightenBy'
-import Modal from '../../../component-modal/src/ConfirmationModal'
-import { fieldTypes } from './config/Elements'
-
-const ModalContainer = styled.div`
-  background: ${th('colorBackground')};
-  padding: 20px 24px;
-  z-index: 100;
-`
+import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
+import { fieldTypes, submissionFieldTypes } from './config/Elements'
 
 const FeildWrapper = styled.div`
   align-items: center;
@@ -28,7 +20,7 @@ const FeildWrapper = styled.div`
     background-color: ${lightenBy('colorPrimary', 0.7)};
   }
 
-  &:hover svg:first-child {
+  &:hover svg {
     stroke: ${th('colorPrimary')};
   }
 `
@@ -55,10 +47,6 @@ const IconAction = styled(Action)`
   margin: 0 ${grid(1)};
 `
 
-const StatusIcon = withTheme(({ children, theme }) => (
-  <Icon color={theme.colorPrimary}>{children}</Icon>
-))
-
 const DragIcon = styled(DragVerticalIcon)`
   height: 20px;
   margin-right: ${grid(1)};
@@ -72,62 +60,10 @@ const UnpaddedIcon = styled(Icon)`
 `
 
 const SmallIcon = withTheme(({ children, theme }) => (
-  <UnpaddedIcon color={theme.colorPrimary} size={2.5}>
+  <UnpaddedIcon color="transparent" size={2.5}>
     {children}
   </UnpaddedIcon>
 ))
-
-const Status = styled.div`
-  align-items: center;
-  color: ${th('colorPrimary')};
-  display: inline-flex;
-`
-
-const StatusIdle = styled(Status).attrs(props => ({
-  children: <StatusIcon>plus_circle</StatusIcon>,
-}))``
-
-const Root = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-weight: 200;
-  padding-bottom: 10px;
-  padding-top: 10px;
-
-  &:hover ${StatusIdle} {
-    circle {
-      fill: ${th('colorPrimary')};
-      stroke: ${th('colorPrimary')};
-    }
-
-    line {
-      stroke: white;
-    }
-  }
-`
-
-const Main = styled.div`
-  display: flex;
-  justify-content: center;
-`
-
-const CancelButton = styled(Button)`
-  background: #e9ebe8;
-  padding: 8px;
-  text-decoration: none;
-
-  &:hover {
-    background: #dbdbdb;
-  }
-`
-
-const ConfirmationString = styled.p`
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  width: 100%;
-`
 
 const FieldTypeLabel = styled.span`
   color: ${lightenBy('colorPrimary', 0.5)};
@@ -136,6 +72,7 @@ const FieldTypeLabel = styled.span`
 `
 
 const BuilderElement = ({
+  category,
   element,
   isSelected,
   setSelectedFieldId,
@@ -144,22 +81,31 @@ const BuilderElement = ({
   formFeildId,
   index,
 }) => {
-  const [openModal, setOpenModal] = useState(false)
+  const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false)
   const [formFieldId, setFormFieldId] = useState()
-
-  const openModalHandler = id => {
-    setOpenModal(true)
-    setFormFieldId(id)
-  }
-
-  const closeModalHandler = () => {
-    setOpenModal(false)
-  }
 
   const getItemStyle = (isDragging, draggableStyle) => ({
     ...draggableStyle,
     margin: `0px 0px 8px`,
   })
+
+  let componentTypeOptions =
+    category === 'submission' ? submissionFieldTypes : fieldTypes
+
+  // Disable ThreadedDiscussion in submission and review forms
+  if (['submission', 'review'].includes(category))
+    componentTypeOptions = componentTypeOptions.filter(
+      o => o.value !== 'ThreadedDiscussion',
+    )
+  // Disable ManuscriptFile in review and decision forms
+  if (['review', 'decision'].includes(category))
+    componentTypeOptions = componentTypeOptions.filter(
+      o => o.value !== 'ManuscriptFile',
+    )
+
+  const fieldType = componentTypeOptions.find(
+    x => x.value === element.component,
+  )
 
   return (
     <Draggable draggableId={formFeildId} index={index} key={formFeildId}>
@@ -191,40 +137,34 @@ const BuilderElement = ({
             >
               <MainAction>
                 {element.shortDescription ?? element.title}{' '}
-                <FieldTypeLabel>
-                  ({fieldTypes.find(x => x.value === element.component)?.label})
-                </FieldTypeLabel>
+                {fieldType.isCustom && (
+                  <FieldTypeLabel>
+                    (
+                    {fieldTypes.find(x => x.value === element.component)?.label}
+                    )
+                  </FieldTypeLabel>
+                )}
               </MainAction>
               <IconAction
-                onClick={() =>
-                  openModalHandler({
-                    variables: { formId, elementId: element.id },
-                  })
-                }
+                onClick={e => {
+                  setDeleteModalIsOpen(true)
+                  setFormFieldId(element.id)
+                  e.stopPropagation()
+                }}
               >
                 <SmallIcon>x</SmallIcon>
               </IconAction>
             </Element>
 
-            <Modal isOpen={openModal}>
-              <ModalContainer>
-                <ConfirmationString>
-                  Permanently delete this field?
-                </ConfirmationString>
-                <Button
-                  onClick={event => {
-                    deleteField(formFieldId)
-                  }}
-                  primary
-                >
-                  Ok
-                </Button>
-                &nbsp;
-                <CancelButton onClick={() => closeModalHandler()}>
-                  Cancel
-                </CancelButton>
-              </ModalContainer>
-            </Modal>
+            <ConfirmationModal
+              closeModal={() => setDeleteModalIsOpen(false)}
+              confirmationAction={() =>
+                deleteField({ variables: { formId, elementId: formFieldId } })
+              }
+              confirmationButtonText="Delete"
+              isOpen={deleteModalIsOpen}
+              message="Permanently delete this field?"
+            />
           </FeildWrapper>
         </div>
       )}
@@ -245,33 +185,10 @@ BuilderElement.propTypes = {
   formId: PropTypes.string.isRequired,
 }
 
-const AddElementButton = ({ addElement }) => (
-  <Root>
-    <Main>
-      <Action
-        onClick={() =>
-          addElement({
-            title: 'New Field',
-            id: uuid(),
-          })
-        }
-      >
-        <Heading>
-          <StatusIdle />
-          Add Field
-        </Heading>
-      </Action>
-    </Main>
-  </Root>
-)
-
-AddElementButton.propTypes = {
-  addElement: PropTypes.func.isRequired,
-}
-
 const FormBuilder = ({
   selectedFieldId,
   form,
+  category,
   setSelectedFieldId,
   addField,
   deleteField,
@@ -291,6 +208,7 @@ const FormBuilder = ({
             >
               {form.structure.children?.map((element, index) => (
                 <BuilderElement
+                  category={category}
                   deleteField={deleteField}
                   element={element}
                   formFeildId={element.id}
@@ -308,14 +226,6 @@ const FormBuilder = ({
           )}
         </Droppable>
       </DragDropContext>
-      <AddElementButton
-        addElement={newElement => {
-          addField({
-            variables: { element: newElement, formId: form.id },
-          })
-          setSelectedFieldId(newElement.id)
-        }}
-      />
     </Page>
   )
 }

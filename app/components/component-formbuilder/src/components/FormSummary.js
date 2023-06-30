@@ -2,13 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { th } from '@pubsweet/ui-toolkit'
 import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
-import {
-  Icon,
-  Action,
-  ActionButton,
-  LooseRow,
-  LabelBadge,
-} from '../../../shared'
+import { Icon, Action, LooseRow, LabelBadge } from '../../../shared'
 
 const DetailPane = styled.div`
   background: ${th('colorSecondaryBackground')};
@@ -29,27 +23,11 @@ const RightLooseRow = styled(LooseRow)`
   width: unset;
 `
 
-const MakeActiveButton = styled(ActionButton)`
-  font-size: ${th('fontSizeBaseSmall')};
-  line-height: ${th('lineHeightBaseSmall')};
-`
-
-const FormSummary = ({
-  form,
-  isActive,
-  openFormSettingsDialog,
-  makeFormActive,
-}) => {
+const FormSummary = ({ form, isActive, openFormSettingsDialog }) => {
   return (
     <DetailPane>
       <RightLooseRow>
-        {isActive ? (
-          <LabelBadge color={th('colorPrimary')}>Active</LabelBadge>
-        ) : (
-          <MakeActiveButton isCompact onClick={makeFormActive}>
-            Make this the active form
-          </MakeActiveButton>
-        )}
+        {isActive && <LabelBadge color={th('colorPrimary')}>Active</LabelBadge>}
         <Action onClick={openFormSettingsDialog} title="Edit form settings">
           <Icon noPadding>edit</Icon>
         </Action>

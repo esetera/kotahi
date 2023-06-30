@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { forEach } from 'lodash'
 import styled, { withTheme } from 'styled-components'
+import { v4 as uuid } from 'uuid'
 import { Action, Icon } from '@pubsweet/ui'
 import FormSettingsModal from './FormSettingsModal'
 import FieldSettingsModal from './FieldSettingsModal'
@@ -14,9 +15,15 @@ import {
   SectionRow,
   TightRow,
   ActionButton,
+  RoundIconButton,
 } from '../../../shared'
 import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
 import FormSummary from './FormSummary'
+
+const AddFieldButton = styled(RoundIconButton)`
+  flex: 0 0 40px;
+  margin-left: 28px;
+`
 
 const IconAction = styled(Action)`
   line-height: 1.15;
@@ -129,11 +136,11 @@ const FormBuilderLayout = ({
               <FormSummary
                 form={form}
                 isActive={isActive}
-                makeFormActive={() => makeFormActive(form)}
                 openFormSettingsDialog={() => setIsEditingFormSettings(true)}
               />
               <FormBuilder
                 addField={updateField}
+                category={category}
                 deleteField={deleteField}
                 dragField={dragField}
                 form={form}
@@ -144,6 +151,15 @@ const FormBuilderLayout = ({
                   setSelectedFieldId(id)
                   if (id) setIsEditingFieldSettings(true)
                 }}
+              />
+              <AddFieldButton
+                iconName="Plus"
+                onClick={() => {
+                  setSelectedFieldId(uuid())
+                  setIsEditingFieldSettings(true)
+                }}
+                primary
+                title="Add field..."
               />
             </div>
           </SectionRow>
@@ -186,7 +202,7 @@ const FormBuilderLayout = ({
 
   const selectedField = selectedForm.structure.children.find(
     elem => elem.id === selectedFieldId,
-  )
+  ) || { id: selectedFieldId, component: null }
 
   return (
     <>
@@ -235,7 +251,9 @@ const FormBuilderLayout = ({
 
       <FormSettingsModal
         form={selectedForm}
+        isActive={formIsActive(selectedForm)}
         isOpen={isEditingFormSettings}
+        makeFormActive={() => makeFormActive(selectedForm)}
         onClose={() => setIsEditingFormSettings(false)}
         onSubmit={async updatedForm => {
           const payload = { variables: { form: updatedForm } }
