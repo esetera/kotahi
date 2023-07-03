@@ -1,9 +1,14 @@
 const { logger } = require('@coko/server')
+const config = require('config')
 
 const {
   getMatchingReferencesFromCrossRef,
   getReferenceWithDoi,
 } = require('./validation')
+
+const { formatReference } = require('./formatting')
+
+const { crossRefEmail, crossRefCount } = config.references
 
 /* eslint-disable prefer-destructuring */
 const resolvers = {
@@ -12,7 +17,8 @@ const resolvers = {
       try {
         const matches = await getMatchingReferencesFromCrossRef(
           input.text,
-          input.count,
+          input.count || crossRefCount || 3,
+          crossRefEmail,
         )
 
         return { matches, success: true, message: '' }
@@ -23,11 +29,30 @@ const resolvers = {
     },
     async getReference(_, { doi }, ctx) {
       try {
-        const reference = await getReferenceWithDoi(doi)
+        const reference = await getReferenceWithDoi(doi, crossRefEmail)
+
         return { reference, success: true, message: '' }
       } catch (error) {
         logger.error('Response Error:', error.message)
         return { reference: {}, success: false, message: 'error' }
+      }
+    },
+    async formatReferences(_, { input }, ctx) {
+      try {
+        const references = input.map(ref => {
+          const { result, error } = formatReference(ref)
+
+          if (error) {
+            throw error
+          }
+
+          return result || ''
+        })
+
+        return { references, success: true, message: '' }
+      } catch (error) {
+        logger.error('Response Error:', error)
+        return { references: [], success: false, message: 'error' }
       }
     },
   },
@@ -42,6 +67,7 @@ const typeDefs = `
   extend type Query {
     getMatchingReferences(input: ReferenceInput): References
     getReference(doi:String!): SingleReference
+		formatReferences(input: [String]): FormattedReferences
   }
 
   type SingleReference {
@@ -71,6 +97,12 @@ const typeDefs = `
     volume: String
     journalTitle: String
   }
+
+	type FormattedReferences {
+		success: Boolean
+    message: String
+		references: [String]
+	}
 `
 
 module.exports = {

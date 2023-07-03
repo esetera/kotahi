@@ -38,11 +38,12 @@ import {
   KotahiBlockDropDownToolGroupService,
   JatsSideMenuToolGroupService,
   JatsAnnotationListTooolGroupService,
+  JatsTagsService,
 } from '../CustomWaxToolGroups'
-import JatsTagsService from '../JatsTags'
 import CharactersList from './CharactersList'
 import KotahiSchema from './KotahiSchema'
 import AnyStyleService from '../CustomWaxToolGroups/AnystyleService/AnyStyleService'
+import RefService from '../CustomWaxToolGroups/RefCitationService/RefCitationService'
 import {
   ProductionExtensionServices,
   ProductionExtensionLayoutElements,
@@ -62,7 +63,6 @@ const serviceList = [
   new ListsService(),
   new ListToolGroupService(),
   new MathService(),
-  new NoteService(),
   new ImageService(),
   new NoteToolGroupService(),
   new SpecialCharactersService(),
@@ -90,6 +90,8 @@ const serviceList = [
   new JatsSideMenuToolGroupService(),
   new JatsAnnotationListTooolGroupService(),
   new AnyStyleService(),
+  new RefService(),
+  new NoteService(),
 ]
 
 // generate a list which replaces any service in serviceList with a service of the same name from PluginServices
@@ -103,6 +105,7 @@ for (let i = 0; i < serviceList.length; i += 1) {
     )
 
     if (index > -1) {
+      /* eslint-disable-next-line no-console */
       console.log('Replacing default Wax Production service: ', service.name)
       serviceList[i] = ProductionExtensionServices[index]
       ProductionExtensionServices.splice(index, 1)

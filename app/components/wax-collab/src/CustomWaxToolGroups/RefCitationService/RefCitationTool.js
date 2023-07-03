@@ -2,7 +2,6 @@ import React from 'react'
 import { decorate, injectable } from 'inversify'
 import { isEmpty } from 'lodash'
 import { LeftSideButton, Commands, Tools } from 'wax-prosemirror-core'
-// import { v4 as uuidv4 } from 'uuid'
 
 class Reference extends Tools {
   title = 'Change to reference'
@@ -13,8 +12,9 @@ class Reference extends Tools {
 
   // eslint-disable-next-line class-methods-use-this
   get run() {
+    console.log('in run')
+
     return (state, dispatch) => {
-      console.log(state)
       Commands.setBlockType(state.config.schema.nodes.reference, {
         class: 'ref',
       })(state, dispatch)
@@ -25,10 +25,19 @@ class Reference extends Tools {
   get active() {
     return (state, activeViewId) => {
       let isActive = false
-      if (activeViewId !== 'main') return false
 
+      const currentViewPossible =
+        activeViewId === 'main' || activeViewId.indexOf('note-') === 0
+
+      console.log(
+        'in getactive, currentViewPossible:',
+        currentViewPossible,
+        activeViewId,
+      )
+      if (!currentViewPossible) return false
+      console.log('could be active')
       const { from, to } = state.selection
-      state.doc.nodesBetween(from, to, (node, pos) => {
+      state.doc.nodesBetween(from, to, node => {
         if (node.type.name === 'reference') {
           isActive = true
         }
@@ -38,7 +47,8 @@ class Reference extends Tools {
   }
 
   select = (state, activeViewId) => {
-    if (activeViewId !== 'main') return false
+    if (activeViewId !== 'main' && activeViewId.indexOf('note-') !== 0)
+      return false
     return true
   }
 

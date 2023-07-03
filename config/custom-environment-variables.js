@@ -99,6 +99,10 @@ module.exports = {
     host: 'SERVICE_ANYSTYLE_HOST',
     port: 'SERVICE_ANYSTYLE_PORT',
   },
+  references: {
+    crossRefEmail: 'SERVICE_REFERENCES_CROSSREF_EMAIL',
+    crossRefCount: 'SERVICE_REFERENCES_CROSSREF_COUNT',
+  },
   xsweet: {
     clientId: 'SERVICE_XSWEET_CLIENT_ID',
     clientSecret: 'SERVICE_XSWEET_SECRET',

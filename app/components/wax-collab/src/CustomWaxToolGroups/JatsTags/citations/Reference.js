@@ -14,7 +14,6 @@ class Reference extends Tools {
   // eslint-disable-next-line class-methods-use-this
   get run() {
     return (state, dispatch) => {
-      console.log('in here', state)
       Commands.setBlockType(state.config.schema.nodes.reference, {
         class: 'ref',
       })(state, dispatch)

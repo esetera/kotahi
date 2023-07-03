@@ -1,21 +1,13 @@
 const axios = require('axios')
-// const config = require('config')
-const { logger } = require('@coko/server')
-
-// TODO: Presumably we should be picking up account name from config?
-// we have config.crossref.depositorEmail – can we use this? (see config/custom-environment-variables.js)
-// Question: why are we using two separate emails for this?
-
-const dummyEmail = 'test@gmail.com'
-const crossRefEmail = 'peroli.sivaprakasam@amnet-systems.com'
+// const { logger } = require('@coko/server') // turning off logger until I can get it to work in tests
 
 axios.interceptors.request.use(req => {
-  logger.debug('Starting Request:', JSON.stringify(req, null, 2))
+  // logger.debug('Starting Request:', JSON.stringify(req, null, 2))
   return req
 })
 
 axios.interceptors.response.use(resp => {
-  logger.debug('Response:', JSON.stringify(resp.data, null, 2))
+  // logger.debug('Response:', JSON.stringify(resp.data, null, 2))
   return resp
 })
 
@@ -52,18 +44,29 @@ const createReference = data => {
 }
 // const refValConfig = config.get('referenceValidator')
 
-const getMatchingReferencesFromCrossRef = async (reference, count = 3) => {
+// A note: per https://www.crossref.org/documentation/retrieve-metadata/rest-api/tips-for-using-the-crossref-rest-api/, this is the
+// "polite" way to use the API (which uses the mailto parameter for self-identification). There is also a "plus" version of the API
+// which requires a service contract; the benefit of that is that it will not be rate-limited. We could consider an implementation
+// that uses this? Paramter would go in config.
+
+// TODO: Is it worth caching requests/results? It's likely that the same requests are going to be sent out, and caching might help.
+
+const getMatchingReferencesFromCrossRef = async (
+  reference,
+  count,
+  crossRefEmail,
+) => {
   // eslint-disable-next-line no-return-await
   return await axios
-    .get('https://api.crossref.org/works', {
+    .get('https://api.crossref.org/v1/works', {
       params: {
         'query.bibliographic': reference,
         rows: count,
         select: 'DOI,author,issue,page,title,volume,container-title',
-        mailto: dummyEmail,
+        mailto: crossRefEmail,
       },
       headers: {
-        'User-Agent': `Kotahi (Axios 0.21; mailto:${dummyEmail})`,
+        'User-Agent': `Kotahi (Axios 0.21; mailto:${crossRefEmail})`,
       },
     })
     .then(response => {
@@ -77,10 +80,10 @@ const getMatchingReferencesFromCrossRef = async (reference, count = 3) => {
     })
 }
 
-const getReferenceWithDoi = async doi => {
+const getReferenceWithDoi = async (doi, crossRefEmail) => {
   // eslint-disable-next-line no-return-await
   return await axios
-    .get(`https://api.crossref.org/works/${doi}`, {
+    .get(`https://api.crossref.org/v1/works/${doi}`, {
       params: {
         mailto: crossRefEmail,
       },

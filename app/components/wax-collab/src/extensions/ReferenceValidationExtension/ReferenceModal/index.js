@@ -66,7 +66,17 @@ export const RefModal = ({ isOpen, closeModal }) => {
   }, [isOpen])
 
   const persistReference = (refBlock, Id, manually) => {
+    console.log('in persistReference')
+    console.log(
+      'refBlock.dataId: ',
+      refBlock.dataId,
+      'Id: ',
+      Id,
+      'manually: ',
+      manually,
+    )
     const allNodes = DocumentHelpers.findBlockNodes(main.state.doc)
+    console.log('allNodes: ', allNodes)
 
     const refNode = allNodes.find(node => {
       const {
@@ -75,6 +85,7 @@ export const RefModal = ({ isOpen, closeModal }) => {
         },
       } = node
 
+      console.log('refNode:', refNode)
       return manually ? refId === Id : refId === refBlock.dataId
     })
 

@@ -8,6 +8,8 @@ import {
   ReferenceValidationToolGroupService,
 } from './ReferenceValidationExtension'
 
+import NoteService from './NoteService/NoteService'
+
 // It's also possible to redefine an existing Wax Service:
 
 // import { ImageService } from './ImageServiceExtension'
@@ -31,10 +33,12 @@ const ProductionExtensionLayoutElements = [
 const ProductionExtensionServices = [
   new ExampleBlockDropDownToolGroupService(),
   new ReferenceValidationToolGroupService(),
+  new NoteService(),
   // new ImageService(),
 ]
 
 const FullExtensionServices = [
+  new NoteService(),
   // new ImageService()
 ]
 

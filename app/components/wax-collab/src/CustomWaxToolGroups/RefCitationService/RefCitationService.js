@@ -1,10 +1,14 @@
 import { Service } from 'wax-prosemirror-core'
 import { v4 as uuidv4 } from 'uuid'
-import Reference from './ReferenceElementTool'
+import Reference from './RefCitationTool'
+
+// TODO: In ../index.js, this is defined as a block. It's not going to work in footnotes; I think we might need to modify our existing MixedCitationSpan to work like this?
+// TODO: This doesn't currently come out as JATS.
+// TODO: make this include the original text as an attribute (data-original-text) when created.
 
 const refNode = {
   content: 'inline*',
-  group: 'block reference',
+  group: 'block',
   priority: 0,
   defining: true,
   attrs: {
@@ -19,7 +23,6 @@ const refNode = {
     {
       tag: 'p.ref',
       getAttrs(hook, next) {
-        console.log(hook)
         Object.assign(hook, {
           class: hook?.dom?.getAttribute('class'),
           refId: hook?.dom?.getAttribute('id'),
@@ -61,8 +64,8 @@ const refNode = {
   },
 }
 
-class ReferenceElementService extends Service {
-  name = 'ReferenceElement'
+class RefService extends Service {
+  // name = 'RefService'
 
   boot() {}
 
@@ -78,4 +81,4 @@ class ReferenceElementService extends Service {
   }
 }
 
-export default ReferenceElementService
+export default RefService

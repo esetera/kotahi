@@ -132,6 +132,10 @@ module.exports = {
     host: '',
     port: '',
   },
+  references: {
+    crossRefEmail: '',
+    crossRefCount: 3,
+  },
   xsweet: {
     clientId: '',
     clientSecret: '',
