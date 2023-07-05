@@ -38,13 +38,6 @@ const FormSummary = ({ form, isActive, openFormSettingsDialog }) => {
         readonly
         value={form.structure.description}
       />
-      <p>
-        <i>
-          {form.structure.haspopup === 'true'
-            ? 'Confirmation page is shown prior to submitting'
-            : 'No confirmation page'}
-        </i>
-      </p>
     </DetailPane>
   )
 }

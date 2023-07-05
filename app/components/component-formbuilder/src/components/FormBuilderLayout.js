@@ -16,6 +16,7 @@ import {
   TightRow,
   ActionButton,
   RoundIconButton,
+  WidthLimiter,
 } from '../../../shared'
 import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
 import FormSummary from './FormSummary'
@@ -218,35 +219,37 @@ const FormBuilderLayout = ({
         <Heading>
           {category.charAt(0).toUpperCase() + category.slice(1)} Form Builder
         </Heading>
-        <div
-          style={{
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '0',
-            overflow: 'hidden',
-            flex: '1',
-          }}
-        >
-          <AddFormButton
-            isCompact
-            onClick={() => {
-              setSelectedFormId(null)
-              setIsEditingFormSettings(true)
+        <WidthLimiter>
+          <div
+            style={{
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: '0',
+              overflow: 'hidden',
+              flex: '1',
             }}
           >
-            Add new form
-          </AddFormButton>
-          <HiddenTabs
-            defaultActiveKey={selectedFormId ?? null}
-            onChange={tab => {
-              setSelectedFormId(tab)
-              setSelectedFieldId(null)
-            }}
-            sections={sections}
-            shouldFillFlex
-          />
-        </div>
+            <AddFormButton
+              isCompact
+              onClick={() => {
+                setSelectedFormId(null)
+                setIsEditingFormSettings(true)
+              }}
+            >
+              Add new form
+            </AddFormButton>
+            <HiddenTabs
+              defaultActiveKey={selectedFormId ?? null}
+              onChange={tab => {
+                setSelectedFormId(tab)
+                setSelectedFieldId(null)
+              }}
+              sections={sections}
+              shouldFillFlex
+            />
+          </div>
+        </WidthLimiter>
       </Container>
 
       <FormSettingsModal

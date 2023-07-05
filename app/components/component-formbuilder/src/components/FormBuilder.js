@@ -137,13 +137,7 @@ const BuilderElement = ({
             >
               <MainAction>
                 {element.shortDescription ?? element.title}{' '}
-                {fieldType.isCustom && (
-                  <FieldTypeLabel>
-                    (
-                    {fieldTypes.find(x => x.value === element.component)?.label}
-                    )
-                  </FieldTypeLabel>
-                )}
+                <FieldTypeLabel>({fieldType?.label})</FieldTypeLabel>
               </MainAction>
               <IconAction
                 onClick={e => {
