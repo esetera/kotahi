@@ -101,7 +101,30 @@ const sendAlertForMessage = async ({
   }).save()
 }
 
+const getNotificationOptionForUser = async ({ userId, type }) => {
+  // [TODO-1344]: this function currently runs two queries to calculate the ['chat'] and [] options.
+  // We should have a query that can help return all 2 values (or 3values when we also pass channel id in the path)
+  let notificationUserOption = await models.NotificationUserOption.query()
+    .where({ userId, path: ['chat'] })
+    .first()
+
+  if (notificationUserOption) {
+    return notificationUserOption.option === '30MinDigest'
+  }
+
+  notificationUserOption = await models.NotificationUserOption.query()
+    .where({ userId, path: [] })
+    .first()
+
+  if (notificationUserOption) {
+    return notificationUserOption.option === '30MinDigest'
+  }
+
+  return true // hardcoded default. [TODO-1344]: move to config
+}
+
 module.exports = {
   sendAlerts,
   sendAlertForMessage,
+  getNotificationOptionForUser,
 }

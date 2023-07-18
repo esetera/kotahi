@@ -1,4 +1,5 @@
 const Alert = require('./alert')
+const { getNotificationOptionForUser } = require('./alertCommsUtils')
 const NotificationUserOption = require('./notificationUserOption')
 
 const resolvers = {
@@ -10,17 +11,10 @@ const resolvers = {
       return Alert.all()
     },
     getGlobalChatNotificationOption: async (_, __, context) => {
-      // [TODO-1344]: need to move this logic to a separate utility function
-      // [TODO-1344]: this only returns the one option. Ideally it should return ['chat'] as well as [] for user
-      const notificationUserOption = await NotificationUserOption.query()
-        .where({ userId: context.user, path: ['chat'] })
-        .first()
-
-      if (notificationUserOption) {
-        return notificationUserOption.option === '30MinDigest'
-      }
-
-      return true // hardcoded default. [TODO-1344]: move to config
+      return getNotificationOptionForUser({
+        userId: context.user,
+        type: 'globalChat',
+      })
     },
   },
   Mutation: {

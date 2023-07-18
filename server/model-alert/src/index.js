@@ -4,8 +4,7 @@ const graphql = require('./graphql')
 const resolvers = require('./graphql')
 
 module.exports = {
-  // model,
-  model: [
+  models: [
     { model: alert, modelName: 'Alert' },
     { model: notificationUserOption, modelName: 'NotificationUserOption' },
   ],
