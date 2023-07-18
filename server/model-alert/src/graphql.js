@@ -9,6 +9,20 @@ const resolvers = {
     alerts: async (_, __, context) => {
       return Alert.all()
     },
+    getGlobalChatNotificationOptionForUser: async (_, { userId }) => {
+      // [TODO-1344]: need to move this logic to a separate utility function
+      // [TODO-1344]: this only returns the one option. Ideally it should return ['chat'] as well as [] for user
+      const notificationUserOption = await NotificationUserOption.query()
+        .where('userId', userId)
+        .where('path', ['chat'])
+        .first()
+
+      if (notificationUserOption) {
+        return notificationUserOption.option === '30MinDigest'
+      }
+
+      return true // hardcoded default. [TODO-1344]: move to config
+    },
   },
   Mutation: {
     createAlert: async (
@@ -35,7 +49,7 @@ const resolvers = {
         .where('user_id', userId)
         .where('path', ['chat'])
 
-      // TODO: the code below can be replaced by a single upsert statement
+      // [TODO-1344]: the code below can be replaced by a single upsert statement
       if (!globalChatOption || globalChatOption.length === 0) {
         const notificationOptionData = {
           created: new Date(),
@@ -83,13 +97,24 @@ const typeDefs = `
     messageId: ID
   }
 
+  type NotificationUserOption {
+    id: ID
+    created: String
+    updated: String
+    userId: ID!
+    path: [String]
+    option: String!
+  }
+
   extend type Query {
     alert(id: ID): Alert
     alerts: [Alert]
+    getGlobalChatNotificationOptionForUser(userId: ID!): Boolean
   }
 
   extend type Mutation {
     createAlert(input: AlertInput): Alert
+    updateGlobalChatNotificationOptionForUser(userId: ID!, option: String!): NotificationUserOption
   }
 `
 
