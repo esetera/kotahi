@@ -43,7 +43,7 @@ const resolvers = {
     updateGlobalChatNotificationOption: async (_, { option }, context) => {
       const globalChatOption = await NotificationUserOption.query()
         .skipUndefined()
-        .where('user_id', context.user)
+        .where({ userId: context.user })
         .where('path', ['chat'])
 
       // [TODO-1344]: the code below can be replaced by a single upsert statement
@@ -59,7 +59,10 @@ const resolvers = {
           notificationOptionData.option = '30MinDigest'
         }
 
-        await new NotificationUserOption(notificationOptionData).save()
+        // [TODO-1344]: need to use model.save() instead of model.query().insert()
+        await new NotificationUserOption(notificationOptionData)
+          .$query()
+          .insert()
       } else {
         let optionToSave = 'off'
 
@@ -69,7 +72,7 @@ const resolvers = {
 
         await NotificationUserOption.query()
           .where('path', ['chat'])
-          .where('user_id', context.user)
+          .where({ userId: context.user })
           .patch({ option: optionToSave })
       }
     },

@@ -56,8 +56,8 @@ const GET_GLOBAL_CHAT_NOTIFICATION_OPTION = gql`
 `
 
 const UPDATE_GLOBAL_CHAT_NOTIFICATION_OPTION = gql`
-  mutation updateGlobalChatNotificationOption($userId: ID!, $option: String!) {
-    updateGlobalChatNotificationOption(userId: $userId, option: $option) {
+  mutation updateGlobalChatNotificationOption($option: String!) {
+    updateGlobalChatNotificationOption(option: $option) {
       id
       created
       updated
