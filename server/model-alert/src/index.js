@@ -1,14 +1,13 @@
-const alert = require('./alert')
-const notificationUserOption = require('./notificationUserOption')
-const graphql = require('./graphql')
-const resolvers = require('./graphql')
+/* eslint-disable global-require */
 
 module.exports = {
+  ...require('./graphql'),
   models: [
-    { model: alert, modelName: 'Alert' },
-    { model: notificationUserOption, modelName: 'NotificationUserOption' },
+    { modelName: 'Alert', model: require('./alert') },
+    {
+      modelName: 'NotificationUserOption',
+      model: require('./notificationUserOption'),
+    },
+    { modelName: 'NotificationDigest', model: require('./notificationDigest') },
   ],
-  modelName: 'Alert',
-  resolvers,
-  ...graphql,
 }

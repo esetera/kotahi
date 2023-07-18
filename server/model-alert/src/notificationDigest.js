@@ -1,8 +1,8 @@
 const { BaseModel } = require('@coko/server')
 
-class NotificationUserOption extends BaseModel {
+class NotificationDigest extends BaseModel {
   static get tableName() {
-    return 'notification_user_options'
+    return 'notification_digest'
   }
 
   static get relationMappings() {
@@ -14,7 +14,7 @@ class NotificationUserOption extends BaseModel {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: User,
         join: {
-          from: 'notification_user_options.user_id',
+          from: 'notification_digest.user_id',
           to: 'users.id',
         },
       },
@@ -27,13 +27,17 @@ class NotificationUserOption extends BaseModel {
         id: { type: 'integer' },
         created: { type: 'datetime', notNull: true },
         updated: { type: 'datetime' },
-        userId: { type: 'integer', notNull: true },
-        objectId: { type: ['integer', 'null'] },
-        path: { type: 'array', items: { type: 'string' }, notNull: true },
-        option: { type: 'string', notNull: true },
+        time: { type: 'datetime', notNull: true },
+        maxNotificationTime: { type: 'datetime', notNull: true },
+        pathString: { type: 'string' },
+        header: { type: 'string' },
+        content: { type: 'string' },
+        userId: { type: 'integer' },
+        userIsMentioned: { type: 'boolean', default: false },
+        option: { type: 'string' },
       },
     }
   }
 }
 
-module.exports = NotificationUserOption
+module.exports = NotificationDigest
