@@ -24,7 +24,6 @@ class NotificationDigest extends BaseModel {
   static get schema() {
     return {
       properties: {
-        id: { type: 'integer' },
         created: { type: 'datetime', notNull: true },
         updated: { type: 'datetime' },
         time: { type: 'datetime', notNull: true },
@@ -32,7 +31,7 @@ class NotificationDigest extends BaseModel {
         pathString: { type: 'string' },
         header: { type: 'string' },
         content: { type: 'string' },
-        userId: { type: 'integer' },
+        userId: { type: ['string'], format: 'uuid' },
         userIsMentioned: { type: 'boolean', default: false },
         option: { type: 'string' },
       },

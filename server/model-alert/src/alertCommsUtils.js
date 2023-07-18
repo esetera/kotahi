@@ -124,14 +124,33 @@ const getNotificationOptionForUser = async ({ userId, type }) => {
 }
 
 // [TODO-1344]: need to find a better file to store this event handler
-const notificationEventHandler = ({
+const notificationEventHandler = async ({
   time,
   path,
   header,
   content,
   users,
   mentionedUsers,
-}) => {}
+}) => {
+  users.forEach(async user => {
+    const userNotificationOption = await getNotificationOptionForUser({
+      userId: user.id,
+      type: 'chatChannel', // [TODO-1344]: hardcoded, need to rethink these values
+    })
+
+    if (!userNotificationOption) return
+
+    await new models.NotificationDigest({
+      time,
+      maxNotificationTime: time,
+      pathString: '',
+      header,
+      content,
+      userId: user.id,
+      userIsMentioned: false, // hardcoded for now until we built the @ tagging feature
+    }).save()
+  })
+}
 
 module.exports = {
   sendAlerts,

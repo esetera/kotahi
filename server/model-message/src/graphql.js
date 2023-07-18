@@ -100,13 +100,14 @@ const resolvers = {
           channelId: message.channelId,
         })
         .whereNot({ userId: message.userId })
+        .withGraphJoined('user')
 
       notificationEventHandler({
         time: message.created,
         path: ['chat', message.channelId],
         header: '', // [TODO-1344]: need to get clarity on this
         content: message.content,
-        users: channelMembers.map(channelMember => channelMember.userId),
+        users: channelMembers.map(channelMember => channelMember.user),
         mentionedUsers: [], // hardcoded for now until we built the @ tagging feature
       })
 
