@@ -101,16 +101,18 @@ const Profile = ({
   updateUsername,
   updateEventNotificationsOptIn,
   user,
+  globalChatNotificationUserOption,
 }) => {
-  const [isEventNotificationsOptIn, setEventNotificationsOptIn] = useState(
-    user?.eventNotificationsOptIn,
-  )
+  const [
+    hasGlobalChatNotificationOptIn,
+    setHasGlobalChatNotificationOptIn,
+  ] = useState(globalChatNotificationUserOption)
 
   useEffect(() => {
-    if (user) {
-      setEventNotificationsOptIn(user.eventNotificationsOptIn)
+    if (globalChatNotificationUserOption) {
+      setHasGlobalChatNotificationOptIn(globalChatNotificationUserOption)
     }
-  }, [user])
+  }, [globalChatNotificationUserOption])
 
   const isCurrentUsersOwnProfile = user.id === currentUser.id
 
@@ -119,14 +121,14 @@ const Profile = ({
     currentUser.groupRoles.includes('groupManager') ||
     currentUser.globalRoles.includes('admin')
 
-  const toggleEventNotificationsCheckbox = async () => {
-    const newEventNotificationsPreference = !isEventNotificationsOptIn
-    setEventNotificationsOptIn(newEventNotificationsPreference)
+  const toggleGlobalChatNotificationOptIn = async () => {
+    const updatedGlobalChatNotificationOptIn = !hasGlobalChatNotificationOptIn
+    setHasGlobalChatNotificationOptIn(updatedGlobalChatNotificationOptIn)
 
     await updateEventNotificationsOptIn({
       variables: {
         id: user.id,
-        eventNotificationsOptIn: newEventNotificationsPreference,
+        eventNotificationsOptIn: updatedGlobalChatNotificationOptIn,
       },
     })
   }
@@ -201,9 +203,9 @@ const Profile = ({
         </SectionContent>
         <SectionContent>
           <StyledCheckbox
-            checked={!isEventNotificationsOptIn}
+            checked={!hasGlobalChatNotificationOptIn}
             label="Mute all discussion email notifications"
-            onChange={toggleEventNotificationsCheckbox}
+            onChange={toggleGlobalChatNotificationOptIn}
           />
         </SectionContent>
       </div>

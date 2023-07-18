@@ -49,6 +49,12 @@ const UPDATE_USERNAME = gql`
   }
 `
 
+const GET_GLOBAL_CHAT_NOTIFICATION_OPTION = gql`
+  query getGlobalChatNotificationOptionForUser($userId: ID!) {
+    getGlobalChatNotificationOptionForUser(userId: $userId)
+  }
+`
+
 const UPDATE_USER_NOTIFICATION_PREFERENCE = gql`
   mutation updateEventNotificationsOptIn(
     $id: ID!
@@ -89,6 +95,15 @@ const ProfilePage = ({ currentUser, match }) => {
   const [updateUserEmail] = useMutation(UPDATE_EMAIL)
   const [updateUsername] = useMutation(UPDATE_USERNAME)
 
+  const { data: globalChatNotificationUserOption } = useQuery(
+    GET_GLOBAL_CHAT_NOTIFICATION_OPTION,
+    {
+      variables: {
+        userId: currentUser.id,
+      },
+    },
+  )
+
   const [updateEventNotificationsOptIn] = useMutation(
     UPDATE_USER_NOTIFICATION_PREFERENCE,
   )
@@ -111,6 +126,9 @@ const ProfilePage = ({ currentUser, match }) => {
   return (
     <Profile
       currentUser={currentUser}
+      globalChatNotificationUserOption={
+        globalChatNotificationUserOption?.getGlobalChatNotificationOptionForUser
+      }
       kotahiVersion={kotahiVersion}
       logoutUser={logoutUser}
       match={match}
