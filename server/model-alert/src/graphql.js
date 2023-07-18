@@ -9,11 +9,11 @@ const resolvers = {
     alerts: async (_, __, context) => {
       return Alert.all()
     },
-    getGlobalChatNotificationOptionForUser: async (_, { userId }) => {
+    getGlobalChatNotificationOption: async (_, __, context) => {
       // [TODO-1344]: need to move this logic to a separate utility function
       // [TODO-1344]: this only returns the one option. Ideally it should return ['chat'] as well as [] for user
       const notificationUserOption = await NotificationUserOption.query()
-        .where('userId', userId)
+        .where('userId', context.user)
         .where('path', ['chat'])
         .first()
 
@@ -40,20 +40,17 @@ const resolvers = {
 
       return alert
     },
-    updateGlobalChatNotificationOptionForUser: async (
-      _,
-      { userId, option },
-    ) => {
+    updateGlobalChatNotificationOption: async (_, { option }, context) => {
       const globalChatOption = await NotificationUserOption.query()
         .skipUndefined()
-        .where('user_id', userId)
+        .where('user_id', context.user)
         .where('path', ['chat'])
 
       // [TODO-1344]: the code below can be replaced by a single upsert statement
       if (!globalChatOption || globalChatOption.length === 0) {
         const notificationOptionData = {
           created: new Date(),
-          userId,
+          userId: context.user,
           path: '{chat}',
           option: 'off',
         }
@@ -72,7 +69,7 @@ const resolvers = {
 
         await NotificationUserOption.query()
           .where('path', ['chat'])
-          .where('user_id', userId)
+          .where('user_id', context.user)
           .patch({ option: optionToSave })
       }
     },
@@ -109,12 +106,12 @@ const typeDefs = `
   extend type Query {
     alert(id: ID): Alert
     alerts: [Alert]
-    getGlobalChatNotificationOptionForUser(userId: ID!): Boolean
+    getGlobalChatNotificationOption: Boolean
   }
 
   extend type Mutation {
     createAlert(input: AlertInput): Alert
-    updateGlobalChatNotificationOptionForUser(userId: ID!, option: String!): NotificationUserOption
+    updateGlobalChatNotificationOption(option: String!): NotificationUserOption
   }
 `
 

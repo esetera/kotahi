@@ -50,22 +50,20 @@ const UPDATE_USERNAME = gql`
 `
 
 const GET_GLOBAL_CHAT_NOTIFICATION_OPTION = gql`
-  query getGlobalChatNotificationOptionForUser($userId: ID!) {
-    getGlobalChatNotificationOptionForUser(userId: $userId)
+  query getGlobalChatNotificationOption {
+    getGlobalChatNotificationOption
   }
 `
 
-const UPDATE_USER_NOTIFICATION_PREFERENCE = gql`
-  mutation updateEventNotificationsOptIn(
-    $id: ID!
-    $eventNotificationsOptIn: Boolean!
-  ) {
-    updateEventNotificationsOptIn(
-      id: $id
-      event_notifications_opt_in: $eventNotificationsOptIn
-    ) {
+const UPDATE_GLOBAL_CHAT_NOTIFICATION_OPTION = gql`
+  mutation updateGlobalChatNotificationOption($userId: ID!, $option: String!) {
+    updateGlobalChatNotificationOption(userId: $userId, option: $option) {
       id
-      eventNotificationsOptIn
+      created
+      updated
+      userId
+      path
+      option
     }
   }
 `
@@ -104,8 +102,8 @@ const ProfilePage = ({ currentUser, match }) => {
     },
   )
 
-  const [updateEventNotificationsOptIn] = useMutation(
-    UPDATE_USER_NOTIFICATION_PREFERENCE,
+  const [updateGlobalChatNotificationOptIn] = useMutation(
+    UPDATE_GLOBAL_CHAT_NOTIFICATION_OPTION,
   )
 
   if (loading) return <Spinner />
@@ -127,13 +125,13 @@ const ProfilePage = ({ currentUser, match }) => {
     <Profile
       currentUser={currentUser}
       globalChatNotificationUserOption={
-        globalChatNotificationUserOption?.getGlobalChatNotificationOptionForUser
+        globalChatNotificationUserOption?.getGlobalChatNotificationOption
       }
       kotahiVersion={kotahiVersion}
       logoutUser={logoutUser}
       match={match}
       replaceAvatarImage={replaceAvatarImage}
-      updateEventNotificationsOptIn={updateEventNotificationsOptIn}
+      updateGlobalChatNotificationOptIn={updateGlobalChatNotificationOptIn}
       updateProfilePicture={updateProfilePicture}
       updateUserEmail={updateUserEmail}
       updateUsername={updateUsername}

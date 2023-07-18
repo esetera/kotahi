@@ -99,7 +99,7 @@ const Profile = ({
   updateProfilePicture,
   updateUserEmail,
   updateUsername,
-  updateEventNotificationsOptIn,
+  updateGlobalChatNotificationOptIn,
   user,
   globalChatNotificationUserOption,
 }) => {
@@ -125,10 +125,9 @@ const Profile = ({
     const updatedGlobalChatNotificationOptIn = !hasGlobalChatNotificationOptIn
     setHasGlobalChatNotificationOptIn(updatedGlobalChatNotificationOptIn)
 
-    await updateEventNotificationsOptIn({
+    await updateGlobalChatNotificationOptIn({
       variables: {
-        id: user.id,
-        eventNotificationsOptIn: updatedGlobalChatNotificationOptIn,
+        option: updatedGlobalChatNotificationOptIn ? 'on' : 'off',
       },
     })
   }
