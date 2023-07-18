@@ -123,8 +123,19 @@ const getNotificationOptionForUser = async ({ userId, type }) => {
   return true // hardcoded default. [TODO-1344]: move to config
 }
 
+// [TODO-1344]: need to find a better file to store this event handler
+const notificationEventHandler = ({
+  time,
+  path,
+  header,
+  content,
+  users,
+  mentionedUsers,
+}) => {}
+
 module.exports = {
   sendAlerts,
   sendAlertForMessage,
   getNotificationOptionForUser,
+  notificationEventHandler,
 }

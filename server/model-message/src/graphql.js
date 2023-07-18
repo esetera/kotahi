@@ -5,7 +5,7 @@ const { getPubsub } = pubsubManager
 // Fires immediately when the message is created
 const MESSAGE_CREATED = 'MESSAGE_CREATED'
 
-const Message = require('./message')
+const models = require('@pubsweet/models')
 
 const {
   updateChannelLastViewed,
@@ -13,20 +13,24 @@ const {
   addUserToChatChannel,
 } = require('../../model-channel/src/channelCommsUtils')
 
+const {
+  notificationEventHandler,
+} = require('../../model-alert/src/alertCommsUtils')
+
 const resolvers = {
   Query: {
     message: async (_, { messageId }) => {
-      Message.find(messageId)
+      models.Message.find(messageId)
     },
     messages: async (_, { channelId, first = 20, before }, context) => {
-      let messagesQuery = Message.query()
+      let messagesQuery = models.Message.query()
         .where({ channelId })
         .withGraphJoined('user')
         .limit(first)
         .orderBy('messages.created', 'desc')
 
       if (before) {
-        const firstMessage = await Message.query().findById(before)
+        const firstMessage = await models.Message.query().findById(before)
         messagesQuery = messagesQuery.where(
           'messages.created',
           '<',
@@ -46,12 +50,12 @@ const resolvers = {
       let firstUnreadMessage = null
 
       if (channelMember) {
-        unreadMessagesCount = await Message.query()
+        unreadMessagesCount = await models.Message.query()
           .where({ channelId })
           .where('created', '>', channelMember.lastViewed)
           .count()
 
-        firstUnreadMessage = await Message.query()
+        firstUnreadMessage = await models.Message.query()
           .select('id')
           .where({ channelId })
           .where('created', '>', channelMember.lastViewed)
@@ -76,13 +80,13 @@ const resolvers = {
       const pubsub = await getPubsub()
       const userId = context.user
 
-      const savedMessage = await new Message({
+      const savedMessage = await new models.Message({
         content,
         userId,
         channelId,
       }).save()
 
-      const message = await Message.query()
+      const message = await models.Message.query()
         .findById(savedMessage.id)
         .withGraphJoined('user')
 
@@ -90,13 +94,29 @@ const resolvers = {
 
       await addUserToChatChannel({ channelId, userId })
 
+      // [TODO-1344]: the code below can also be moved to message model $afterInsert
+      const channelMembers = await models.ChannelMember.query()
+        .where({
+          channelId: message.channelId,
+        })
+        .whereNot({ userId: message.userId })
+
+      notificationEventHandler({
+        time: message.created,
+        path: ['chat', message.channelId],
+        header: '', // [TODO-1344]: need to get clarity on this
+        content: message.content,
+        users: channelMembers.map(channelMember => channelMember.userId),
+        mentionedUsers: [], // hardcoded for now until we built the @ tagging feature
+      })
+
       return message
     },
   },
   Subscription: {
     messageCreated: {
       resolve: async (messageId, _, context) => {
-        const message = await Message.query()
+        const message = await models.Message.query()
           .findById(messageId)
           .withGraphJoined('user')
 
