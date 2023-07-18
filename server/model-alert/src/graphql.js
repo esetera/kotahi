@@ -13,8 +13,7 @@ const resolvers = {
       // [TODO-1344]: need to move this logic to a separate utility function
       // [TODO-1344]: this only returns the one option. Ideally it should return ['chat'] as well as [] for user
       const notificationUserOption = await NotificationUserOption.query()
-        .where('userId', context.user)
-        .where('path', ['chat'])
+        .where({ userId: context.user, path: ['chat'] })
         .first()
 
       if (notificationUserOption) {
@@ -43,11 +42,11 @@ const resolvers = {
     updateGlobalChatNotificationOption: async (_, { option }, context) => {
       const globalChatOption = await NotificationUserOption.query()
         .skipUndefined()
-        .where({ userId: context.user })
-        .where('path', ['chat'])
+        .where({ userId: context.user, path: ['chat'] })
+        .first()
 
       // [TODO-1344]: the code below can be replaced by a single upsert statement
-      if (!globalChatOption || globalChatOption.length === 0) {
+      if (!globalChatOption) {
         const notificationOptionData = {
           created: new Date(),
           userId: context.user,
@@ -71,8 +70,7 @@ const resolvers = {
         }
 
         await NotificationUserOption.query()
-          .where('path', ['chat'])
-          .where({ userId: context.user })
+          .where({ userId: context.user, path: ['chat'] })
           .patch({ option: optionToSave })
       }
     },
