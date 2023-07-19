@@ -140,9 +140,12 @@ const notificationEventHandler = async ({
 
     if (!userNotificationOption) return
 
+    const maxNotificationTime = new Date(time)
+    maxNotificationTime.setMinutes(maxNotificationTime.getMinutes() + 30)
+
     await new models.NotificationDigest({
       time,
-      maxNotificationTime: time,
+      maxNotificationTime,
       pathString: path.join('/'),
       header,
       content,
