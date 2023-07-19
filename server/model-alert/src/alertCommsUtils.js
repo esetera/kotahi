@@ -143,7 +143,7 @@ const notificationEventHandler = async ({
     await new models.NotificationDigest({
       time,
       maxNotificationTime: time,
-      pathString: '',
+      pathString: path.join('/'),
       header,
       content,
       userId: user.id,
