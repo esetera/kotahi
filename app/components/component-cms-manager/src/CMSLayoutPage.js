@@ -1,7 +1,6 @@
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 import { Formik } from 'formik'
 import { useMutation, useQuery } from '@apollo/client'
-import { ConfigContext } from '../../config/src/index'
 import LayoutForm from './layout/LayoutForm'
 import { Container, Spinner, CommsErrorBanner } from '../../shared'
 import PageHeader from './components/PageHeader'
@@ -16,7 +15,6 @@ import {
 } from './queries'
 
 const CMSLayoutPage = ({ history }) => {
-  const config = useContext(ConfigContext)
   const { loading, data, error } = useQuery(getCMSLayout)
   const [updateCMSLayout] = useMutation(updateCMSLayoutMutation)
   const [updateCMSPageInfo] = useMutation(updateCMSPageDataMutation)
@@ -80,7 +78,6 @@ const CMSLayoutPage = ({ history }) => {
           partners: formData.partners,
           footerText: formData.footerText,
           published: new Date(),
-          groupId: config.groupId,
         },
       },
     })

@@ -45,7 +45,7 @@ class CMSLayout extends BaseModel {
         footerText: { type: 'string' },
         published: { type: ['string', 'object', 'null'], format: 'date-time' },
         edited: { type: ['string', 'object', 'null'], format: 'date-time' },
-        groupId: { type: ['string', 'null'], format: 'uuid' },
+        groupId: { type: ['string'], format: 'uuid' },
       },
     }
   }

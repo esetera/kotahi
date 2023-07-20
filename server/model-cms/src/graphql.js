@@ -109,8 +109,9 @@ const resolvers = {
   Mutation: {
     async createCMSPage(_, { input }, ctx) {
       try {
+        const groupId = ctx.req.headers['group-id']
         const savedCmsPage = await new models.CMSPage(
-          cleanCMSPageInput(input),
+          cleanCMSPageInput({ ...input, groupId }),
         ).save()
 
         const cmsPage = await models.CMSPage.query().findById(savedCmsPage.id)
@@ -131,7 +132,6 @@ const resolvers = {
 
     async updateCMSPage(_, { id, input }, ctx) {
       const attrs = cleanCMSPageInput(input)
-
       if (!input.creatorId) {
         attrs.creatorId = ctx.user
       }
