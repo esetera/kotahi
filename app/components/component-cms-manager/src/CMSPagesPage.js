@@ -29,6 +29,9 @@ const CMSPagesPage = ({ match, history }) => {
 
   const { loading, data, error, refetch: refetchCMSPages } = useQuery(
     getCMSPages,
+    {
+      variables: { groupId: config.groupId },
+    },
   )
 
   const [createNewCMSPage] = useMutation(createCMSPageMutation)
@@ -60,7 +63,7 @@ const CMSPagesPage = ({ match, history }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const { cmsPages } = data
+  const cmsPages = data?.cmsPages || []
 
   let cmsPage = cmsPages.length > 0 ? cmsPages[0] : null
 

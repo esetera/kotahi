@@ -51,6 +51,7 @@ const footerTextInput = {
 const Footer = ({
   formikProps,
   cmsLayout,
+  groupId,
   createFile,
   deleteFile,
   triggerAutoSave,
@@ -133,6 +134,7 @@ const Footer = ({
       <CompactSectionWithFullWidth key="footer_page_links">
         <LayoutSecondaryHeading>Footer Page links</LayoutSecondaryHeading>
         <PageOrder
+          groupId={groupId}
           initialItems={cmsLayout.flaxFooterConfig}
           onPageOrderUpdated={onPageOrderUpdated}
         />

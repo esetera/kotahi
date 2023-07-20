@@ -2,7 +2,7 @@ import React from 'react'
 import { LayoutMainHeading, LayoutSecondaryHeading } from '../style'
 import PageOrder from './PageOrder'
 
-const Header = ({ cmsLayout, onPageOrderUpdated }) => {
+const Header = ({ cmsLayout, onPageOrderUpdated, groupId }) => {
   return (
     <div>
       <LayoutMainHeading>
@@ -13,6 +13,7 @@ const Header = ({ cmsLayout, onPageOrderUpdated }) => {
         </LayoutSecondaryHeading>
       </LayoutMainHeading>
       <PageOrder
+        groupId={groupId}
         initialItems={cmsLayout.flaxHeaderConfig}
         onPageOrderUpdated={onPageOrderUpdated}
       />

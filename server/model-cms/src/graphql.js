@@ -18,7 +18,7 @@ const setInitialLayout = async () => {
 
 const getFlaxPageConfig = async configKey => {
   const pages = await models.CMSPage.query()
-    .select(['id', 'title', 'url', configKey])
+    .select(['id', 'title', 'url', 'group_id', configKey])
     .orderBy('title')
 
   if (!pages) return []
@@ -30,6 +30,7 @@ const getFlaxPageConfig = async configKey => {
       url: page.url,
       shownInMenu: page[configKey].shownInMenu,
       sequenceIndex: page[configKey].sequenceIndex,
+      groupId: page.groupId,
     }))
     .sort((page1, page2) => {
       if (page1.sequenceIndex < page2.sequenceIndex) return -1
@@ -73,9 +74,9 @@ const cleanCMSPageInput = inputData => {
 
 const resolvers = {
   Query: {
-    async cmsPages(_, vars, ctx) {
-      const pages = await models.CMSPage.query().orderBy('title')
-      return pages
+    async cmsPages(_, { groupId }, ctx) {
+      const cmsPages = await models.CMSPage.query().where('groupId', groupId)
+      return cmsPages || []
     },
 
     async cmsPage(_, { id }, ctx) {
@@ -179,6 +180,19 @@ const resolvers = {
 
       return null
     },
+
+    async group(parent) {
+      if (!parent.groupId) {
+        return null
+      }
+
+      const group = await models.CMSPage.relatedQuery('group')
+        .for(parent.id)
+        .first()
+
+      return group
+    },
+
     async creator(parent) {
       if (!parent.creatorId) {
         return null
@@ -202,6 +216,18 @@ const resolvers = {
 
       logoFile.storedObjects = updatedStoredObjects
       return logoFile
+    },
+
+    async group(parent) {
+      if (!parent.groupId) {
+        return null
+      }
+
+      const group = await models.CMSLayout.relatedQuery('group')
+        .for(parent.id)
+        .first()
+
+      return group
     },
 
     async flaxHeaderConfig(parent) {
@@ -230,7 +256,7 @@ const resolvers = {
 const typeDefs = `
   extend type Query {
     cmsPage(id: ID!): CMSPage!
-    cmsPages: [CMSPage!]!
+    cmsPages(groupId: ID!): [CMSPage!]!
     cmsLayout: CMSLayout!
   }
 
@@ -253,6 +279,7 @@ const typeDefs = `
     edited: DateTime
     created: DateTime!
     updated: DateTime
+    group: Group!
   }
 
   type CreatePageResponse {
@@ -290,6 +317,7 @@ const typeDefs = `
     updated: DateTime
     flaxHeaderConfig: [FlaxPageHeaderConfig!]
     flaxFooterConfig: [FlaxPageFooterConfig!]
+    group: Group!
   }
 
   type FlaxPageHeaderConfig {
@@ -298,6 +326,7 @@ const typeDefs = `
     url: String!
     sequenceIndex: Int
     shownInMenu: Boolean
+    groupId: String!
   }
 
   type FlaxPageFooterConfig {
@@ -306,6 +335,7 @@ const typeDefs = `
     url: String!
     sequenceIndex: Int
     shownInMenu: Boolean
+    groupId: String!
   }
 
   input CMSPageInput {
@@ -318,6 +348,7 @@ const typeDefs = `
     sequenceIndex: Int
     flaxHeaderConfig: FlaxConfigInput
     flaxFooterConfig: FlaxConfigInput
+    groupId: String
   }
 
   input StoredPartnerInput {
@@ -334,6 +365,7 @@ const typeDefs = `
     footerText: String
     published: DateTime
     edited: DateTime
+    groupId: String
   }
 
   input FlaxConfigInput {

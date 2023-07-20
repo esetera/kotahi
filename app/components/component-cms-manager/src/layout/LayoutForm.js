@@ -11,6 +11,7 @@ import Footer from './Footer'
 const LayoutForm = ({
   formikProps,
   cmsLayout,
+  groupId,
   submitButtonText,
   onHeaderPageOrderChanged,
   onFooterPageOrderChanged,
@@ -40,6 +41,7 @@ const LayoutForm = ({
         <PaddedContent>
           <Header
             cmsLayout={cmsLayout}
+            groupId={groupId}
             onPageOrderUpdated={onHeaderPageOrderChanged}
           />
         </PaddedContent>
@@ -56,6 +58,7 @@ const LayoutForm = ({
             createFile={createFile}
             deleteFile={deleteFile}
             formikProps={formikProps}
+            groupId={groupId}
             onPageOrderUpdated={onFooterPageOrderChanged}
             triggerAutoSave={triggerAutoSave}
           />

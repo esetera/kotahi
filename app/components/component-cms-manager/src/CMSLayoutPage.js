@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Formik } from 'formik'
 import { useMutation, useQuery } from '@apollo/client'
+import { ConfigContext } from '../../config/src/index'
 import LayoutForm from './layout/LayoutForm'
 import { Container, Spinner, CommsErrorBanner } from '../../shared'
 import PageHeader from './components/PageHeader'
@@ -20,6 +21,7 @@ const CMSLayoutPage = ({ history }) => {
   const [updateCMSPageInfo] = useMutation(updateCMSPageDataMutation)
   const [rebuildFlaxSite] = useMutation(rebuildFlaxSiteMutation)
   const [createFile] = useMutation(createFileMutation)
+  const config = useContext(ConfigContext)
 
   const [deleteFile] = useMutation(deleteFileMutation, {
     update(cache, { data: { deleteFile: fileToDelete } }) {
@@ -78,6 +80,7 @@ const CMSLayoutPage = ({ history }) => {
           partners: formData.partners,
           footerText: formData.footerText,
           published: new Date(),
+          groupId: config.groupId,
         },
       },
     })
@@ -127,6 +130,7 @@ const CMSLayoutPage = ({ history }) => {
               createFile={createFile}
               deleteFile={deleteFile}
               formikProps={formikProps}
+              groupId={config.groupId}
               onFooterPageOrderChanged={onFooterPageOrderChanged}
               onHeaderPageOrderChanged={onHeaderPageOrderChanged}
               submitButtonText={submitButtonText}

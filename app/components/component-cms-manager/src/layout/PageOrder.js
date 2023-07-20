@@ -22,10 +22,11 @@ const reformObject = values => {
     title: item.title,
     sequenceIndex: item.sequenceIndex,
     shownInMenu: item.shownInMenu,
+    groupId: item.groupId,
   }))
 }
 
-const PageOrder = ({ initialItems, onPageOrderUpdated }) => {
+const PageOrder = ({ initialItems, onPageOrderUpdated, groupId }) => {
   const [items, setItems] = React.useState(reformObject(initialItems))
 
   const updateItems = updatedItems => {
@@ -54,7 +55,7 @@ const PageOrder = ({ initialItems, onPageOrderUpdated }) => {
   }
 
   const renderItemList = (item, index) => {
-    return (
+    return item.groupId === groupId ? (
       <Draggable draggableId={item.id} index={index} key={item.id}>
         {(provided, snapshot) => (
           <LayoutHeaderListItem
@@ -77,7 +78,7 @@ const PageOrder = ({ initialItems, onPageOrderUpdated }) => {
           </LayoutHeaderListItem>
         )}
       </Draggable>
-    )
+    ) : null
   }
 
   return (
