@@ -1,6 +1,5 @@
 const { BaseModel } = require('@coko/server')
 const File = require('@coko/server/src/models/file/file.model')
-const Group = require('../../model-group/src/group')
 
 class CMSLayout extends BaseModel {
   static get tableName() {
@@ -16,14 +15,6 @@ class CMSLayout extends BaseModel {
         join: {
           from: 'cms_layouts.logoId',
           to: 'files.id',
-        },
-      },
-      group: {
-        relation: BaseModel.BelongsToOneRelation,
-        modelClass: Group,
-        join: {
-          from: 'cms_layouts.groupId',
-          to: 'groups.id',
         },
       },
     }

@@ -1,6 +1,5 @@
 const { BaseModel } = require('@coko/server')
 const { User } = require('@pubsweet/models')
-const Group = require('../../model-group/src/group')
 
 class CMSPage extends BaseModel {
   static get tableName() {
@@ -17,14 +16,6 @@ class CMSPage extends BaseModel {
         join: {
           from: 'cms_pages.creatorId',
           to: 'users.id',
-        },
-      },
-      group: {
-        relation: BaseModel.BelongsToOneRelation,
-        modelClass: Group,
-        join: {
-          from: 'cms_pages.groupId',
-          to: 'groups.id',
         },
       },
     }
