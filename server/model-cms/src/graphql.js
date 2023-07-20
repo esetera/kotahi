@@ -291,7 +291,7 @@ const typeDefs = `
     edited: DateTime
     created: DateTime!
     updated: DateTime
-    groupId: String
+    groupId: ID!
   }
 
   type CreatePageResponse {
@@ -329,7 +329,7 @@ const typeDefs = `
     updated: DateTime
     flaxHeaderConfig: [FlaxPageHeaderConfig!]
     flaxFooterConfig: [FlaxPageFooterConfig!]
-    groupId: String
+    groupId: ID!
   }
 
   type FlaxPageHeaderConfig {
@@ -354,11 +354,8 @@ const typeDefs = `
     content: String
     published: DateTime
     edited: DateTime
-    shownInMenu: Boolean
-    sequenceIndex: Int
     flaxHeaderConfig: FlaxConfigInput
     flaxFooterConfig: FlaxConfigInput
-    groupId: String
   }
 
   input StoredPartnerInput {
@@ -375,7 +372,6 @@ const typeDefs = `
     footerText: String
     published: DateTime
     edited: DateTime
-    groupId: String
   }
 
   input FlaxConfigInput {
