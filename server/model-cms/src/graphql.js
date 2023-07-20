@@ -110,6 +110,7 @@ const resolvers = {
     async createCMSPage(_, { input }, ctx) {
       try {
         const groupId = ctx.req.headers['group-id']
+
         const savedCmsPage = await new models.CMSPage(
           cleanCMSPageInput({ ...input, groupId }),
         ).save()
@@ -132,6 +133,7 @@ const resolvers = {
 
     async updateCMSPage(_, { id, input }, ctx) {
       const attrs = cleanCMSPageInput(input)
+
       if (!input.creatorId) {
         attrs.creatorId = ctx.user
       }
