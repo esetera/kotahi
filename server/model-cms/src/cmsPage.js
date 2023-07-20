@@ -1,4 +1,6 @@
 const { BaseModel } = require('@coko/server')
+const { User } = require('@pubsweet/models')
+const Group = require('../../model-group/src/group')
 
 class CMSPage extends BaseModel {
   static get tableName() {
@@ -7,7 +9,7 @@ class CMSPage extends BaseModel {
 
   static get relationMappings() {
     /* eslint-disable-next-line global-require */
-    const { User } = require('@pubsweet/models')
+
     return {
       creator: {
         relation: BaseModel.BelongsToOneRelation,
@@ -15,6 +17,14 @@ class CMSPage extends BaseModel {
         join: {
           from: 'cms_pages.creatorId',
           to: 'users.id',
+        },
+      },
+      group: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: Group,
+        join: {
+          from: 'cms_pages.groupId',
+          to: 'groups.id',
         },
       },
     }
@@ -42,6 +52,7 @@ class CMSPage extends BaseModel {
         edited: { type: ['string', 'object', 'null'], format: 'date-time' },
         flaxHeaderConfig: flaxConfig,
         flaxFooterConfig: flaxConfig,
+        groupId: { type: ['string', 'null'], format: 'uuid' },
       },
     }
   }

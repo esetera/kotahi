@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 
 import { Formik } from 'formik'
 
 import CMSPageEditForm from './CMSPageEditForm'
+
+import { ConfigContext } from '../../../config/src/index'
 
 import { FullWidthAndHeightContainer } from '../style'
 
@@ -16,6 +18,8 @@ const CMSPageEdit = ({
   deleteCMSPage,
 }) => {
   const [customFormErrors, setCustomFormErrors] = useState({})
+
+  const config = useContext(ConfigContext)
 
   const [submitButtonState, setSubmitButtonState] = useState({
     state: null,
@@ -42,6 +46,7 @@ const CMSPageEdit = ({
       content: formData.content,
       url: formData.url,
       published: timeStamp,
+      groupId: config.groupId,
     }
 
     await updatePageDataQuery({
@@ -67,6 +72,7 @@ const CMSPageEdit = ({
       title: formData.title,
       content: formData.content,
       url: formData.url,
+      groupId: config.groupId,
     }
 
     const newCMSPageResults = await createNewCMSPage({
