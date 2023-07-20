@@ -88,12 +88,12 @@ const resolvers = {
       return cmsPages
     },
 
-    async cmsPage(_, { id }, ctx) {
+    async cmsPage(_, { id }, _ctx) {
       const cmsPage = await models.CMSPage.query().findById(id)
       return cmsPage
     },
 
-    async cmsLayout(_, vars, ctx) {
+    async cmsLayout(_, _vars, ctx) {
       const groupId = ctx.req.headers['group-id']
       let layout = await models.CMSLayout.query()
         .where('groupId', groupId)
@@ -193,18 +193,6 @@ const resolvers = {
       return null
     },
 
-    async group(parent) {
-      if (!parent.groupId) {
-        return null
-      }
-
-      const group = await models.CMSPage.relatedQuery('group')
-        .for(parent.id)
-        .first()
-
-      return group
-    },
-
     async creator(parent) {
       if (!parent.creatorId) {
         return null
@@ -228,18 +216,6 @@ const resolvers = {
 
       logoFile.storedObjects = updatedStoredObjects
       return logoFile
-    },
-
-    async group(parent) {
-      if (!parent.groupId) {
-        return null
-      }
-
-      const group = await models.CMSLayout.relatedQuery('group')
-        .for(parent.id)
-        .first()
-
-      return group
     },
 
     async flaxHeaderConfig(parent) {

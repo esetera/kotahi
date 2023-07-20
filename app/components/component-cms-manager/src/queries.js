@@ -30,13 +30,10 @@ const cmsPageFields = `
   updated
   published
   edited
+  groupId
   creator {
     id
     username
-  }
-  group {
-    id
-    name
   }
 `
 
