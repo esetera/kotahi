@@ -1,85 +1,87 @@
 import { gql } from '@apollo/client'
 
 const fileFields = `
-  id
-  name
-  tags
-  storedObjects {
-    mimetype
-    key
-    url
-    type
-  }
+    id
+    name
+    tags
+    storedObjects {
+      mimetype
+      key
+      url
+      type
+    }
 `
 
 const flaxPageConfigFields = `
-  id
-  title
-  sequenceIndex
-  shownInMenu
-  url
+    id
+    title
+    sequenceIndex
+    shownInMenu
+    url
 `
 
 const cmsPageFields = `
-  id
-  content
-  created
-  url
-  status
-  title
-  updated
-  published
-  edited
-  groupId
-  creator {
     id
-    username
-  }
+    content
+    created
+    url
+    status
+    title
+    updated
+    published
+    edited
+    groupId
+    creator {
+      id
+      username
+    }
 `
 
 const cmsLayoutFields = `
-  id
-  created
-  updated
-  primaryColor
-  secondaryColor
-  footerText
-  published
-  edited
-  flaxHeaderConfig {
-    ${flaxPageConfigFields}
-  }
-  flaxFooterConfig {
-    ${flaxPageConfigFields}
-  }
-  partners {
     id
-    url
-    sequenceIndex
-    file {
+    created
+    updated
+    primaryColor
+    secondaryColor
+    footerText
+    published
+    edited
+    groupId
+    flaxHeaderConfig {
+      ${flaxPageConfigFields}
+    }
+    flaxFooterConfig {
+      ${flaxPageConfigFields}
+    }
+    partners {
+      id
+      url
+      sequenceIndex
+      file {
+       ${fileFields}
+      }
+    }
+    logo {
       ${fileFields}
     }
-  }
-  logo {
-    ${fileFields}
-  }
+ 
 `
 
 const createCmsPageFields = `
-  cmsPage {
-    id
-    url
-    content
-  }
-  success
-  error
-  column
-  errorMessage
+    cmsPage {
+      id
+      url
+      content
+    }
+    success
+    error
+    column
+    errorMessage
 `
 
 const deleteCmsPageFields = `
-  success
-  error
+    success
+    error
 `
 
 export const getCMSPages = gql`
