@@ -7,7 +7,7 @@ const File = require('@coko/server/src/models/file/file.model')
 const setInitialLayout = async groupId => {
   const { formData } = await models.Config.query()
     .where('groupId', groupId)
-    .first() // TODO: Modify this to be queried with groupId for multi-tenancy phase 2 / CMS release
+    .first()
 
   const { primaryColor, secondaryColor } = formData.groupIdentity
 
@@ -291,7 +291,7 @@ const typeDefs = `
     edited: DateTime
     created: DateTime!
     updated: DateTime
-    group: Group!
+    groupId: String
   }
 
   type CreatePageResponse {
@@ -329,7 +329,7 @@ const typeDefs = `
     updated: DateTime
     flaxHeaderConfig: [FlaxPageHeaderConfig!]
     flaxFooterConfig: [FlaxPageFooterConfig!]
-    group: Group!
+    groupId: String
   }
 
   type FlaxPageHeaderConfig {
