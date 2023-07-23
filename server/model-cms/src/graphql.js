@@ -166,6 +166,7 @@ const resolvers = {
 
     async updateCMSLayout(_, { _id, input }, ctx) {
       const groupId = ctx.req.headers['group-id']
+
       const layout = await models.CMSLayout.query()
         .where('groupId', groupId)
         .first()

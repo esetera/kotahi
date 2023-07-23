@@ -18,7 +18,7 @@ const rebuild = async (params, groupId) => {
       url: `${currentApIUrl}/graphql`,
     },
     buildConfigs: params,
-    groupId: groupId,
+    groupId,
   })
 
   return new Promise((resolve, reject) => {
