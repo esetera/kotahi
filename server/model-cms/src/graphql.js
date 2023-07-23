@@ -165,7 +165,10 @@ const resolvers = {
     },
 
     async updateCMSLayout(_, { _id, input }, ctx) {
-      const layout = await models.CMSLayout.query().first()
+      const groupId = ctx.req.headers['group-id']
+      const layout = await models.CMSLayout.query()
+        .where('groupId', groupId)
+        .first()
 
       if (!layout) {
         const savedCmsLayout = await new models.CMSLayout(input).save()
