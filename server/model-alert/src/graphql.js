@@ -11,10 +11,12 @@ const resolvers = {
       return Alert.all()
     },
     getGlobalChatNotificationOption: async (_, __, context) => {
-      return getNotificationOptionForUser({
+      const notificationUserOption = getNotificationOptionForUser({
         userId: context.user,
         type: 'globalChat',
       })
+
+      return notificationUserOption.option === '30MinDigest'
     },
   },
   Mutation: {

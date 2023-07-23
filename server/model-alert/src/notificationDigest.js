@@ -34,6 +34,7 @@ class NotificationDigest extends BaseModel {
         userId: { type: ['string'], format: 'uuid' },
         userIsMentioned: { type: 'boolean', default: false },
         option: { type: 'string' },
+        actioned: { type: 'boolean', default: false },
       },
     }
   }

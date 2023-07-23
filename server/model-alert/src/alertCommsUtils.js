@@ -7,56 +7,45 @@ const {
 } = require('../../model-user/src/userCommsUtils')
 
 const sendAlerts = async () => {
-  const channelMembers = await models.ChannelMember.query()
-    .whereNull('lastAlertTriggeredTime')
-    .where(
-      'lastViewed',
-      '<',
-      new Date(Date.now() - 1000 * 60 * 30), // 30 min ago
-    )
-    .withGraphJoined('user')
+  // [TODO-1344]: add a comment describing the below query
+  const notificationDigestRows = await models.NotificationDigest.query()
+    .distinctOn('user_id')
+    .where('max_notification_time', '<', new Date())
+    .orderBy(['user_id', 'max_notification_time'])
 
-  channelMembers.forEach(async channelMember => {
-    // Check if notification preference is true for the user
-    if (!channelMember.user.eventNotificationsOptIn) {
-      return
-    }
-
-    // check if there are messages in the channel that have a larger timestamp than channelMemberlastviewed
-    const earliestUnreadMessage = await models.Message.query()
-      .where({ channelId: channelMember.channelId })
-      .where('created', '>', channelMember.lastViewed)
-      .orderBy('created')
-      .first()
-
-    if (!earliestUnreadMessage) {
-      return
-    }
+  notificationDigestRows.forEach(async notificationDigest => {
+    if (notificationDigest.actioned) return
 
     await sendAlertForMessage({
-      user: channelMember.user,
-      messageId: earliestUnreadMessage.id,
+      userId: notificationDigest.userId,
+      messageId: notificationDigest.header,
       title: 'Unread messages in channel',
     })
 
-    await models.ChannelMember.query().updateAndFetchById(channelMember.id, {
-      lastAlertTriggeredTime: new Date(),
-    })
+    // query to update all notificationdigest entries where user=user and path=path
+    await models.NotificationDigest.query()
+      .update({
+        actioned: true,
+      })
+      .where({
+        userId: notificationDigest.userId,
+        pathString: notificationDigest.pathString,
+      })
   })
 }
 
 const sendAlertForMessage = async ({
-  user,
+  userId,
   messageId,
   title,
   triggerTime = new Date(),
 }) => {
+  const user = await models.User.query().findById(userId)
   const message = await models.Message.query().findById(messageId)
   const channel = await models.Channel.query().findById(message.channelId)
 
   // send email notification
-  const urlFrag = config.journal.metadata.toplevel_urlfragment
-  const baseUrl = config['pubsweet-client'].baseUrl + urlFrag
+  const { baseUrl } = config['pubsweet-client']
 
   let discussionLink = baseUrl
 
@@ -109,7 +98,7 @@ const getNotificationOptionForUser = async ({ userId, type }) => {
     .first()
 
   if (notificationUserOption) {
-    return notificationUserOption.option === '30MinDigest'
+    return notificationUserOption.option
   }
 
   notificationUserOption = await models.NotificationUserOption.query()
@@ -117,10 +106,10 @@ const getNotificationOptionForUser = async ({ userId, type }) => {
     .first()
 
   if (notificationUserOption) {
-    return notificationUserOption.option === '30MinDigest'
+    return notificationUserOption.option
   }
 
-  return true // hardcoded default. [TODO-1344]: move to config
+  return '30MinDigest' // hardcoded default. [TODO-1344]: move to config
 }
 
 // [TODO-1344]: need to find a better file to store this event handler
@@ -133,12 +122,12 @@ const notificationEventHandler = async ({
   mentionedUsers,
 }) => {
   users.forEach(async user => {
-    const userNotificationOption = await getNotificationOptionForUser({
+    const notificationUserOption = await getNotificationOptionForUser({
       userId: user.id,
       type: 'chatChannel', // [TODO-1344]: hardcoded, need to rethink these values
     })
 
-    if (!userNotificationOption) return
+    if (!notificationUserOption) return
 
     const maxNotificationTime = new Date(time)
     maxNotificationTime.setMinutes(maxNotificationTime.getMinutes() + 30)
@@ -147,6 +136,7 @@ const notificationEventHandler = async ({
       time,
       maxNotificationTime,
       pathString: path.join('/'),
+      option: notificationUserOption,
       header,
       content,
       userId: user.id,
