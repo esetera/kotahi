@@ -75,11 +75,11 @@ const sendAlertForMessage = async ({
     discussionLink,
   }
 
-  await sendEmailNotification(
-    user.email,
-    'alertUnreadMessageDigestTemplate',
-    data,
-  )
+  // await sendEmailNotification(
+  //   user.email,
+  //   'alertUnreadMessageDigestTemplate',
+  //   data,
+  // )
 
   await new models.Alert({
     title,
