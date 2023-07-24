@@ -33,7 +33,7 @@ const stripConfidentialDataFromReviews = (
   if (!reviewForm || !decisionForm) return []
 
   const confidentialReviewFields = reviewForm.structure.children
-    .filter(field => field.hideFromAuthors === 'true')
+    .filter(field => field.hideFromAuthors === 'true' && userRoles.author)
     .map(field => field.name)
 
   const confidentialDecisionFields = decisionForm.structure.children
