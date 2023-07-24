@@ -1,5 +1,4 @@
 const { BaseModel } = require('@coko/server')
-const { User } = require('@pubsweet/models')
 
 class CMSPage extends BaseModel {
   static get tableName() {
@@ -8,7 +7,7 @@ class CMSPage extends BaseModel {
 
   static get relationMappings() {
     /* eslint-disable-next-line global-require */
-
+    const { User } = require('@pubsweet/models')
     return {
       creator: {
         relation: BaseModel.BelongsToOneRelation,

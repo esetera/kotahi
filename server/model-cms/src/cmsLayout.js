@@ -1,5 +1,4 @@
 const { BaseModel } = require('@coko/server')
-const File = require('@coko/server/src/models/file/file.model')
 
 class CMSLayout extends BaseModel {
   static get tableName() {
@@ -8,6 +7,7 @@ class CMSLayout extends BaseModel {
 
   static get relationMappings() {
     /* eslint-disable-next-line global-require */
+    const File = require('@coko/server/src/models/file/file.model')
     return {
       logo: {
         relation: BaseModel.BelongsToOneRelation,

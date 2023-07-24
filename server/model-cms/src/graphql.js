@@ -5,9 +5,10 @@ const { fileStorage } = require('@coko/server')
 const File = require('@coko/server/src/models/file/file.model')
 
 const setInitialLayout = async groupId => {
-  const { formData } = await models.Config.query()
-    .where('groupId', groupId)
-    .first()
+  const { formData } = await models.Config.query().findOne({
+    groupId,
+    active: true,
+  })
 
   const { primaryColor, secondaryColor } = formData.groupIdentity
 
@@ -273,7 +274,6 @@ const typeDefs = `
     edited: DateTime
     created: DateTime!
     updated: DateTime
-    groupId: ID!
   }
 
   type CreatePageResponse {
@@ -311,7 +311,6 @@ const typeDefs = `
     updated: DateTime
     flaxHeaderConfig: [FlaxPageHeaderConfig!]
     flaxFooterConfig: [FlaxPageFooterConfig!]
-    groupId: ID!
   }
 
   type FlaxPageHeaderConfig {

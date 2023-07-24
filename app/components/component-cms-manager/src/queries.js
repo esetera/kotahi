@@ -30,7 +30,6 @@ const cmsPageFields = `
     updated
     published
     edited
-    groupId
     creator {
       id
       username
@@ -46,7 +45,6 @@ const cmsLayoutFields = `
     footerText
     published
     edited
-    groupId
     flaxHeaderConfig {
       ${flaxPageConfigFields}
     }
