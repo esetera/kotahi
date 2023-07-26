@@ -1,7 +1,7 @@
 const config = require('config')
 const { app } = require('@coko/server')
 const { setConfig } = require('./config/src/configObject')
-const { registerPlugins } = require('./plugins')
+const { registerPlugins } = require('./plugins/plugins')
 
 setConfig({
   journal: config.journal,

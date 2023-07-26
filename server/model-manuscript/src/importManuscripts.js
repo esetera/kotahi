@@ -4,7 +4,7 @@ const importArticlesFromBiorxiv = require('../../import-articles/biorxiv-import'
 const importArticlesFromBiorxivWithFullTextSearch = require('../../import-articles/biorxiv-full-text-import')
 const importArticlesFromPubmed = require('../../import-articles/pubmed-import')
 const importArticlesFromSemanticScholar = require('../../import-articles/semantic-scholar-papers-import')
-const { runImports } = require('../../plugins')
+const { runImports } = require('../../plugins/imports')
 
 const { getPubsub } = pubsubManager
 
