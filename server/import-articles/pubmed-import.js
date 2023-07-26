@@ -3,12 +3,9 @@ const axios = require('axios')
 const xml2json = require('xml-js')
 const FormData = require('form-data')
 const fetch = require('node-fetch')
-
 const models = require('@pubsweet/models')
-const ArticleImportSources = require('../model-article-import-sources/src/articleImportSources')
-const ArticleImportHistory = require('../model-article-import-history/src/articleImportHistory')
-const Form = require('../model-form/src/form')
 const flattenObj = require('../utils/flattenObj')
+const { getSubmissionForm } = require('../model-review/src/reviewCommsUtils')
 
 const selectVersionRegexp = /(v)(?!.*\1)/g
 
@@ -40,8 +37,8 @@ const pubmedQueries = {
     '("Drug Therapy"[Mesh] OR "drug therapy"[tiab] OR "drug treatment"[tiab] OR "drug target"[tiab] OR "drug targets"[tiab] OR "drug trial" OR "drug trials" OR "pharmaceutical"[tiab] OR "drug repurposing" OR "antiviral"[tiab] OR "antivirals"[tiab] OR "agents"[tiab] OR "corticosteroid" OR "corticosteroids" OR "Angiotensin receptor blocker" OR "angiotensin receptor blockers" OR "statin" OR "statins" OR "hydroxychloroquine" OR "chloroquine" OR "oseltamivir" OR "arbidol" OR "remdesivir" OR "favipiravir" OR "angiotensin-converting enzyme inhibitors"[mh] OR "angiotensin-converting enzyme inhibitor" OR "angiotensin-converting enzyme inhibitors" OR "ACE inhibitor" OR "ACE inhibitors" OR "immunoglobulins"[mh] OR "immunoglobulin" OR "immunoglobulins" OR "IVIG" OR "arbidol"[nm] OR "arbidol" OR "umifenovir" OR "azithromycin"[mh] OR "azithromycin" OR "carrimycin" OR "danoprevir"[nm] OR "danoprevir" OR "interferons"[mh] OR "interferon" OR "interferons" OR "IFN" OR "darunavir"[mh] OR "darunavir" OR "prezista" OR "cobicistat"[mh] OR "cobicistat" OR "tybost" OR "Recombinant human interferon α2β" OR "recombinant human interferon alpha 2 beta" OR "thalidomide"[mh] OR "thalidomide" OR "sedoval" OR "thalomid" OR "methylprednisolone"[mh] OR "methylprednisolone" OR "metipred" OR "urbason" OR "Medrol" OR "pirfenidone"[nm] OR "pirfenidone" OR "Esbriet" OR "deskar" OR "bevacizumab"[mh] OR "bevacizumab" OR "mvasi" OR "avastin" OR "fingolimod hydrochloride"[mh] OR "fingolimod" OR "gilenya" OR "gilenia" OR "bromhexine"[mh] OR "bromhexine" OR "Clevudine"[nm] OR "clevudine" OR "Povidone-iodine"[mh] OR "povidone-iodine" OR "betadine" OR "minidyne" OR "Ruxolitinib" OR "INCB018424"[nm] OR "Acalabrutinib"[nm] OR "acalabrutinib" OR "calquence" OR "Vazegepant" OR "Eculizumab"[nm] OR "eculizumab" OR "soliris" OR "Lopinavir"[mh] OR "lopinavir" OR "Ritonavir"[mh] OR "ritonavir" OR "norvir" OR "Imatinib mesylate"[mh] OR "imatinib" OR "gleevec" OR "Baricitinib"[nm] OR "baricitinib" OR "olumiant" OR "dexamethasone"[mh] OR "dexamethasone" OR "decadron" OR "Leronlimab"[nm] OR "leronlimab" OR "Dalargin" OR "Mefloquin"[mh] OR "mefloquin" OR "mephloquine" OR "lariam" OR "Spironolactone"[mh] OR "spironolactone" OR "aldactone" OR "carospir" OR "Tocilizumab"[nm] OR "tocilizumab" OR "Clazakizumab"[nm] OR "clazakizumab" OR "Pyridostigmine bromide"[mh] OR "pyridostigmine" OR "mestinon" OR "indomethacin"[mh] OR "indomethacin" OR "indomethacine" OR "Indocin" OR "tivorbex" OR "Azithromycin"[mh] OR "azithromycin" OR "Zithromax" OR "Danoprevir"[nm] OR "danoprevir" OR "Tinzaparin"[mh] OR "tinzaparin" OR "innohep" OR "heparin"[mh] OR "Heparin" OR "Nitazoxanide"[nm] OR "nitazoxanide" OR "Ivermectin"[mh] OR "Ivermectin" OR "Niclosamide"[mh] OR "niclosamide" OR "Sarilumab"[nm] OR "sarilumab" OR "kevzara" OR "camostat"[nm] OR "Camostat" OR "tretinoin"[mh] OR "tretinoin" OR "Retinoic acid" OR "isotrentinoin" OR "vitamin a"[mh] OR "vitamin a" OR "methotrexate"[mh] OR "methotrexate" OR "Nafamostat"[nm] OR "nafamostat" OR "melatonin"[mh] OR "melatonin") AND ("COVID-19"[tw] OR "COVID 19"[tw] OR "COVID19"[tw] OR "COVID2019"[tw] OR "COVID 2019"[tw] OR "COVID-2019"[tw] OR "novel coronavirus"[tw] OR "new coronavirus"[tw] OR "novel corona virus"[tw] OR "new corona virus"[tw] OR "SARS-CoV-2"[tw] OR "SARSCoV2"[tw] OR "SARS-CoV2"[tw] OR "2019nCoV"[tw] OR "2019-nCoV"[tw] OR "2019 coronavirus"[tw] OR "2019 corona virus"[tw] OR "coronavirus disease 2019"[tw] OR "severe acute respiratory syndrome coronavirus 2"[nm] OR "severe acute respiratory syndrome coronavirus 2"[tw] OR "sars-coronavirus-2"[tw] OR "coronavirus disease 2019"[tw] OR "corona virus disease 2019"[tw]) NOT ("letter"[pt] OR "comment"[pt] OR "editorial"[pt] OR "review"[pt] OR "letter"[ti] OR "comment"[ti] OR "editorial"[ti] OR "brief communication"[ti] OR "review"[ti])',
 }
 
-const getData = async ctx => {
-  const manuscripts = await models.Manuscript.query()
+const getData = async (groupId, ctx) => {
+  const manuscripts = await models.Manuscript.query().where({ groupId })
 
   const currentArticleURLs = manuscripts.map(({ submission }) => {
     return submission.articleURL
@@ -57,24 +54,29 @@ const getData = async ctx => {
     .split('T')[0]
     .replace(/-/g, '/')
 
-  const [checkIfSourceExists] = await ArticleImportSources.query().where({
-    server: 'pubmed',
-  })
+  const [checkIfSourceExists] = await models.ArticleImportSources.query().where(
+    {
+      server: 'pubmed',
+    },
+  )
 
   if (!checkIfSourceExists) {
-    await ArticleImportSources.query().insert({
+    await models.ArticleImportSources.query().insert({
       server: 'pubmed',
     })
   }
 
-  const [pubmedImportSourceId] = await ArticleImportSources.query().where({
+  const [
+    pubmedImportSourceId,
+  ] = await models.ArticleImportSources.query().where({
     server: 'pubmed',
   })
 
-  const lastImportDate = await ArticleImportHistory.query()
+  const lastImportDate = await models.ArticleImportHistory.query()
     .select('date')
     .where({
       sourceId: pubmedImportSourceId.id,
+      groupId,
     })
 
   const minDate = lastImportDate.length
@@ -154,7 +156,7 @@ const getData = async ctx => {
     })
   }
 
-  const submissionForm = await Form.findOneByField('purpose', 'submit')
+  const submissionForm = await getSubmissionForm(groupId)
 
   const parsedFormStructure = submissionForm.structure.children
     .map(formElement => {
@@ -363,6 +365,7 @@ const getData = async ctx => {
                 files: [],
                 reviews: [],
                 teams: [],
+                groupId,
               }
             : null
         })
@@ -385,17 +388,19 @@ const getData = async ctx => {
   )
 
   if (lastImportDate.length) {
-    await ArticleImportHistory.query()
+    await models.ArticleImportHistory.query()
       .update({
         date: new Date().toISOString(),
       })
       .where({
         date: lastImportDate[0].date,
+        groupId,
       })
   } else {
-    await ArticleImportHistory.query().insert({
+    await models.ArticleImportHistory.query().insert({
       date: new Date().toISOString(),
       sourceId: pubmedImportSourceId.id,
+      groupId,
     })
   }
 

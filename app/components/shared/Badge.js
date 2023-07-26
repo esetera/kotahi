@@ -1,8 +1,9 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 import { grid, th } from '@pubsweet/ui-toolkit'
+import { color } from '../../theme'
 
-const Status = styled.span`
+export const Status = styled.span`
   border-radius: 8px;
   font-size: ${th('fontSizeBaseSmall')};
   font-variant: all-small-caps;
@@ -16,6 +17,12 @@ const Status = styled.span`
     css`
       cursor: pointer;
     `}
+
+ ${props =>
+    props.color &&
+    css`
+      background-color: ${props.color};
+    `}
 `
 
 export const SuccessStatus = styled(Status)`
@@ -26,7 +33,7 @@ export const SuccessStatus = styled(Status)`
         `
       : css`
           background-color: ${th('colorSuccess')};
-          color: ${th('colorTextReverse')};
+          color: ${color.textReverse};
         `}
 `
 
@@ -38,7 +45,7 @@ export const ErrorStatus = styled(Status)`
         `
       : css`
           background-color: ${th('colorError')};
-          color: ${th('colorTextReverse')};
+          color: ${color.textReverse};
         `}
 `
 
@@ -46,14 +53,21 @@ export const NormalStatus = styled(Status)`
   ${props =>
     props.minimal
       ? css`
-          color: ${th('colorPrimary')};
+          color: ${color.brand1.base};
         `
       : css`
           background-color: ${th('colorWarning')};
         `}
 `
 
-const label = (status, published) => {
+export const ConfigurableStatus = styled(Status)`
+  ${props => css`
+    color: ${props.lightText ? color.textReverse : color.text};
+    background-color: ${props.color};
+  `}
+`
+
+export const label = (status, published) => {
   const isPublished = !!published
 
   const labels = {
@@ -66,6 +80,7 @@ const label = (status, published) => {
     revise: 'Revise',
     revising: 'Revising',
     invited: 'Invited', // reviewer status
+    inProgress: 'In Progress', // reviewer status
     completed: 'Completed', // reviewer status
     unanswered: 'Invited',
     evaluated: 'evaluated',
@@ -82,10 +97,16 @@ const label = (status, published) => {
 }
 
 // TODO: Make this configurable
-export const StatusBadge = ({ status, published, minimal, clickable }) => {
+export const StatusBadge = ({
+  status,
+  published,
+  minimal,
+  clickable,
+  styles,
+}) => {
   if (status === 'accepted' || status === 'published') {
     return (
-      <SuccessStatus clickable={clickable} minimal={minimal}>
+      <SuccessStatus clickable={clickable} minimal={minimal} style={styles}>
         {label(status, published)}
       </SuccessStatus>
     )
@@ -93,14 +114,14 @@ export const StatusBadge = ({ status, published, minimal, clickable }) => {
 
   if (status === 'rejected') {
     return (
-      <ErrorStatus clickable={clickable} minimal={minimal}>
+      <ErrorStatus clickable={clickable} minimal={minimal} style={styles}>
         {label(status, published)}
       </ErrorStatus>
     )
   }
 
   return (
-    <NormalStatus clickable={clickable} minimal={minimal}>
+    <NormalStatus clickable={clickable} minimal={minimal} style={styles}>
       {label(status, published)}
     </NormalStatus>
   )

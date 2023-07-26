@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { debounce, set } from 'lodash'
 import { gql, useQuery, useMutation, useApolloClient } from '@apollo/client'
-import config from 'config'
 import ReactRouterPropTypes from 'react-router-prop-types'
+import { ConfigContext } from '../../../config/src'
 import Submit from './Submit'
 import query, { fragmentFields } from '../userManuscriptFormQuery'
 import { Spinner } from '../../../shared'
@@ -73,12 +73,11 @@ const deleteFileMutation = gql`
   }
 `
 
-const urlFrag = config.journal.metadata.toplevel_urlfragment
-
 let debouncers = {}
 
-const SubmitPage = ({ match, history }) => {
-  const [isPublishingBlocked, setIsPublishingBlocked] = useState(false)
+const SubmitPage = ({ currentUser, match, history }) => {
+  const config = useContext(ConfigContext)
+  const { urlFrag } = config
 
   useEffect(() => {
     return () => {
@@ -90,7 +89,7 @@ const SubmitPage = ({ match, history }) => {
   const { data, loading, error } = useQuery(
     query,
     {
-      variables: { id: match.params.version },
+      variables: { id: match.params.version, groupId: config.groupId },
       partialRefetch: true,
     },
     { refetchOnMount: true },
@@ -127,7 +126,6 @@ const SubmitPage = ({ match, history }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const currentUser = data?.currentUser
   const manuscript = data?.manuscript
   const submissionForm = data?.submissionForm?.structure
   const decisionForm = data?.decisionForm?.structure
@@ -159,13 +157,7 @@ const SubmitPage = ({ match, history }) => {
     return debouncers[path](versionId, manuscriptDelta)
   }
 
-  const republish = async manuscriptId => {
-    if (isPublishingBlocked) {
-      return
-    }
-
-    setIsPublishingBlocked(true)
-
+  const republish = async (manuscriptId, groupId) => {
     const fieldErrors = await validateManuscriptSubmission(
       {
         ...JSON.parse(manuscript.submission),
@@ -173,27 +165,38 @@ const SubmitPage = ({ match, history }) => {
       },
       submissionForm,
       validateDoi(client),
-      validateSuffix(client),
+      validateSuffix(client, groupId),
     )
 
-    if (fieldErrors.filter(Boolean).length !== 0) {
-      return
+    if (fieldErrors.filter(Boolean).length) {
+      return [
+        {
+          stepLabel: 'publishing',
+          errorMessage:
+            'This manuscript has incomplete or invalid fields. Please correct these and try again.',
+        },
+      ]
     }
 
     await updateManuscript(manuscriptId, manuscriptChangedFields)
-    await publishManuscript({
-      variables: {
-        id: manuscriptId,
-      },
-    })
 
-    if (['aperture', 'colab'].includes(process.env.INSTANCE_NAME)) {
+    const result = (
+      await publishManuscript({
+        variables: {
+          id: manuscriptId,
+        },
+      })
+    )?.data?.publishManuscript
+
+    if (result?.steps?.some(step => !step.succeeded)) return result
+
+    if (['aperture', 'colab'].includes(config.instanceName)) {
       history.push(`${urlFrag}/dashboard`)
-    }
-
-    if (['elife', 'ncrc'].includes(process.env.INSTANCE_NAME)) {
+    } else if (['elife', 'ncrc'].includes(config.instanceName)) {
       history.push(`${urlFrag}/admin/manuscripts`)
     }
+
+    return null
   }
 
   const onSubmit = async versionId => {
@@ -210,16 +213,18 @@ const SubmitPage = ({ match, history }) => {
       },
     })
 
-    if (['aperture', 'colab'].includes(process.env.INSTANCE_NAME)) {
+    if (['aperture', 'colab'].includes(config.instanceName)) {
       history.push(`${urlFrag}/dashboard`)
     }
 
-    if (['elife', 'ncrc'].includes(process.env.INSTANCE_NAME)) {
+    if (['elife', 'ncrc'].includes(config.instanceName)) {
       history.push(`${urlFrag}/admin/manuscripts`)
     }
   }
 
   const versions = gatherManuscriptVersions(manuscript)
+
+  const manuscriptLatestVersionId = versions[0].manuscript.id
 
   const threadedDiscussionProps = {
     threadedDiscussions: data.threadedDiscussions,
@@ -229,6 +234,8 @@ const SubmitPage = ({ match, history }) => {
     deletePendingComment,
     currentUser,
     firstVersionManuscriptId: manuscript.parentId || manuscript.id,
+    versions,
+    currentVersion: manuscript,
   }
 
   return (
@@ -238,18 +245,23 @@ const SubmitPage = ({ match, history }) => {
       currentUser={currentUser}
       decisionForm={decisionForm}
       deleteFile={deleteFile}
+      manuscriptLatestVersionId={manuscriptLatestVersionId}
       match={match}
       onChange={handleChange}
       onSubmit={onSubmit}
       parent={manuscript}
       republish={republish}
       reviewForm={reviewForm}
-      setShouldPublishField={currentUser.admin ? setShouldPublishField : null}
+      setShouldPublishField={
+        currentUser.groupRoles.includes('groupManager')
+          ? setShouldPublishField
+          : null
+      }
       submissionForm={submissionForm}
       threadedDiscussionProps={threadedDiscussionProps}
       updateManuscript={updateManuscript}
       validateDoi={validateDoi(client)}
-      validateSuffix={validateSuffix(client)}
+      validateSuffix={validateSuffix(client, config.groupId)}
       versions={versions}
     />
   )

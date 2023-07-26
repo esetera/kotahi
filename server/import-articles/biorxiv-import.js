@@ -1,10 +1,6 @@
 /* eslint-disable camelcase, consistent-return */
 const axios = require('axios')
-
 const models = require('@pubsweet/models')
-const ArticleImportSources = require('../model-article-import-sources/src/articleImportSources')
-const ArticleImportHistory = require('../model-article-import-history/src/articleImportHistory')
-const Form = require('../model-form/src/form')
 
 const {
   ecologyAndSpillover,
@@ -17,7 +13,9 @@ const {
   pharmaceuticalInterventions,
 } = require('./topics')
 
-const getData = async ctx => {
+const { getSubmissionForm } = require('../model-review/src/reviewCommsUtils')
+
+const getData = async (groupId, ctx) => {
   const dateTwoWeeksAgo =
     +new Date(new Date(Date.now()).toISOString().split('T')[0]) - 12096e5
 
@@ -32,24 +30,29 @@ const getData = async ctx => {
     Pharmaceutical_interventions: pharmaceuticalInterventions,
   }
 
-  const [checkIfSourceExists] = await ArticleImportSources.query().where({
-    server: 'biorxiv',
-  })
+  const [checkIfSourceExists] = await models.ArticleImportSources.query().where(
+    {
+      server: 'biorxiv',
+    },
+  )
 
   if (!checkIfSourceExists) {
-    await ArticleImportSources.query().insert({
+    await models.ArticleImportSources.query().insert({
       server: 'biorxiv',
     })
   }
 
-  const [biorxivImportSourceId] = await ArticleImportSources.query().where({
+  const [
+    biorxivImportSourceId,
+  ] = await models.ArticleImportSources.query().where({
     server: 'biorxiv',
   })
 
-  const lastImportDate = await ArticleImportHistory.query()
+  const lastImportDate = await models.ArticleImportHistory.query()
     .select('date')
     .where({
       sourceId: biorxivImportSourceId.id,
+      groupId,
     })
 
   const requests = async (cursor = 0, minDate, results = []) => {
@@ -89,7 +92,7 @@ const getData = async ctx => {
       ),
   )
 
-  const submissionForm = await Form.findOneByField('purpose', 'submit')
+  const submissionForm = await getSubmissionForm(groupId)
 
   const parsedFormStructure = submissionForm.structure.children
     .map(formElement => {
@@ -178,6 +181,7 @@ const getData = async ctx => {
           files: [],
           reviews: [],
           teams: [],
+          groupId,
         }
       },
     )
@@ -201,17 +205,19 @@ const getData = async ctx => {
     // const insertedTeams = await models.Team.query().insert(teamsToInsert)
 
     if (lastImportDate.length) {
-      await ArticleImportHistory.query()
+      await models.ArticleImportHistory.query()
         .update({
           date: new Date().toISOString(),
         })
         .where({
           date: lastImportDate[0].date,
+          groupId,
         })
     } else {
-      await ArticleImportHistory.query().insert({
+      await models.ArticleImportHistory.query().insert({
         date: new Date().toISOString(),
         sourceId: biorxivImportSourceId.id,
+        groupId,
       })
     }
 

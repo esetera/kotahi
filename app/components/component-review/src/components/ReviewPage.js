@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect } from 'react'
+import PropTypes from 'prop-types'
+import { v4 as uuid } from 'uuid'
 import { useMutation, useQuery, gql } from '@apollo/client'
-import config from 'config'
 import { Redirect } from 'react-router-dom'
 import ReactRouterPropTypes from 'react-router-prop-types'
 import { set, debounce } from 'lodash'
+import { ConfigContext } from '../../../config/src'
 import ReviewLayout from './review/ReviewLayout'
 import { Heading, Page, Spinner } from '../../../shared'
-import useCurrentUser from '../../../../hooks/useCurrentUser'
 import manuscriptVersions from '../../../../shared/manuscript_versions'
 import {
   UPDATE_PENDING_COMMENT,
@@ -14,6 +15,7 @@ import {
   COMPLETE_COMMENT,
   DELETE_PENDING_COMMENT,
 } from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/queries'
+import { UPDATE_REVIEWER_STATUS_MUTATION } from '../../../../queries/team'
 
 const createFileMutation = gql`
   mutation($file: Upload!, $meta: FileMetaInput!) {
@@ -48,6 +50,7 @@ const reviewFields = `
   isDecision
   isHiddenReviewerName
   canBePublishedPublicly
+  isSharedWithCurrentUser
   user {
     id
     username
@@ -149,13 +152,7 @@ const formStructure = `
 `
 
 const query = gql`
-  query($id: ID!) {
-    currentUser {
-      id
-      username
-      admin
-    }
-
+  query($id: ID!, $groupId: ID) {
     manuscript(id: $id) {
       parentId
       ${fragmentFields}
@@ -178,6 +175,7 @@ const query = gql`
         id
         comments {
           id
+          manuscriptVersionId
           commentVersions {
             id
             author {
@@ -203,25 +201,16 @@ const query = gql`
       userCanEditAnyComment
     }
 
-    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission") {
+    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
       ${formStructure}
     }
 
-    reviewForm: formForPurposeAndCategory(purpose: "review", category: "review") {
+    reviewForm: formForPurposeAndCategory(purpose: "review", category: "review", groupId: $groupId) {
       ${formStructure}
     }
 
-    decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision") {
+    decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision", groupId: $groupId) {
       ${formStructure}
-    }
-  }
-`
-
-const completeReviewMutation = gql`
-  mutation($id: ID!) {
-    completeReview(id: $id) {
-      id
-      status
     }
   }
 `
@@ -234,12 +223,11 @@ const updateReviewMutationQuery = gql`
   }
 `
 
-const urlFrag = config.journal.metadata.toplevel_urlfragment
-
-const ReviewPage = ({ match, ...props }) => {
-  const currentUser = useCurrentUser()
+const ReviewPage = ({ currentUser, history, match }) => {
+  const config = useContext(ConfigContext)
+  const { urlFrag } = config
   const [updateReviewMutation] = useMutation(updateReviewMutationQuery)
-  const [completeReview] = useMutation(completeReviewMutation)
+  const [updateReviewerStatus] = useMutation(UPDATE_REVIEWER_STATUS_MUTATION)
   const [createFile] = useMutation(createFileMutation)
   const [updatePendingComment] = useMutation(UPDATE_PENDING_COMMENT)
   const [completeComments] = useMutation(COMPLETE_COMMENTS)
@@ -260,6 +248,7 @@ const ReviewPage = ({ match, ...props }) => {
   const { loading, error, data, refetch } = useQuery(query, {
     variables: {
       id: match.params.version,
+      groupId: config.groupId,
     },
     partialRefetch: true,
   })
@@ -267,7 +256,15 @@ const ReviewPage = ({ match, ...props }) => {
   const reviewOrInitial = manuscript =>
     manuscript?.reviews?.find(
       review => review?.user?.id === currentUser?.id && !review.isDecision,
-    ) || {}
+    ) || {
+      // Usually a blank review is created when the user accepts the review invite.
+      // Creating a new review object here is a fallback for unknown error situations
+      // when the blank review was not created in advance for some reason.
+      id: uuid(),
+      isDecision: false,
+      isHiddenReviewerName: true,
+      jsonData: {},
+    }
 
   const versions = data
     ? manuscriptVersions(data.manuscript).map(v => ({
@@ -287,7 +284,8 @@ const ReviewPage = ({ match, ...props }) => {
   const updateReviewJsonData = (value, path) => {
     if (!latestVersion.id) {
       // we shouldn't need this because of debouncing! But this protects against trying to save while loading is still happening
-      console.error('no version id!')
+      // eslint-disable-next-line no-console
+      console.log('no version id!')
       return false
     }
 
@@ -344,7 +342,7 @@ const ReviewPage = ({ match, ...props }) => {
 
   useEffect(() => debouncedUpdateReviewJsonData.flush, [])
 
-  if (loading) return <Spinner />
+  if (loading || currentUser === null) return <Spinner />
 
   if (error) {
     console.warn(error.message)
@@ -447,10 +445,11 @@ const ReviewPage = ({ match, ...props }) => {
     })
   }
 
-  const handleSubmit = async ({ reviewId, history }) => {
-    await completeReview({
+  const handleSubmit = async () => {
+    await updateReviewerStatus({
       variables: {
-        id: reviewId,
+        status: 'completed',
+        manuscriptId: latestVersion.id,
       },
     })
 
@@ -474,12 +473,7 @@ const ReviewPage = ({ match, ...props }) => {
       currentUser={currentUser}
       decisionForm={decisionForm}
       deleteFile={deleteFile}
-      onSubmit={values =>
-        handleSubmit({
-          reviewId: existingReview.id,
-          history: props.history,
-        })
-      }
+      onSubmit={handleSubmit}
       review={existingReview}
       reviewForm={reviewForm}
       status={reviewerStatus}
@@ -493,6 +487,9 @@ const ReviewPage = ({ match, ...props }) => {
 }
 
 ReviewPage.propTypes = {
+  currentUser: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }).isRequired,
   match: ReactRouterPropTypes.match.isRequired,
   history: ReactRouterPropTypes.history.isRequired,
 }

@@ -1,40 +1,166 @@
 const { logger, fileStorage } = require('@coko/server')
 const { AuthorizationError, ConflictError } = require('@pubsweet/errors')
 const { parseISO, addSeconds } = require('date-fns')
+const { chunk } = require('lodash')
 const models = require('@pubsweet/models')
-const config = require('config')
 
-const Invitation = require('../../model-invitations/src/invitations')
-const sendEmailNotification = require('../../email-notifications')
+const {
+  sendEmailWithPreparedData,
+  getGroupAndGlobalRoles,
+} = require('./userCommsUtils')
+
+const addGlobalAndGroupRolesToUserObject = async (ctx, user) => {
+  if (!user) return
+  const groupId = ctx.req.headers['group-id']
+  Object.assign(user, await getGroupAndGlobalRoles(user.id, groupId))
+}
+
+const setUserMembershipInTeam = async (ctx, userId, team, shouldBeMember) => {
+  if (!team) return // We won't create a new team: this is only intended for existing teams
+  const groupId = ctx.req.headers['group-id']
+  const teamId = team.id
+
+  if (shouldBeMember) {
+    await models.TeamMember.query()
+      .insert({ userId, teamId })
+      .whereNotExists(models.TeamMember.query().where({ userId, teamId }))
+  } else {
+    await models.TeamMember.transaction(async trx => {
+      if (team.role === 'user') {
+        const manuscripts = await models.Manuscript.query(trx)
+          .where({ groupId })
+          .withGraphFetched('[teams, invitations, tasks]')
+
+        const manuscriptTeams = manuscripts.flatMap(
+          manuscript => manuscript.teams,
+        )
+
+        // Remove user from assigned manuscript teams be it author, seniorEditor, handlingEditor, editor, reviewer which are not completed
+        await Promise.all(
+          manuscriptTeams.map(async manuscriptTeam => {
+            const member = await models.TeamMember.query(trx).findOne({
+              userId,
+              teamId: manuscriptTeam.id,
+            })
+
+            // Skips removing reviewer team members with completed reviews
+            if (member && (!member.status || member.status !== 'completed')) {
+              member.delete()
+            }
+          }),
+        )
+
+        const manuscriptInvitations = manuscripts.flatMap(
+          manuscript => manuscript.invitations,
+        )
+
+        // Remove user UNANSWERED invitations and sent out invitations
+        await Promise.all(
+          manuscriptInvitations.map(async manuscriptInvitation => {
+            const invitation = await models.Invitation.query(trx).findById(
+              manuscriptInvitation.id,
+            )
+
+            if (
+              invitation.userId === userId &&
+              invitation.status === 'UNANSWERED'
+            ) {
+              invitation.delete()
+            } else if (invitation.senderId === userId) {
+              // TODO: Fix database validation error sender_id is set not null 1647493905-invitations.sql
+              // await models.Invitation.query(
+              //   trx,
+              // ).patchAndFetchById(invitation.id, { senderId: null })
+            }
+          }),
+        )
+
+        // Remove user from assignee tasks
+        await models.Task.query(trx)
+          .patch({ assigneeUserId: null, assigneeType: null })
+          .where({ assigneeUserId: userId, groupId })
+
+        const manuscriptTasks = manuscripts.flatMap(
+          manuscript => manuscript.tasks,
+        )
+
+        // Remove user from task email notifications
+        await Promise.all(
+          manuscriptTasks.map(async manuscriptTask => {
+            const task = await models.Task.query(trx).findById(
+              manuscriptTask.id,
+            )
+
+            await models.TaskEmailNotification.query(trx)
+              .delete()
+              .where({ recipientUserId: userId, taskId: task.id })
+          }),
+        )
+
+        // Remove user from submitted manuscripts
+        await models.Manuscript.query(trx)
+          .update({ submitterId: null })
+          .where({ submitterId: userId, groupId })
+
+        await models.TeamMember.query(trx).delete().where({ userId, teamId })
+      } else {
+        await models.TeamMember.query(trx).delete().where({ userId, teamId })
+      }
+    })
+  }
+}
 
 const resolvers = {
   Query: {
-    user(_, { id, username }, ctx) {
+    async user(_, { id, username }, ctx) {
       if (id) {
-        return models.User.query().findById(id)
+        const user = await models.User.query().findById(id)
+        await addGlobalAndGroupRolesToUserObject(ctx, user)
+        return user
       }
 
       if (username) {
-        return models.User.query().where({ username }).first()
+        const user = await models.User.query().findOne({ username })
+        await addGlobalAndGroupRolesToUserObject(ctx, user)
+        return user
       }
 
       return null
     },
     async users(_, vars, ctx) {
-      return models.User.query()
+      return models.User.query().joinRelated('teams').where({
+        role: 'user',
+        objectId: ctx.req.headers['group-id'],
+      })
     },
-    async paginatedUsers(_, { sort, offset, limit, filter }, ctx) {
-      const query = models.User.query()
+    async paginatedUsers(_, { sort, offset, limit }, ctx) {
+      const currentUser = await models.User.query().findById(ctx.user)
+      await addGlobalAndGroupRolesToUserObject(ctx, currentUser)
 
-      if (filter && filter.admin) {
-        query.where({ admin: true })
+      let query
+
+      if (currentUser.globalRoles.includes('admin')) {
+        query = models.User.query()
+      } else {
+        query = models.User.query().joinRelated('teams').where({
+          role: 'user',
+          objectId: ctx.req.headers['group-id'],
+        })
       }
 
       const totalCount = await query.resultSize()
 
       if (sort) {
         // e.g. 'created_DESC' into 'created' and 'DESC' arguments
-        query.orderBy(...sort.split('_'))
+        const [fieldName, direction] = sort.split('_')
+
+        if (fieldName === 'lastOnline') {
+          query.orderByRaw(
+            `(last_online IS NULL) ${direction === 'DESC' ? 'ASC' : 'DESC'}`,
+          )
+        }
+
+        query.orderBy(fieldName, direction)
       }
 
       if (limit) {
@@ -46,6 +172,17 @@ const resolvers = {
       }
 
       const users = await query
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const someUsers of chunk(users, 10)) {
+        // eslint-disable-next-line no-await-in-loop
+        await Promise.all(
+          someUsers.map(async user =>
+            addGlobalAndGroupRolesToUserObject(ctx, user),
+          ),
+        )
+      }
+
       return {
         totalCount,
         users,
@@ -59,8 +196,8 @@ const resolvers = {
         lastOnline: new Date(Date.now()),
       })
 
-      // eslint-disable-next-line no-underscore-dangle
-      user._currentRoles = await user.currentRoles()
+      if (!user) return null
+      await addGlobalAndGroupRolesToUserObject(ctx, user)
       return user
     },
     searchUsers(_, { teamId, query }, ctx) {
@@ -108,13 +245,21 @@ const resolvers = {
       }
     },
     async deleteUser(_, { id }, ctx) {
-      const user = await models.User.query().findById(id)
-      await models.Manuscript.query()
-        .update({ submitterId: null })
-        .where({ submitterId: id })
-
-      await models.User.query().where({ id }).delete()
-      return user
+      return models.User.transaction(async trx => {
+        const user = await models.User.query(trx).findById(id)
+        await models.Manuscript.query(trx)
+          .update({ submitterId: null })
+          .where({ submitterId: id })
+        await models.Invitation.query(trx).where({ userId: id }).delete()
+        // TODO: Fix database validation error sender_id is set not null 1647493905-invitations.sql
+        await models.Invitation.query(trx)
+          .update({ senderId: null })
+          .where({ senderId: id })
+        await models.User.query(trx).where({ id }).delete()
+        // eslint-disable-next-line no-console
+        console.info(`User ${id} (${user.username}) deleted.`)
+        return user
+      })
     },
     async updateUser(_, { id, input }, ctx) {
       if (input.password) {
@@ -124,9 +269,33 @@ const resolvers = {
         delete input.password
       }
 
-      return models.User.query().updateAndFetchById(id, JSON.parse(input))
+      const updatedUser = JSON.parse(input)
+      delete updatedUser.globalRoles
+      delete updatedUser.groupRoles
+      return models.User.query().updateAndFetchById(id, updatedUser)
     },
+    async setGlobalRole(_, { userId, role, shouldEnable }, ctx) {
+      const team = await models.Team.query().findOne({ role, global: true })
+      await setUserMembershipInTeam(ctx, userId, team, shouldEnable)
+      const user = await models.User.find(userId)
+      await addGlobalAndGroupRolesToUserObject(ctx, user)
+      delete user.updated
+      return user
+    },
+    async setGroupRole(_, { userId, role, shouldEnable }, ctx) {
+      const groupId = ctx.req.headers['group-id']
 
+      const team = await models.Team.query().findOne({
+        role,
+        objectId: groupId,
+      })
+
+      await setUserMembershipInTeam(ctx, userId, team, shouldEnable)
+      const user = await models.User.find(userId)
+      await addGlobalAndGroupRolesToUserObject(ctx, user)
+      delete user.updated
+      return user
+    },
     // Authentication
     async loginUser(_, { input }, ctx) {
       /* eslint-disable-next-line global-require */
@@ -151,16 +320,16 @@ const resolvers = {
         token: createJWT(user),
       }
     },
-    async updateCurrentUsername(_, { username }, ctx) {
-      const user = await models.User.find(ctx.user)
+    async updateUsername(_, { id, username }, ctx) {
+      const user = await models.User.find(id)
       user.username = username
       await user.save()
       return user
     },
-    async updateCurrentEmail(_, { email }, ctx) {
-      const ctxUser = await models.User.find(ctx.user)
+    async updateEmail(_, { id, email }, ctx) {
+      const user = await models.User.find(id)
 
-      if (ctxUser.email === email) {
+      if (user.email === email) {
         return { success: true }
       }
 
@@ -171,165 +340,67 @@ const resolvers = {
         return { success: false, error: 'Email is invalid' }
       }
 
-      const userWithSuchEmail = await models.User.query().where({ email })
+      const userWithSuchEmail = await models.User.query().findOne({ email })
 
-      if (userWithSuchEmail[0]) {
+      if (userWithSuchEmail) {
         return { success: false, error: 'Email is already taken' }
       }
 
       try {
-        const user = await models.User.query().updateAndFetchById(ctx.user, {
+        const updatedUser = await models.User.query().updateAndFetchById(id, {
           email,
         })
 
-        return { success: true, user }
+        return { success: true, user: updatedUser }
       } catch (e) {
         return { success: false, error: 'Something went wrong', user: null }
       }
     },
+    async updateRecentTab(_, { tab }, ctx) {
+      const user = await models.User.query().updateAndFetchById(ctx.user, {
+        recentTab: tab,
+      })
+
+      return user
+    },
     async sendEmail(_, { input }, ctx) {
-      const inputParsed = JSON.parse(input)
-
-      // TODO:
-      // Maybe a better way to make this function less ambigious is by having a simpler object of the structure:
-      // { senderName, senderEmail, recieverName, recieverEmail }
-      // ANd send this as `input` from the Frontend
-      const {
-        manuscript,
-        selectedEmail, // selectedExistingRecieverEmail (TODO?): This is for a pre-existing receiver being selected
-        selectedTemplate,
-        externalEmail, // New User Email
-        externalName, // New User username
-        currentUser,
-      } = inputParsed
-
-      const receiverEmail = externalEmail || selectedEmail
-
-      let receiverName = externalName
-
-      if (selectedEmail) {
-        // If the email of a pre-existing user is selected
-        // Get that user
-        const [userReceiver] = await models.User.query()
-          .where({ email: selectedEmail })
-          .withGraphFetched('[defaultIdentity]')
-
-        /* eslint-disable-next-line */
-        receiverName =
-          userReceiver.username || userReceiver.defaultIdentity.name || ''
-      }
-
-      let authorName = ''
-      const manuscriptWithAuthors = await models.Manuscript.query()
-        .findById(manuscript.id)
-        .withGraphFetched('[teams(onlyAuthors).[members(onlyAccepted, orderByCreatedDesc).[user]]]');
-      if (manuscriptWithAuthors.teams.length) {
-        const authorTeam = manuscriptWithAuthors.teams[0]
-        if (authorTeam.members.length) {
-          const author = authorTeam.members[0] // picking the author that has latest created date
-          authorName = author.user.username
-        }
-      }
-
-      const emailValidationRegexp = /^[^\s@]+@[^\s@]+$/
-      const emailValidationResult = emailValidationRegexp.test(receiverEmail)
-
-      if (!emailValidationResult || !receiverName) {
-        return { success: false }
-      }
-
-      const invitationSender = await models.User.find(ctx.user)
-      const manuscriptId = manuscript.id
-      const toEmail = receiverEmail
-      const purpose = 'Inviting an author to accept a manuscript'
-      const status = 'UNANSWERED'
-      const senderId = invitationSender.id
-
-      let invitationId = ''
-
-      const invitationContainingEmailTemplate = [
-        'authorInvitationEmailTemplate',
-        'reviewerInvitationEmailTemplate',
-        'reminderAuthorInvitationTemplate',
-        'reminderReviewerInvitationTemplate',
-      ]
-
-      if (invitationContainingEmailTemplate.includes(selectedTemplate)) {
-        let userId = null
-        let invitedPersonName = ''
-
-        if (selectedEmail) {
-          // If the email of a pre-existing user is selected
-          // Get that user
-          const [userReceiver] = await models.User.query()
-            .where({ email: selectedEmail })
-            .withGraphFetched('[defaultIdentity]')
-
-          userId = userReceiver.id
-          invitedPersonName = userReceiver.username
-        } else {
-          // Use the username provided
-          invitedPersonName = externalName
-        }
-
-        const invitedPersonType =
-          selectedTemplate === 'authorInvitationEmailTemplate'
-            ? 'AUTHOR'
-            : 'REVIEWER'
-
-        const newInvitation = await new Invitation({
-          manuscriptId,
-          toEmail,
-          purpose,
-          status,
-          senderId,
-          invitedPersonType,
-          invitedPersonName,
-          userId,
-        }).saveGraph()
-
-        invitationId = newInvitation.id
-      }
-
-      if (invitationId === '') {
-        console.error(
-          'Invitation Id is not available to be used for this template.',
-        )
-      }
-
-      let instance
-
-      if (config['notification-email'].use_colab) {
-        instance = 'colab'
-      } else {
-        instance = 'generic'
-      }
-
       try {
-        await sendEmailNotification(receiverEmail, selectedTemplate, {
-          articleTitle: manuscript.meta.title,
-          authorName,
-          currentUser,
-          receiverName,
-          shortId: manuscript.shortId,
-          instance,
-          toEmail,
-          invitationId,
-          submissionLink: JSON.parse(manuscript.submission).link,
-          purpose,
-          status,
-          senderId,
-          appUrl: config['pubsweet-client'].baseUrl,
-        })
-        return { success: true }
-      } catch (e) {
-        console.error(e)
-        return { success: false }
+        const result = await sendEmailWithPreparedData(input, ctx)
+        return {
+          invitation: result,
+          response: {
+            success: true,
+          },
+        }
+      } catch (error) {
+        // Return SendEmailPayload object with success=false and error message
+        return {
+          invitation: null,
+          response: {
+            success: false,
+            errorMessage: error.message,
+          },
+        }
       }
+    },
+    async updateEventNotificationsOptIn(parent, args, ctx) {
+      // eslint-disable-next-line camelcase
+      const { id, event_notifications_opt_in } = args
+
+      const user = await models.User.query().patchAndFetchById(id, {
+        eventNotificationsOptIn: event_notifications_opt_in,
+      })
+
+      return user
     },
   },
   User: {
-    isOnline: user => user.isOnline(),
+    async isOnline(parent) {
+      const currentDateTime = new Date()
+      return (
+        parent.lastOnline && currentDateTime - parent.lastOnline < 5 * 60 * 1000
+      )
+    },
     async defaultIdentity(parent, args, ctx) {
       const identity = await models.Identity.query()
         .where({ userId: parent.id, isDefault: true })
@@ -351,6 +422,8 @@ const resolvers = {
 
       const avatarPlaceholder = '/profiles/default_avatar.svg'
 
+      let { profilePicture } = user
+
       if (user.file) {
         const params = new Proxy(new URLSearchParams(user.profilePicture), {
           get: (searchParams, prop) => searchParams.get(prop),
@@ -368,15 +441,20 @@ const resolvers = {
             storedObject => storedObject.type === 'small',
           ).key
 
-          user.profilePicture = await fileStorage.getURL(objectKey)
-          await user.save()
+          profilePicture = await fileStorage.getURL(objectKey)
+
+          await models.User.query().patchAndFetchById(user.id, {
+            profilePicture,
+          })
         }
-      } else if (user.profilePicture !== avatarPlaceholder) {
-        user.profilePicture = avatarPlaceholder
-        await user.save()
+      } else if (profilePicture !== avatarPlaceholder) {
+        profilePicture = avatarPlaceholder
+        await models.User.query().patchAndFetchById(user.id, {
+          profilePicture,
+        })
       }
 
-      return user.profilePicture
+      return profilePicture
     },
   },
 }
@@ -385,12 +463,8 @@ const typeDefs = `
   extend type Query {
     user(id: ID, username: String): User
     users: [User]
-    paginatedUsers(sort: UsersSort, offset: Int, limit: Int, filter: UsersFilter): PaginatedUsers
+    paginatedUsers(sort: UsersSort, offset: Int, limit: Int): PaginatedUsers
     searchUsers(teamId: ID, query: String): [User]
-  }
-
-  type SendEmailResponse {
-    success: Boolean
   }
 
   type PaginatedUsers {
@@ -398,13 +472,27 @@ const typeDefs = `
     users: [User]
   }
 
+  type SendEmailResponse {
+    success: Boolean!
+    errorMessage: String
+  }
+
+  type SendEmailPayload {
+    invitation: Invitation
+    response: SendEmailResponse!
+  }
+
   extend type Mutation {
     createUser(input: UserInput): User
     deleteUser(id: ID): User
     updateUser(id: ID, input: String): User
-    updateCurrentUsername(username: String): User
-    sendEmail(input: String): SendEmailResponse
-    updateCurrentEmail(email: String): UpdateEmailResponse
+    updateUsername(id: ID!, username: String!): User
+    sendEmail(input: String!): SendEmailPayload!
+    updateEmail(id: ID!, email: String!): UpdateEmailResponse
+    updateRecentTab(tab: String): User
+    setGlobalRole(userId: ID!, role: String!, shouldEnable: Boolean!): User!
+    setGroupRole(userId: ID!, role: String!, shouldEnable: Boolean!): User!
+    updateEventNotificationsOptIn(id: ID!, event_notifications_opt_in: Boolean!): User
   }
 
   type UpdateEmailResponse {
@@ -413,17 +501,11 @@ const typeDefs = `
     user: User
   }
 
-  input UsersFilter {
-    admin: Boolean
-  }
-
   enum UsersSort {
     username_ASC
     username_DESC
     email_ASC
     email_DESC
-    admin_ASC
-    admin_DESC
     created_ASC
     created_DESC
     lastOnline_ASC
@@ -436,7 +518,8 @@ const typeDefs = `
     updated: DateTime
     username: String
     email: String
-    admin: Boolean
+    groupRoles: [String]
+    globalRoles: [String]
     identities: [Identity]
     defaultIdentity: Identity
     file: File
@@ -444,8 +527,8 @@ const typeDefs = `
     online: Boolean
     lastOnline: DateTime
     isOnline: Boolean
-    _currentRoles: [CurrentRole]
-    _currentGlobalRoles: [String]
+    recentTab: String
+    eventNotificationsOptIn: Boolean!
   }
 
   type CurrentRole {
@@ -467,7 +550,8 @@ const typeDefs = `
     email: String!
     password: String
     rev: String
-    admin: Boolean
+    globalRoles: [String!]
+    groupRoles: [String!]
   }
 
   # Authentication

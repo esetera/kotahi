@@ -2,7 +2,6 @@ import React from 'react'
 
 // TODO: Sort out the imports, perhaps make DecisionReview a shared component?
 import DecisionReview from '../../../component-review/src/components/decision/DecisionReview'
-import useCurrentUser from '../../../../hooks/useCurrentUser'
 import ReadonlyFormTemplate from '../../../component-review/src/components/metadata/ReadonlyFormTemplate'
 
 import {
@@ -17,6 +16,7 @@ const Decision = ({
   manuscript,
   showEditorOnlyFields,
   threadedDiscussionProps,
+  allowAuthorsSubmitNewVersion,
 }) => {
   const decisionDataString = manuscript.reviews.find(r => r.isDecision)
     ?.jsonData
@@ -25,9 +25,19 @@ const Decision = ({
     ? JSON.parse(decisionDataString)
     : null
 
+  const filteredChildren = !manuscript.decision
+    ? {
+        ...decisionForm,
+        children: decisionForm.children.filter(
+          formComponent => formComponent.component === 'ThreadedDiscussion',
+        ),
+      }
+    : decisionForm
+
   return decisionData ? (
     <ReadonlyFormTemplate
-      form={decisionForm}
+      allowAuthorsSubmitNewVersion={allowAuthorsSubmitNewVersion}
+      form={filteredChildren}
       formData={decisionData}
       hideSpecialInstructions
       manuscript={manuscript}
@@ -41,14 +51,14 @@ const Decision = ({
 
 const DecisionAndReviews = ({
   manuscript,
-  isControlPage,
+  isControlPage = false,
   reviewForm,
   decisionForm,
   showEditorOnlyFields,
   threadedDiscussionProps,
+  currentUser,
+  allowAuthorsSubmitNewVersion,
 }) => {
-  const currentUser = useCurrentUser()
-
   const decision =
     manuscript.reviews &&
     !!manuscript.reviews.length &&
@@ -85,6 +95,7 @@ const DecisionAndReviews = ({
           <Title>Decision</Title>
         </SectionHeader>
         <Decision
+          allowAuthorsSubmitNewVersion={allowAuthorsSubmitNewVersion}
           decisionForm={decisionForm}
           editor={decision?.user}
           manuscript={manuscript}
@@ -101,10 +112,13 @@ const DecisionAndReviews = ({
           reviewsToShow.map((review, index) => (
             <SectionRow key={review.id}>
               <DecisionReview
+                currentUser={currentUser}
+                isControlPage={isControlPage}
                 open
+                readOnly
                 review={review}
                 reviewer={{
-                  name: review.user.username,
+                  name: review.user?.username,
                   ordinal: index + 1,
                   user: review.user,
                 }}

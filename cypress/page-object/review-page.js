@@ -9,9 +9,9 @@ const ABSTRACT_EDITOR_FIELD = '.ProseMirror > .paragraph'
 
 // const REVIEW_COMMENT_FIELD = 'reviewComment'
 // const CONFIDENTIAL_COMMENT_FIELD = 'confidentialComment'
-const ACCEPT_RADIO_BUTTON = '.fgnKvm > .sc-dmlrTW'
-const REVISE_RADIO_BUTTON = '.izJvPI > .sc-dmlrTW'
-const REJECT_RADIO_BUTTON = '.dPWuRK > .sc-dmlrTW'
+const ACCEPT_RADIO_BUTTON = '[value="accept"]'
+const REVISE_RADIO_BUTTON = '[value="revise"]'
+const REJECT_RADIO_BUTTON = '[value="reject"]'
 const SUBMIT_BUTTON = 'review-action-btn'
 const CONFIRM_SUBMIT_BUTTON = 'article > button:eq(0)'
 // const DECISION_COMMENT_FIELD = 'decisionComment'
@@ -21,8 +21,8 @@ const PUBLISH_BUTTON = 'button[type="button"]'
 const CAN_BE_PUBLISHED_PUBLICLY_CHECKBOX = '[name=canBePublishedPublicly]'
 const PAGE_SECTIONS = 'General__SectionContent'
 const SECTION_HEADER = 'h2[class]'
-const DECISION_TEXT = 'sc-kNMOeM gDlahr'
-const DECISION_RECOMMENDATION = 'style__Legend-sc-1jvxmxn-2 KPAWX'
+const DECISION_TEXT = '[class*=EditorStyles__ReadOnlySimpleEditorDiv]'
+const DECISION_RECOMMENDATION = 'style__Legend-sc-1jvxmxn-2 bTVTjY'
 
 const DECISION_BUTTON_SELECTED =
   '[class*=component-decision-viewer__RadioGroup] [checked]'
@@ -33,17 +33,15 @@ export const ReviewPage = {
     return cy.getByContainsClass(REVIEW_METADATA_CELL).eq(nth)
   },
   getReviewCommentField() {
-    return cy.get(
-      ':nth-child(1) > :nth-child(2) > :nth-child(1) > :nth-child(1) > .EditorStyles__SimpleGrid-k4rcxo-9 > .EditorStyles__SimpleEditorDiv-k4rcxo-11',
-    )
+    return cy.get('[contenteditable="true"]:nth(0)')
   },
   fillInReviewComment(reviewComment) {
-    this.getReviewCommentField().fillInput(reviewComment)
+    this.getReviewCommentField()
+      .focus()
+      .type(reviewComment, { delay: 200, force: true })
   },
   getConfidentialCommentField() {
-    return cy.get(
-      ':nth-child(3) > :nth-child(2) > :nth-child(1) > :nth-child(1) > .EditorStyles__SimpleGrid-k4rcxo-9 > .EditorStyles__SimpleEditorDiv-k4rcxo-11',
-    )
+    return cy.get('[contenteditable="true"]:nth(1)')
   },
   fillInConfidentialComment(confidentialComment) {
     this.getConfidentialCommentField().fillInput(confidentialComment)
@@ -52,19 +50,25 @@ export const ReviewPage = {
     return cy.get(ACCEPT_RADIO_BUTTON)
   },
   clickAcceptRadioButton() {
-    this.getAcceptRadioButton().eq(0).click()
+    this.getAcceptRadioButton().eq(0).click({ force: true })
   },
   getReviseRadioButton() {
     return cy.get(REVISE_RADIO_BUTTON)
   },
   clickReviseRadioButton() {
-    this.getReviseRadioButton().eq(0).click()
+    this.getReviseRadioButton().eq(0).click({ force: true })
   },
   getRejectRadioButton() {
     return cy.get(REJECT_RADIO_BUTTON)
   },
   clickRejectRadioButton() {
-    this.getRejectRadioButton().eq(0).click()
+    this.getRejectRadioButton().eq(0).click({ force: true })
+  },
+  getReviseButton() {
+    return cy.get(REVISE_RADIO_BUTTON)
+  },
+  clickRevise() {
+    this.getReviseButton().click()
   },
   getSubmitButton() {
     return cy.getByDataTestId(SUBMIT_BUTTON)
@@ -73,7 +77,7 @@ export const ReviewPage = {
     this.getSubmitButton().click()
   },
   getDecisionCommentField() {
-    return cy.GET(ABSTRACT_EDITOR_FIELD)
+    return cy.get(ABSTRACT_EDITOR_FIELD)
   },
   clickDecisionCommandField() {
     this.getDecisionCommentField().click().focused().blur()
@@ -112,7 +116,7 @@ export const ReviewPage = {
     return cy.get(SECTION_HEADER)
   },
   getDecisionText() {
-    return cy.getByContainsClass(DECISION_TEXT)
+    return cy.get(DECISION_TEXT)
   },
   getDecisionRecommendation() {
     return cy.getByContainsClass(DECISION_RECOMMENDATION)

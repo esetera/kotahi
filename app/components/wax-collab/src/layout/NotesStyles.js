@@ -1,9 +1,10 @@
 import styled from 'styled-components'
-import { th, grid } from '@pubsweet/ui-toolkit'
+import { grid } from '@pubsweet/ui-toolkit'
 import EditorElements from './EditorElements'
+import { color } from '../../../../theme'
 
 export const NotesAreaContainer = styled.div`
-  background: #fff;
+  background: ${color.backgroundA};
   bottom: ${grid(-2)};
   box-shadow: 0 ${grid(-0.3)} ${grid(0.5)} ${grid(-0.2)} gray;
   display: flex; /* this is so that comments on notes appear beside the notes */
@@ -17,6 +18,7 @@ export const NotesAreaContainer = styled.div`
   &.productionnotes {
     grid-column-start: initial;
     grid-row-start: initial;
+    position: relative;
   }
 
   .ProseMirror {
@@ -28,8 +30,8 @@ export const NotesAreaContainer = styled.div`
 `
 
 export const ReadOnlyNotesAreaContainer = styled.div`
-  background: #fff;
-  border-top: 1px solid ${th('colorFurniture')};
+  background: ${color.backgroundA};
+  border-top: 1px solid ${color.gray90};
   grid-column-start: editorCol;
   grid-row-start: notesRow;
   width: 100%;
@@ -47,12 +49,16 @@ export const NotesContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding-bottom: ${grid(4)};
-  width: calc(100% - ${grid(4)});
   padding-left: 32px;
+  width: calc(100% - ${grid(4)});
+
+  & > div > div > div:first-child {
+    margin-top: 4px; /* fix alignment of numbers */
+  }
 `
 
 export const NotesHeading = styled.div`
-  color: ${th('colorPrimary')};
-  margin: 3px 7px 3px -32px;
+  color: ${color.brand1.base};
+  margin: 3px 7px 3px -25px;
   text-transform: uppercase;
 `

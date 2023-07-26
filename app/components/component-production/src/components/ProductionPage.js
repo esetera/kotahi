@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 import React from 'react'
-import { useQuery, useMutation, gql } from '@apollo/client'
+import { useQuery, useMutation, gql, useApolloClient } from '@apollo/client'
 import ReactRouterPropTypes from 'react-router-prop-types'
 import { adopt } from 'react-adopt'
 import Production from './Production'
@@ -82,11 +82,6 @@ const fragmentFields = `
 
 const query = gql`
   query($id: ID!) {
-    currentUser {
-      id
-      username
-      admin
-    }
     manuscript(id: $id) {
       ${fragmentFields}
     }
@@ -102,7 +97,8 @@ export const updateMutation = gql`
   }
 `
 
-const ProductionPage = ({ match, ...props }) => {
+const ProductionPage = ({ currentUser, match, ...props }) => {
+  const client = useApolloClient()
   const [makingPdf, setMakingPdf] = React.useState(false)
   const [makingJats, setMakingJats] = React.useState(false)
   // const [saving, setSaving] = React.useState(false)
@@ -135,9 +131,10 @@ const ProductionPage = ({ match, ...props }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const { manuscript, currentUser } = data
+  const { manuscript } = data
   return (
     <Composed
+      client={client}
       currentUser={currentUser}
       manuscript={manuscript}
       setMakingJats={setMakingJats}
@@ -167,6 +164,7 @@ const ProductionPage = ({ match, ...props }) => {
             />
           ) : null}
           <Production
+            client={client}
             currentUser={currentUser}
             file={manuscript.files.find(file =>
               file.tags.includes('manuscript'),

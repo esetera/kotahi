@@ -1,7 +1,10 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
-import { WaxContext, ComponentPlugin } from 'wax-prosemirror-core'
-import { DocumentHelpers } from 'wax-prosemirror-utilities'
+import {
+  WaxContext,
+  ComponentPlugin,
+  DocumentHelpers,
+} from 'wax-prosemirror-core'
 import {
   Grid,
   FullWaxEditorGrid,
@@ -88,11 +91,14 @@ const FullWaxEditorCommentsLayout = (readOnly, authorComments) => ({
     main && DocumentHelpers.getTrackBlockNodesCount(main)
 
   return (
-    <EditorWrapper className={options.fullScreen ? 'fullscreen' : ''}>
+    <EditorWrapper
+      className={options.fullScreen ? 'fullscreen' : ''}
+      id="wax-container"
+    >
       {readOnly ? (
         <Grid readonly>
           <FullWaxEditorGrid noScroll useComments>
-            <ReadOnlyEditorWithCommentsEditor>
+            <ReadOnlyEditorWithCommentsEditor className="panelWrapper">
               {editor}
             </ReadOnlyEditorWithCommentsEditor>
             <FullCommentsContainer authorComments={authorComments}>
@@ -112,7 +118,7 @@ const FullWaxEditorCommentsLayout = (readOnly, authorComments) => ({
               <RightArea area="main" />
             </FullCommentsContainer>
             {notes.length > 0 && (
-              <ReadOnlyNotesAreaContainer>
+              <ReadOnlyNotesAreaContainer className="panelWrapper">
                 <NotesContainer id="notes-container">
                   <NotesHeading>Notes</NotesHeading>
                   <NotesArea view={main} />
@@ -130,7 +136,9 @@ const FullWaxEditorCommentsLayout = (readOnly, authorComments) => ({
             <TopBar />
           </Menu>
           <FullWaxEditorGrid useComments>
-            <EditorDiv className="wax-surface-scroll">{editor}</EditorDiv>
+            <EditorDiv className="wax-surface-scroll panelWrapper">
+              {editor}
+            </EditorDiv>
             <FullCommentsContainer>
               <CommentTrackToolsContainer>
                 <CommentTrackTools>
@@ -147,7 +155,7 @@ const FullWaxEditorCommentsLayout = (readOnly, authorComments) => ({
             </FullCommentsContainer>
             {notes.length > 0 && (
               <>
-                <NotesAreaContainer>
+                <NotesAreaContainer className="panelWrapper">
                   <NotesContainer id="notes-container">
                     <NotesHeading>Notes</NotesHeading>
                     <NotesArea view={main} />

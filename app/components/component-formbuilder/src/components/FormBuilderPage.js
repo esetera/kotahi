@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { cloneDeep, omitBy } from 'lodash'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import config from 'config'
+import { ConfigContext } from '../../../config/src'
 import FormBuilderLayout from './FormBuilderLayout'
 import { Spinner, CommsErrorBanner } from '../../../shared'
 import pruneEmpty from '../../../../shared/pruneEmpty'
@@ -52,13 +52,14 @@ const deleteFormMutation = gql`
 `
 
 const query = gql`
-  query GET_FORM($category: String!) {
-    formsByCategory(category: $category) {
+  query GET_FORM($category: String!, $groupId: ID) {
+    formsByCategory(category: $category, groupId: $groupId) {
       id
       created
       updated
       purpose
       category
+      groupId
       structure {
         name
         description
@@ -111,31 +112,43 @@ const prepareForSubmit = values => {
 }
 
 const FormBuilderPage = ({ category }) => {
+  const config = useContext(ConfigContext)
+
   const { loading, data, error } = useQuery(query, {
-    variables: { category },
+    variables: { category, groupId: config.groupId },
   })
 
   const cleanedForms = pruneEmpty(data?.formsByCategory)
 
   // TODO Structure forms for graphql and retrieve IDs from these mutations to allow Apollo Cache to do its magic, rather than forcing refetch.
   const [deleteForm] = useMutation(deleteFormMutation, {
-    refetchQueries: [{ query, variables: { category } }],
+    refetchQueries: [
+      { query, variables: { category, groupId: config.groupId } },
+    ],
   })
 
   const [deleteFormElement] = useMutation(deleteFormElementMutation, {
-    refetchQueries: [{ query, variables: { category } }],
+    refetchQueries: [
+      { query, variables: { category, groupId: config.groupId } },
+    ],
   })
 
   const [updateForm] = useMutation(updateFormMutation, {
-    refetchQueries: [{ query, variables: { category } }],
+    refetchQueries: [
+      { query, variables: { category, groupId: config.groupId } },
+    ],
   })
 
   const [updateFormElement] = useMutation(updateFormElementMutation, {
-    refetchQueries: [{ query, variables: { category } }],
+    refetchQueries: [
+      { query, variables: { category, groupId: config.groupId } },
+    ],
   })
 
   const [createForm] = useMutation(createFormMutation, {
-    refetchQueries: [{ query, variables: { category } }],
+    refetchQueries: [
+      { query, variables: { category, groupId: config.groupId } },
+    ],
   })
 
   const [activeFormId, setActiveFormId] = useState()
@@ -253,7 +266,7 @@ const FormBuilderPage = ({ category }) => {
                 setActiveFieldId={setActiveFieldId}
                 setActiveFormId={setActiveFormId}
                 shouldAllowHypothesisTagging={
-                  config.hypothesis.shouldAllowTagging
+                  config?.publishing?.hypothesis?.shouldAllowTagging
                 }
                 updateField={updateFormElement}
                 updateForm={updateForm}

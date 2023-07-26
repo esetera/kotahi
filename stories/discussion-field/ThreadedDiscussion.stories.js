@@ -1,25 +1,36 @@
 import React from 'react'
 import ThreadedDiscussion from '../../app/components/component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
+import { JournalProvider } from '../../app/components/xpub-journal/src'
+import { XpubProvider } from '../../app/components/xpub-with-context/src'
+import { ConfigProvider } from '../../app/components/config/src'
+import * as journal from '../../config/journal'
+import config from '../../config/sampleConfigFormData'
 import DesignEmbed from '../common/utils'
 
 export const Base = args => (
-  <>
-    {args.figmaEmbedLink && (
-      <>
-        <h2 style={{ color: '#333333' }}>Design</h2>
-        <iframe
-          allowFullScreen
-          height={350}
-          src={args.figmaEmbedLink}
-          style={{ border: '1px solid rgba(0, 0, 0, 0.1)' }}
-          title="figma embed"
-          width="100%"
-        />
-        <h2 style={{ color: '#333333' }}>Component</h2>
-      </>
-    )}
-    <ThreadedDiscussion {...args} />
-  </>
+  <XpubProvider>
+    <JournalProvider journal={JSON.parse(JSON.stringify(journal))}>
+      <ConfigProvider config={config}>
+        <>
+          {args.figmaEmbedLink && (
+            <>
+              <h2 style={{ color: '#333333' }}>Design</h2>
+              <iframe
+                allowFullScreen
+                height={350}
+                src={args.figmaEmbedLink}
+                style={{ border: '1px solid rgba(0, 0, 0, 0.1)' }}
+                title="figma embed"
+                width="100%"
+              />
+              <h2 style={{ color: '#333333' }}>Component</h2>
+            </>
+          )}
+          <ThreadedDiscussion {...args} />
+        </>
+      </ConfigProvider>
+    </JournalProvider>
+  </XpubProvider>
 )
 
 Base.args = {
@@ -100,7 +111,8 @@ Base.args = {
       __typename: 'User',
       id: '92f99a84-fc8b-4f94-bc9e-10bb3f7c3902',
       username: 'Harriet Handling-Editor',
-      admin: true,
+      groupRoles: ['groupManager'],
+      globalRoles: [],
       isOnline: null,
     },
     firstVersionManuscriptId: '8f3ae437-58e9-4946-869f-737da08bc3a2',

@@ -1,29 +1,32 @@
 /// <reference types="Cypress" />
 import { evaluate } from '../support/routes'
-import { ControlPage } from './control-page'
+// import { ControlPage } from './control-page'
 
 /**
  * Page component representing the fourth option in the left side menu,
  * where users can see the list of submitted manuscripts & select Control,
  * View or Delete.
  */
-const MANUSCRIPTS_OPTIONS_LIST = '[class*=style__UserAction]'
+const MANUSCRIPTS_OPTIONS_LIST = '[class*=Action__ActionLink]'
+const MANUSCRIPTS_OPTIONS_E = '[class*=Action__ActionLink]'
 const BUTTON = 'button'
-const LIVE_CHAT_BUTTON = '[class*=VideoChatButton]'
+const LIVE_CHAT_BUTTON = '[class*=VideoChat__FloatRightButton]'
 const MANUSCRIPTS_PAGE_TITLE = '[class*=General__Heading-sc]'
 const EVALUATION_BUTTON = '[href*=evaluation]'
-const CONTROL_BUTTON = '[href*="/kotahi/versions/"]'
+// const CONTROL_BUTTON = '[href*="/kotahi/versions/"]'
 const CREATED_CARET = 'Carets__Caret'
 const AUTHOR_FIELD = 'UserCombo__Primary'
 const STATUS_FIELD = 'Badge__Status'
 const TABLE_HEADER = '[class*=Table__Header]'
-const MANUSCRIPTS_TABLE_HEAD = '[class*=Table__Header] > tr >th'
+const MANUSCRIPTS_TABLE_HEAD = '[class*=style__ManuscriptsHeaderRow]'
 const ARTICLE_TITLE = '[class*=Table__Row]>td:nth-child(1)'
-const ARTICLE_LABEL = 'style__Cell-cydfzx-13 JXlDr'
+const ARTICLE_ID = '[name="submission.articleId"]'
+const ARTICLE_LABEL = '[name="submission.labels"]'
 const ARTICLE_TOPIC = '[class*=Table__Cell] > [title]'
-const TABLE_ROW = 'style__ManuscriptsRow-cydfzx-10 NtEio'
+const TABLE_ROW = '[class*=style__ManuscriptsRow]'
 const TABLE_CELL = 'Table__Cell'
-const LABEL = 'style__StyledTableLabel'
+const LABEL = '[name="submission.labels"]'
+const BULKBUTTON = 'style__BulkActionModalButton'
 
 const ARTICLE_CHECKBOX =
   '[class*=NewItemCheckbox__StyledCheckboxTable]label > [type*=checkbox]'
@@ -35,9 +38,9 @@ const TOOLTIP_ICON = 'style__InfoIcon'
 const TOOLTIP_TEXT = 'rc-tooltip-inner'
 const ARTICLES_COUNT = '[class*=Pagination] > strong'
 const PAGINATION_PAGE_BUTTON = 'Page '
-const CONFIRMATION_MESSAGE = '[class*=BulkArchiveModalContainer] > p'
+const CONFIRMATION_MESSAGE = '[class*=BulkActionModalContainer] > p'
 const IMPORT_CONFIRMATION_POPUP = '[class*=Toastify] > [role=alert]'
-const CONTROL = '[href*=decision]'
+// const CONTROL = '[href*=decision]'
 const DROPDOWN_OPTION_LIST = '[class*=MenuList] > [id*=option]'
 export const ManuscriptsPage = {
   getManuscriptsOptionsList() {
@@ -49,6 +52,12 @@ export const ManuscriptsPage = {
   getOptionWithText(text) {
     return this.getManuscriptsOptionsList().contains(text)
   },
+  getOptionsElife() {
+    return cy.get(MANUSCRIPTS_OPTIONS_E)
+  },
+  getOptionsElifeText(text) {
+    return cy.get(MANUSCRIPTS_OPTIONS_E).contains(text)
+  },
   getSubmitButton() {
     return cy.get(BUTTON).contains('New submission')
   },
@@ -56,7 +65,7 @@ export const ManuscriptsPage = {
     this.getSubmitButton().click()
   },
   getRefreshButton() {
-    return cy.get(BUTTON).contains('Refresh')
+    return cy.contains('Refresh')
   },
   clickRefreshButton() {
     this.getRefreshButton().click()
@@ -71,7 +80,7 @@ export const ManuscriptsPage = {
     return cy.get(MANUSCRIPTS_PAGE_TITLE)
   },
   getEvaluationButton() {
-    return cy.get(EVALUATION_BUTTON)
+    return cy.contains('button', 'Evaluation')
   },
   getNthEvaluationButton(nth) {
     return cy.get(EVALUATION_BUTTON).eq(nth)
@@ -91,30 +100,30 @@ export const ManuscriptsPage = {
     cy.awaitDisappearSpinner()
     cy.url({ timeout: 10000 }).should('contain', evaluate)
   },
-  getControlButton() {
-    return cy.get(CONTROL_BUTTON).first()
-  },
-  clickControlButton() {
-    this.getControlButton().click()
-  },
-  getControl() {
-    return cy.get(CONTROL)
-  },
-  clickControl() {
-    this.getControl().click()
-  },
-  clickControlAndVerifyPageLoaded() {
-    this.getControl().click()
-    cy.awaitDisappearSpinner()
-    cy.url({ timeout: 10000 }).should('contain', 'decision')
-    ControlPage.getAssignSeniorEditorDropdown().should('be.visible')
-  },
-  clickControlNthAndVerifyPageLoaded(nth) {
-    this.getControl().eq(nth).click()
-    cy.awaitDisappearSpinner()
-    cy.url({ timeout: 10000 }).should('contain', 'decision')
-    ControlPage.getAssignSeniorEditorDropdown().should('be.visible')
-  },
+  // getControlButton() {
+  //   return cy.get(CONTROL_BUTTON).first()
+  // },
+  // clickControlButton() {
+  //   this.getControlButton().click()
+  // },
+  // getControl() {
+  //   return cy.get(CONTROL)
+  // },
+  // clickControl() {
+  //   this.getControl().click()
+  // },
+  // clickControlAndVerifyPageLoaded() {
+  //   this.getControl().click()
+  //   cy.awaitDisappearSpinner()
+  //   cy.url({ timeout: 10000 }).should('contain', 'decision')
+  //   ControlPage.getAssignSeniorEditorDropdown().should('be.visible')
+  // },
+  // clickControlNthAndVerifyPageLoaded(nth) {
+  //   this.getControl().eq(nth).click()
+  //   cy.awaitDisappearSpinner()
+  //   cy.url({ timeout: 10000 }).should('contain', 'decision')
+  //   ControlPage.getAssignSeniorEditorDropdown().should('be.visible')
+  // },
   getCreatedCaret(nth) {
     return cy.getByContainsClass(CREATED_CARET).eq(nth)
   },
@@ -133,17 +142,23 @@ export const ManuscriptsPage = {
   clickStatus(nth) {
     this.getStatusField(nth).click()
   },
-  getTableHead(nth) {
-    return cy.get(MANUSCRIPTS_TABLE_HEAD).eq(nth)
+  getTableHead() {
+    return cy.get(MANUSCRIPTS_TABLE_HEAD)
   },
   getArticleTitleByRow(nth) {
     return cy.get(ARTICLE_TITLE).eq(nth)
+  },
+  getArticleIdByRow(nth) {
+    return cy.get(ARTICLE_ID).eq(nth)
+  },
+  clickArticleId() {
+    return this.getArticleIdByRow(0).click()
   },
   clickTableHead(nth) {
     this.getTableHead(nth).click()
   },
   getArticleLabel() {
-    return cy.getByContainsClass(ARTICLE_LABEL)
+    return cy.get(ARTICLE_LABEL)
   },
   clickArticleLabel(nth) {
     this.getArticleLabel().eq(nth).click()
@@ -167,19 +182,19 @@ export const ManuscriptsPage = {
     this.getArticleTopicWithText(text).click()
   },
   getTableRow() {
-    return cy.getByContainsClass(TABLE_ROW)
+    return cy.get(TABLE_ROW)
   },
   getNthTableRow(nth) {
     return this.getTableRow().eq(nth)
   },
   getTableRowsCount() {
-    return cy.getByContainsClass(TABLE_ROW).its('length')
+    return cy.get(TABLE_ROW).its('length')
   },
   getTableJournal() {
     return cy.getByContainsClass(TABLE_CELL).eq(1)
   },
   getLabelRow(nth) {
-    return cy.getByContainsClass(LABEL).eq(nth)
+    return cy.get(LABEL).eq(nth)
   },
   getTableHeader() {
     return cy.get(TABLE_HEADER, { timeout: 15000 })
@@ -203,13 +218,13 @@ export const ManuscriptsPage = {
     return cy.getByContainsClass(NUMBER_OF_ARTICLES_SELECTED).invoke('text')
   },
   getDeleteButton() {
-    return cy.get(BUTTON).contains('Delete')
+    return cy.get(BUTTON).contains('Archive')
   },
   clickDelete() {
     this.getDeleteButton().click()
   },
   getConfirmButton() {
-    return cy.get(BUTTON).contains('Confirm')
+    return cy.getByContainsClass(BULKBUTTON).contains('Archive')
   },
   clickConfirm() {
     this.getConfirmButton().click()
@@ -218,7 +233,7 @@ export const ManuscriptsPage = {
     return cy.get(CONFIRMATION_MESSAGE)
   },
   getCloseButton() {
-    return cy.get(BUTTON).contains('Close')
+    return cy.get(BUTTON).contains('Cancel')
   },
   clickClose() {
     this.getCloseButton().click()

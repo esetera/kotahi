@@ -8,9 +8,37 @@ const CALLBACK_URL = '/auth/orcid/callback'
 
 const orcidBackURL = config['pubsweet-client'].baseUrl
 
+const addUserToAdminAndGroupManagerTeams = async (userId, groupId) => {
+  // eslint-disable-next-line global-require
+  const { Team, TeamMember } = require('@pubsweet/models')
+
+  const groupManagerTeam = await Team.query().findOne({
+    role: 'groupManager',
+    objectId: groupId,
+    objectType: 'Group',
+  })
+
+  const adminTeam = await Team.query().findOne({ role: 'admin', global: true })
+  await TeamMember.query().insert({ userId, teamId: adminTeam.id })
+  await TeamMember.query().insert({ userId, teamId: groupManagerTeam.id })
+}
+
+const addUserToUserTeam = async (userId, groupId) => {
+  // eslint-disable-next-line global-require
+  const { Team, TeamMember } = require('@pubsweet/models')
+
+  const userTeam = await Team.query().findOne({
+    role: 'user',
+    objectId: groupId,
+    objectType: 'Group',
+  })
+
+  await TeamMember.query().insert({ userId, teamId: userTeam.id })
+}
+
 module.exports = app => {
   // eslint-disable-next-line global-require
-  const { User } = require('@pubsweet/models')
+  const { Config, Group, User } = require('@pubsweet/models')
 
   // set up OAuth client
   passport.use(
@@ -23,12 +51,21 @@ module.exports = app => {
         // this works here only with webpack dev server's proxy (ie. clientUrl/auth -> serverUrl/auth)
         // or when the server and client are served from the same url
         callbackURL: orcidBackURL + CALLBACK_URL,
+        passReqToCallback: true,
         ...config.get('auth-orcid'),
       },
-      async (accessToken, refreshToken, params, profile, done) => {
+      async (req, accessToken, refreshToken, params, profile, done) => {
+        const urlParams = new URLSearchParams(req.query.state)
+        const groupId = urlParams.get('group_id')
+
         // convert oauth response into a user object
         let user
         let firstLogin = false
+
+        const activeConfig = await Config.query().findOne({
+          groupId,
+          active: true,
+        })
 
         try {
           user = await User.query()
@@ -66,23 +103,16 @@ module.exports = app => {
               },
             }).saveGraph()
 
+            if (usersCountString === '0' || activeConfig.formData.user.isAdmin)
+              await addUserToAdminAndGroupManagerTeams(user.id, groupId)
+
             // Do another request to the ORCID API for aff/name
             const userDetails = await fetchUserDetails(user)
-
             user.defaultIdentity.name = `${userDetails.firstName || ''} ${
               userDetails.lastName || ''
             }`
             user.defaultIdentity.aff = userDetails.institution || ''
-
             user.email = userDetails.email || null
-
-            if (
-              usersCountString === '0' || // The first ever user is automatically made an admin
-              ['elife'].includes(process.env.INSTANCE_NAME) // TODO temporary feature: all logins to elife are automatically made admin
-            ) {
-              user.admin = true
-            }
-
             user.saveGraph()
             firstLogin = true
           }
@@ -91,13 +121,22 @@ module.exports = app => {
           return
         }
 
-        done(null, { ...user, firstLogin })
+        done(null, { ...user, firstLogin, groupId })
       },
     ),
   )
 
   // handle sign in request
-  app.get('/auth/orcid', passport.authenticate('orcid'))
+  app.get('/auth/orcid', (req, res, next) => {
+    // Extract custom parameters from the request query
+    const groupId = req.query.group_id
+
+    const options = {
+      state: `group_id=${groupId}`,
+    }
+
+    passport.authenticate('orcid', options)(req, res, next)
+  })
 
   // handle oauth response
   app.get(
@@ -106,25 +145,72 @@ module.exports = app => {
       failureRedirect: '/login',
       session: false,
     }),
-    (req, res) => {
+    async (req, res) => {
       const jwt = createJWT(req.user)
+      const { groupId } = req.user
 
-      let redirectionURL
+      const group = await Group.query().findOne({
+        id: groupId,
+        isArchived: false,
+      })
 
-      if (['aperture', 'colab', 'ncrc'].includes(process.env.INSTANCE_NAME)) {
-        redirectionURL = '/kotahi/dashboard'
-
-        if (req.user.firstLogin) {
-          redirectionURL = '/kotahi/profile'
-        }
+      if (!group) {
+        throw new Error(`Group not found or archived!`)
       }
 
-      if (['elife'].includes(process.env.INSTANCE_NAME)) {
-        // temporary .. because all users are admins - is temporary feature
-        redirectionURL = '/kotahi/admin/manuscripts'
+      const urlFrag = `/${group.name}`
+
+      const activeConfig = await Config.query().findOne({
+        groupId,
+        active: true,
+      })
+
+      // Based on configuration User Management -> All users are assigned Group Manager and Admin roles flag
+      if (activeConfig.formData.user.isAdmin)
+        await addUserToAdminAndGroupManagerTeams(req.user.id, groupId)
+
+      // eslint-disable-next-line global-require
+      const { Team } = require('@pubsweet/models')
+
+      const groupManagerTeam = await Team.query()
+        .withGraphJoined('members')
+        .select('role')
+        .findOne({
+          userId: req.user.id,
+          objectId: groupId,
+          objectType: 'Group',
+          role: 'groupManager',
+        })
+
+      const isGroupManager = !!groupManagerTeam
+
+      const userTeam = await Team.query()
+        .withGraphJoined('members')
+        .select('role')
+        .findOne({
+          userId: req.user.id,
+          objectId: groupId,
+          objectType: 'Group',
+          role: 'user',
+        })
+
+      const isGroupUser = !!userTeam
+
+      if (!isGroupUser) await addUserToUserTeam(req.user.id, groupId)
+
+      let redirectionUrl
+
+      if (req.user.firstLogin) {
+        redirectionUrl = `${urlFrag}/profile`
+      } else if (isGroupManager) {
+        redirectionUrl = `${urlFrag}${activeConfig.formData.dashboard.loginRedirectUrl}`
+      } else {
+        redirectionUrl = `${urlFrag}/dashboard`
       }
 
-      res.redirect(`/login?token=${jwt}&redirectUrl=${redirectionURL}`)
+      res.redirect(
+        `${urlFrag}/login?token=${jwt}&redirectUrl=${redirectionUrl}`,
+      )
     },
   )
 }

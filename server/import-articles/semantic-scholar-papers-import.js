@@ -1,10 +1,7 @@
 /* eslint-disable camelcase, consistent-return */
 const axios = require('axios')
-const config = require('config')
 const { map } = require('lodash')
 const models = require('@pubsweet/models')
-const ArticleImportHistory = require('../model-article-import-history/src/articleImportHistory')
-const ArticleImportSources = require('../model-article-import-sources/src/articleImportSources')
 
 const {
   getLastImportDate,
@@ -14,20 +11,27 @@ const {
 
 const SAVE_CHUNK_SIZE = 50
 
-const getData = async ctx => {
-  const [checkIfSourceExists] = await ArticleImportSources.query().where({
-    server: 'semantic-scholar',
+const getData = async (groupId, ctx) => {
+  const activeConfig = await models.Config.query().findOne({
+    groupId,
+    active: true,
   })
 
+  const [checkIfSourceExists] = await models.ArticleImportSources.query().where(
+    {
+      server: 'semantic-scholar',
+    },
+  )
+
   if (!checkIfSourceExists) {
-    await ArticleImportSources.query().insert({
+    await models.ArticleImportSources.query().insert({
       server: 'semantic-scholar',
     })
   }
 
   const [
     semanticScholarImportSourceId,
-  ] = await ArticleImportSources.query().where({
+  ] = await models.ArticleImportSources.query().where({
     server: 'semantic-scholar',
   })
 
@@ -35,9 +39,11 @@ const getData = async ctx => {
 
   const imports = []
 
-  const lastImportDate = await getLastImportDate(sourceId)
+  const lastImportDate = await getLastImportDate(sourceId, groupId)
 
-  const manuscripts = await models.Manuscript.query().orderBy('created', 'desc')
+  const manuscripts = await models.Manuscript.query()
+    .where({ groupId })
+    .orderBy('created', 'desc')
 
   const selectedManuscripts = manuscripts.filter(
     manuscript => manuscript.submission.labels,
@@ -92,7 +98,10 @@ const getData = async ctx => {
 
         return (
           diffDays <
-          Number(config.manuscripts.semanticScholarImportsRecencyPeriodDays)
+          Number(
+            activeConfig.formData.manuscript
+              .semanticScholarImportsRecencyPeriodDays,
+          )
         )
       }
 
@@ -131,7 +140,7 @@ const getData = async ctx => {
       preprints => !currentURLs.has(preprints.url),
     )
 
-    const emptySubmission = getEmptySubmission()
+    const emptySubmission = getEmptySubmission(groupId)
 
     const newManuscripts = withoutUrlDuplicates.map(
       ({
@@ -184,6 +193,7 @@ const getData = async ctx => {
         files: [],
         reviews: [],
         teams: [],
+        groupId,
       }),
     )
 
@@ -205,15 +215,16 @@ const getData = async ctx => {
       }
 
       if (lastImportDate > 0) {
-        await ArticleImportHistory.query()
+        await models.ArticleImportHistory.query()
           .update({
             date: new Date().toISOString(),
           })
-          .where({ sourceId })
+          .where({ sourceId, groupId })
       } else {
-        await ArticleImportHistory.query().insert({
+        await models.ArticleImportHistory.query().insert({
           date: new Date().toISOString(),
           sourceId,
+          groupId,
         })
       }
 

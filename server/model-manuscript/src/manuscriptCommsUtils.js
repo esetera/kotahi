@@ -1,14 +1,4 @@
-const config = require('config')
-
 const models = require('@pubsweet/models')
-const { pubsubManager } = require('@coko/server')
-const importArticlesFromBiorxiv = require('../../import-articles/biorxiv-import')
-const importArticlesFromBiorxivWithFullTextSearch = require('../../import-articles/biorxiv-full-text-import')
-const importArticlesFromPubmed = require('../../import-articles/pubmed-import')
-const importArticlesFromSemanticScholar = require('../../import-articles/semantic-scholar-papers-import')
-const { runImports } = require('../../plugins')
-
-const { getPubsub } = pubsubManager
 
 /** For a given versionId, find the first/original version of that manuscript and return its ID */
 const getIdOfFirstVersionOfManuscript = async versionId =>
@@ -29,76 +19,40 @@ const getIdOfLatestVersionOfManuscript = async versionId => {
   )[0].id
 }
 
-let isImportInProgress = false
-let isImportingFromSemanticScholarInProgress = false
-
-const importManuscripts = async ctx => {
-  if (isImportInProgress) return false
-  isImportInProgress = true
-
-  await runImports(ctx.user)
-
-  const promises = []
-
-  if (process.env.INSTANCE_NAME === 'ncrc') {
-    promises.push(importArticlesFromBiorxiv(ctx))
-    promises.push(importArticlesFromPubmed(ctx))
-  } else if (process.env.INSTANCE_NAME === 'colab') {
-    promises.push(importArticlesFromBiorxivWithFullTextSearch(ctx))
-  }
-
-  Promise.all(promises)
-    .catch(error => console.error(error))
-    .finally(async () => {
-      isImportInProgress = false
-      const pubsub = await getPubsub()
-      pubsub.publish('IMPORT_MANUSCRIPTS_STATUS', {
-        manuscriptsImportStatus: true,
-      })
-    })
-
-  return true
+const isLatestVersionOfManuscript = async versionId => {
+  const latestVersionId = await getIdOfLatestVersionOfManuscript(versionId)
+  return versionId === latestVersionId
 }
 
-const importManuscriptsFromSemanticScholar = ctx => {
-  if (isImportingFromSemanticScholarInProgress) return false
-  isImportingFromSemanticScholarInProgress = true
+const archiveOldManuscripts = async groupId => {
+  const activeConfig = await models.Config.query().findOne({
+    groupId,
+    active: true,
+  })
 
-  const promises = []
+  const { archivePeriodDays } = activeConfig.formData.manuscript
+  if (Number.isNaN(archivePeriodDays) || archivePeriodDays < 1) return
 
-  if (process.env.INSTANCE_NAME === 'colab') {
-    promises.push(importArticlesFromSemanticScholar(ctx))
-  }
-
-  if (!promises.length) return false
-
-  Promise.all(promises)
-    .catch(error => console.error(error))
-    .finally(async () => {
-      isImportingFromSemanticScholarInProgress = false
-      const pubsub = await getPubsub()
-      pubsub.publish('IMPORT_MANUSCRIPTS_STATUS', {
-        manuscriptsImportStatus: true,
-      })
-    })
-
-  return true
-}
-
-const archiveOldManuscripts = async () => {
   const cutoffDate = new Date(
-    new Date().valueOf() - config.manuscripts.archivePeriodDays * 86400000, // subtracting milliseconds of ARCHIVE_PERIOD_DAYS
+    new Date().valueOf() - archivePeriodDays * 86400000, // subtracting milliseconds of ARCHIVE_PERIOD_DAYS
   )
 
-  await models.Manuscript.query()
+  const archivedCount = await models.Manuscript.query()
     .update({ isHidden: true })
     .where('created', '<', cutoffDate)
     .where('status', 'new')
+    .where('groupId', groupId)
+    .whereNot('isHidden', true)
     .where(function subcondition() {
       this.whereRaw(`submission->>'labels' = ''`).orWhereRaw(
         `submission->>'labels' IS NULL`,
       )
     })
+
+  // eslint-disable-next-line no-console
+  console.info(
+    `Automatically archived ${archivedCount} new, unlabelled manuscripts older than ${archivePeriodDays} days.`,
+  )
 }
 
 /** Populates hasOverdueTasksForUser field of each manuscript IN PLACE.
@@ -115,7 +69,8 @@ const manuscriptHasOverdueTasksForUser = (manuscript, userId) => {
 
     if (
       (isEditor || task.assigneeUserId === userId) &&
-      task.status !== 'Done' &&
+      task.status === 'In progress' &&
+      task.dueDate &&
       new Date(task.dueDate) < now
     ) {
       return true
@@ -152,10 +107,9 @@ const getEditorIdsForManuscript = async manuscriptId => {
 module.exports = {
   getIdOfFirstVersionOfManuscript,
   getIdOfLatestVersionOfManuscript,
-  importManuscripts,
-  importManuscriptsFromSemanticScholar,
   archiveOldManuscripts,
   manuscriptHasOverdueTasksForUser,
   manuscriptIsActive,
   getEditorIdsForManuscript,
+  isLatestVersionOfManuscript,
 }

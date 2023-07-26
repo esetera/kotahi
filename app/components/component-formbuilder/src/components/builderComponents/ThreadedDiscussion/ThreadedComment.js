@@ -16,7 +16,7 @@ import {
 } from '../../style'
 import { FieldPublishingSelector, Icon } from '../../../../../shared'
 import { UserAvatar } from '../../../../../component-avatar/src'
-import Modal from '../../../../../component-modal/src'
+import Modal from '../../../../../component-modal/src/ConfirmationModal'
 import SimpleWaxEditor from '../../../../../wax-collab/src/SimpleWaxEditor'
 import { hasValue } from '../../../../../../shared/htmlUtils'
 
@@ -31,6 +31,8 @@ const ThreadedComment = ({
   onSubmit,
   shouldPublish,
   setShouldPublish,
+  selectedManuscriptVersionId,
+  isLatestVersionOfManuscript,
 }) => {
   const {
     comment: value,
@@ -47,6 +49,22 @@ const ThreadedComment = ({
     existingComment?.comment || '',
   )
 
+  const commentBelongsToDifferentManuscriptVersion =
+    selectedManuscriptVersionId !== comment.manuscriptVersionId
+
+  const canEditComment =
+    userCanEditAnyComment ||
+    (userCanEditOwnComment && author.id === currentUser.id)
+
+  const canEditThisComment = comment.manuscriptVersionId
+    ? isLatestVersionOfManuscript &&
+      selectedManuscriptVersionId === comment.manuscriptVersionId &&
+      canEditComment
+    : canEditComment
+
+  const shouldShowEditIcon =
+    (!comment.manuscriptVersionId && canEditComment) || canEditThisComment
+
   const [modalFieldValue, setModalFieldValue] = useState(value)
   const [counter, setCounter] = useState(1)
   const [collapse, setCollapse] = useState(!shouldExpandByDefault)
@@ -60,8 +78,17 @@ const ThreadedComment = ({
 
   return (
     <>
-      <CommentContainer>
-        <CommentWrapper key={comment.id}>
+      <CommentContainer
+        commentBelongsToDifferentManuscriptVersion={
+          commentBelongsToDifferentManuscriptVersion
+        }
+      >
+        <CommentWrapper
+          commentBelongsToDifferentManuscriptVersion={
+            commentBelongsToDifferentManuscriptVersion
+          }
+          key={comment.id}
+        >
           <CommentMetaWrapper>
             <UserMetaWrapper>
               <UserAvatar user={author} />
@@ -83,23 +110,18 @@ const ThreadedComment = ({
                 }
               />
             </div>
-            {setShouldPublish && (
+            {setShouldPublish && isLatestVersionOfManuscript && (
               <FieldPublishingSelector
                 onChange={setShouldPublish}
                 value={shouldPublish}
               />
             )}
-            {(userCanEditAnyComment ||
-              (userCanEditOwnComment && author.id === currentUser.id)) && (
-              <Icon
-                noPadding
-                onClick={event => {
-                  setOpenModal(true)
-                }}
-              >
+            {shouldShowEditIcon && (
+              <Icon noPadding onClick={() => setOpenModal(true)}>
                 edit
               </Icon>
             )}
+
             <Collapse
               onClick={event => {
                 setCollapse(!collapse)
@@ -110,19 +132,19 @@ const ThreadedComment = ({
             </Collapse>
           </ActionWrapper>
         </CommentWrapper>
-        {hasValue(submittedValue) ? (
-          <SimpleWaxEditorWrapper collapse={collapse}>
-            <SimpleWaxEditor
-              {...simpleWaxEditorProps}
-              key={counter}
-              readonly
-              value={submittedValue}
-            />
-            <CollapseOverlay collapse={collapse} />
-          </SimpleWaxEditorWrapper>
-        ) : (
-          'Comment is deleted'
-        )}
+        <SimpleWaxEditorWrapper collapse={collapse}>
+          <SimpleWaxEditor
+            {...simpleWaxEditorProps}
+            key={counter}
+            readonly
+            value={
+              hasValue(submittedValue)
+                ? submittedValue
+                : 'Comment is either deleted or is unsubmitted'
+            }
+          />
+          <CollapseOverlay collapse={collapse} />
+        </SimpleWaxEditorWrapper>
         <Modal isOpen={openModal}>
           <ModalContainer>
             <SimpleWaxEditor

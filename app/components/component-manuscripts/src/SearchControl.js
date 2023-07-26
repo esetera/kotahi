@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import styled, { useTheme } from 'styled-components'
 import { X } from 'react-feather'
 import { th, grid } from '@pubsweet/ui-toolkit'
 import { RoundIconButton } from '../../shared'
-import lightenBy from '../../../shared/lightenBy'
+import { color } from '../../../theme'
 
 const SearchContainer = styled.div`
   align-items: center;
@@ -18,10 +18,10 @@ const InlineTextField = styled.input`
     // eslint-disable-next-line no-nested-ternary
     props.isFilteringResults
       ? props.isShowingCurrentSearch
-        ? lightenBy('colorPrimary', 0.4) // Stronger color to indicate this is the current search filtering
-        : lightenBy('colorPrimary', 0.8) // Weaker, to indicate there is filtering but the string is no longer representative of it
-      : 'colorBackground'};
-  border: 1px solid ${th('colorBorder')};
+        ? color.brand1.tint50 // Stronger color to indicate this is the current search filtering
+        : color.brand1.tint70 // Weaker, to indicate there is filtering but the string is no longer representative of it
+      : color.backgroundA};
+  border: 1px solid ${color.gray60};
   border-radius: ${th('borderRadius')};
   display: inline;
   flex: 0 1 40em;
@@ -30,7 +30,7 @@ const InlineTextField = styled.input`
   transition: ${th('transitionDuration')} ${th('transitionTimingFunction')};
 
   &:focus {
-    border-color: ${th('colorPrimary')};
+    border-color: ${color.brand1.base};
     box-shadow: ${th('boxShadow')};
   }
 `
@@ -45,6 +45,11 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
     if ((query || null) !== currentSearchQuery) applySearchQuery(query)
     setSearchText(query || '')
   }
+
+  useEffect(() => {
+    setIsOpen(!!currentSearchQuery)
+    setSearchText(currentSearchQuery || '')
+  }, [currentSearchQuery])
 
   return (
     <SearchContainer isOpen={isOpen}>
@@ -89,9 +94,10 @@ const SearchControl = ({ currentSearchQuery, applySearchQuery }) => {
       <RoundIconButton
         iconName="Search"
         onClick={() => {
-          submitSearch(searchText)
-          if (isOpen) ref.current.focus()
-          else setIsOpen(true)
+          if (isOpen) {
+            submitSearch(searchText)
+            ref.current.focus()
+          } else setIsOpen(true)
         }}
         primary={isOpen}
         title="Search"

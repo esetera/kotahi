@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 const Handlebars = require('handlebars')
 const { set, get } = require('lodash')
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
@@ -13,17 +14,21 @@ const {
 
 const SUBMISSION_FIELD_PREFIX = 'submission'
 const META_FIELD_PREFIX = 'meta'
+const URI_SEARCH_PARAM = 'search'
 
 /** This returns a modified array of reviews, omitting fields or entire reviews marked as
  * hidden from author, UNLESS the current user is the reviewer the review belongs to.
- * This does not consider whether the user is an admin or editor of the manuscript:
+ * This does not consider whether the user is a groupManager/admin or editor of the manuscript:
  * that must be checked elsewhere.
  */
 const stripConfidentialDataFromReviews = (
   reviews,
   reviewForm,
   decisionForm,
+  sharedReviewersIds,
   userId,
+  userRoles,
+  manuscriptHasDecision,
 ) => {
   if (!reviewForm || !decisionForm) return []
 
@@ -32,11 +37,34 @@ const stripConfidentialDataFromReviews = (
     .map(field => field.name)
 
   const confidentialDecisionFields = decisionForm.structure.children
-    .filter(field => field.hideFromAuthors === 'true')
+    .filter(
+      field =>
+        field.hideFromAuthors === 'true' &&
+        userRoles.author &&
+        field.component !== 'ThreadedDiscussion',
+    )
     .map(field => field.name)
 
   return reviews
-    .filter(r => !r.isHiddenFromAuthor || r.userId === userId)
+    .filter(
+      r =>
+        (!r.isHiddenFromAuthor && manuscriptHasDecision) ||
+        // TODO the above case is not tightly enough controlled.
+        // Even if the review is not 'hidden' and the manuscript has a decision,
+        // we should also require that the review has been completed, and that
+        // either the manuscript has been published or the current user is its
+        // author.
+        // The current logic is still safer and more secure than what we had
+        // previously, which delivered reviews to the client with few controls.
+        // Further improvements should probably go hand in hand with improving
+        // what data we store in a Review object: it should really store status
+        // and isShared, rather than requiring us to retrieve these from the
+        // TeamMember object.
+        (userRoles.author && r.isDecision) ||
+        // decision will have restricted data stripped
+        r.userId === userId ||
+        (sharedReviewersIds.includes(r.userId) && !r.isDecision),
+    )
     .map(review => {
       const r = { ...review, jsonData: ensureJsonIsParsed(review.jsonData) }
       if (r.userId === userId) return r
@@ -54,30 +82,6 @@ const stripConfidentialDataFromReviews = (
       r.jsonData = filteredJsonData
       return r
     })
-}
-
-const fixMissingValuesInFilesInSingleMsVersion = ms => {
-  const result = { ...ms }
-
-  if (ms.files)
-    result.files = ms.files.map(f => ({
-      ...f,
-      tags: f.tags || [],
-      storedObjects: f.storedObjects || [],
-    }))
-
-  return result
-}
-
-/** Returns a new manuscript object in which null/undefined files, file tags and file storedObjects are replaced with []. */
-const fixMissingValuesInFiles = ms => {
-  const result = fixMissingValuesInFilesInSingleMsVersion(ms)
-  if (result.manuscriptVersions)
-    result.manuscriptVersions = result.manuscriptVersions.map(v =>
-      fixMissingValuesInFilesInSingleMsVersion(v),
-    )
-
-  return result
 }
 
 /** Get evaluations as
@@ -208,7 +212,7 @@ const applyFilters = (
 ) => {
   filters
     .filter(discardDuplicateFields)
-    .filter(f => f.field !== 'search')
+    .filter(f => f.field !== URI_SEARCH_PARAM)
     .forEach(filter => {
       if (['created', 'updated'].includes(filter.field)) {
         try {
@@ -270,6 +274,7 @@ const applyFilters = (
 }
 
 /** Builds a raw query string and an array of params, based on the requested filtering, sorting, offset and limit.
+ * If manuscriptIDs is specified, then the query is restricted to those IDs.
  * Returns [query, params]
  */
 const buildQueryForManuscriptSearchFilterAndOrder = (
@@ -279,6 +284,8 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
   filters,
   submissionForm,
   timezoneOffsetMinutes,
+  manuscriptIDs = null,
+  groupId = null,
 ) => {
   // These keep track of the various terms we're adding to SELECT, FROM, WHERE and ORDER BY, as well as params.
   const selectItems = { rawFragments: [], params: [] }
@@ -296,7 +303,15 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
   addWhere('parent_id IS NULL')
   addWhere('is_hidden IS NOT TRUE')
 
-  const searchFilter = filters.find(f => f.field === 'search')
+  if (manuscriptIDs) {
+    addWhere('id = ANY(?)', manuscriptIDs)
+  }
+
+  if (groupId) {
+    addWhere('group_id = ?', groupId)
+  }
+
+  const searchFilter = filters.find(f => f.field === URI_SEARCH_PARAM)
 
   const searchQuery =
     searchFilter && formatSearchQueryForPostgres(searchFilter.value)
@@ -524,7 +539,6 @@ const applyTemplatesToArtifacts = (
 module.exports = {
   buildQueryForManuscriptSearchFilterAndOrder,
   stripConfidentialDataFromReviews,
-  fixMissingValuesInFiles,
   hasEvaluations,
   applyTemplatesToArtifacts,
   getFieldsMapForTemplating,

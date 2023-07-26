@@ -2,17 +2,19 @@ import React, { useContext } from 'react'
 import styled, { css, keyframes, withTheme } from 'styled-components'
 import { Icon, Action } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
+import { ConfigContext } from '../../../config/src'
 import { XpubContext } from '../../../xpub-with-context/src'
 import upload from '../upload'
 import { Dropzone } from '../../../shared'
+import { color } from '../../../../theme'
 
 const StatusIcon = withTheme(({ children, theme }) => (
-  <Icon color={theme.colorPrimary}>{children}</Icon>
+  <Icon color={color.brand1.base()}>{children}</Icon>
 ))
 
 const Status = styled.div`
   align-items: center;
-  color: ${th('colorPrimary')};
+  color: ${color.brand1.base};
   display: inline-flex;
   margin-top: -2px;
 `
@@ -106,12 +108,12 @@ const Root = styled.div`
 
   &:hover ${StatusIdle} {
     circle {
-      fill: ${th('colorPrimary')};
-      stroke: ${th('colorPrimary')};
+      fill: ${color.brand1.base};
+      stroke: ${color.brand1.base};
     }
 
     line {
-      stroke: white;
+      stroke: ${color.textReverse};
     }
   }
 `
@@ -129,7 +131,7 @@ const Error = styled.div`
 `
 
 const Info = styled.div`
-  color: ${th('colorPrimary')};
+  color: ${color.brand1.base};
   font-size: 2em;
   font-weight: 400;
 
@@ -141,12 +143,13 @@ const Info = styled.div`
 `
 
 const SubInfo = styled.div`
-  color: #333;
+  color: ${color.gray20};
   line-height: 32px;
   text-align: center;
 `
 
 const UploadManuscript = ({ acceptFiles, ...props }) => {
+  const config = useContext(ConfigContext)
   const { client, history, journals, currentUser } = props
 
   // const [error, setError] = useState(false)
@@ -164,6 +167,7 @@ const UploadManuscript = ({ acceptFiles, ...props }) => {
     journals,
     currentUser,
     setConversion,
+    config,
   })
 
   // const status = completed

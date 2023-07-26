@@ -3,6 +3,11 @@ import styled, { css } from 'styled-components'
 import Messages from '../../app/components/component-chat/src/Messages/Messages'
 import ChatInput from '../../app/components/component-chat/src/SuperChatInput/SuperChatInput'
 import DesignEmbed from '../common/utils'
+import { XpubProvider } from '../../app/components/xpub-with-context/src'
+import { JournalProvider } from '../../app/components/xpub-journal/src'
+import { ConfigProvider } from '../../app/components/config/src'
+import * as journal from '../../config/journal'
+import config from '../../config/sampleConfigFormData'
 
 const MessageContainer = styled.section`
   background: rgb(255, 255, 255);
@@ -51,32 +56,38 @@ const MessagesWrapper = styled.div`
 `
 
 export const Base = args => (
-  <MessageContainer {...args}>
-    <>
-      {args.figmaEmbedLink && (
-        <>
-          <h2 style={{ color: '#333333' }}>Design</h2>
-          <iframe
-            allowFullScreen
-            height={350}
-            src={args.figmaEmbedLink}
-            style={{ border: '1px solid rgba(0, 0, 0, 0.1)' }}
-            title="figma embed"
-            width="100%"
-          />
-          <h2 style={{ color: '#333333' }}>Component</h2>
-        </>
-      )}
+  <XpubProvider>
+    <JournalProvider journal={JSON.parse(JSON.stringify(journal))}>
+      <ConfigProvider config={config}>
+        <MessageContainer {...args}>
+          <>
+            {args.figmaEmbedLink && (
+              <>
+                <h2 style={{ color: '#333333' }}>Design</h2>
+                <iframe
+                  allowFullScreen
+                  height={350}
+                  src={args.figmaEmbedLink}
+                  style={{ border: '1px solid rgba(0, 0, 0, 0.1)' }}
+                  title="figma embed"
+                  width="100%"
+                />
+                <h2 style={{ color: '#333333' }}>Component</h2>
+              </>
+            )}
 
-      <MessagesWrapper {...args}>
-        <Messages {...args} />
-      </MessagesWrapper>
+            <MessagesWrapper {...args}>
+              <Messages {...args} />
+            </MessagesWrapper>
 
-      <ChatInputContainer {...args}>
-        <ChatInput {...args} />
-      </ChatInputContainer>
-    </>
-  </MessageContainer>
+            <ChatInputContainer {...args}>
+              <ChatInput {...args} />
+            </ChatInputContainer>
+          </>
+        </MessageContainer>
+      </ConfigProvider>
+    </JournalProvider>
+  </XpubProvider>
 )
 
 export const EmptyAuthorChat = Base.bind()
@@ -121,7 +132,8 @@ const authorProps = {
       id: '20ca2a8d-d78e-4260-baed-86369992353f',
       profilePicture: null,
       username: 'Kotahi Dev',
-      admin: true,
+      groupRoles: ['groupManager'],
+      globalRoles: [],
       email: 'shanthitestemail@maiiinator.com',
       defaultIdentity: {
         __typename: 'Identity',
@@ -132,13 +144,6 @@ const authorProps = {
         id: '661c6b4f-5b5b-4ef0-aa4e-7d7b5bb38628',
       },
       isOnline: null,
-      _currentRoles: [
-        {
-          __typename: 'CurrentRole',
-          id: '297574d0-686c-4b1e-9cbc-3f3d8d86f8e2',
-          roles: ['author'],
-        },
-      ],
       teams: [
         {
           __typename: 'Team',
@@ -204,7 +209,8 @@ const adminEditorProps = {
       id: '20ca2a8d-d78e-4260-baed-86369992353f',
       profilePicture: null,
       username: 'Kotahi Dev',
-      admin: true,
+      groupRoles: ['groupManager'],
+      globalRoles: [],
       email: 'shanthitestemail@maiiinator.com',
       defaultIdentity: {
         __typename: 'Identity',
@@ -215,13 +221,6 @@ const adminEditorProps = {
         id: '661c6b4f-5b5b-4ef0-aa4e-7d7b5bb38628',
       },
       isOnline: null,
-      _currentRoles: [
-        {
-          __typename: 'CurrentRole',
-          id: '297574d0-686c-4b1e-9cbc-3f3d8d86f8e2',
-          roles: ['admin'],
-        },
-      ],
       teams: [
         {
           __typename: 'Team',
@@ -272,7 +271,8 @@ const emptyAuthorProps = {
       id: '20ca2a8d-d78e-4260-baed-86369992353f',
       profilePicture: null,
       username: 'Kotahi Dev',
-      admin: true,
+      groupRoles: ['groupManager'],
+      globalRoles: [],
       email: 'shanthitestemail@maiiinator.com',
       defaultIdentity: {
         __typename: 'Identity',
@@ -283,13 +283,6 @@ const emptyAuthorProps = {
         id: '661c6b4f-5b5b-4ef0-aa4e-7d7b5bb38628',
       },
       isOnline: null,
-      _currentRoles: [
-        {
-          __typename: 'CurrentRole',
-          id: '297574d0-686c-4b1e-9cbc-3f3d8d86f8e2',
-          roles: ['author'],
-        },
-      ],
       teams: [
         {
           __typename: 'Team',
@@ -340,7 +333,8 @@ const emptyAdminEditorProps = {
       id: '20ca2a8d-d78e-4260-baed-86369992353f',
       profilePicture: null,
       username: 'Kotahi Dev',
-      admin: true,
+      groupRoles: ['groupManager'],
+      globalRoles: [],
       email: 'shanthitestemail@maiiinator.com',
       defaultIdentity: {
         __typename: 'Identity',
@@ -351,13 +345,6 @@ const emptyAdminEditorProps = {
         id: '661c6b4f-5b5b-4ef0-aa4e-7d7b5bb38628',
       },
       isOnline: null,
-      _currentRoles: [
-        {
-          __typename: 'CurrentRole',
-          id: '297574d0-686c-4b1e-9cbc-3f3d8d86f8e2',
-          roles: ['admin'],
-        },
-      ],
       teams: [
         {
           __typename: 'Team',

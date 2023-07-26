@@ -123,13 +123,7 @@ export const fragmentFields = `
 `
 
 const query = gql`
-  query($id: ID!) {
-    currentUser {
-      id
-      username
-      admin
-    }
-
+  query($id: ID!, $groupId: ID) {
     manuscript(id: $id) {
       ${fragmentFields}
       manuscriptVersions {
@@ -143,15 +137,15 @@ const query = gql`
       }
     }
 
-    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission") {
+    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
       ${formFields}
     }
 
-    decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision") {
+    decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision", groupId: $groupId) {
       ${formFields}
     }
 
-    reviewForm: formForPurposeAndCategory(purpose: "review", category: "review") {
+    reviewForm: formForPurposeAndCategory(purpose: "review", category: "review", groupId: $groupId) {
       ${formFields}
     }
 
@@ -164,6 +158,7 @@ const query = gql`
         id
         comments {
           id
+          manuscriptVersionId
           commentVersions {
             id
             author {

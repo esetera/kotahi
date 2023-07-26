@@ -3,61 +3,16 @@ const { app } = require('@coko/server')
 const { setConfig } = require('./config/src/configObject')
 const { registerPlugins } = require('./plugins')
 
-// You can modify the app or ensure other things are imported here.
-const schedule = require('../node_modules/node-schedule')
+setConfig({
+  journal: config.journal,
+  teams: config.teams,
+  manuscripts: config.manuscripts,
+  baseUrl: config['pubsweet-client'].baseUrl,
+}) // TODO pass all client config that does not come from `Config` table through this structure or append it to config resolver
 
-setConfig({ teamTimezone: config.manuscripts.teamTimezone }) // TODO pass all client config through this structure
-
-const {
-  importManuscripts,
-  importManuscriptsFromSemanticScholar,
-  archiveOldManuscripts,
-} = require('./model-manuscript/src/manuscriptCommsUtils')
-
-const { createNewTaskAlerts } = require('./model-task/src/taskCommsUtils')
+const { initiateJobSchedules } = require('./utils/jobUtils')
 
 registerPlugins()
-
-if (config.manuscripts.autoImportHourUtc) {
-  schedule.scheduleJob(
-    {
-      tz: 'Etc/UTC',
-      rule: `00 ${config.manuscripts.autoImportHourUtc} * * *`,
-    },
-    async () => {
-      // eslint-disable-next-line no-console
-      console.info(
-        `Running scheduled import and archive tasks at ${new Date().toISOString()}`,
-      )
-
-      try {
-        await importManuscripts({ user: null })
-        await importManuscriptsFromSemanticScholar({ user: null })
-        await archiveOldManuscripts()
-      } catch (error) {
-        console.error(error)
-      }
-    },
-  )
-}
-
-schedule.scheduleJob(
-  {
-    tz: `${config.manuscripts.teamTimezone || 'Etc/UTC'}`,
-    rule: `00 00 * * *`,
-  },
-  async () => {
-    // eslint-disable-next-line no-console
-    console.info(
-      `Running scheduler for tracking overdue tasks ${new Date().toISOString()}`,
-    )
-
-    try {
-      await createNewTaskAlerts()
-    } catch (error) {
-      console.error(error)
-    }
-  },
-)
+initiateJobSchedules() // Initiate all job schedules
 
 module.exports = app

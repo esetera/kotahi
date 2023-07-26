@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { set, debounce } from 'lodash'
+import { ConfigContext } from '../../../config/src'
 import DecisionAndReviews from './DecisionAndReviews'
 import CreateANewVersion from './CreateANewVersion'
 import ReadonlyFormTemplate from '../../../component-review/src/components/metadata/ReadonlyFormTemplate'
@@ -45,9 +46,15 @@ const Submit = ({
   deleteFile,
   setShouldPublishField,
   threadedDiscussionProps,
+  manuscriptLatestVersionId,
   validateDoi,
   validateSuffix,
 }) => {
+  const config = useContext(ConfigContext)
+
+  const allowAuthorsSubmitNewVersion =
+    config?.submission?.allowAuthorsSubmitNewVersion
+
   const decisionSections = []
 
   const submissionValues = createBlankSubmissionBasedOnForm(submissionForm)
@@ -65,11 +72,8 @@ const Submit = ({
     const userCanEditManuscriptAndFormData =
       index === 0 &&
       (['new', 'revising'].includes(version.status) ||
-        (currentUser.admin && version.status !== 'rejected'))
-
-    const hasDecision = !['new', 'submitted', 'revising'].includes(
-      version.status,
-    )
+        (currentUser.groupRoles.includes('groupManager') &&
+          version.status !== 'rejected'))
 
     const editorSection = {
       content: (
@@ -82,11 +86,19 @@ const Submit = ({
           }}
         />
       ),
-      key: `editor_${version.id}`,
+      key: `editor`,
       label: 'Manuscript text',
     }
 
     let decisionSection
+
+    const selectedManuscriptVersionId = version.id
+
+    const threadedDiscussionExtendedProps = {
+      ...threadedDiscussionProps,
+      manuscriptLatestVersionId,
+      selectedManuscriptVersionId,
+    }
 
     if (userCanEditManuscriptAndFormData) {
       Object.assign(submissionValues, JSON.parse(version.submission))
@@ -107,7 +119,7 @@ const Submit = ({
         createFile,
         deleteFile,
         setShouldPublishField,
-        threadedDiscussionProps,
+        threadedDiscussionExtendedProps,
         validateDoi,
         validateSuffix,
       }
@@ -121,14 +133,14 @@ const Submit = ({
       decisionSection = {
         content: (
           <>
-            {hasDecision && (
-              <DecisionAndReviews
-                decisionForm={decisionForm}
-                manuscript={version}
-                reviewForm={reviewForm}
-                threadedDiscussionProps={threadedDiscussionProps}
-              />
-            )}
+            <DecisionAndReviews
+              allowAuthorsSubmitNewVersion={allowAuthorsSubmitNewVersion}
+              currentUser={currentUser}
+              decisionForm={decisionForm}
+              manuscript={version}
+              reviewForm={reviewForm}
+              threadedDiscussionProps={threadedDiscussionExtendedProps}
+            />
             <ReadonlyFormTemplate
               form={submissionForm}
               formData={{
@@ -137,7 +149,7 @@ const Submit = ({
               }}
               manuscript={version}
               showEditorOnlyFields={false}
-              threadedDiscussionProps={threadedDiscussionProps}
+              threadedDiscussionProps={threadedDiscussionExtendedProps}
               title="Metadata"
             />
           </>
@@ -150,18 +162,21 @@ const Submit = ({
     decisionSections.push({
       content: (
         <>
-          {['ncrc'].includes(process.env.INSTANCE_NAME) && (
+          {['ncrc'].includes(config.instanceName) && (
             <AssignEditorsReviewers
               AssignEditor={AssignEditor}
               manuscript={version}
             />
           )}
-          {index === 0 && version.status === 'revise' && (
-            <CreateANewVersion
-              createNewVersion={createNewVersion}
-              manuscript={version}
-            />
-          )}
+          {index === 0 &&
+            !['revising', 'new'].includes(version.status) &&
+            (allowAuthorsSubmitNewVersion || version.status === 'revise') && (
+              <CreateANewVersion
+                allowAuthorsSubmitNewVersion={allowAuthorsSubmitNewVersion}
+                createNewVersion={createNewVersion}
+                manuscript={version}
+              />
+            )}
           <HiddenTabs
             defaultActiveKey={version.id}
             sections={[decisionSection, editorSection]}
@@ -191,7 +206,7 @@ const Submit = ({
         </ErrorBoundary>
       </Manuscript>
       <Chat>
-        <MessageContainer channelId={channelId} />
+        <MessageContainer channelId={channelId} currentUser={currentUser} />
       </Chat>
     </Columns>
   )
@@ -236,7 +251,7 @@ Submit.propTypes = {
   reviewForm: formPropTypes.isRequired,
   createNewVersion: PropTypes.func.isRequired,
   currentUser: PropTypes.shape({
-    admin: PropTypes.bool,
+    groupRoles: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   }),
   parent: PropTypes.shape({
     channels: PropTypes.arrayOf(
@@ -255,7 +270,7 @@ Submit.propTypes = {
   updateManuscript: PropTypes.func.isRequired,
 }
 Submit.defaultProps = {
-  currentUser: { admin: false },
+  currentUser: { groupRoles: [] },
   parent: undefined,
 }
 

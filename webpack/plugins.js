@@ -1,5 +1,3 @@
-const config = require('config')
-
 const webpack = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -51,20 +49,9 @@ module.exports = (opts = {}) => {
       'PUBLIC_CLIENT_PROTOCOL',
       'PUBLIC_CLIENT_HOST',
       'PUBLIC_CLIENT_PORT',
-      'USE_SANDBOXED_ORCID',
-      'INSTANCE_NAME',
-      'MANUSCRIPTS_TABLE_COLUMNS',
-      'MANUSCRIPTS_TABLE_FIRST_COLUMN_WIDTH',
-      'DISPLAY_SHORTID_AS_IDENTIFIER',
+      'USE_COLAB_EMAIL',
+      'FLAX_SITE_URL',
     ]),
-  )
-
-  // put dynamically required modules into the build
-  // TODO Is authsome still needed? Or dead code?
-  plugins.push(
-    new webpack.ContextReplacementPlugin(/./, __dirname, {
-      [config.authsome.mode]: config.authsome.mode,
-    }),
   )
 
   if (isDevelopment) {

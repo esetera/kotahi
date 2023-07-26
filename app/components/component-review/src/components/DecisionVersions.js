@@ -14,6 +14,8 @@ import MessageContainer from '../../../component-chat/src/MessageContainer'
 
 const DecisionVersions = ({
   allUsers,
+  addReviewer,
+  roles,
   currentUser,
   decisionForm,
   form,
@@ -21,7 +23,7 @@ const DecisionVersions = ({
   updateManuscript,
   manuscript,
   sendNotifyEmail,
-  sendChannelMessageCb,
+  sendChannelMessage,
   makeDecision,
   updateReviewJsonData,
   publishManuscript,
@@ -39,19 +41,27 @@ const DecisionVersions = ({
   threadedDiscussionProps,
   validateDoi,
   validateSuffix,
-  invitations,
   setExternalEmail,
   externalEmail,
   selectedEmail,
   setSelectedEmail,
   setShouldPublishField,
-  isEmailAddressOptedOut,
+  selectedEmailIsBlacklisted,
+  updateSharedStatusForInvitedReviewer,
   dois,
   refetch,
   updateTask,
   updateTasks,
+  teams,
+  updateTeamMember,
+  removeReviewer,
+  updateTaskNotification,
+  deleteTaskNotification,
+  createTaskEmailNotificationLog,
+  emailTemplates,
 }) => {
   const versions = gatherManuscriptVersions(manuscript)
+  const firstVersion = versions[versions.length - 1]
 
   const initialValue = useMemo(
     () =>
@@ -64,18 +74,27 @@ const DecisionVersions = ({
   )
 
   // Protect if channels don't exist for whatever reason
-  let editorialChannelId, allChannelId
+  let editorialChannel, allChannel
 
   if (Array.isArray(manuscript.channels) && manuscript.channels.length) {
-    editorialChannelId = manuscript.channels.find(c => c.type === 'editorial')
-      .id
-    allChannelId = manuscript.channels.find(c => c.type === 'all').id
+    editorialChannel = manuscript.channels.find(c => c.type === 'editorial')
+    allChannel = manuscript.channels.find(c => c.type === 'all')
   }
 
   const channels = [
-    { id: allChannelId, name: 'Discussion with author' },
-    { id: editorialChannelId, name: 'Editorial discussion' },
+    {
+      id: allChannel?.id,
+      name: 'Discussion with author',
+      type: allChannel?.type,
+    },
+    {
+      id: editorialChannel?.id,
+      name: 'Editorial discussion',
+      type: editorialChannel?.type,
+    },
   ]
+
+  const manuscriptLatestVersionId = versions[0].manuscript.id
 
   return (
     <Columns>
@@ -84,36 +103,44 @@ const DecisionVersions = ({
           <VersionSwitcher>
             {versions.map((version, index) => (
               <DecisionVersion
+                addReviewer={addReviewer}
                 allUsers={allUsers}
                 canHideReviews={canHideReviews}
                 createFile={createFile}
+                createTaskEmailNotificationLog={createTaskEmailNotificationLog}
                 createTeam={createTeam}
                 currentDecisionData={initialValue}
                 currentUser={currentUser}
                 decisionForm={decisionForm}
                 deleteFile={deleteFile}
+                deleteTaskNotification={deleteTaskNotification}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
                 dois={dois}
+                emailTemplates={emailTemplates}
                 externalEmail={externalEmail}
                 form={form}
-                invitations={invitations}
+                invitations={version.manuscript.invitations || []}
                 isCurrentVersion={index === 0}
-                isEmailAddressOptedOut={isEmailAddressOptedOut}
                 key={version.manuscript.id}
                 makeDecision={makeDecision}
+                manuscriptLatestVersionId={manuscriptLatestVersionId}
                 onChange={handleChange}
-                parent={manuscript}
+                parent={firstVersion.manuscript}
                 publishManuscript={publishManuscript}
                 refetch={refetch}
+                removeReviewer={removeReviewer}
                 reviewers={reviewers}
                 reviewForm={reviewForm}
+                roles={roles}
                 selectedEmail={selectedEmail}
-                sendChannelMessageCb={sendChannelMessageCb}
+                selectedEmailIsBlacklisted={selectedEmailIsBlacklisted}
+                sendChannelMessage={sendChannelMessage}
                 sendNotifyEmail={sendNotifyEmail}
                 setExternalEmail={setExternalEmail}
                 setSelectedEmail={setSelectedEmail}
                 setShouldPublishField={setShouldPublishField}
                 teamLabels={teamLabels}
+                teams={teams}
                 threadedDiscussionProps={threadedDiscussionProps}
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}
@@ -125,20 +152,30 @@ const DecisionVersions = ({
                     version.manuscript.id,
                   )
                 }
-                updateTask={index === 0 ? updateTask : null}
-                updateTasks={index === 0 ? updateTasks : null}
+                updateSharedStatusForInvitedReviewer={
+                  updateSharedStatusForInvitedReviewer
+                }
+                updateTask={updateTask}
+                updateTaskNotification={updateTaskNotification}
+                updateTasks={updateTasks}
                 updateTeam={updateTeam}
+                updateTeamMember={updateTeamMember}
                 urlFrag={urlFrag}
                 validateDoi={validateDoi}
                 validateSuffix={validateSuffix}
                 version={version.manuscript}
+                versionNumber={versions.length - index}
               />
             ))}
           </VersionSwitcher>
         </ErrorBoundary>
       </Manuscript>
       <Chat>
-        <MessageContainer channels={channels} manuscriptId={manuscript.id} />
+        <MessageContainer
+          channels={channels}
+          currentUser={currentUser}
+          manuscriptId={manuscript.id}
+        />
       </Chat>
     </Columns>
   )

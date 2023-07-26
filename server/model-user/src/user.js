@@ -98,6 +98,8 @@ class User extends BaseModel {
           type: ['string', 'object', 'null'],
           format: 'date-time',
         },
+        recentTab: { type: ['string', 'null'] },
+        eventNotificationsOptIn: { type: ['boolean', true] },
       },
     }
   }
@@ -183,11 +185,6 @@ class User extends BaseModel {
         return pick(owner, ['id', 'username'])
       }),
     )
-  }
-
-  async isOnline() {
-    const currentDateTime = new Date()
-    return this.lastOnline && currentDateTime - this.lastOnline < 5 * 60 * 1000
   }
 }
 

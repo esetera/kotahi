@@ -15,6 +15,8 @@ const {
   getCrossrefCitationsFromList,
 } = require('../../utils/jatsUtils')
 
+const Config = require('../../config/src/config')
+
 const DOI_PATH_PREFIX = 'https://doi.org/'
 const ABSTRACT_PLACEHOLDER = '‖ABSTRACT‖'
 const CITATIONS_PLACEHOLDER = '‖CITATIONS‖'
@@ -22,15 +24,18 @@ const CITATIONS_PLACEHOLDER = '‖CITATIONS‖'
 const builder = new xml2js.Builder()
 const parser = new xml2js.Parser()
 
-const requestToCrossref = async xmlFiles => {
+const requestToCrossref = async (xmlFiles, activeConfig) => {
   const publishPromises = xmlFiles.map(async file => {
     const formData = new FormData()
-    formData.append('login_id', config.crossref.login)
-    formData.append('login_passwd', config.crossref.password)
+    formData.append('login_id', activeConfig.formData.publishing.crossref.login)
+    formData.append(
+      'login_passwd',
+      activeConfig.formData.publishing.crossref.password,
+    )
     formData.append('fname', fs.createReadStream(file))
 
     const crossrefURL =
-      config.crossref.useSandbox === 'false'
+      activeConfig.formData.publishing.crossref.useSandbox === false
         ? 'https://doi.crossref.org/servlet/deposit'
         : 'https://test.crossref.org/servlet/deposit'
 
@@ -48,16 +53,21 @@ const requestToCrossref = async xmlFiles => {
 
 /** Publish either article or reviews to Crossref, according to config */
 const publishToCrossref = async manuscript => {
-  if (!config.crossref.doiPrefix)
+  const activeConfig = await Config.query().findOne({
+    groupId: manuscript.groupId,
+    active: true,
+  })
+
+  if (!activeConfig.formData.publishing.crossref.doiPrefix)
     throw new Error(
       'Could not publish to Crossref, as no DOI prefix is configured.',
     )
 
-  if (config.crossref.publicationType === 'article')
+  if (activeConfig.formData.publishing.crossref.publicationType === 'article')
     await publishArticleToCrossref(manuscript).catch(err => {
       throw err
     })
-  // else if (config.crossref.publicationType === 'reviews')
+  // else if (activeConfig.formData.publishing.crossref.publicationType === 'peer review')
   else
     await publishReviewsToCrossref(manuscript).catch(err => {
       throw err
@@ -121,14 +131,16 @@ const getReviewOrSubmissionField = (manuscript, fieldName) => {
 
 /** Get DOI in form 10.12345/<suffix>
  * If the configured prefix includes 'https://doi.org/' and/or a trailing slash, these are dealt with gracefully. */
-const getDoi = suffix => {
-  let prefix = config.crossref.doiPrefix
+const getDoi = async (suffix, activeConfig) => {
+  let prefix = activeConfig.formData.publishing.crossref.doiPrefix
   if (!prefix) throw new Error('No DOI prefix configured.')
   if (prefix.startsWith(DOI_PATH_PREFIX))
     prefix = prefix.replace(DOI_PATH_PREFIX, '')
   if (prefix.endsWith('/')) prefix = prefix.replace('/', '')
   if (!/^10\.\d{4,9}$/.test(prefix))
-    throw new Error(`Unrecognised DOI prefix "${config.crossref.doiPrefix}"`)
+    throw new Error(
+      `Unrecognised DOI prefix "${activeConfig.formData.publishing.crossref.doiPrefix}"`,
+    )
   return `${prefix}/${suffix}`
 }
 
@@ -204,12 +216,12 @@ const doiExists = async checkDOI => {
     await axios.get(`https://api.crossref.org/works/${checkDOI}/agency`)
     return true
   } catch (err) {
-    if (err.response.status === 404) {
+    if (err && err.response && err.response.status === 404) {
       // HTTP 404 "Not found" response. The DOI is not known by Crossref
       // console.log(`DOI '${checkDOI}' is available.`)
       return false
     }
-    // Unexpected HTTP response (5xx)
+    // Unexpected response (e.g. HTTP 5xx)
     // Assume that the DOI exists, otherwise server errors at crossref will prevent form submission in Kotahi
 
     return true
@@ -220,6 +232,11 @@ const emailRegex = /^[\p{L}\p{N}!/+\-_]+(\.[\p{L}\p{N}!/+\-_]+)*@[\p{L}\p{N}!/+\
 
 /** Send submission to register an article, with appropriate metadata */
 const publishArticleToCrossref = async manuscript => {
+  const activeConfig = await Config.query().findOne({
+    groupId: manuscript.groupId,
+    active: true,
+  })
+
   if (!manuscript.submission)
     throw new Error('Manuscript has no submission object')
   if (!manuscript.meta.title) throw new Error('Manuscript has no title')
@@ -229,22 +246,24 @@ const publishArticleToCrossref = async manuscript => {
     throw new Error('Manuscript has no submission.authors field')
   if (!Array.isArray(manuscript.submission.authors))
     throw new Error('Manuscript.submission.authors is not an array')
-  if (!emailRegex.test(config.crossref.depositorEmail))
+  if (
+    !emailRegex.test(activeConfig.formData.publishing.crossref.depositorEmail)
+  )
     throw new Error(
-      `Depositor email address "${config.crossref.depositorEmail}" is misconfigured`,
+      `Depositor email address "${activeConfig.formData.publishing.crossref.depositorEmail}" is misconfigured`,
     )
 
   const issueYear = getIssueYear(manuscript)
   const publishDate = new Date()
-  const journalDoi = getDoi(0)
+  const journalDoi = getDoi(0, activeConfig)
 
   const doiSuffix =
     getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id
 
-  const doi = getDoi(doiSuffix)
+  const doi = getDoi(doiSuffix, activeConfig)
   if (!(await doiIsAvailable(doi))) throw Error('Custom DOI is not available.')
 
-  const publishedLocation = `${config.crossref.publishedArticleLocationPrefix}${manuscript.shortId}`
+  const publishedLocation = `${activeConfig.formData.publishing.crossref.publishedArticleLocationPrefix}${manuscript.shortId}`
   const batchId = uuid()
   const citations = getCitations(manuscript)
 
@@ -252,11 +271,12 @@ const publishArticleToCrossref = async manuscript => {
 
   const journal = {
     journal_metadata: {
-      full_title: config.crossref.journalName,
-      abbrev_title: config.crossref.journalAbbreviatedName,
+      full_title: activeConfig.formData.publishing.crossref.journalName,
+      abbrev_title:
+        activeConfig.formData.publishing.crossref.journalAbbreviatedName,
       doi_data: {
         doi: journalDoi,
-        resource: config.crossref.journalHomepage,
+        resource: activeConfig.formData.publishing.crossref.journalHomepage,
       },
     },
     journal_issue: {
@@ -296,13 +316,13 @@ const publishArticleToCrossref = async manuscript => {
     journal.journal_issue.issue = manuscript.submission.issueNumber
   }
 
-  if (config.crossref.licenseUrl)
+  if (activeConfig.formData.publishing.crossref.licenseUrl)
     journal.journal_article.program = {
       $: {
         name: 'AccessIndicators',
         xmlns: 'http://www.crossref.org/AccessIndicators.xsd',
       },
-      license_ref: config.crossref.licenseUrl,
+      license_ref: activeConfig.formData.publishing.crossref.licenseUrl,
     }
 
   journal.journal_article.doi_data = {
@@ -326,10 +346,12 @@ const publishArticleToCrossref = async manuscript => {
         doi_batch_id: batchId,
         timestamp: getCurrentCrossrefTimestamp(publishDate),
         depositor: {
-          depositor_name: config.crossref.depositorName,
-          email_address: config.crossref.depositorEmail,
+          depositor_name:
+            activeConfig.formData.publishing.crossref.depositorName,
+          email_address:
+            activeConfig.formData.publishing.crossref.depositorEmail,
         },
-        registrant: config.crossref.registrant,
+        registrant: activeConfig.formData.publishing.crossref.registrant,
       },
       body: {
         journal,
@@ -350,11 +372,16 @@ const publishArticleToCrossref = async manuscript => {
   const fileName = `submission-${batchId}.xml`
   await fsPromised.appendFile(`${dirName}/${fileName}`, xml)
   const filePath = `${dirName}/${fileName}`
-  await requestToCrossref([filePath])
+  await requestToCrossref([filePath], activeConfig)
   await fs.rmdirSync(dirName, { recursive: true })
 }
 
 const publishReviewsToCrossref = async manuscript => {
+  const activeConfig = await Config.query().findOne({
+    groupId: manuscript.groupId,
+    active: true,
+  })
+
   if (
     !manuscript.submission.articleURL ||
     !manuscript.submission.articleURL.startsWith('https://doi.org/')
@@ -384,7 +411,10 @@ const publishReviewsToCrossref = async manuscript => {
       `${manuscript.id}/`
     : null
 
-  const summaryDoi = summaryDoiSuffix ? getDoi(summaryDoiSuffix) : null
+  const summaryDoi = summaryDoiSuffix
+    ? getDoi(summaryDoiSuffix, activeConfig)
+    : null
+
   // only validate if a summary exists, i.e. there is a summary author/creator
   if (summaryDoi && !(await doiIsAvailable(summaryDoi)))
     throw Error(`Summary suffix is not available: ${summaryDoiSuffix}`)
@@ -402,7 +432,7 @@ const publishReviewsToCrossref = async manuscript => {
             `review${reviewNumber}suffix`,
           ) || `${manuscript.id}/${reviewNumber}`
 
-        const doi = getDoi(doiSuffix)
+        const doi = getDoi(doiSuffix, activeConfig)
         if (!(await doiIsAvailable(doi)))
           throw Error(`Review suffix is not available: ${doiSuffix}`)
 
@@ -426,11 +456,11 @@ const publishReviewsToCrossref = async manuscript => {
         templateCopy.doi_batch.body[0].peer_review[0].review_date[0].month[0] = month
         templateCopy.doi_batch.body[0].peer_review[0].review_date[0].year[0] = year
         templateCopy.doi_batch.head[0].depositor[0].depositor_name[0] =
-          config.crossref.depositorName
+          activeConfig.formData.publishing.crossref.depositorName
         templateCopy.doi_batch.head[0].depositor[0].email_address[0] =
-          config.crossref.depositorEmail
+          activeConfig.formData.publishing.crossref.depositorEmail
         templateCopy.doi_batch.head[0].registrant[0] =
-          config.crossref.registrant
+          activeConfig.formData.publishing.crossref.registrant
         templateCopy.doi_batch.head[0].timestamp[0] = +new Date()
         templateCopy.doi_batch.head[0].doi_batch_id[0] = String(
           +new Date(),
@@ -579,7 +609,7 @@ const publishReviewsToCrossref = async manuscript => {
   })
 
   const xmlFiles = await Promise.all(fileCreationPromises)
-  await requestToCrossref(xmlFiles)
+  await requestToCrossref(xmlFiles, activeConfig)
   fs.rmdirSync(dirName, {
     recursive: true,
   })

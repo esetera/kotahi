@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import config from 'config'
-import { get } from 'lodash'
+import React, { useContext, useEffect, useState } from 'react'
 import { gql, useQuery, useMutation } from '@apollo/client'
 import PropTypes from 'prop-types'
 import { Select } from '../../../../shared'
 import {
   CREATE_TEAM_MUTATION,
   UPDATE_TEAM_MUTATION,
-} from '../../../../../queries'
+} from '../../../../../queries/team'
+import { ConfigContext } from '../../../../config/src'
 
 const editorOption = user => ({
-  label: user.defaultIdentity?.name || user.email || user.username,
+  label: user.username || user.email || user.defaultIdentity?.name,
   value: user.id,
 })
 
@@ -20,7 +19,6 @@ const query = gql`
       id
       username
       email
-      admin
       defaultIdentity {
         id
         name
@@ -31,6 +29,7 @@ const query = gql`
 
 // TODO Instead use ../../../../component-review/src/components/assignEditors/AssignEditor.js and delete this file
 const AssignEditor = ({ teamRole, manuscript }) => {
+  const config = useContext(ConfigContext)
   const [team, setTeam] = useState([])
   const [teams, setTeams] = useState([])
   const [selectedEditor, setSelectedEditor] = useState(undefined)
@@ -95,7 +94,7 @@ const AssignEditor = ({ teamRole, manuscript }) => {
     }
   }, [selectedEditor])
 
-  const teamName = get(config, `teams.${teamRole}.name`)
+  const teamName = config?.teams[teamRole].name
 
   const { data, loading, error } = useQuery(query)
 

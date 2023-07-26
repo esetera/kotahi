@@ -1,10 +1,8 @@
 /* eslint-disable no-unused-vars */
-import config from 'config'
 import request from 'pubsweet-client/src/helpers/api'
 import { gql } from '@apollo/client'
-import { map } from 'lodash'
+// import { map } from 'lodash'
 import * as cheerio from 'cheerio'
-import currentRolesVar from '../../../shared/currentRolesVar'
 
 const fragmentFields = `
   id
@@ -14,12 +12,107 @@ const fragmentFields = `
   }
 `
 
-const urlFrag = config.journal.metadata.toplevel_urlfragment
-
 const stripTags = file => {
   // eslint-disable-next-line no-useless-escape
   const reg = /<container id="main">([\s\S]*?)<\/container>/
   return file.match(reg)[1]
+}
+
+const cleanOutWmfs = file => {
+  const wmfRegex = /"data:image\/[ew]mf;base64,[0-9a-zA-Z/+=]*"/g
+
+  return file.replaceAll(
+    wmfRegex,
+    '"" alt="Broken image" data-original-name="broken-image"',
+  )
+}
+
+const checkForEmptyBlocks = file => {
+  // what we want is inside container#main
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(file, 'text/html')
+  const inside = doc.querySelector('container#main')
+
+  for (let i = 0; i < inside.childNodes.length; i += 1) {
+    if (!inside.childNodes[i].tagName) {
+      const text = inside.childNodes[i].data
+
+      if (/\S/.test(text)) {
+        // We've found unwrapped text! Wrap it in <p></p>
+        console.error('Found unwrapped child node: ', inside.childNodes[i].data)
+        const p = doc.createElement('p')
+        p.innerHTML = inside.childNodes[i].data
+        inside.replaceChild(p, inside.childNodes[i])
+      }
+    } else {
+      if (inside.childNodes[i].tagName === 'A') {
+        console.error('Found unwrapped <a> tag:', inside.childNodes[i])
+        const p = doc.createElement('p')
+        p.appendChild(inside.childNodes[i])
+        inside.replaceChild(p, inside.childNodes[i])
+      }
+
+      if (inside.childNodes[i].tagName === 'IMG') {
+        console.error('Found unwrapped <img> tag:', inside.childNodes[i])
+        const figure = doc.createElement('figure')
+
+        if (!inside.childNodes[i + 1]) {
+          console.error('No next sibling, adding dummy paragraph')
+          const dummyp = doc.createElement('p')
+          inside.appendChild(dummyp)
+        }
+
+        figure.appendChild(inside.childNodes[i])
+        inside.replaceChild(figure, inside.childNodes[i])
+      }
+    }
+  }
+
+  const out = document.createElement('container')
+  out.appendChild(inside)
+  out.id = 'main'
+  return out.innerHTML
+}
+
+const stripTrackChanges = file => {
+  // PROBLEMATIC FIX FOR XSWEET
+  // This function strips out track changes spans from the HTML returned from xSweet
+  // It would be more efficient to do this on the xSweet side! This is done client-side
+  // and is probably shower than it needs to be.
+
+  const $ = cheerio.load(file)
+  // might be smarter to do this with DOMParser? We were already importing cheerio.
+
+  const stripSpans = () => {
+    $('span').each((index, el) => {
+      if (el.attribs.class && el.attribs.class.indexOf('format-change') > -1) {
+        // console.log('format change: ', $(el).html())
+        $(el).replaceWith($(el).html())
+      }
+
+      if (el.attribs.class && el.attribs.class.indexOf('insertion') > -1) {
+        // console.log('insertion: ', $(el).html())
+        $(el).replaceWith($(el).html())
+      }
+
+      if (el.attribs.class && el.attribs.class.indexOf('deletion') > -1) {
+        // console.log('deletion: ', $(el).html())
+        $(el).replaceWith('')
+      }
+    })
+  }
+
+  if ($('span.format-change,span.insertion,span.deletion').length) {
+    // don't run this if we don't have to.
+    stripSpans()
+  }
+
+  if ($('span.format-change,span.insertion,span.deletion').length) {
+    // Because there may be nested spans, we need to run this function again to make sure we get everything.
+    stripSpans()
+  }
+
+  return $.html()
 }
 
 const cleanMath = file => {
@@ -28,9 +121,16 @@ const cleanMath = file => {
   // Sometimes math comes in in the form <h4><h4><math-display>...math...</math-display></h4></h4>
   // It should not be coming in like this! If the duplicated <h4>s are replaced by <p>, math processing works correctly
 
-  const dupedH4s = /<h4>\s*<h4>([\s\S]*?)<\/h4>\s*<\/h4>/g
+  // console.log('Coming in:\n\n\n', file, '\n\n\n')
+  const dupedHeaderMathRegex = /<h[1-6]>\s*<\/h[1-6]>\s*<h[1-6]>(<math-(?:inline|display)[^>]*>)([\s\S]*?)(<\/math-(?:inline|display)>)\s*<\/h[1-6]>/g
 
-  const dedupedFile = file.replaceAll(dupedH4s, `<p>$1</p>`)
+  // A second fix: math was coming in like this: <h3></h3><h3><math-display>...math...</math-display></h3>
+
+  const dupedHeaderMathRegex2 = /<h[1-6]>\s*<h[1-6]>(<math-(?:inline|display)[^>]*>)([\s\S]*?)(<\/math-(?:inline|display)>)\s*<\/h[1-6]>\s*<\/h[1-6]>/g
+
+  const dedupedFile = file
+    .replaceAll(dupedHeaderMathRegex, `<p>$1$2$3</p>`)
+    .replaceAll(dupedHeaderMathRegex2, `<p>$1$2$3</p>`)
 
   // Note: both inline and display equations were coming in from xSweet with
   // $$ around them. This code removes them.
@@ -45,6 +145,8 @@ const cleanMath = file => {
     .replaceAll(inlineStart, `<math-inline class="math-node">`)
     .replaceAll(displayEnd, `</math-display>`)
     .replaceAll(inlineEnd, `</math-inline>`)
+
+  // console.log('Coming out:\n\n\n', cleanedFile, '\n\n\n')
 
   return cleanedFile
 }
@@ -183,16 +285,22 @@ const base64Images = source => {
   const doc = new DOMParser().parseFromString(source, 'text/html')
 
   const images = [...doc.images].map((e, index) => {
-    const mimeType = e.src.match(/[^:]\w+\/[\w\-+.]+(?=;base64,)/)[0]
-    const blob = base64toBlob(e.src, mimeType)
-    const mimeTypeSplit = mimeType.split('/')
-    const extFileName = mimeTypeSplit[1]
+    const isDataUrl = e.src.match(/[^:]\w+\/[\w\-+.]+(?=;base64,)/)
 
-    const file = new File([blob], `Image${index + 1}.${extFileName}`, {
-      type: mimeType,
-    })
+    if (isDataUrl) {
+      const mimeType = isDataUrl[0]
+      const blob = base64toBlob(e.src, mimeType)
+      const mimeTypeSplit = mimeType.split('/')
+      const extFileName = mimeTypeSplit[1]
 
-    return { dataSrc: e.src, mimeType, file }
+      const file = new File([blob], `Image${index + 1}.${extFileName}`, {
+        type: mimeType,
+      })
+
+      return { dataSrc: e.src, mimeType, file }
+    }
+
+    return null
   })
 
   return images || null
@@ -231,18 +339,37 @@ const uploadPromise = (files, client) => {
   })
 }
 
-const DocxToHTMLPromise = (file, data) => {
-  const body = new FormData()
-  body.append('docx', file)
+const getHtmlFromDocxQuery = gql`
+  query($url: String!) {
+    docxToHtml(url: $url) {
+      html
+      error
+    }
+  }
+`
 
-  const url = `${config['pubsweet-client'].baseUrl}/convertDocxToHTML`
+const DocxToHTMLPromise = (file, data, client) => {
+  const theUrl = data.uploadFile.storedObjects[0].url
 
-  return request(url, { method: 'POST', body }).then(response =>
-    Promise.resolve({
-      fileURL: data.uploadFile.storedObjects[0].url,
-      response,
-    }),
-  )
+  return client
+    .query({
+      query: getHtmlFromDocxQuery,
+      variables: {
+        url: theUrl,
+      },
+      fetchPolicy: 'network-only',
+    })
+    .then(result => {
+      if (result?.data?.docxToHtml?.html && !result?.data?.docxToHtml?.error) {
+        return {
+          response: `<container id="main">${result.data.docxToHtml.html}</container>`,
+          fileURL: theUrl,
+        }
+      }
+
+      console.error('Server-side error: ', result.data.docxToHtml.error)
+      return file
+    })
 }
 
 const createManuscriptPromise = (
@@ -252,6 +379,7 @@ const createManuscriptPromise = (
   currentUser,
   fileURL,
   response,
+  config,
 ) => {
   // In the case of a Docx file, response is the HTML
   // In the case of another type of file, response is true/false
@@ -286,17 +414,13 @@ const createManuscriptPromise = (
       title,
       source,
     },
+    groupId: config.groupId,
   }
 
   return client.mutate({
     mutation: createManuscriptMutation,
     variables: { input: manuscript },
     update: (cache, { data: { createManuscript } }) => {
-      const currentRoles = currentRolesVar()
-      currentRolesVar([
-        ...currentRoles,
-        { id: createManuscript.id, roles: ['author'] },
-      ])
       cache.modify({
         fields: {
           manuscripts(existingManuscriptRefs = []) {
@@ -318,9 +442,21 @@ const createManuscriptPromise = (
   })
 }
 
-const redirectPromise = (setConversionState, journals, history, data) => {
+const redirectPromise = (
+  setConversionState,
+  journals,
+  history,
+  data,
+  config,
+) => {
   setConversionState(() => ({ converting: false, completed: true }))
-  const route = `${urlFrag}/versions/${data.createManuscript.id}/submit`
+  const { urlFrag } = config
+
+  // redirect after a new submission path
+  const route = `${urlFrag}/versions/${data.createManuscript.id}/${
+    ['elife', 'ncrc'].includes(config.instanceName) ? 'evaluation' : 'submit'
+  }`
+
   // redirect after a short delay
   window.setTimeout(() => {
     history.push(route)
@@ -339,6 +475,7 @@ export default ({
   journals,
   currentUser,
   setConversion,
+  config,
 }) => async files => {
   setConversion({ converting: true })
   let manuscriptData
@@ -352,13 +489,18 @@ export default ({
 
       if (skipXSweet(file)) {
         uploadResponse = {
-          fileURL: data.uploadFile.url,
+          fileURL: data.uploadFile.url, // I think this should be data.uploadFile[0].url if this is actually used?
           response: true,
         }
       } else {
-        uploadResponse = await DocxToHTMLPromise(file, data)
-        uploadResponse.response = cleanMath(stripTags(uploadResponse.response))
-
+        uploadResponse = await DocxToHTMLPromise(file, data, client)
+        uploadResponse.response = cleanOutWmfs(
+          cleanMath(
+            stripTags(
+              stripTrackChanges(checkForEmptyBlocks(uploadResponse.response)),
+            ),
+          ),
+        )
         images = base64Images(uploadResponse.response)
       }
 
@@ -369,6 +511,7 @@ export default ({
         currentUser,
         uploadResponse.fileURL,
         uploadResponse.response,
+        config,
       )
 
       // Moving the below logic to server-side 'createManuscript' to fix slow docx uploads
@@ -436,6 +579,7 @@ export default ({
         currentUser,
         undefined,
         undefined,
+        config,
       )
     }
 
@@ -444,6 +588,7 @@ export default ({
       journals,
       history,
       manuscriptData.data,
+      config,
     )
   } catch (error) {
     setConversion({ error })

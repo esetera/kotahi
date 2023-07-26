@@ -2,6 +2,11 @@ import React from 'react'
 import styled from 'styled-components'
 import Menu from '../../app/components/Menu'
 import DesignEmbed from '../common/utils'
+import { XpubProvider } from '../../app/components/xpub-with-context/src'
+import { JournalProvider } from '../../app/components/xpub-journal/src'
+import { ConfigProvider } from '../../app/components/config/src'
+import * as journal from '../../config/journal'
+import config from '../../config/sampleConfigFormData'
 
 const Root = styled.div`
   display: grid;
@@ -23,9 +28,15 @@ const Root = styled.div`
 `
 
 export const Base = args => (
-  <Root>
-    <Menu {...args} />
-  </Root>
+  <XpubProvider>
+    <JournalProvider journal={JSON.parse(JSON.stringify(journal))}>
+      <ConfigProvider config={config}>
+        <Root>
+          <Menu {...args} />
+        </Root>
+      </ConfigProvider>
+    </JournalProvider>
+  </XpubProvider>
 )
 
 Base.args = {
@@ -72,7 +83,8 @@ Base.args = {
     id: 'ed0d6990-b32a-4b32-8bf6-39bd20078643',
     profilePicture: null,
     username: 'Shanthi',
-    admin: true,
+    groupRoles: ['groupManager'],
+    globalRoles: [],
     email: 'shanthitestemail@mailinator.com',
     defaultIdentity: {
       __typename: 'Identity',
@@ -83,7 +95,6 @@ Base.args = {
       id: '7b03f794-ed3c-4dac-933d-a6616b3d70c2',
     },
     isOnline: true,
-    _currentRoles: [],
     teams: [],
   },
 }

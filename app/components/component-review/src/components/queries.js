@@ -40,6 +40,29 @@ const manuscriptFields = `
     ${reviewFields}
   }
   decision
+  invitations {
+    id
+    declinedReason
+    responseComment
+    responseDate
+    toEmail
+    invitedPersonName
+    updated
+    status
+    invitedPersonType
+    userId
+    isShared
+    user {
+      id
+      username
+      profilePicture
+      isOnline
+      defaultIdentity {
+        id
+        identifier
+      }
+    }
+  }
   teams {
     id
     name
@@ -51,12 +74,18 @@ const manuscriptFields = `
       user {
         id
         username
+        profilePicture
+        isOnline
+        email
         defaultIdentity {
           id
           name
+          identifier
         }
       }
       status
+      isShared
+      updated
     }
   }
   status
@@ -81,20 +110,51 @@ const manuscriptFields = `
     created
     updated
     manuscriptId
+    groupId
     title
-    assigneeUserId
     assignee {
       id
       username
       email
       profilePicture
     }
+    assigneeUserId
     defaultDurationDays
     dueDate
     reminderPeriodDays
     sequenceIndex
     status
+    assigneeType
+    assigneeEmail
+    assigneeName
+    emailNotifications {
+      id
+      taskId
+      recipientUserId
+      recipientType
+      notificationElapsedDays
+      emailTemplateId
+      recipientName
+      recipientEmail
+      recipientUser {
+        id
+        username
+        email
+      }
+      sentAt
+    }
+    notificationLogs {
+      id
+      taskId
+      senderEmail
+      recipientEmail
+      emailTemplateId
+      content
+      updated
+      created
+    }
   }
+  
 `
 
 const formFields = `
@@ -137,14 +197,32 @@ const formFields = `
   }
 `
 
-export const query = gql`
-  query($id: ID!) {
-    currentUser {
+const teamFields = `
+  id
+  role
+  name
+  objectId
+  objectType
+  members {
+    updated
+    id
+    user {
       id
       username
-      admin
+      profilePicture
+      isOnline
+      defaultIdentity {
+        id
+        identifier
+      }
     }
+    status
+    isShared
+  }
+`
 
+export const query = gql`
+  query($id: ID!, $groupId: ID!) {
     manuscript(id: $id) {
       ${manuscriptFields}
       manuscriptVersions {
@@ -156,7 +234,6 @@ export const query = gql`
         topic
       }
     }
-
     threadedDiscussions(manuscriptId: $id) {
       id
       created
@@ -166,6 +243,7 @@ export const query = gql`
         id
         comments {
           id
+          manuscriptVersionId
           commentVersions {
             id
             author {
@@ -191,30 +269,61 @@ export const query = gql`
       userCanEditAnyComment
     }
 
-    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission") {
+    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
       ${formFields}
     }
 
-    decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision") {
+    decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision", groupId: $groupId) {
       ${formFields}
     }
 
-    reviewForm: formForPurposeAndCategory(purpose: "review", category: "review") {
+    reviewForm: formForPurposeAndCategory(purpose: "review", category: "review", groupId: $groupId) {
       ${formFields}
     }
 
     users {
       id
       username
+      profilePicture
+      isOnline
       email
-      admin
       defaultIdentity {
         id
+        identifier
       }
     }
 
     doisToRegister(id: $id)
+
+    emailTemplates {
+      id
+      created
+      updated
+      emailTemplateType
+      emailContent {
+        cc
+        subject
+        body
+        description
+      }
+    }
   }
+`
+
+export const addReviewerMutation = gql`
+mutation($manuscriptId: ID!, $userId: ID!) {
+  addReviewer(manuscriptId: $manuscriptId, userId: $userId) {
+    ${teamFields}
+  }
+}
+`
+
+export const removeReviewerMutation = gql`
+mutation($manuscriptId: ID!, $userId: ID!) {
+  removeReviewer(manuscriptId: $manuscriptId, userId: $userId) {
+    ${teamFields}
+  }
+}
 `
 
 export const updateReviewMutation = gql`
@@ -258,24 +367,15 @@ export const publishManuscriptMutation = gql`
   }
 `
 
-export const getUsers = gql`
-  {
-    users {
-      id
-      username
-      email
-      admin
-      defaultIdentity {
+export const sendEmail = gql`
+  mutation($input: String!) {
+    sendEmail(input: $input) {
+      invitation {
         id
       }
-    }
-  }
-`
-
-export const sendEmail = gql`
-  mutation($input: String) {
-    sendEmail(input: $input) {
-      success
+      response {
+        success
+      }
     }
   }
 `

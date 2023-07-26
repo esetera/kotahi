@@ -1,7 +1,6 @@
 import { decorate, injectable } from 'inversify'
-import { toggleMark } from 'prosemirror-commands'
-import { Commands } from 'wax-prosemirror-utilities'
-import { Tools } from 'wax-prosemirror-services'
+import { Commands, Tools } from 'wax-prosemirror-core'
+import removeOrToggleMark from '../removeOrToggleMark'
 
 class FirstPage extends Tools {
   title = 'Change to first page'
@@ -14,7 +13,7 @@ class FirstPage extends Tools {
   // eslint-disable-next-line class-methods-use-this
   get run() {
     return (state, dispatch) => {
-      toggleMark(state.config.schema.marks.firstPage)(state, dispatch)
+      removeOrToggleMark(state, dispatch, 'firstPage')
     }
   }
 

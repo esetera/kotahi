@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{article.meta.title}}</title>
+    <title>{{article.articleMetadata.title}}</title>
 				<!-- set mathjax configuration -->
 		<!--<script type="text/x-mathjax-config">
 				MathJax.Hub.Config({
@@ -51,73 +51,67 @@
       <img class="logo" src="{{article.publicationMetadata.publisherLogo}}" alt="logo" >
       <header>
         <p id="researchLevel">
-          {{article.parsedSubmission.objectType}}
+          {{article.articleMetadata.objectType}}
         </p>
-        <ul id="topicList">
-          {% for topic in article.parsedSubmission.topic %} 
-                                                                                                                                                                                                       <li>{{topic}}</li> 
-          {% endfor %}
-        </ul>
-        <h1 class="tile">{{article.meta.title}}</h1>
-        <p class="authors">
-          <ul class="authors-list">
-            {% for author in article.parsedSubmission.authors %}
-                                                                                                                                                                                                       <li>
-              {% if author.email === parsedSubmission.AuthorCorrespondence%}
-                                                                                                                                                                                                       <sup>*</sup>
-              {% endif %}
-              {{author.lastName | safe}} {{author.firstName | safe}} 
-              <small>{{author.affiliation}}</small>
-            </li>
-            {% endfor %}
-          </ul>
-        </p>
-      </header>
+				<ul id="topicList">
+					{% for topic in article.articleMetadata.topics %}<li>{{ topic }}</li>{% endfor %}
+				</ul>
+        <h1 class="title">{{article.meta.title}}</h1>
+				{{article.articleMetadata.formattedAuthors | safe}} 
+      </header>			
       <aside class="marginData left">
-        <section class="emailList">
-          {# if corresponding: true show email #}
-          <h4> <sup>*</sup> For Correspondence:</h4>
-          <p>{{parsedSubmission.AuthorCorrespondence}}</p>
-        </section>
-        <section>
-          <h4> Competing Interest:</h4>
-          <p>{{article.parsedSubmission.conflictOfInterest}}</p>
-        </section>
-        {% if article.parsedSubmission.Funding %}
-
-                                                                                                                                                                                                       <section> 
-          <h4>Funding:</h4> 
-          <p>{{article.parsedSubmission.Funding }}</p> 
-        </section>
-
-        {% endif %}
-        <section class="date">
-          <div>
-            <h4>Received:</h4> 
-            <p>{{article.parsedSubmission.dateReceived}}</p>
-          </div>
-          <div>
-            <h4> Accepted:</h4> 
-            <p>{{article.parsedSubmission.DateAccepted}}</p>
-          </div>
-          <div>
-            <h4> Published:</h4>
-            <p>{{article.parsedSubmission.DatePublished}}</p>
-          </div>
-        </section>
-        <section class="copyright">
-          {# add logo here #}
-          <!-- <p>Copyright Holder,</p> -->
-          <!-- <p> Copyright description</p> -->
-        </section>
+				<section class="emailList">
+					{# if corresponding: true show email #}
+					<h4><sup>*</sup> For Correspondence:</h4>
+					<p>{{article.articleMetadata.authorCorrespondence}}</p>
+				</section>
+				<section class="competing">
+					<h4>Competing Interest:</h4>
+          <p>{{article.articleMetadata.competingInterests}}</p>
+				</section>
+				{% if article.articleMetadata.funding %}
+					<section class="funding">
+						<h4>Funding:</h4>
+						<p>{{ article.articleMetadata.funding }}</p>
+					</section>
+				{% endif %}
+				<section class="date">
+					<div>
+						<h4>Received:</h4>
+						<p>{{ article.articleMetadata.dateReceived }}</p>
+					</div>
+					<div>
+						<h4>Accepted:</h4>
+						<p>{{ article.articleMetadata.dateAccepted }}</p>
+					</div>
+					<div>
+						<h4>Published:</h4>
+						<p>{{ article.articleMetadata.datePublished }}</p>
+					</div>
+				</section>
+				<section class="copyright">
+					{# add logo here #}
+					<!-- <p>Copyright Holder,</p> -->
+					<!-- <p>Copyright description</p> -->
+				</section>
+				<p class="url doi">
+						{{article.articleMetadata.doi}}
+				</p>
+				<p id="journalTitle">
+						{{article.publicationMetadata.journalTitle}}
+				</p>
+				<p id="journalSlug">
+						{{article.publicationMetadata.journalSlug}}
+				</p>
       </aside>
     </section>
-
     <section class="content">
-      {{article.parsedSubmission.abstract | safe}}
-      {{article.meta.source | safe}}
+			<section class="abstract">
+				{{ article.articleMetadata.abstract | safe }}
+			</section>
+			<section class="article">
+				{{ article.meta.source | safe }}
+			</section>
     </section>
-
-
   </body>
 </html>

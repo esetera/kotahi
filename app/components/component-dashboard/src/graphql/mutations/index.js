@@ -85,13 +85,21 @@ export default {
     }
   `,
   createNewTaskAlertsMutation: gql`
-    mutation {
-      createNewTaskAlerts
+    mutation($groupId: ID!) {
+      createNewTaskAlerts(groupId: $groupId)
     }
   `,
   removeTaskAlertsForCurrentUserMutation: gql`
     mutation {
       removeTaskAlertsForCurrentUser
+    }
+  `,
+  updateTab: gql`
+    mutation($tab: String) {
+      updateRecentTab(tab: $tab) {
+        id
+        recentTab
+      }
     }
   `,
 }

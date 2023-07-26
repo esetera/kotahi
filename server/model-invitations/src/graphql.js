@@ -1,7 +1,12 @@
 const models = require('@pubsweet/models')
-const BlacklistEmail = require('./blacklist_email')
-const Team = require('../../model-team/src/team')
-const TeamMember = require('../../model-team/src/team_member')
+
+const {
+  isLatestVersionOfManuscript,
+} = require('../../model-manuscript/src/manuscriptCommsUtils')
+
+const {
+  addUserToManuscriptChatChannel,
+} = require('../../model-channel/src/channelCommsUtils')
 
 const resolvers = {
   Query: {
@@ -11,6 +16,15 @@ const resolvers = {
     },
     async invitationStatus(_, { id }, ctx) {
       const invitation = await models.Invitation.query().findById(id)
+
+      const isLatestVersion = await isLatestVersionOfManuscript(
+        invitation.manuscriptId,
+      )
+
+      if (!isLatestVersion) {
+        invitation.status = 'EXPIRED'
+      }
+
       return invitation
     },
     async getInvitationsForManuscript(_, { id }, ctx) {
@@ -24,9 +38,10 @@ const resolvers = {
 
       return invitations
     },
-    async getBlacklistInformation(_, { email }, ctx) {
-      const blacklistData = await BlacklistEmail.query().where({
+    async getBlacklistInformation(_, { email, groupId }, ctx) {
+      const blacklistData = await models.BlacklistEmail.query().where({
         email,
+        groupId,
       })
 
       return blacklistData
@@ -65,13 +80,18 @@ const resolvers = {
 
       return result
     },
-    async addEmailToBlacklist(_, { email }, ctx) {
-      const result = await new BlacklistEmail({ email }).save()
+    async addEmailToBlacklist(_, { email, groupId }, ctx) {
+      const result = await new models.BlacklistEmail({ email, groupId }).save()
 
       return result
     },
     async assignUserAsAuthor(_, { manuscriptId, userId }, ctx) {
       const manuscript = await models.Manuscript.query().findById(manuscriptId)
+
+      await addUserToManuscriptChatChannel({
+        manuscriptId,
+        userId,
+      })
 
       const existingTeam = await manuscript
         .$relatedQuery('teams')
@@ -87,9 +107,8 @@ const resolvers = {
             .resultSize()) > 0
 
         if (!authorExists) {
-          await new TeamMember({
+          await new models.TeamMember({
             teamId: existingTeam.id,
-            status: 'accepted',
             userId,
           }).save()
         }
@@ -98,10 +117,10 @@ const resolvers = {
       }
 
       // Create a new team of authors if it doesn't exist
-      const newTeam = await new Team({
+      const newTeam = await new models.Team({
         objectId: manuscriptId,
         objectType: 'manuscript',
-        members: [{ status: 'accepted', userId }],
+        members: [{ userId }],
         role: 'author',
         name: 'Authors',
       }).saveGraph()
@@ -122,6 +141,11 @@ const resolvers = {
       )
 
       return result
+    },
+  },
+  Invitation: {
+    async user(parent) {
+      return parent.user || models.User.query().findById(parent.userId)
     },
   },
 }
@@ -150,20 +174,22 @@ type BlacklistEmail {
   id: ID
   created: DateTime
   updated: DateTime
-  email: String
+  email: String!
+  groupId: ID!
 }
+
 extend type Query {
   invitationManuscriptId(id: ID): Invitation
   invitationStatus(id: ID): Invitation
   getInvitationsForManuscript(id: ID): [Invitation!]
-  getBlacklistInformation(email: String): [BlacklistEmail]
+  getBlacklistInformation(email: String!, groupId: ID!): [BlacklistEmail]
   getEmailInvitedReviewers(manuscriptId: ID!): [Invitation!]!
 }
 
 extend type Mutation {
   updateInvitationStatus(id: ID, status: String, userId: ID,  responseDate: DateTime ): Invitation
   updateInvitationResponse(id: ID,  responseComment: String,  declinedReason: String ): Invitation
-  addEmailToBlacklist(email: String!): BlacklistEmail
+  addEmailToBlacklist(email: String!, groupId: ID!): BlacklistEmail
   assignUserAsAuthor(manuscriptId: ID!, userId: ID!): Team
   updateSharedStatusForInvitedReviewer(invitationId: ID!, isShared: Boolean!): Invitation!
 }

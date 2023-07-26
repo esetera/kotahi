@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { th, override } from '@pubsweet/ui-toolkit'
-import lightenBy from '../../shared/lightenBy'
 import { TabsContainer } from './Tabs'
+import { ConfigContext } from '../config/src'
+import { color } from '../../theme'
 
-const Tab = styled.div`
-  background: ${({ active, theme }) =>
+export const Tab = styled.div`
+  background: ${({ active }) =>
     active
-      ? theme.colors.neutral.white
+      ? color.backgroundA
       : 'linear-gradient(180deg, #ECECEC 0%, #ECECEC 40.1%, #D6D6D6 100%)'};
   border-radius: ${th('borderRadius')} ${th('borderRadius')} 0 0;
   box-shadow: ${({ active }) =>
     active
       ? '-4px 0 7px -4px rgba(0, 0, 0, 0.1), 4px 0 7px -4px rgba(0, 0, 0, 0.1), 0 -4px 7px -4px rgba(0, 0, 0, 0.1)'
       : 'none'};
-  color: ${th('colorText')};
+  color: ${color.text};
   cursor: pointer;
   font-size: ${th('fontSizeBaseSmall')};
   font-weight: 500;
@@ -22,11 +23,11 @@ const Tab = styled.div`
   padding: calc(${th('gridUnit')} - 1px) 1em;
   padding-bottom: 0;
   position: relative;
-  top: 2px;
 
   div {
     border-bottom: 3px solid
-      ${({ active }) => (active ? th('colorPrimary') : 'none')};
+      ${({ active }) => (active ? color.brand1.base : 'none')};
+    margin-bottom: -2px;
     padding-bottom: 4px;
   }
 
@@ -34,8 +35,8 @@ const Tab = styled.div`
   ${override('ui.Tab')}
 `
 
-const HiddenTabsContainer = styled(TabsContainer)`
-  ${props => props.sticky && `background-color: ${th('colorBackgroundHue')};`}
+export const HiddenTabsContainer = styled(TabsContainer)`
+  ${props => props.sticky && `background-color: ${color.backgroundC};`}
   ${props => props.sticky && 'position: sticky;'}
   ${props => props.sticky && 'top: -16px;'}
   ${props => props.sticky && 'z-index: 999;'}
@@ -45,23 +46,26 @@ const HiddenTabsContainer = styled(TabsContainer)`
   }
 `
 
-const TabContainer = styled.div.attrs(props => ({
+export const TabContainer = styled.div.attrs(props => ({
   'data-test-id': props['data-test-id'] || 'tab-container',
-}))``
+}))`
+  align-items: stretch;
+  display: flex;
+`
 
 const HideChatButton = styled.button`
   align-items: center;
   /* TODO: add a global style for this */
-  background-color: ${th('colorFurniture')};
+  background-color: ${color.gray90};
   border-radius: ${th('borderRadius')};
-  color: ${th('colorText')};
+  color: ${color.text};
   display: flex;
   float: right;
   font-size: 16px;
   padding: 6px 12px;
 
   &:hover {
-    background-color: ${lightenBy('colorFurniture', 0.2)};
+    background-color: ${color.gray95};
   }
 `
 
@@ -73,6 +77,7 @@ const HiddenTabs = ({
   background,
   hideChat,
 }) => {
+  const config = useContext(ConfigContext)
   const [activeKey, setActiveKey] = useState(defaultActiveKey)
 
   useEffect(() => {
@@ -95,10 +100,11 @@ const HiddenTabs = ({
     <>
       <HiddenTabsContainer
         background={background}
+        config={config}
         gridArea={tabsContainerGridArea}
         sticky={false}
       >
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', alignItems: 'stretch' }}>
           {sections.map(({ key, label }) => (
             <TabContainer
               key={key}

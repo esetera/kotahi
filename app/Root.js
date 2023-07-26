@@ -1,9 +1,8 @@
 /* eslint-disable no-param-reassign */
 import React from 'react'
-import { BrowserRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import { ThemeProvider } from 'styled-components'
 import { ApolloProvider, ApolloClient, ApolloLink, split } from '@apollo/client'
+import { BrowserRouter } from 'react-router-dom'
 // import { ApolloClient } from 'apollo-client'
 import { WebSocketLink } from '@apollo/client/link/ws'
 // import { split, ApolloLink } from 'apollo-link'
@@ -11,9 +10,7 @@ import { getMainDefinition } from '@apollo/client/utilities'
 import { setContext } from '@apollo/client/link/context'
 import { InMemoryCache } from '@apollo/client/cache'
 import { createUploadLink } from 'apollo-upload-client'
-
-import GlobalStyle from './theme/elements/GlobalStyle'
-import currentRolesVar from './shared/currentRolesVar'
+import Pages from './Pages'
 
 // See https://github.com/apollographql/apollo-feature-requests/issues/6#issuecomment-465305186
 export function stripTypenames(obj) {
@@ -49,6 +46,15 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
     }
   })
 
+  const groupLink = setContext((_, { headers }) => {
+    return {
+      headers: {
+        ...headers,
+        'group-id': localStorage.getItem('groupId') || null,
+      },
+    }
+  })
+
   const removeTypename = new ApolloLink((operation, forward) => {
     if (operation.variables) {
       operation.variables = stripTypenames(operation.variables)
@@ -57,7 +63,7 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
     return forward(operation)
   })
 
-  let link = ApolloLink.from([removeTypename, authLink, uploadLink])
+  let link = ApolloLink.from([removeTypename, authLink, groupLink, uploadLink])
 
   if (connectToWebSocket) {
     const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
@@ -98,14 +104,6 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
         },
         Manuscript: {
           fields: {
-            _currentRoles: {
-              read(existing, { cache, args, readField }) {
-                const currentRoles = currentRolesVar()
-                const currentId = readField('id')
-                const r = currentRoles.find(ro => ro.id === currentId)
-                return (r && r.roles) || []
-              },
-            },
             formFieldsToPublish: {
               merge(existing, incoming) {
                 return incoming
@@ -170,25 +168,19 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
   return new ApolloClient(makeConfig ? makeConfig(config) : config)
 }
 
-const Root = ({
-  makeApolloConfig,
-  routes,
-  theme,
-  connectToWebSocket = true,
-}) => (
-  <div>
-    <ApolloProvider
-      client={makeApolloClient(makeApolloConfig, connectToWebSocket)}
-    >
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <GlobalStyle />
-          {routes}
-        </ThemeProvider>
-      </BrowserRouter>
-    </ApolloProvider>
-  </div>
-)
+const Root = ({ makeApolloConfig, connectToWebSocket = true }) => {
+  return (
+    <div>
+      <ApolloProvider
+        client={makeApolloClient(makeApolloConfig, connectToWebSocket)}
+      >
+        <BrowserRouter>
+          <Pages />
+        </BrowserRouter>
+      </ApolloProvider>
+    </div>
+  )
+}
 
 Root.defaultProps = {
   makeApolloConfig: config => config,
@@ -196,9 +188,6 @@ Root.defaultProps = {
 }
 Root.propTypes = {
   makeApolloConfig: PropTypes.func,
-  routes: PropTypes.node.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  theme: PropTypes.object.isRequired,
   connectToWebSocket: PropTypes.bool,
 }
 

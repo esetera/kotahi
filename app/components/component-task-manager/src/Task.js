@@ -1,60 +1,40 @@
-import React, { useState, useContext } from 'react'
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment-timezone'
-import styled, { ThemeContext, css } from 'styled-components'
+import styled, { css } from 'styled-components'
 import { Draggable } from 'react-beautiful-dnd'
-import { Circle, CheckCircle, Trash2 } from 'react-feather'
+import { Circle, CheckCircle, MoreVertical } from 'react-feather'
 import { th, grid } from '@pubsweet/ui-toolkit'
+import { debounce } from 'lodash'
+import { transposeFromTimezoneToLocal } from '../../../shared/dateUtils'
 import {
-  transposeFromLocalToTimezone,
-  transposeFromTimezoneToLocal,
-} from '../../../shared/dateUtils'
-import {
-  MinimalTextInput,
-  MinimalSelect,
-  MinimalDatePicker,
   MinimalButton,
-  MinimalNumericUpDown,
-  CompactDetailLabel,
   ActionButton,
   LooseColumn,
   MediumRow,
+  TextInput,
 } from '../../shared'
-import { DragVerticalIcon } from '../../shared/Icons'
-import Modal from '../../component-modal/src'
-import { ConfigContext } from '../../config/src'
 
-const TextInput = styled(MinimalTextInput)`
-  margin-left: ${grid(0.5)};
-`
+import { DragVerticalIcon } from '../../shared/Icons'
+import Modal from '../../component-modal/src/ConfirmationModal'
+import { ConfigContext } from '../../config/src'
+import AssigneeDropdown from './AssigneeDropdown'
+import DueDateField from './DueDateField'
+import StatusDropdown from './StatusDropdown'
+import TaskEditModal from './TaskEditModal'
+import CounterField from '../../shared/CounterField'
+import { color } from '../../../theme'
 
 const TaskRow = styled.div`
-  align-items: stretch;
+  align-items: flex-start;
   display: flex;
   gap: ${grid('1')};
-
-  & > div {
-    align-items: center;
-    background: linear-gradient(0deg, transparent, ${th('colorBackgroundHue')});
-    display: flex;
-    line-height: 1em;
-    min-height: ${grid(6)};
-    padding: ${grid(1)} ${grid(0.5)};
-  }
-
-  ${props =>
-    props.isOverdue
-      ? css`
-          & > div:last-child {
-            border-right: ${grid(1)} solid ${th('colorError')};
-          }
-        `
-      : ''}
-
-  & > div:first-child > div:first-child > svg,
-  & > div:first-child > button:last-child > svg {
-    display: none;
-  }
 
   &:hover > div:first-child > div:first-child > svg,
   &:hover > div:first-child > button:last-child > svg {
@@ -62,47 +42,45 @@ const TaskRow = styled.div`
   }
 `
 
-/* stylelint-disable no-descending-specificity */
-const TaskHeaderRow = styled(TaskRow)`
-  & > div {
-    background: none;
-    color: ${th('colorBorder')};
-    font-size: ${th('fontSizeBaseSmall')};
-    font-variant: all-small-caps;
-    line-height: ${th('lineHeightBaseSmall')};
-    min-height: ${grid(3)};
-  }
+const TaskRowContainer = styled.div`
+  padding: 10px 8px 15px 8px;
 
-  & > div > div {
-    height: unset;
+  & + div {
+    border-top: 2px solid rgba(191, 191, 191, 0.5);
   }
 `
-/* stylelint-enable no-descending-specificity */
 
 const TitleCell = styled.div`
   display: flex;
-  flex: 2 1 40em;
+
+  input {
+    margin-left: 7px;
+  }
 `
 
-const AssigneeCell = styled.div`
-  flex: 1 1 15em;
+const StatusActionCell = styled.div`
+  /* stylelint-disable-next-line declaration-no-important */
+  background: none !important;
+  border-right: ${grid(1)} solid transparent;
+  flex: 0 1 12em;
   justify-content: flex-start;
-`
 
-const DueDateCell = styled.div`
-  flex: 0 0 7.8em;
-  justify-content: flex-start;
-  position: relative;
-`
+  ${props =>
+    props.isOverdue
+      ? css`
+          border-right-color: ${th('colorError')};
+        `
+      : ''}
 
-const StatusCell = styled.div`
-  flex: 0 1 15em;
-  justify-content: flex-start;
+  padding-right: ${grid(1)};
 `
 
 const DurationDaysCell = styled.div`
-  flex: 0 1 10em;
+  align-items: center;
+  display: flex;
+  height: 45px;
   justify-content: flex-start;
+  line-height: 1.5;
   position: relative;
 `
 
@@ -117,24 +95,103 @@ const Handle = styled.div`
 
 const DragIcon = styled(DragVerticalIcon)`
   height: 20px;
-  stroke: ${th('colorTextPlaceholder')};
+  stroke: ${color.gray40};
   stroke-width: 1.8;
   width: 20px;
 
   &:hover {
-    stroke: ${th('colorPrimary')};
+    stroke: ${color.brand1.base};
   }
 `
 
-const DaysNoteContainer = styled.div`
-  position: absolute;
-  transform: translate(4px, 16px);
+const Ellipsis = styled(MoreVertical)`
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+
+  &:hover path {
+    fill: ${color.brand1.base};
+  }
 `
 
 const ModalContainer = styled(LooseColumn)`
-  background-color: ${th('colorBackground')};
+  background-color: ${color.backgroundA};
   padding: ${grid(2.5)} ${grid(3)};
   z-index: 10000;
+`
+
+const ActionDialog = styled.div`
+  background: ${color.backgroundA};
+  border-radius: 6px;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
+  left: -80px;
+  position: absolute;
+  top: 15px;
+  z-index: 9999;
+`
+
+const BaseLabel = styled.div`
+  cursor: pointer;
+  padding: 12px 20px;
+
+  &:first-child {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+
+  &:last-child {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: ${color.gray95};
+  }
+`
+
+const EditLabel = styled(BaseLabel)``
+const DeleteLabel = styled(BaseLabel)``
+
+const TaskAction = styled.div`
+  cursor: pointer;
+  display: flex;
+  position: relative;
+`
+
+const BaseFieldContainer = styled.div`
+  /* align-items: flex-start; */
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  line-height: 1em;
+`
+
+const TitleFieldContainer = styled(BaseFieldContainer)`
+  flex: 1 1 40em;
+`
+
+const AssigneeFieldContainer = styled(BaseFieldContainer)`
+  flex: 1 1 15em;
+`
+
+const DurationDaysFieldContainer = styled(BaseFieldContainer)`
+  flex: 0 0 10em;
+  margin-left: 10px;
+`
+
+const DueDateFieldContainer = styled(BaseFieldContainer)`
+  align-items: flex-end;
+  flex: 0 0 18em;
+  flex-direction: row;
+
+  > div {
+    flex: 1;
+  }
+
+  > div + div {
+    margin-left: ${grid(1)};
+  }
 `
 
 const calculateDaysDifference = (a, b) => {
@@ -147,35 +204,6 @@ const calculateDaysDifference = (a, b) => {
   bMidnight.setMinutes(0)
   bMidnight.setSeconds(0)
   return Math.round((bMidnight - aMidnight) / (24 * 60 * 60 * 1000))
-}
-
-const statusOptions = [
-  { label: 'Not started', value: 'Not started' },
-  { label: 'In progress', value: 'In progress' },
-  { label: 'Done', value: 'Done' },
-]
-
-export const TaskHeader = ({ editAsTemplate }) => {
-  return (
-    <TaskHeaderRow>
-      <TitleCell>
-        <Handle />
-        <Handle />
-        Title
-      </TitleCell>
-      <AssigneeCell>Assignee</AssigneeCell>
-      {editAsTemplate ? (
-        <>
-          <DurationDaysCell>Duration (days)</DurationDaysCell>
-        </>
-      ) : (
-        <>
-          <DueDateCell>Due date</DueDateCell>
-          <StatusCell>Status</StatusCell>
-        </>
-      )}
-    </TaskHeaderRow>
-  )
 }
 
 const getLocalTimeString = val => {
@@ -196,31 +224,88 @@ const getLocalTimeString = val => {
 }
 
 const Task = ({
-  task,
+  task: propTask,
   index,
   updateTask,
-  userOptions,
+  assigneeGroupedOptions,
   onCancel,
   onDelete,
   isReadOnly,
   editAsTemplate,
+  recipientGroupedOptions,
+  updateTaskNotification,
+  deleteTaskNotification,
+  currentUser,
+  manuscript,
+  sendNotifyEmail,
+  createTaskEmailNotificationLog,
+  emailTemplates,
 }) => {
   const config = useContext(ConfigContext)
-  const themeContext = useContext(ThemeContext)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
+  const [isEditTaskMetaModal, setIsEditTaskMetaModal] = useState(false)
+  const [isActionDialog, setIsActionDialog] = useState(false)
+
+  const taskRef = useRef()
+
+  const [task, setTask] = useState(propTask)
+
+  useEffect(() => {
+    setTask(propTask)
+  }, [propTask])
+
+  const [taskTitle, setTaskTitle] = useState(task?.title || '')
+
+  useEffect(() => {
+    setTaskTitle(task.title)
+  }, [task])
+
+  const updateTaskTitleDebounce = useCallback(
+    debounce(updateTask ?? (() => {}), 1000),
+    [],
+  )
+
+  useEffect(() => {
+    return updateTaskTitleDebounce.flush
+  }, [])
+
+  const updateTaskTitle = value => {
+    setTaskTitle(value)
+    updateTaskTitleDebounce(task.id, { ...task, title: value })
+  }
+
+  const [transposedDueDate, setTransposedDueDate] = useState(
+    transposeFromTimezoneToLocal(
+      task.dueDate,
+      config?.taskManager?.teamTimezone,
+    ),
+  )
 
   const dueDateLocalString = getLocalTimeString(moment(task.dueDate))
 
-  const transposedDueDate = transposeFromTimezoneToLocal(
-    task.dueDate,
-    config.teamTimezone,
-  )
-
   const transposedEndOfToday = moment(
-    transposeFromTimezoneToLocal(new Date(), config.teamTimezone),
+    transposeFromTimezoneToLocal(new Date(), config?.taskManager?.teamTimezone),
   )
     .endOf('day')
     .toDate()
+
+  useEffect(() => {
+    const checkIfClickedOutside = e => {
+      if (
+        isActionDialog &&
+        taskRef.current &&
+        !taskRef.current.contains(e.target)
+      ) {
+        setIsActionDialog(false)
+      }
+    }
+
+    document.addEventListener('click', checkIfClickedOutside)
+
+    return () => {
+      document.removeEventListener('click', checkIfClickedOutside)
+    }
+  }, [isActionDialog])
 
   const daysDifference = calculateDaysDifference(
     transposedEndOfToday,
@@ -234,49 +319,48 @@ const Task = ({
       (Math.abs(daysDifference) === 1 ? ' day' : ' days') +
       (daysDifference < 0 ? ' ago' : '')
 
-  const dueDateLabel = moment
-    .tz(task.dueDate, config.teamTimezone)
-    .format('YYYY-MM-DD')
+  let displayDefaultDurationDaysUnit
+
+  if (task.defaultDurationDays === null) {
+    displayDefaultDurationDaysUnit = ''
+  } else {
+    displayDefaultDurationDaysUnit =
+      task.defaultDurationDays && task.defaultDurationDays === 1
+        ? ' day'
+        : ' days'
+  }
+
+  const displayDefaultDurationDays =
+    task.defaultDurationDays !== null
+      ? `${task.defaultDurationDays}${displayDefaultDurationDaysUnit}`
+      : 'None'
 
   const isDone = task.status === 'Done'
 
-  const isOverdue =
-    Date.now() > new Date(task.dueDate).getTime() && !isDone && !editAsTemplate
+  const isOverdue = task.dueDate
+    ? Date.now() > new Date(task.dueDate).getTime() &&
+      task.status === 'In progress' &&
+      !editAsTemplate
+    : false
 
-  if (isReadOnly)
-    return (
-      <TaskRow isOverdue={isOverdue}>
-        <TitleCell>
-          <Handle />
-          <Handle>
-            {isDone ? (
-              <CheckCircle color={themeContext.colorPrimary} />
-            ) : (
-              <Circle color={themeContext.colorBorder} />
-            )}
-          </Handle>
-          <TextInput isReadOnly value={task.title} />
-        </TitleCell>
-        <AssigneeCell>{task.assignee?.username}</AssigneeCell>
-        {editAsTemplate ? (
-          <>
-            <DurationDaysCell>{task.defaultDurationDays || 0}</DurationDaysCell>
-          </>
-        ) : (
-          <>
-            <DueDateCell title={dueDateLocalString}>
-              <DaysNoteContainer>
-                <CompactDetailLabel isWarning={isOverdue}>
-                  {daysDifferenceLabel}
-                </CompactDetailLabel>
-              </DaysNoteContainer>
-              {dueDateLabel}
-            </DueDateCell>
-            <StatusCell isOverdue={isOverdue}>{task.status}</StatusCell>
-          </>
-        )}
-      </TaskRow>
-    )
+  const status = {
+    NOT_STARTED: 'Not started',
+    START: 'Start',
+    IN_PROGRESS: 'In progress',
+    PAUSED: 'Paused',
+    DONE: 'Done',
+  }
+
+  useEffect(() => {
+    if (task.dueDate) {
+      setTransposedDueDate(
+        transposeFromTimezoneToLocal(
+          task.dueDate,
+          config?.taskManager?.teamTimezone,
+        ),
+      )
+    }
+  }, [task])
 
   return (
     <Draggable draggableId={task.id} index={index} key={task.id}>
@@ -296,132 +380,135 @@ const Task = ({
               </MediumRow>
             </ModalContainer>
           </Modal>
-          <TaskRow
+          <TaskEditModal
+            assigneeGroupedOptions={assigneeGroupedOptions}
+            createTaskEmailNotificationLog={createTaskEmailNotificationLog}
+            currentUser={currentUser}
+            daysDifferenceLabel={daysDifferenceLabel}
+            deleteTaskNotification={deleteTaskNotification}
+            displayDefaultDurationDays={displayDefaultDurationDays}
+            dueDateLocalString={dueDateLocalString}
+            editAsTemplate={editAsTemplate}
+            emailTemplates={emailTemplates}
+            isOpen={isEditTaskMetaModal}
             isOverdue={isOverdue}
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-          >
-            <TitleCell>
-              <Handle {...provided.dragHandleProps}>
-                <DragIcon />
-              </Handle>
-              {editAsTemplate ? (
-                <Handle />
-              ) : (
-                <Handle
-                  onClick={() =>
-                    updateTask(task.id, {
-                      ...task,
-                      status: isDone ? 'In progress' : 'Done',
-                    })
-                  }
-                  title={isDone ? '' : 'Click to mark as done'}
-                >
-                  {isDone ? (
-                    <CheckCircle color={themeContext.colorPrimary} />
+            isReadOnly={isReadOnly}
+            manuscript={manuscript}
+            onCancel={setIsEditTaskMetaModal}
+            onSave={setIsEditTaskMetaModal}
+            recipientGroupedOptions={recipientGroupedOptions}
+            sendNotifyEmail={sendNotifyEmail}
+            status={status}
+            task={task}
+            transposedDueDate={transposedDueDate}
+            transposedEndOfToday={transposedEndOfToday}
+            updateTask={updateTask}
+            updateTaskNotification={updateTaskNotification}
+          />
+          <TaskRowContainer>
+            <TaskRow
+              isOverdue={isOverdue}
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+            >
+              <TitleFieldContainer>
+                <TitleCell>
+                  <Handle {...provided.dragHandleProps}>
+                    <DragIcon />
+                  </Handle>
+                  {editAsTemplate ? (
+                    <Handle />
                   ) : (
-                    <Circle color={themeContext.colorBorder} />
+                    <Handle
+                      onClick={() =>
+                        updateTask(task.id, {
+                          ...task,
+                          status: isDone ? 'In progress' : 'Done',
+                        })
+                      }
+                      title={isDone ? '' : 'Click to mark as done'}
+                    >
+                      {isDone ? (
+                        <CheckCircle color={color.brand1.base()} />
+                      ) : (
+                        <Circle color={color.gray60} />
+                      )}
+                    </Handle>
                   )}
-                </Handle>
+                  <TextInput
+                    onChange={event => updateTaskTitle(event.target.value)}
+                    placeholder="Give your task a name..."
+                    value={taskTitle}
+                  />
+                  <TaskAction ref={taskRef}>
+                    <MinimalButton
+                      onClick={() => {
+                        setIsActionDialog(!isActionDialog)
+                      }}
+                    >
+                      <Ellipsis height="24" width="24" />
+                    </MinimalButton>
+                    {isActionDialog && (
+                      <ActionDialog>
+                        <EditLabel onClick={() => setIsEditTaskMetaModal(true)}>
+                          Edit
+                        </EditLabel>
+                        <DeleteLabel
+                          onClick={() => setIsConfirmingDelete(true)}
+                        >
+                          Delete
+                        </DeleteLabel>
+                      </ActionDialog>
+                    )}
+                  </TaskAction>
+                </TitleCell>
+              </TitleFieldContainer>
+              <AssigneeFieldContainer>
+                <AssigneeDropdown
+                  assigneeGroupedOptions={assigneeGroupedOptions}
+                  task={task}
+                  unregisteredFieldsAlign="column"
+                  updateTask={updateTask}
+                />
+              </AssigneeFieldContainer>
+              {editAsTemplate ? (
+                <DurationDaysFieldContainer>
+                  <DurationDaysCell>
+                    <CounterField
+                      minValue={0}
+                      onChange={val => {
+                        updateTask(task.id, {
+                          ...task,
+                          defaultDurationDays: val,
+                        })
+                      }}
+                      showNone
+                      value={task.defaultDurationDays}
+                    />
+                  </DurationDaysCell>
+                </DurationDaysFieldContainer>
+              ) : (
+                <DueDateFieldContainer>
+                  <div>
+                    <DueDateField
+                      compact
+                      displayDefaultDurationDays={displayDefaultDurationDays}
+                      dueDateLocalString={dueDateLocalString}
+                      task={task}
+                      transposedDueDate={transposedDueDate}
+                      transposedEndOfToday={transposedEndOfToday}
+                      updateTask={updateTask}
+                    />
+                  </div>
+                  <div>
+                    <StatusActionCell isOverdue={isOverdue}>
+                      <StatusDropdown onStatusUpdate={setTask} task={task} />
+                    </StatusActionCell>
+                  </div>
+                </DueDateFieldContainer>
               )}
-              <TextInput
-                autoFocus={!task.title}
-                onCancel={() => {
-                  if (!task.title) onCancel()
-                }}
-                onChange={val => updateTask(task.id, { ...task, title: val })}
-                placeholder="Give your task a name..."
-                taskId={task.id}
-                title={task.title}
-                value={task.title}
-              />
-              <MinimalButton onClick={() => setIsConfirmingDelete(true)}>
-                <Trash2 size={18} />
-              </MinimalButton>
-            </TitleCell>
-            <AssigneeCell title={task.assignee?.username}>
-              <MinimalSelect
-                aria-label="Assignee"
-                data-testid="Assignee_select"
-                isClearable
-                label="Assignee"
-                onChange={selected =>
-                  updateTask(task.id, {
-                    ...task,
-                    assigneeUserId: selected?.value,
-                    assignee: selected?.user,
-                  })
-                }
-                options={userOptions}
-                placeholder="Assign a user"
-                value={task.assignee?.id}
-              />
-            </AssigneeCell>
-            {editAsTemplate ? (
-              <>
-                <DurationDaysCell>
-                  <MinimalNumericUpDown
-                    onChange={val =>
-                      updateTask(task.id, {
-                        ...task,
-                        defaultDurationDays: val,
-                      })
-                    }
-                    value={task.defaultDurationDays || 0}
-                  />
-                </DurationDaysCell>
-              </>
-            ) : (
-              <>
-                <DueDateCell title={dueDateLocalString}>
-                  <DaysNoteContainer>
-                    <CompactDetailLabel isWarning={isOverdue}>
-                      {daysDifferenceLabel}
-                    </CompactDetailLabel>
-                  </DaysNoteContainer>
-                  <MinimalDatePicker
-                    clearIcon={null}
-                    format="yyyy-MM-dd"
-                    minDate={transposedEndOfToday}
-                    onChange={val =>
-                      updateTask(task.id, {
-                        ...task,
-                        dueDate: moment
-                          .tz(
-                            transposeFromLocalToTimezone(
-                              val,
-                              config.teamTimezone,
-                            ),
-                            config.teamTimezone,
-                          )
-                          .endOf('day')
-                          .toDate(),
-                      })
-                    }
-                    position="top center"
-                    suppressTodayHighlight
-                    value={transposedDueDate}
-                  />
-                </DueDateCell>
-                <StatusCell isOverdue={isOverdue} title={task.status}>
-                  <MinimalSelect
-                    aria-label="Assignee"
-                    data-testid="Assignee_select"
-                    label="Assignee"
-                    onChange={selected =>
-                      updateTask(task.id, {
-                        ...task,
-                        status: selected.value,
-                      })
-                    }
-                    options={statusOptions}
-                    placeholder="Assign a user"
-                    value={task.status}
-                  />
-                </StatusCell>
-              </>
-            )}
-          </TaskRow>
+            </TaskRow>
+          </TaskRowContainer>
         </>
       )}
     </Draggable>
@@ -448,16 +535,6 @@ Task.propTypes = {
   onCancel: PropTypes.func,
   onDelete: PropTypes.func.isRequired,
   updateTask: PropTypes.func.isRequired,
-  userOptions: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.node.isRequired,
-      value: PropTypes.string,
-      user: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        username: PropTypes.string.isRequired,
-      }).isRequired,
-    }),
-  ).isRequired,
 }
 
 Task.defaultProps = {

@@ -2,8 +2,7 @@ import React, { useContext } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { isEmpty } from 'lodash'
 import { injectable } from 'inversify'
-import { WaxContext /*, Commands */ } from 'wax-prosemirror-core'
-import { Tools } from 'wax-prosemirror-services'
+import { WaxContext, Tools /*, Commands */ } from 'wax-prosemirror-core'
 // import { wrapIn } from 'prosemirror-commands'
 import AnyStyleButton from './components/AnyStyleButton'
 import replaceText from './replaceText'
@@ -14,6 +13,7 @@ class AnyStyleTool extends Tools {
   title = 'Convert with Anystyle'
   label = 'Automatic parser'
 
+  // eslint-disable-next-line class-methods-use-this
   get run() {
     return true
   }
@@ -22,6 +22,7 @@ class AnyStyleTool extends Tools {
     return true
   }
 
+  // eslint-disable-next-line class-methods-use-this
   get enable() {
     return state => {
       return true

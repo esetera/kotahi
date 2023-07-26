@@ -1,7 +1,10 @@
 import React, { useCallback, useContext, useState, useEffect } from 'react'
-import { WaxContext, ComponentPlugin } from 'wax-prosemirror-core'
-import { DocumentHelpers } from 'wax-prosemirror-utilities'
-import PanelGroup from 'react-panelgroup'
+import {
+  WaxContext,
+  ComponentPlugin,
+  DocumentHelpers,
+} from 'wax-prosemirror-core'
+
 import {
   NotesAreaContainer,
   ReadOnlyNotesAreaContainer,
@@ -99,14 +102,6 @@ const ProductionWaxEditorLayout = (readOnly, readOnlyComments) => ({
     }
   }
 
-  let surfaceHeight = (window.innerHeight / 5) * 3
-  let notesHeight = (window.innerHeight / 5) * 2
-
-  const onResizeEnd = arr => {
-    surfaceHeight = arr[0].size
-    notesHeight = arr[1].size
-  }
-
   return (
     <div style={fullScreenStyles}>
       <Grid production readonly={readOnly} readOnlyComments={readOnlyComments}>
@@ -128,15 +123,8 @@ const ProductionWaxEditorLayout = (readOnly, readOnlyComments) => ({
               </SideMenu>
 
               <EditorArea className="editorArea">
-                <PanelGroup
-                  direction="column"
-                  onResizeEnd={onResizeEnd}
-                  panelWidths={[
-                    { size: surfaceHeight, resize: 'stretch' },
-                    { size: notesHeight, resize: 'resize' },
-                  ]}
-                >
-                  <WaxSurfaceScroll>
+                <div>
+                  <WaxSurfaceScroll className="panelWrapper">
                     <EditorContainer>{editor}</EditorContainer>
                     <CommentsContainer>
                       <CommentTrackToolsContainer>
@@ -152,7 +140,7 @@ const ProductionWaxEditorLayout = (readOnly, readOnlyComments) => ({
                     </CommentsContainer>
                   </WaxSurfaceScroll>
                   {hasNotes && (
-                    <NotesAreaContainer className="productionnotes">
+                    <NotesAreaContainer className="productionnotes panelWrapper">
                       <NotesContainer id="notes-container">
                         <NotesHeading>Notes</NotesHeading>
                         <NotesArea view={main} />
@@ -162,7 +150,7 @@ const ProductionWaxEditorLayout = (readOnly, readOnlyComments) => ({
                       </CommentsContainerNotes>
                     </NotesAreaContainer>
                   )}
-                </PanelGroup>
+                </div>
               </EditorArea>
             </ProductionEditorDiv>
           </>

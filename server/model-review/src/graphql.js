@@ -1,5 +1,4 @@
 const models = require('@pubsweet/models')
-const File = require('@coko/server/src/models/file/file.model')
 const { getFilesWithUrl } = require('../../utils/fileStorageUtils')
 const { deepMergeObjectsReplacingArrays } = require('../../utils/objectUtils')
 const { getReviewForm, getDecisionForm } = require('./reviewCommsUtils')
@@ -15,9 +14,13 @@ const resolvers = {
       const reviewDelta = { jsonData: {}, ...input }
       const existingReview = (await models.Review.query().findById(id)) || {}
 
+      const manuscript = await models.Manuscript.query().findById(
+        existingReview.manuscriptId || input.manuscriptId,
+      )
+
       const form = existingReview.isDecision
-        ? await getDecisionForm()
-        : await getReviewForm()
+        ? await getDecisionForm(manuscript.groupId)
+        : await getReviewForm(manuscript.groupId)
 
       await convertFilesToIdsOnly(reviewDelta, form)
 
@@ -56,7 +59,7 @@ const resolvers = {
       await convertFilesToFullObjects(
         review,
         form,
-        async ids => File.query().findByIds(ids),
+        async ids => models.File.query().findByIds(ids),
         getFilesWithUrl,
       )
 
@@ -75,11 +78,9 @@ const resolvers = {
       }
     },
 
-    async completeReview(_, { id }, ctx) {
-      const review = await models.Review.query().findById(id)
-
+    async updateReviewerTeamMemberStatus(_, { manuscriptId, status }, ctx) {
       const manuscript = await models.Manuscript.query()
-        .findById(review.manuscriptId)
+        .findById(manuscriptId)
         .withGraphFetched('[submitter.[defaultIdentity], channels.members]')
 
       const team = await manuscript
@@ -92,8 +93,37 @@ const resolvers = {
         .where('userId', ctx.user)
         .first()
 
-      member.status = 'completed'
+      member.status = status
+      member.updated = new Date().toISOString()
       return member.save()
+    },
+  },
+  Review: {
+    async user(parent, { id }, ctx) {
+      // TODO redact user if it's an anonymous review and ctx.user is not editor or admin
+      return parent.user || models.User.query().findById(parent.userId)
+    },
+    async isSharedWithCurrentUser(parent, _, ctx) {
+      if (
+        parent.isSharedWithCurrentUser ||
+        parent.isSharedWithCurrentUser === false
+      )
+        return !!parent.isSharedWithCurrentUser
+
+      const sharedMembers = await models.Team.relatedQuery('members')
+        .for(
+          models.Team.query().where({
+            role: 'reviewer',
+            objectId: parent.manuscriptId,
+          }),
+        )
+        .where({ isShared: true })
+        .where(builder =>
+          builder.where({ status: 'completed' }).orWhere({ userId: ctx.user }),
+        )
+
+      if (sharedMembers.some(m => m.userId === ctx.user)) return true
+      return false
     },
   },
 }
@@ -101,7 +131,7 @@ const resolvers = {
 const typeDefs = `
   extend type Mutation {
     updateReview(id: ID, input: ReviewInput): Review!
-    completeReview(id: ID!): TeamMember
+    updateReviewerTeamMemberStatus(manuscriptId: ID!, status: String): TeamMember
   }
 
   type Review {
@@ -113,6 +143,7 @@ const typeDefs = `
     user: User
     isHiddenFromAuthor: Boolean
     isHiddenReviewerName: Boolean
+    isSharedWithCurrentUser: Boolean!
     canBePublishedPublicly: Boolean
     jsonData: String
     userId: String

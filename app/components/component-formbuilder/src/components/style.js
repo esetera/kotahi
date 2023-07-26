@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components'
-import { th, grid, darken } from '@pubsweet/ui-toolkit'
+import { th, grid } from '@pubsweet/ui-toolkit'
 import { Button } from '@pubsweet/ui'
-import lightenBy from '../../../../shared/lightenBy'
+import { color } from '../../../../theme'
 
 export const Section = styled.div`
   margin: calc(${th('gridUnit')} * 6) 0;
@@ -36,7 +36,7 @@ const Page = styled.div`
 `
 
 const Heading = styled.div`
-  color: ${th('colorPrimary')};
+  color: ${color.brand1.base};
   font-family: ${th('fontReading')};
   font-size: ${th('fontSizeHeading3')};
   margin: ${th('gridUnit')} 0;
@@ -49,7 +49,7 @@ const UploadContainer = styled.div`
 `
 
 const DetailText = styled.div`
-  color: ${lightenBy('colorText', 0.3)};
+  color: ${color.gray40};
   font-family: ${th('fontReading')};
   font-size: ${th('fontSizeBaseSmall')};
   line-height: ${th('lineHeightBaseSmall')};
@@ -82,7 +82,7 @@ const ButtonWrapper = styled.div`
 `
 
 const ModalContainer = styled.div`
-  background: ${th('colorBackground')};
+  background: ${color.backgroundA};
   max-height: calc(100vh - 60px);
   overflow-y: auto;
   padding: 20px 24px;
@@ -144,6 +144,21 @@ const CommentWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
+  ${props =>
+    props.commentBelongsToDifferentManuscriptVersion
+      ? css`
+          color: ${color.gray60};
+        `
+      : ``}
+
+  svg {
+    ${props =>
+      props.commentBelongsToDifferentManuscriptVersion
+        ? css`
+            stroke: ${color.gray60} !important;
+          `
+        : ``}
+  }
 `
 
 const Collapse = styled.div`
@@ -157,23 +172,33 @@ const ActionWrapper = styled.div`
   justify-content: flex-end;
 
   svg {
-    stroke: ${th('colorIconPrimary')};
+    stroke: ${color.gray40};
   }
 `
 
 const CancelButton = styled(Button)`
-  background-color: ${th('colorFurniture')};
+  background-color: ${color.gray90};
   padding: 8px;
   text-decoration: none;
 
   &:hover {
-    background-color: ${darken('colorFurniture', 0.1)};
+    background-color: ${color.gray80};
   }
 `
 
 const CommentContainer = styled.div`
-  border-bottom: 1px ${th('borderStyle')} ${th('colorContainerBorder')};
+  border-bottom: 1px ${th('borderStyle')} ${color.gray80};
   padding-bottom: 25px;
+
+  p {
+    ${props =>
+      props.commentBelongsToDifferentManuscriptVersion
+        ? css`
+            color: ${color.gray60};
+            background-color: ${color.backgroundA};
+          `
+        : ``}
+  }
 `
 
 export {

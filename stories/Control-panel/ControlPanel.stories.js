@@ -2,18 +2,26 @@ import React from 'react'
 import DecisionVersion from '../../app/components/component-review/src/components/DecisionVersion'
 import { JournalProvider } from '../../app/components/xpub-journal/src'
 import { XpubProvider } from '../../app/components/xpub-with-context/src'
+import { ConfigProvider } from '../../app/components/config/src'
 import * as journal from '../../config/journal'
+import config from '../../config/sampleConfigFormData'
 import DesignEmbed from '../common/utils'
+import { roles } from '../../app/globals'
 
 export const Base = args => (
   <XpubProvider>
     <JournalProvider journal={JSON.parse(JSON.stringify(journal))}>
-      <DecisionVersion {...props} />
+      <ConfigProvider config={config}>
+        <DecisionVersion {...props} />
+      </ConfigProvider>
     </JournalProvider>
   </XpubProvider>
 )
 
 const props = {
+  invitations: [],
+  dois: [],
+  roles,
   form: {
     __typename: 'FormStructure',
     name: 'Research Object Submission Form',
@@ -618,7 +626,8 @@ const props = {
     __typename: 'User',
     id: '92f99a84-fc8b-4f94-bc9e-10bb3f7c3902',
     username: 'Harriet Handling-Editor',
-    admin: true,
+    groupRoles: ['groupManager'],
+    globalRoles: [],
   },
   version: {
     __typename: 'Manuscript',
@@ -807,7 +816,8 @@ const props = {
       id: '187f6a96-84c9-4785-b01a-89de4003099e',
       username: 'Shanthi',
       email: 'shanthitestemails@mailinator.com',
-      admin: null,
+      groupRoles: [],
+      globalRoles: [],
       defaultIdentity: {
         __typename: 'Identity',
         id: '43b57bf4-3bda-4832-9b4b-ea5d594f9d5e',
@@ -818,7 +828,8 @@ const props = {
       id: '92f99a84-fc8b-4f94-bc9e-10bb3f7c3902',
       username: 'Harriet Handling-Editor',
       email: 'shanthitestemail@mailinator.com',
-      admin: true,
+      groupRoles: ['groupManager'],
+      globalRoles: [],
       defaultIdentity: {
         __typename: 'Identity',
         id: 'aeb8257c-2fd4-44b9-a464-0c38e0eae7b5',
@@ -826,7 +837,7 @@ const props = {
     },
   ],
   sendNotifyEmail: {},
-  sendChannelMessageCb: {},
+  sendChannelMessage: {},
   publishManuscript: {},
   assignEditors: {
     called: true,
@@ -837,7 +848,8 @@ const props = {
           id: '187f6a96-84c9-4785-b01a-89de4003099e',
           username: 'Shanthi',
           email: 'shanthitestemails@mailinator.com',
-          admin: null,
+          groupRoles: [],
+          globalRoles: [],
           defaultIdentity: {
             __typename: 'Identity',
             id: '43b57bf4-3bda-4832-9b4b-ea5d594f9d5e',
@@ -848,7 +860,8 @@ const props = {
           id: '92f99a84-fc8b-4f94-bc9e-10bb3f7c3902',
           username: 'Harriet Handling-Editor',
           email: 'shanthitestemail@mailinator.com',
-          admin: true,
+          groupRoles: ['groupManager'],
+          globalRoles: [],
           defaultIdentity: {
             __typename: 'Identity',
             id: 'aeb8257c-2fd4-44b9-a464-0c38e0eae7b5',
@@ -931,7 +944,8 @@ const props = {
     id: 'ed0d6990-b32a-4b32-8bf6-39bd20078643',
     profilePicture: null,
     username: 'Shanthi',
-    admin: true,
+    groupRoles: ['groupManager'],
+    globalRoles: [],
     email: 'shanthitestemail@mailinator.com',
     defaultIdentity: {
       __typename: 'Identity',
@@ -942,7 +956,6 @@ const props = {
       id: '7b03f794-ed3c-4dac-933d-a6616b3d70c2',
     },
     isOnline: true,
-    _currentRoles: [],
     teams: [],
   },
   channelId: 'fa75c598-ea43-4666-a0e0-67d93d413be2',

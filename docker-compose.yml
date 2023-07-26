@@ -24,15 +24,8 @@ services:
       - SERVER_HOST=server
       - SERVER_PORT=3000
       - PUBLIC_CLIENT_HOST=${PUBLIC_CLIENT_HOST:-0.0.0.0}
-      - INSTANCE_NAME=${INSTANCE_NAME:-elife}
-      - USE_SANDBOXED_ORCID=${USE_SANDBOXED_ORCID:-true}
-      - MANUSCRIPTS_TABLE_COLUMNS=${MANUSCRIPTS_TABLE_COLUMNS}
-      - MANUSCRIPTS_TABLE_FIRST_COLUMN_WIDTH=${MANUSCRIPTS_TABLE_FIRST_COLUMN_WIDTH}
-      - DISPLAY_SHORTID_AS_IDENTIFIER=${DISPLAY_SHORTID_AS_IDENTIFIER:-false}
-      - REVIEW_SHARED=${REVIEW_SHARED:-false}
-      - REVIEW_HIDE=${REVIEW_HIDE:-false}
-      - HYPOTHESIS_ALLOW_TAGGING=${HYPOTHESIS_ALLOW_TAGGING}
-      - ALLOW_MANUAL_IMPORT=${ALLOW_MANUAL_IMPORT:-}
+      - USE_COLAB_EMAIL=${USE_COLAB_EMAIL:-false}
+      - FLAX_SITE_URL=${FLAX_SITE_URL:-http://localhost:8081/}
 
     volumes:
       - ./app:/home/node/app/app
@@ -45,6 +38,7 @@ services:
       dockerfile: ./Dockerfile-development
     depends_on:
       - db
+      - xsweet
     entrypoint:
       [
         'node_modules/.bin/wait-for-it',
@@ -84,7 +78,6 @@ services:
       - ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET}
       - USE_SANDBOXED_ORCID=${USE_SANDBOXED_ORCID:-true}
       - USE_COLAB_EMAIL=${USE_COLAB_EMAIL:-false}
-      - INSTANCE_NAME=${INSTANCE_NAME:-elife}
       - KOTAHI_API_TOKENS=${KOTAHI_API_TOKENS:-}
       - JOURNAL_NAME=${JOURNAL_NAME:-}
       - JOURNAL_ABBREVIATED_NAME=${JOURNAL_ABBREVIATED_NAME:-}
@@ -95,6 +88,7 @@ services:
       - HYPOTHESIS_API_KEY=${HYPOTHESIS_API_KEY:-}
       - HYPOTHESIS_GROUP=${HYPOTHESIS_GROUP:-}
       - HYPOTHESIS_REVERSE_FIELD_ORDER=${HYPOTHESIS_REVERSE_FIELD_ORDER:-}
+      - HYPOTHESIS_ALLOW_TAGGING=${HYPOTHESIS_ALLOW_TAGGING:-}
       - CROSSREF_LOGIN=${CROSSREF_LOGIN:-}
       - CROSSREF_PASSWORD=${CROSSREF_PASSWORD:-}
       - CROSSREF_REGISTRANT=${CROSSREF_REGISTRANT:-}
@@ -106,7 +100,6 @@ services:
       - PUBLISHED_ARTICLE_LOCATION_PREFIX=${PUBLISHED_ARTICLE_LOCATION_PREFIX:-}
       - PUBLICATION_LICENSE_URL=${PUBLICATION_LICENSE_URL:-}
       - MANUSCRIPTS_TABLE_COLUMNS=${MANUSCRIPTS_TABLE_COLUMNS}
-      - MANUSCRIPTS_TABLE_FIRST_COLUMN_WIDTH=${MANUSCRIPTS_TABLE_FIRST_COLUMN_WIDTH}
       - GMAIL_NOTIFICATION_EMAIL_AUTH=${GMAIL_NOTIFICATION_EMAIL_AUTH}
       - GMAIL_NOTIFICATION_EMAIL_SENDER=${GMAIL_NOTIFICATION_EMAIL_SENDER}
       - GMAIL_NOTIFICATION_PASSWORD=${GMAIL_NOTIFICATION_PASSWORD}
@@ -135,9 +128,28 @@ services:
       - SERVICE_ANYSTYLE_HOST=${SERVICE_ANYSTYLE_HOST:-anystyle}
       - SERVICE_ANYSTYLE_PORT=${SERVICE_ANYSTYLE_PORT}
       - AUTO_IMPORT_HOUR_UTC=${AUTO_IMPORT_HOUR_UTC:-}
+      - DISABLE_EVENT_NOTIFICATIONS=${DISABLE_EVENT_NOTIFICATIONS:-}
       - ARCHIVE_PERIOD_DAYS=${ARCHIVE_PERIOD_DAYS:-}
+      - ALLOW_MANUAL_IMPORT=${ALLOW_MANUAL_IMPORT:-}
       - SEMANTIC_SCHOLAR_IMPORTS_RECENCY_PERIOD_DAYS=${SEMANTIC_SCHOLAR_IMPORTS_RECENCY_PERIOD_DAYS:-}
       - TEAM_TIMEZONE=${TEAM_TIMEZONE:-Etc/UTC}
+      - REVIEW_SHARED=${REVIEW_SHARED:-false}
+      - REVIEW_HIDE=${REVIEW_HIDE:-false}
+      - DISPLAY_SHORTID_AS_IDENTIFIER=${DISPLAY_SHORTID_AS_IDENTIFIER:-false}
+      - SERVICE_XSWEET_CLIENT_ID=59a3392b-0c4f-4318-bbe2-f86eff6d3de4
+      - SERVICE_XSWEET_SECRET=asldkjLKJLaslkdf897kjhKUJH
+      - SERVICE_XSWEET_PROTOCOL=${SERVICE_XSWEET_PROTOCOL:-http}
+      - SERVICE_XSWEET_HOST=${SERVICE_XSWEET_HOST:-xsweet}
+      - SERVICE_XSWEET_PORT=${SERVICE_XSWEET_PORT:-3004}
+      - FLAX_EXPRESS_PORT=${FLAX_EXPRESS_PORT:-3000}
+      - FLAX_EXPRESS_HOST=${FLAX_EXPRESS_HOST:-kotahi-flax-site}
+      - FLAX_EXPRESS_PROTOCOL=${FLAX_EXPRESS_PROTOCOL:-http}
+      - FLAX_CLIENT_ID=${FLAX_CLIENT_ID:-}
+      - FLAX_CLIENT_SECRET=${FLAX_CLIENT_SECRET:-}
+      - FLAX_CLIENT_API_URL=${FLAX_CLIENT_API_URL:-http://client:4000}
+      - FLAX_SITE_URL=${FLAX_SITE_URL:-false}
+      - USE_APERTURE_EMAIL=${USE_APERTURE_EMAIL:-false}
+      - INSTANCE_GROUPS=${INSTANCE_GROUPS:-kotahi:aperture}
 
     volumes:
       - ./config:/home/node/app/config
@@ -182,27 +194,40 @@ services:
     volumes:
       - ./scripts/init-pgboss.sql:/docker-entrypoint-initdb.d/init-pgboss.sql
 
-  job-xsweet:
-    image: pubsweet/job-xsweet:1.5.4
+  xsweet:
     depends_on:
-      - server
-    command:
-      [
-        'bash',
-        './scripts/wait-for-it.sh',
-        'server:3000',
-        --,
-        'node',
-        'src/xsweet.js',
-      ]
+      - db-xsweet
+    image: cokoapps/xsweet:2.1.2
+    ports:
+      - ${SERVICE_XSWEET_PORT:-3004}:${SERVICE_XSWEET_PORT:-3004}
     environment:
-      - POSTGRES_HOST=db
+      - PUBSWEET_SECRET=xsweet_dev_secret
+      - POSTGRES_USER=xsweet_user_dev
+      - POSTGRES_PASSWORD=xsweet_user_password
+      - POSTGRES_HOST=db-xsweet
+      - POSTGRES_DB=xsweet_dev
       - POSTGRES_PORT=5432
-      - POSTGRES_DB=${POSTGRES_DB:-kotahi_dev}
-      - POSTGRES_USER=${POSTGRES_USER:-dev}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - SERVER_PORT=${SERVICE_XSWEET_PORT:-3004}
+      - NODE_ENV=development
+    entrypoint:
+      [
+        'sh',
+        'scripts/wait-for-it',
+        'db-xsweet:5432',
+        '--',
+        'sh',
+        'scripts/setupDevServer.sh',
+      ]
+    command: ['node', 'server/startServer.js']
+
+  db-xsweet:
+    image: postgres:14.4-alpine
+    environment:
+      - POSTGRES_USER=xsweet_user_dev
+      - POSTGRES_DB=xsweet_dev
+      - POSTGRES_PASSWORD=xsweet_user_password
     volumes:
-      - ./scripts/wait-for-it.sh:/home/node/scripts/wait-for-it.sh
+      - ./scripts/init-pgboss.sql:/docker-entrypoint-initdb.d/init-pgboss.sql
 
   db:
     image: postgres:10-alpine
@@ -242,7 +267,7 @@ services:
 
   # Create the file server and give it a root user
   fileHosting:
-    image: minio/minio
+    image: minio/minio:RELEASE.2023-05-04T21-44-30Z
     ports:
       - ${S3_PORT:-9000}:9000
       - ${MINIO_CONSOLE_PORT:-9001}:9001
@@ -260,7 +285,7 @@ services:
 
   # Create non-root user and bucket that we'll connect to
   createbucket:
-    image: minio/mc
+    image: minio/mc:RELEASE.2023-05-04T18-10-16Z
     depends_on:
       - fileHosting
     entrypoint: >
@@ -269,7 +294,7 @@ services:
       /usr/bin/mc admin user add cokoServer/ ${S3_ACCESS_KEY_ID:-nonRootUser} ${S3_SECRET_ACCESS_KEY:-nonRootPassword};
       /usr/bin/mc admin user enable cokoServer/ ${S3_ACCESS_KEY_ID:-nonRootUser};
       /usr/bin/mc mb cokoServer/${S3_BUCKET:-uploads};
-      /usr/bin/mc admin policy set cokoServer/ readwrite user=${S3_ACCESS_KEY_ID:-nonRootUser};
+      /usr/bin/mc admin policy attach cokoServer/ readwrite --user=${S3_ACCESS_KEY_ID:-nonRootUser};
       exit 0;
       "
 
@@ -312,7 +337,19 @@ services:
     volumes:
       - ./scripts/init-pgboss.sql:/docker-entrypoint-initdb.d/init-pgboss.sql
 
-
+  kotahi-flax-site:
+    image: cokoapps/kotahi-flax:0.2.0
+    depends_on:
+      - client
+    ports:
+      - ${FLAX_EXPRESS_PORT:-8082}:${FLAX_EXPRESS_PORT:-3000}
+      - ${FLAX_SITE_PORT:-8081}:80
+    environment:
+      - FLAX_EXPRESS_PORT=${FLAX_EXPRESS_PORT:-3000}
+      - FLAX_CLIENT_ID=${FLAX_CLIENT_ID:-}
+      - FLAX_CLIENT_SECRET=${FLAX_CLIENT_SECRET:-}
+      - FLAX_CLIENT_API_URL=${FLAX_CLIENT_API_URL:-http://client:4000}
+      - FLAX_DEFAULT_GROUP=${FLAX_DEFAULT_GROUP:-"kotahi"}
 
 volumes:
   minio_storage:

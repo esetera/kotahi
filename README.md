@@ -3,12 +3,24 @@
 Kotahi is a manuscript submission system, based on the discontinued [xpub-collabra](https://gitlab.coko.foundation/xpub/xpub) project.
 It is currently under development by the [Coko Foundation](https://coko.foundation/) and is being built with [PubSweet](https://gitlab.coko.foundation/pubsweet/pubsweet).
 
+## Project roadmap
+
+[The Kotahi project roadmap](https://miro.com/app/board/uXjVP7jNtBs=/?share_link_id=747477817280) is available to view on Miro.
+
+## Contribute
+
+Contributions are welcome! Please read our [Community Products Collaboration Guidelines](https://docs.coko.foundation/s/community-collab) and join our [chat channel](https://mattermost.coko.foundation/coko/channels/kotahi).
+
+## Bug reporting
+
+To report a bug, [open a GitLab issue](https://gitlab.coko.foundation/kotahi/kotahi/-/issues/new) and use the bug-report template contained in the issue.
+
 ## Getting started: the quick guide
 
 To install Kotahi locally, you'll need these things:
 
 - A copy of this repo.
-- Node & Yarn. Kotahi requires Node 12.
+- Node & Yarn. Kotahi requires Node 16.
 - Docker. Kotahi uses [Docker](https://www.docker.com/) for images of the databases and servers that it uses. Make sure you have Docker installed and running.
 - An ORCID account. Kotahi uses [ORCID](https://orcid.org/) for account authentication. It's free and easy to sign up. The [FAQ](FAQ.md) tells you how.
 - A working _.env_ file. You can start by copying [.env.example](.env.example) (in the shell: `cp .env.example .env`). The .env file contains passwords and other sensitive information; it also contains a lot of configuration options at the moment.
@@ -28,7 +40,7 @@ Once you have those things, try doing this:
 - Click **Dashboard** in the upper right.
 - You'll be prompted to login with ORCID. If you don't yet have an ORCID ID, you can login with account number `0000-0001-6819-2182` and password `KotahiDemoAccess2021`. _Please do not use this account for anything other than testing!_
 - If you're asked, click "Authorize Access".
-- You should be returned to Kotahi; enter an email address to get started. The email you enter will be associated with the ORCID ID in your instance; and the first account created is automatically an admin, so if you're not just trying out Kotahi, there's a benefit to making your own ORCID ID.
+- You should be returned to Kotahi; enter an email address to get started. The email you enter will be associated with the ORCID ID in your instance; and the first account created is automatically a system admin, so if you're not just trying out Kotahi, there's a benefit to making your own ORCID ID.
 
 If something doesn't work, read though the details in the next section; or check through the [FAQ](FAQ.md).
 

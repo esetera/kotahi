@@ -1,6 +1,6 @@
 /* stylelint-disable selector-type-no-unknown */
 import { css } from 'styled-components'
-import { darken } from '@pubsweet/ui-toolkit'
+import { color } from '../../../../../theme'
 
 /* All styles regarding ProseMirror surface and elements */
 
@@ -143,14 +143,14 @@ export default css`
   /* added for figure weirdness */
 
   figure {
-    border: 1px solid ${darken('colorPrimary', 1)};
+    border: 1px solid ${color.brand1.base};
     margin-bottom: 1rem;
     padding: 1rem;
     position: relative;
   }
 
   figure::before {
-    color: ${darken('colorPrimary', 1)};
+    color: ${color.brand1.base};
     content: 'Figure:';
     font-size: 75%;
     left: 0;
@@ -165,14 +165,14 @@ export default css`
   }
 
   figcaption {
-    border: 1px solid ${darken('colorPrimary', 1)};
+    border: 1px solid ${color.brand1.base};
     margin-top: 1rem;
     padding: 1rem;
     position: relative;
   }
 
   figcaption::before {
-    color: ${darken('colorPrimary', 1)};
+    color: ${color.brand1.base};
     content: 'Caption:';
     font-size: 75%;
     left: 0;
@@ -180,5 +180,20 @@ export default css`
     position: absolute;
     text-transform: uppercase;
     top: -1.25rem;
+  }
+
+  .ProseMirror p:first-child,
+  .ProseMirror h1:first-child,
+  .ProseMirror h2:first-child,
+  .ProseMirror h3:first-child,
+  .ProseMirror h4:first-child,
+  .ProseMirror h5:first-child,
+  .ProseMirror h6:first-child {
+    margin-top: 0;
+  }
+
+  .ProseMirror fakecursor {
+    /* stylelint-disable-next-line declaration-no-important */
+    visibility: hidden !important;
   }
 `

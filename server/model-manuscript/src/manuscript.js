@@ -2,9 +2,9 @@ const { BaseModel } = require('@coko/server')
 const omit = require('lodash/omit')
 const cloneDeep = require('lodash/cloneDeep')
 const sortBy = require('lodash/sortBy')
+const { getDecisionForm } = require('../../model-review/src/reviewCommsUtils')
 
 const {
-  populateTemplatedTasksForManuscript,
   deleteAlertsForManuscript,
 } = require('../../model-task/src/taskCommsUtils')
 
@@ -20,7 +20,7 @@ class Manuscript extends BaseModel {
 
   static get modifiers() {
     return {
-      orderByCreated(builder) {
+      orderByCreatedDesc(builder) {
         builder.orderBy('created', 'desc')
       },
       orderBy(query, sort) {
@@ -89,13 +89,13 @@ class Manuscript extends BaseModel {
     const manuscripts = await Manuscript.query()
       .where('parent_id', id)
       .withGraphFetched(
-        '[teams.members, reviews.user, files, tasks(orderBySequence).assignee]',
+        '[invitations.[user], teams.members, reviews.user, files, tasks(orderBySequence).[assignee, emailNotifications(orderByCreated)]]',
       )
 
     const firstManuscript = await Manuscript.query()
       .findById(id)
       .withGraphFetched(
-        '[teams.members, reviews.user, files, tasks(orderBySequence).assignee]',
+        '[invitations.[user], teams.members, reviews.user, files, tasks(orderBySequence).[assignee, emailNotifications(orderByCreated)]]',
       )
 
     manuscripts.push(firstManuscript)
@@ -106,13 +106,62 @@ class Manuscript extends BaseModel {
 
     const manuscriptVersions = sortBy(
       manuscriptVersionsArray,
-      manuscript => new Date(manuscript.created),
+      manuscript => -manuscript.created,
     )
 
     return manuscriptVersions
   }
 
+  async getManuscriptAuthor() {
+    if (!this.id) {
+      return null
+    }
+
+    const manuscriptWithAuthors = await Manuscript.query()
+      .findById(this.id)
+      .withGraphFetched(
+        '[teams(onlyAuthors).[members(orderByCreatedDesc).[user]]]',
+      )
+
+    if (
+      !manuscriptWithAuthors.teams.length ||
+      !manuscriptWithAuthors.teams[0].members.length
+    ) {
+      return null
+    }
+
+    const authorTeam = manuscriptWithAuthors.teams[0]
+    const author = authorTeam.members[0] // picking the author that has latest created date
+    return author.user
+  }
+
+  async getManuscriptEditor() {
+    if (!this.id) {
+      return null
+    }
+
+    const manuscriptWithEditors = await Manuscript.query()
+      .findById(this.id)
+      .withGraphFetched(
+        '[teams(onlyEditors).[members(orderByCreatedDesc).[user]]]',
+      )
+
+    if (
+      !manuscriptWithEditors.teams.length ||
+      !manuscriptWithEditors.teams[0].members.length
+    ) {
+      return null
+    }
+
+    const editorTeam = manuscriptWithEditors.teams[0]
+    const editor = editorTeam.members[0] // picking the editor that has latest created date
+    return editor.user
+  }
+
   async createNewVersion() {
+    // eslint-disable-next-line global-require
+    const Config = require('../../config/src/config')
+
     // Copy authors and editors to the new version
     const teams = await this.$relatedQuery('teams')
       .whereIn('role', ['author', 'editor', 'seniorEditor', 'handlingEditor'])
@@ -130,18 +179,47 @@ class Manuscript extends BaseModel {
     // eslint-disable-next-line
     files.forEach(f => delete f.id)
 
+    const decisions = await this.$relatedQuery('reviews').where({
+      isDecision: true,
+    })
+
+    const decisionForm = await getDecisionForm(this.groupId)
+
+    const threadedDiscussionFieldNames = decisionForm
+      ? decisionForm.structure.children
+          .filter(field => field.component === 'ThreadedDiscussion')
+          .map(field => field.name)
+      : []
+
+    const clonedDecisions = decisions.map(decision => {
+      const clonedDecision = cloneDeep(decision)
+      delete clonedDecision.id
+      clonedDecision.jsonData = {}
+
+      Object.entries(decision.jsonData)
+        .filter(([key]) => threadedDiscussionFieldNames.includes(key))
+        .forEach(([key, value]) => {
+          clonedDecision.jsonData[key] = value
+        })
+
+      return clonedDecision
+    })
+
     const newVersion = cloneDeep(this)
     newVersion.teams = teams
     // eslint-disable-next-line
+    newVersion.reviews = clonedDecisions
     newVersion.files = files
-    // Copy channels as well
-    const channels = await this.$relatedQuery('channels')
-    // eslint-disable-next-line
-    channels.forEach(c => delete c.id)
 
-    newVersion.channels = channels
+    const activeConfig = await Config.query().findOne({
+      groupId: this.groupId,
+      active: true,
+    })
 
-    if (this.decision === 'revise') {
+    if (
+      activeConfig.formData.submission.allowAuthorsSubmitNewVersion ||
+      this.status === 'revise'
+    ) {
       newVersion.status = 'revising'
     }
 
@@ -152,7 +230,6 @@ class Manuscript extends BaseModel {
       omit(cloneDeep(newVersion), ['id', 'created', 'updated', 'decision']),
     )
 
-    await populateTemplatedTasksForManuscript(manuscript.id)
     await deleteAlertsForManuscript(this.id)
 
     return manuscript
@@ -168,7 +245,13 @@ class Manuscript extends BaseModel {
     /* eslint-disable-next-line global-require */
     const Task = require('../../model-task/src/task')
     /* eslint-disable-next-line global-require */
+    const Invitation = require('../../model-invitations/src/invitations')
+    /* eslint-disable-next-line global-require */
     const PublishedArtifact = require('../../model-published-artifact/src/publishedArtifact')
+    /* eslint-disable-next-line global-require */
+    const ThreadedDiscussion = require('../../model-threaded-discussion/src/threadedDiscussion')
+    /* eslint-disable-next-line global-require */
+    const Group = require('../../model-group/src/group')
 
     return {
       submitter: {
@@ -243,6 +326,26 @@ class Manuscript extends BaseModel {
           to: 'manuscripts.parentId',
         },
       },
+      invitations: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: Invitation,
+        join: {
+          from: 'manuscripts.id',
+          to: 'invitations.manuscriptId',
+        },
+      },
+      threadedDiscussions: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: ThreadedDiscussion,
+      },
+      group: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: Group,
+        join: {
+          from: 'manuscripts.groupId',
+          to: 'groups.id',
+        },
+      },
     }
   }
 
@@ -257,6 +360,10 @@ class Manuscript extends BaseModel {
           type: ['array', 'null'],
         },
         teams: {
+          items: { type: 'object' },
+          type: ['array', 'null'],
+        },
+        tasks: {
           items: { type: 'object' },
           type: ['array', 'null'],
         },
@@ -297,6 +404,7 @@ class Manuscript extends BaseModel {
         formFieldsToPublish: { type: 'array' },
         doi: { type: ['string', 'null'] },
         searchableText: { type: 'string' },
+        groupId: { type: ['string', 'null'], format: 'uuid' },
       },
     }
   }

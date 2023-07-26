@@ -11,31 +11,33 @@ const BUTTON = 'button'
 const HEADER = 'General__Heading'
 const SECTION_TITLE = 'General__Title'
 const SECTION_PLACEHOLDER = 'style__Placeholder'
-const SUBMISSION_TITLE = 'VersionTitle'
-const SUBMISSION_BUTTON = '＋ New submission'
+const SUBMISSION_TITLE = '[name="meta.title"]'
+const SUBMISSION_BUTTON = '+ New submission'
 const SUBMISSION_FILE_UPLOAD_INPUT = 'input[type=file]'
 
 /* My Submissions */
-const SUBMITTED_MANUSCRIPTS = ':nth-child(2) > a'
+const SUBMITTED_MANUSCRIPTS = '[class*=style__ClickableManuscriptsRow]'
 const CREATE_NEW_VERSION_BUTTON = 'create-new-manuscript-version-button'
 
 /* Submitted Info */
 const DECISION_FIELDS = ':nth-child(1) > .General__Section-sc-1chiust-0 > div'
 
 // 'To Review section'
-const DO_REVIEW_BUTTON = 'a[href*=review]'
+const DO_REVIEW_BUTTON = '[name="reviewerLinks"] button'
 const ACCEPT_REVIEW_BUTTON = 'accept-review'
 const REJECT_REVIEW_BUTTON = 'reject-review'
 
 // 'Manuscripts I'm editor of' section
-const CONTROL_PANEL_BUTTON = 'control-panel'
+const CONTROL_PANEL_DECISION_BUTTON = 'control-panel-decision'
+const CONTROL_PANEL_TEAM_BUTTON = 'control-panel-team'
 const MANUSCRIPT_NAV_BUTTON = '[href="/kotahi/admin/manuscripts"]'
 const INVITED_REVIEWS_STATUS = 'invited'
 const COMPLETED_REVIEWS_STATUS = 'completed'
 const REJECTED_REVIEWS_STATUS = 'rejected'
 const ACCEPTED_REVIEWS_STATUS = 'accepted'
 const VERSION_TITLE = 'VersionTitle__Root-sc'
-const ARTICLE_LINK = '[class*=General__SectionRow] a[href]'
+const ARTICLE_LINK = '[name="reviewerLinks"] button'
+const DASHBOARD_TAB = '[data-test-id=tab-container]'
 
 // eslint-disable-next-line import/prefer-default-export
 export const DashboardPage = {
@@ -67,7 +69,7 @@ export const DashboardPage = {
     return cy.getByContainsClass(SECTION_TITLE).contains(title)
   },
   getSubmissionTitle() {
-    return cy.getByContainsClass(SUBMISSION_TITLE)
+    return cy.get(SUBMISSION_TITLE)
   },
   getSubmissionButton() {
     return cy.get('button').should('have.text', '＋ New submission')
@@ -87,11 +89,17 @@ export const DashboardPage = {
   getDecisionField(nth) {
     return cy.get(DECISION_FIELDS).eq(nth)
   },
-  getControlPanelButton() {
-    return cy.getByDataTestId(CONTROL_PANEL_BUTTON)
+  getControlPanelDecisionButton() {
+    return cy.getByDataTestId(CONTROL_PANEL_DECISION_BUTTON)
   },
-  clickControlPanel() {
-    this.getControlPanelButton().click()
+  getControlPanelTeamButton() {
+    return cy.getByDataTestId(CONTROL_PANEL_TEAM_BUTTON)
+  },
+  clickControlPanelTeam() {
+    this.getControlPanelTeamButton().click()
+  },
+  clickControlPanelDecision() {
+    this.getControlPanelDecisionButton().click()
   },
   getManuscriptNavButton() {
     return cy.get(MANUSCRIPT_NAV_BUTTON)
@@ -121,7 +129,7 @@ export const DashboardPage = {
     return cy.get(DO_REVIEW_BUTTON)
   },
   clickDoReview() {
-    this.getDoReviewButton().click()
+    this.getDoReviewButton().click({ force: true })
   },
   clickDoReviewAndVerifyPageLoaded() {
     this.getDoReviewButton().click()
@@ -144,9 +152,15 @@ export const DashboardPage = {
     return cy.getByContainsClass(VERSION_TITLE)
   },
   getCompletedReviewButton() {
-    return cy.get(ARTICLE_LINK).contains('Completed')
+    return cy.get(ARTICLE_LINK)
   },
   clickCompletedReviewButton() {
-    this.getCompletedReviewButton().click()
+    this.getCompletedReviewButton().click({ force: true })
+  },
+  getDashboardTab() {
+    return cy.get(DASHBOARD_TAB)
+  },
+  clickDashboardTab(nth) {
+    this.getDashboardTab().eq(nth).click()
   },
 }

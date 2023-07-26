@@ -21,23 +21,27 @@ const ASSIGN_SENIOR_EDITOR_DROPDOWN = 'Assign seniorEditor'
 const ASSIGN_HANDLING_EDITOR_DROPDOWN = 'Assign handlingEditor'
 const ASSIGN_EDITOR_DROPDOWN = 'Assign editor'
 
-// Reviews
-const MANAGE_REVIEWERS_BUTTON = '[class*=General__SectionRow] > a'
-const DECISION_FIELD = '[contenteditable="true"]'
+// Reviews + Invitations
+const INVITE_REVIEWER_DROPDOWN = 'Invite reviewers'
+const INVITE_REVIEWER_OPTION_LIST = 'react-select'
+const INVITE_REVIEWER_SUBMIT_BUTTON = 'button[type="submit"]'
+const INVITED_REVIEWERS = '[class*=KanbanCard__Card]'
+const INVITE_REVIEWER_SUBMIT_MODAL_BUTTON = 'submit-modal'
+const REVIEWER_MODAL_SHARED_CHECKBOX = 'input[type="checkbox"]:nth(10)'
 
-// Publishing
+// Decision + Publishing
 const PUBLISH_BUTTON =
   '[class*=General__SectionAction-sc-1chiust-11] > .sc-bkzZxe'
 const PUBLISH_INFO_MESSAGE = 'General__SectionActionInfo-sc-1chiust-12'
+const DECISION_FIELD = '[contenteditable="true"]'
 
 // Review
-const REVIEW_MESSAGE =
-  '[class*=DecisionReview__Root] [class*=SimpleWaxEditor__ReadOnly] > div > [class*=paragraph]'
+const REVIEW_MESSAGE = '[class*=EditorStyles__ReadOnlySimpleEditorDiv]'
 const REVIEW_OPTION_CHECKBOX =
   '[class*=DecisionReview__StyledCheckbox] > [type=checkbox]'
-const REVIEWER_NAME = '[class*=DecisionReview__Name]'
+const REVIEWER_NAME = '[class*=Review__Heading]'
 const NO_REVIEWS_MESSAGE = '[class*=General__SectionRow]'
-const ACCEPTED_TO_PUBLISH_REVIEW_ICON = '[class*=DecisionReview__Name] > svg'
+const ACCEPTED_TO_PUBLISH_REVIEW_ICON = '[class*=DecisionReview__Name] img'
 
 // Chat
 const MESSAGE_CONTAINER = '.General__Chat-sc-1chiust-18'
@@ -57,9 +61,9 @@ const SHOW_BUTTON = '[class*=DecisionReview__Controls]>[type*=button]'
 const DECISION_TEXT_INPUT =
   ':nth-child(1) > :nth-child(2) > :nth-child(1) > :nth-child(1) > .EditorStyles__SimpleGrid-k4rcxo-9 > .EditorStyles__SimpleEditorDiv-k4rcxo-11'
 
-const ACCEPT_RADIO_BUTTON = '.fgnKvm > .sc-dmlrTW'
-const REVISE_RADIO_BUTTON = '.izJvPI > .sc-dmlrTW'
-const REJECT_RADIO_BUTTON = '.dPWuRK > .sc-dmlrTW'
+const ACCEPT_RADIO_BUTTON = '.cLexBK > .sc-dmlrTW'
+const REVISE_RADIO_BUTTON = '.cABLOw > .sc-dmlrTW'
+const REJECT_RADIO_BUTTON = '.hgPkBe > .sc-dmlrTW'
 const DECISION_SUBMIT_BUTTON = 'decision-action-btn'
 const DECISION_FILE_INPUT = 'input[type=file]'
 
@@ -67,11 +71,37 @@ const CHECK_SVG = 'check-svg'
 
 // eslint-disable-next-line import/prefer-default-export
 export const ControlPage = {
-  getManageReviewersButton() {
-    return cy.get(MANAGE_REVIEWERS_BUTTON)
+  getInviteReviewerDropdown() {
+    return cy.getByContainsAriaLabel(INVITE_REVIEWER_DROPDOWN)
   },
-  clickManageReviewers() {
-    this.getManageReviewersButton().click()
+  clickInviteReviewerDropdown() {
+    this.getInviteReviewerDropdown().click({ force: true })
+  },
+  inviteReviewer(name) {
+    this.clickInviteReviewerDropdown()
+    this.selectReviewerNamed(name)
+    this.clickInviteReviewerSubmit()
+    this.clickReviewerSubmitModalButton()
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000)
+  },
+  getInviteReviewerOptionList() {
+    return cy.getByContainsId(INVITE_REVIEWER_OPTION_LIST)
+  },
+  getInviteReviewerSubmitButton() {
+    return cy.get(INVITE_REVIEWER_SUBMIT_BUTTON)
+  },
+  clickInviteReviewerSubmit() {
+    this.getInviteReviewerSubmitButton().click()
+  },
+  selectReviewerNamed(uuid) {
+    this.getInviteReviewerOptionList().contains(uuid).click()
+  },
+  getInvitedReviewersList() {
+    return cy.get(INVITED_REVIEWERS)
+  },
+  getNumberOfInvitedReviewers() {
+    return this.getInvitedReviewersList().its('length')
   },
   getDecisionField(nth) {
     return cy.get(DECISION_FIELD).eq(nth)
@@ -173,6 +203,26 @@ export const ControlPage = {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000)
   },
+  getReviewerSubmitModalButton() {
+    return cy.getByDataTestId(INVITE_REVIEWER_SUBMIT_MODAL_BUTTON)
+  },
+  clickReviewerSubmitModalButton() {
+    return this.getReviewerSubmitModalButton().click()
+  },
+  getReviewerSharedCheckbox() {
+    return cy.get(REVIEWER_MODAL_SHARED_CHECKBOX)
+  },
+  clickReviewerSharedCheckbox(nth) {
+    return this.getReviewerSharedCheckbox()
+      .eq(nth || 0)
+      .click()
+  },
+  getInvitedReviewer() {
+    return cy.get(INVITED_REVIEWERS)
+  },
+  clickInvitedReviewer() {
+    return this.getInvitedReviewer().click()
+  },
   getReviewerName() {
     return cy.get(REVIEWER_NAME)
   },
@@ -227,7 +277,7 @@ export const ControlPage = {
     return cy.get(EMAIL_NOTIFICATION_DROPDOWNS)
   },
   clickEmailNotificationNthDropdown(nth) {
-    this.getEmailNotificationDropdowns().eq(nth).click()
+    this.getEmailNotificationDropdowns().eq(nth).click({ force: true })
   },
   getNotifyButton() {
     return cy.get(NOTIFY_BUTTON)
@@ -252,6 +302,12 @@ export const ControlPage = {
   },
   getWorkflowTab() {
     return cy.get('[data-test-id=tab-container]').contains('Workflow')
+  },
+  getDecisionTab() {
+    return cy.get('[data-test-id=tab-container]')
+  },
+  clickDecisionTab(nth) {
+    this.getDecisionTab().eq(nth).click()
   },
 
   // Decision Form

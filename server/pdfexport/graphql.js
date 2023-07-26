@@ -10,6 +10,7 @@ const models = require('@pubsweet/models')
 const { createFile, File } = require('@coko/server')
 const { applyTemplate, generateCss } = require('./applyTemplate')
 const makeZip = require('./ziputils.js')
+const publicationMetadata = require('./pdfTemplates/publicationMetadata')
 
 const {
   getFilesWithUrl,
@@ -96,19 +97,6 @@ const pdfHandler = async manuscriptId => {
 
   await fsPromised.mkdir(dirName, { recursive: true })
 
-  articleData.parsedSubmission = {
-    objectType: articleData.submission.objectType,
-    topic: articleData.submission.topics,
-    authors: articleData.submission.authorNames,
-    AuthorCorrespondence: articleData.submission.AuthorCorrespondence,
-    conflictOfInterest: articleData.submission.competingInterests,
-    Funding: articleData.submission.funding,
-    dateReceived: articleData.submission.dateReceived,
-    DateAccepted: articleData.submission.dateAccepted,
-    DatePublished: articleData.submission.datePublished,
-    abstract: articleData.submission.abstract,
-  }
-
   articleData.files = await getFilesWithUrl(articleData.files)
   articleData.meta.source = await replaceImageSrc(
     articleData.meta.source,
@@ -132,21 +120,23 @@ const pdfHandler = async manuscriptId => {
 
   // Manually copy the two fonts to the folder that will be zipped. This is a temporary fix!
 
-  const originalFont1 = path.join(
-    __dirname,
-    '../../profiles/Newsreader-Italic-VariableFont-opsz-wght.ttf',
-  )
+  publicationMetadata.fonts.forEach(async fontPath => {
+    const thisFont = path.join(__dirname, `../../profiles/${fontPath}`)
 
-  const targetFont1 = `${dirName}/Newsreader-Italic-VariableFont-opsz-wght.ttf`
-  await copyFile(originalFont1, targetFont1)
+    const targetFont = `${dirName}/${fontPath}`
+    await copyFile(thisFont, targetFont)
+  })
 
-  const originalFont2 = path.join(
-    __dirname,
-    '../../profiles/Newsreader-VariableFont-opsz-wght.ttf',
-  )
+  // const targetFont1 = `${dirName}/Newsreader-Italic-VariableFont-opsz-wght.ttf`
+  // await copyFile(originalFont1, targetFont1)
 
-  const targetFont2 = `${dirName}/Newsreader-VariableFont-opsz-wght.ttf`
-  await copyFile(originalFont2, targetFont2)
+  // const originalFont2 = path.join(
+  //   __dirname,
+  //   '../../profiles/Newsreader-VariableFont-opsz-wght.ttf',
+  // )
+
+  // const targetFont2 = `${dirName}/Newsreader-VariableFont-opsz-wght.ttf`
+  // await copyFile(originalFont2, targetFont2)
 
   // 2 zip this.
 

@@ -13,15 +13,24 @@ const getExistingOrInitialComments = (
   comments,
   currentUser,
   userCanAddComment,
+  manuscriptLatestVersionId,
+  selectedManuscriptVersionId,
 ) => {
   const result = comments
-    .filter(c => c.pendingVersion || c.commentVersions.length)
+    .filter(c => {
+      if (c.pendingVersion) {
+        return manuscriptLatestVersionId === selectedManuscriptVersionId
+      }
+
+      return c.commentVersions.length > 0
+    })
     .map(c => {
       if (c.pendingVersion) {
         // This comment is currently being edited!
         // Note that the server gives us only a pendingVersion for the current user.
         return {
           ...c.pendingVersion,
+          manuscriptVersionId: c.manuscriptVersionId,
           id: c.id,
           isEditing: true,
           existingComment: c.commentVersions.length
@@ -35,6 +44,7 @@ const getExistingOrInitialComments = (
       return {
         ...cv,
         id: c.id,
+        manuscriptVersionId: c.manuscriptVersionId,
         existingComment: cv,
       }
     })
@@ -52,7 +62,13 @@ const getExistingOrInitialComments = (
 
   // If the last comment in the thread is not by this user (and they are permitted to comment at all),
   // we create the preliminary data for a new comment, not yet in the DB.
-  if (userCanAddComment && !lastCommentIsByUser)
+  // reply to a comment is only provided in the latest version of manuscript
+
+  if (
+    selectedManuscriptVersionId === manuscriptLatestVersionId &&
+    userCanAddComment &&
+    !lastCommentIsByUser
+  )
     result.push({
       id: uuid(),
       comment: '<p class="paragraph></p>',
@@ -75,6 +91,8 @@ const ThreadedDiscussion = ({
     commentsToPublish: commsToPublish,
     setShouldPublishComment,
     shouldRenderSubmitButton,
+    selectedManuscriptVersionId,
+    manuscriptLatestVersionId,
   },
   onChange,
   ...SimpleWaxEditorProps
@@ -96,12 +114,17 @@ const ThreadedDiscussion = ({
     commsToPublish || [],
   )
 
+  const isLatestVersionOfManuscript =
+    selectedManuscriptVersionId === manuscriptLatestVersionId
+
   useEffect(() => {
     setComments(
       getExistingOrInitialComments(
         threadComments,
         currentUser,
         userCanAddComment && !!updatePendingComment && !!completeComment, // Don't allow editing if mutation functions aren't available
+        manuscriptLatestVersionId,
+        selectedManuscriptVersionId,
       ),
     )
   }, [updated])
@@ -118,6 +141,7 @@ const ThreadedDiscussion = ({
                 threadId,
                 commentId: comment.id,
                 comment: content,
+                manuscriptVersionId: selectedManuscriptVersionId,
               },
             })
           }
@@ -165,7 +189,7 @@ const ThreadedDiscussion = ({
             }
           }
 
-          if (!comment.existingComment)
+          if (isLatestVersionOfManuscript && !comment.existingComment)
             return (
               <div key={comment.id}>
                 <SimpleWaxEditorWrapper key={comment.id}>
@@ -187,6 +211,7 @@ const ThreadedDiscussion = ({
             <ThreadedComment
               comment={comment}
               currentUser={currentUser}
+              isLatestVersionOfManuscript={isLatestVersionOfManuscript}
               key={comment.id}
               onCancel={handleCancelEditingComment}
               onChange={handleUpdateComment}
@@ -199,6 +224,7 @@ const ThreadedDiscussion = ({
                   },
                 })
               }
+              selectedManuscriptVersionId={selectedManuscriptVersionId}
               setShouldPublish={
                 setShouldPublishComment &&
                 (val => {

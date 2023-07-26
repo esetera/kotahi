@@ -1,7 +1,6 @@
 FROM cypress/browsers:node14.16.0-chrome89-ff86
 
 ARG packagechanged
-ARG instance_name
 ARG node_env
 ARG server_protocol
 ARG server_host
@@ -9,13 +8,8 @@ ARG server_port
 ARG client_protocol
 ARG client_host
 ARG client_port
-ARG manuscripts_table_columns
-ARG manuscripts_table_first_column_width
-ARG display_shortid_as_identifier
-ARG review_shared
-ARG review_hide
-ARG hypothesis_allow_tagging
-ARG allow_manual_import
+ARG use_colab_email
+ARG flax_site_url
 
 ENV NODE_ENV "development"
 ENV SERVER_PROTOCOL "http"
@@ -24,15 +18,9 @@ ENV SERVER_PORT "3000"
 ENV CLIENT_PROTOCOL "http"
 ENV CLIENT_HOST "0.0.0.0"
 ENV CLIENT_PORT "4000"
-ENV INSTANCE_NAME $instance_name
-ENV MANUSCRIPTS_TABLE_COLUMNS $manuscripts_table_columns
-ENV MANUSCRIPTS_TABLE_FIRST_COLUMN_WIDTH $manuscripts_table_first_column_width
-ENV DISPLAY_SHORTID_AS_IDENTIFIER $display_shortid_as_identifier
-ENV REVIEW_SHARED $review_shared
-ENV REVIEW_HIDE $review_hide
-ENV HYPOTHESIS_ALLOW_TAGGING $hypothesis_allow_tagging
 ENV HOME "/home/simplej"
-ENV ALLOW_MANUAL_IMPORT $allow_manual_import
+ENV USE_COLAB_EMAIL $use_colab_email
+ENV FLAX_SITE_URL $flax_site_url
 
 RUN mkdir -p ${HOME}
 WORKDIR ${HOME}

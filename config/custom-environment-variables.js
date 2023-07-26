@@ -99,6 +99,13 @@ module.exports = {
     host: 'SERVICE_ANYSTYLE_HOST',
     port: 'SERVICE_ANYSTYLE_PORT',
   },
+  xsweet: {
+    clientId: 'SERVICE_XSWEET_CLIENT_ID',
+    clientSecret: 'SERVICE_XSWEET_SECRET',
+    protocol: 'SERVICE_XSWEET_PROTOCOL',
+    host: 'SERVICE_XSWEET_HOST',
+    port: 'SERVICE_XSWEET_PORT',
+  },
   manuscripts: {
     teamTimezone: 'TEAM_TIMEZONE',
     autoImportHourUtc: 'AUTO_IMPORT_HOUR_UTC',
@@ -106,5 +113,15 @@ module.exports = {
     allowManualImport: 'ALLOW_MANUAL_IMPORT',
     semanticScholarImportsRecencyPeriodDays:
       'SEMANTIC_SCHOLAR_IMPORTS_RECENCY_PERIOD_DAYS',
+  },
+
+  'flax-site': {
+    clientId: 'FLAX_CLIENT_ID',
+    clientSecret: 'FLAX_CLIENT_SECRET',
+    clientAPIURL: 'FLAX_CLIENT_API_URL',
+    clientFlaxSiteUrl: 'FLAX_SITE_URL',
+    port: 'FLAX_EXPRESS_PORT',
+    host: 'FLAX_EXPRESS_HOST',
+    protocol: 'FLAX_EXPRESS_PROTOCOL',
   },
 }
