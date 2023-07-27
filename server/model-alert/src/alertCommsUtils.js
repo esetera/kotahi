@@ -9,9 +9,9 @@ const {
 const sendAlerts = async () => {
   // [TODO-1344]: add a comment describing the below query
   const notificationDigestRows = await models.NotificationDigest.query()
-    .distinctOn('user_id')
+    .distinctOn(['user_id', 'path_string'])
     .where('max_notification_time', '<', new Date())
-    .orderBy(['user_id', 'max_notification_time'])
+    .orderBy(['user_id', 'path_string', 'max_notification_time'])
 
   notificationDigestRows.forEach(async notificationDigest => {
     if (notificationDigest.actioned) return
@@ -84,6 +84,8 @@ const sendAlertForMessage = async ({
 
   const selectedTemplate =
     activeConfig.formData.eventNotification.alertUnreadMessageDigestTemplate
+
+  if (!selectedTemplate) return
 
   const selectedEmailTemplate = await models.EmailTemplate.query().findById(
     selectedTemplate,
