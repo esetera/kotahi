@@ -9,7 +9,7 @@ const readPluginGroupsFromManifestFile = async () => {
 
   try {
     // eslint-disable-next-line import/no-unresolved
-    pluginGroups = require('../config/plugins/plugins_manifest.json')
+    pluginGroups = require('../../config/plugins/plugins_manifest.json')
   } catch (error) {
     console.info('No plugins manifest found; skipping plugins.')
     return []
@@ -62,15 +62,7 @@ const registerPlugins = async () => {
                   `Illegal plugin folder name '${folderName}'. Plugins must reside directly beneath the config/plugins/ folder and cannot contain a slash.`,
                 )
 
-              let startPlugin = null
-
-              try {
-                startPlugin = require(`../config/plugins/${folderName}`)
-              } catch (error) {
-                error.message = `Failed to locate plugin ${name} in folder '${folderName}': ${error.message}`
-                throw error
-              }
-
+              const startPlugin = require(`../../config/plugins/${folderName}`)
               console.info(`Starting plugin ${name}...`)
               startPlugin(getBroker(group.id, name))
             } catch (error) {

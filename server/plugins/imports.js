@@ -22,13 +22,11 @@ const runImports = async (groupId, submitterId = null) => {
     try {
       let [sourceRecord] = await models.ArticleImportSources.query().where({
         server: worker.name,
-        groupId,
       })
       if (!sourceRecord)
         sourceRecord = await models.ArticleImportSources.query().insertAndFetch(
           {
             server: worker.name,
-            groupId,
           },
         )
       importSource = sourceRecord.id

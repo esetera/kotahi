@@ -37,7 +37,13 @@ const getEmptySubmission = async groupId => {
 }
 
 const getBroker = (groupId, workerName) => {
-  const importWorkers = importWorkersByGroup[groupId]
+  let importWorkers = importWorkersByGroup[groupId]
+
+  if (!importWorkers) {
+    importWorkers = []
+    importWorkersByGroup[groupId] = importWorkers
+  }
+
   return {
     addManuscriptImporter: (importType, doImport) => {
       assertArgTypes([importType, doImport], 'string', 'function')
@@ -82,4 +88,4 @@ const getBroker = (groupId, workerName) => {
   }
 }
 
-module.exports = getBroker
+module.exports = { getBroker }
