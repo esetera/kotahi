@@ -1,7 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 
-const generateSchema = emailNotificationOptions => {
+const generateSchema = (
+  emailNotificationOptions,
+  defaultReviewerInvitationEmail,
+) => {
   const schema = {
     definitions: {
       timezones: {
@@ -801,8 +804,14 @@ const generateSchema = emailNotificationOptions => {
                 title: 'Event Notifications',
                 properties: {
                   reviewerInvitationPrimaryEmailTemplate: {
-                    description:
-                      'Reviewer invitation email template for a new manuscript',
+                    description: 'Reviewer invitation',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                    default: defaultReviewerInvitationEmail.const,
+                  },
+                  alertUnreadMessageDigestTemplate: {
+                    description: 'Unread discussion message',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
@@ -1203,8 +1212,14 @@ const generateSchema = emailNotificationOptions => {
                 title: 'Event Notifications',
                 properties: {
                   reviewerInvitationPrimaryEmailTemplate: {
-                    description:
-                      'Reviewer invitation email template for a new manuscript',
+                    description: 'Reviewer invitation',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                    default: defaultReviewerInvitationEmail.const,
+                  },
+                  alertUnreadMessageDigestTemplate: {
+                    description: 'Unread discussion message',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
@@ -1601,8 +1616,14 @@ const generateSchema = emailNotificationOptions => {
                 title: 'Event Notifications',
                 properties: {
                   reviewerInvitationPrimaryEmailTemplate: {
-                    description:
-                      'Reviewer invitation email template for a new manuscript',
+                    description: 'Reviewer invitation',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                    default: defaultReviewerInvitationEmail.const,
+                  },
+                  alertUnreadMessageDigestTemplate: {
+                    description: 'Unread discussion message',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
@@ -2000,29 +2021,32 @@ const generateSchema = emailNotificationOptions => {
                 title: 'Event Notifications',
                 properties: {
                   reviewRejectedEmailTemplate: {
-                    description:
-                      'Email Template to trigger if a manuscript is rejected by the reviewer',
+                    description: 'Reviewer rejects an invitation to review',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
                   },
                   reviewerInvitationPrimaryEmailTemplate: {
-                    description:
-                      'Reviewer invitation email template for a new manuscript',
+                    description: 'Reviewer invitation',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
+                    default: defaultReviewerInvitationEmail.const,
                   },
                   evaluationCompleteEmailTemplate: {
-                    description:
-                      'Email Template to trigger once evaluation of a manuscript is completed',
+                    description: 'Submitted review',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
                   },
                   submissionConfirmationEmailTemplate: {
-                    description:
-                      'Email Template to trigger after a manuscript is submitted',
+                    description: 'Submitted manuscript',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                  },
+                  alertUnreadMessageDigestTemplate: {
+                    description: 'Unread discussion message',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,

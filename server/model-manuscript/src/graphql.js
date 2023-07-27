@@ -740,10 +740,14 @@ const resolvers = {
           shortId: manuscript.shortId,
         }
 
+        const selectedEmailTemplate = await models.EmailTemplate.query().findById(
+          selectedTemplate,
+        )
+
         try {
           await sendEmailNotification(
             receiverEmail,
-            selectedTemplate,
+            selectedEmailTemplate,
             data,
             manuscript.groupId,
           )
@@ -810,10 +814,14 @@ const resolvers = {
           shortId: manuscript.shortId,
         }
 
+        const selectedEmailTemplate = await models.EmailTemplate.query().findById(
+          selectedTemplate,
+        )
+
         try {
           await sendEmailNotification(
             receiverEmail,
-            selectedTemplate,
+            selectedEmailTemplate,
             data,
             manuscript.groupId,
           )
@@ -937,9 +945,13 @@ const resolvers = {
               userId: manuscript.submitterId,
             })
 
+            const selectedEmailTemplate = await models.EmailTemplate.query().findById(
+              selectedTemplate,
+            )
+
             await sendEmailNotification(
               receiverEmail,
-              selectedTemplate,
+              selectedEmailTemplate,
               data,
               manuscript.groupId,
             )
@@ -963,7 +975,7 @@ const resolvers = {
       }
 
       await addUserToManuscriptChatChannel({
-        manuscriptId,
+        manuscriptId: manuscript.parentId || manuscriptId,
         userId,
         type: 'editorial',
       })
@@ -1116,25 +1128,22 @@ const resolvers = {
         })
       }
 
-      if (activeConfig.formData.instanceName === 'ncrc') {
-        let succeeded
+      if (process.env.GOOGLE_SPREADSHEET_ID) {
+        const stepLabel = 'Google Spreadsheet'
+        let succeeded = false
         let errorMessage
-        let stepLabel
 
         try {
-          if (await publishToGoogleSpreadSheet(manuscript)) {
-            stepLabel = 'Google Spreadsheet'
-            update.submission = {
-              ...manuscript.submission,
-              editDate: new Date().toISOString().split('T')[0],
-            }
-          } else return null
+          await publishToGoogleSpreadSheet(manuscript)
+          update.submission = {
+            ...manuscript.submission,
+            editDate: new Date().toISOString().split('T')[0],
+          }
+          succeeded = true
         } catch (e) {
-          console.error('error while publishing in google spreadsheet')
+          console.error('error while publishing to google spreadsheet')
           console.error(e)
-          succeeded = false
           errorMessage = e.message
-          return null
         }
 
         steps.push({ succeeded, errorMessage, stepLabel })
