@@ -121,6 +121,7 @@ const FieldSettingsModal = ({
                 <Legend space>Field type</Legend>
                 <ValidatedField
                   component={Select}
+                  hasGroupedOptions
                   name="component"
                   onChange={option => {
                     setComponentType(option.value)
