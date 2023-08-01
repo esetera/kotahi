@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-import request from 'pubsweet-client/src/helpers/api'
 import { gql } from '@apollo/client'
 // import { map } from 'lodash'
 import * as cheerio from 'cheerio'
@@ -306,6 +304,7 @@ const base64Images = source => {
   return images || null
 }
 
+/* eslint-disable-next-line no-unused-vars */
 const uploadImage = (image, client, manuscriptId) => {
   const { file } = image
 
@@ -501,6 +500,7 @@ export default ({
             ),
           ),
         )
+        /* eslint-disable-next-line no-unused-vars */
         images = base64Images(uploadResponse.response)
       }
 

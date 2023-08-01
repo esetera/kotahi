@@ -1,8 +1,8 @@
 const path = require('path')
 const fs = require('fs-extra')
-// const { pick } = require('lodash')
-// require('dotenv').config({ path: path.join(__dirname, '../.env') })
-// const config = require('config')
+const { pick } = require('lodash')
+require('dotenv').config({ path: path.join(__dirname, '../.env') })
+const config = require('config')
 
 const rules = require('./common-rules')
 
@@ -10,10 +10,10 @@ const context = path.resolve(__dirname, '..', 'app')
 const contentBase = path.resolve(__dirname, '..', '_build', 'assets')
 
 // can't use node-config in webpack so save whitelisted client config into the build and alias it below
-// const clientConfig = pick(config, config.publicKeys)
-// fs.ensureDirSync(contentBase)
-// const clientConfigPath = path.join(contentBase, 'client-config.json')
-// fs.writeJsonSync(clientConfigPath, clientConfig, { spaces: 2 })
+const clientConfig = pick(config, config.publicKeys)
+fs.ensureDirSync(contentBase)
+const clientConfigPath = path.join(contentBase, 'client-config.json')
+fs.writeJsonSync(clientConfigPath, clientConfig, { spaces: 2 })
 
 const plugins = require('./plugins')
 
@@ -90,7 +90,7 @@ module.exports = webpackEnv => {
           __dirname,
           '../app/components/xpub-journal',
         ),
-        // config: clientConfigPath,
+        config: clientConfigPath,
       },
       extensions: ['.js', '.jsx', '.json', '.scss'],
       enforceExtension: false,
