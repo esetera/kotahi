@@ -1,0 +1,81 @@
+{
+  "name": "Review",
+  "description": "<p class=\"paragraph\">By completing this review, you agree that you do not have any conflict of interests to declare. For any questions about what constitutes a conflict of interest, contact the administrator.</p>",
+  "haspopup": "true",
+  "popuptitle": "Confirm your review",
+  "popupdescription": "<p class=\"paragraph\">By submitting this review, you agree that you do not have any conflict of interests to declare. For any questions about what constitutes a conflict of interest, contact the administrator.</p>",
+  "children": [
+    {
+      "id": "1880448f-827a-422a-8ed7-c00f8ce9ccae",
+      "name": "comment",
+      "title": "Comments to the Author",
+      "component": "AbstractEditor",
+      "placeholder": "Enter your review...",
+      "validate": [
+        {
+          "id": "332253be-dc19-47a8-9bfb-c32fa3fc9b43",
+          "label": "Required",
+          "value": "required"
+        }
+      ]
+    },
+    {
+      "id": "4e0ee4a6-57bc-4284-957a-f3e17ac4a24d",
+      "name": "files",
+      "title": " ",
+      "shortDescription": "Files",
+      "component": "SupplementaryFiles"
+    },
+    {
+      "id": "2a1eab32-3e78-49e1-b0e5-24104a39a06a",
+      "name": "confidentialComment",
+      "title": "Confidential comments to the editor (optional)",
+      "shortDescription": "Confidential comments",
+      "component": "AbstractEditor",
+      "placeholder": "Enter a confidential note to the editor (optional)...",
+      "hideFromAuthors": "true"
+    },
+    {
+      "id": "21b5de2c-10fd-48cb-a00a-ab2c96b1c242",
+      "name": "confidentialFiles",
+      "title": " ",
+      "shortDescription": "Confidential files",
+      "component": "SupplementaryFiles",
+      "hideFromAuthors": "true"
+    },
+    {
+      "id": "257d6be0-0832-41fc-b6d2-b1f096342bc2",
+      "name": "verdict",
+      "title": "Recommendation",
+      "inline": "true",
+      "options": [
+        {
+          "id": "da8a08bd-d035-400e-856a-f2c6f8040c27",
+          "label": "Accept",
+          "value": "accept",
+          "labelColor": "#048802"
+        },
+        {
+          "id": "da75afd9-aeac-4d24-8f5e-8ed00d233543",
+          "label": "Revise",
+          "value": "revise",
+          "labelColor": "#ebc400"
+        },
+        {
+          "id": "a254f0c1-25e5-45bb-8a8e-8251d2c27f8c",
+          "label": "Reject",
+          "value": "reject",
+          "labelColor": "#ea412e"
+        }
+      ],
+      "validate": [
+        {
+          "id": "d970099e-b05e-4fae-891f-1a81d6f46b65",
+          "label": "Required",
+          "value": "required"
+        }
+      ],
+      "component": "RadioGroup"
+    }
+  ]
+}

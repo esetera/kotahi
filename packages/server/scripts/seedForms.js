@@ -1,0 +1,57 @@
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
+/* eslint-disable no-console */
+
+const { Form } = require('@pubsweet/models')
+
+// TODO: come up with predefined generic forms based on workflows
+const SUBMISSION_FORM_PATHS = {
+  aperture: '../config/storage/forms-aperture/submit.json',
+  colab: '../config/storage/forms-colab/submit.json',
+  elife: '../config/storage/forms/submit.json',
+  ncrc: '../config/storage/forms-ncrc/submit.json',
+}
+
+const REVIEW_FORM_PATH = '../config/storage/forms/review.json'
+const DECISION_FORM_PATH = '../config/storage/forms/decison.json'
+
+const tryAddForm = async (purpose, category, group, seedFilePath) => {
+  const hasForm = !!(
+    await Form.query().where({ purpose, category, groupId: group.id })
+  ).length
+
+  if (hasForm) {
+    console.log(
+      `    Form for ${category} already exists in database. Skipping.`,
+    )
+  } else {
+    const formStructure = require(seedFilePath)
+
+    const form = {
+      purpose,
+      structure: formStructure,
+      category,
+      groupId: group.id,
+    }
+
+    await Form.query().insert(form)
+    console.log(
+      `    Added ${category} form from ${seedFilePath} for "${group.name}" group to database.`,
+    )
+  }
+}
+
+const seed = async (group, config) => {
+  await Promise.all([
+    tryAddForm(
+      'submit',
+      'submission',
+      group,
+      SUBMISSION_FORM_PATHS[config.formData.instanceName],
+    ),
+    tryAddForm('review', 'review', group, REVIEW_FORM_PATH),
+    tryAddForm('decision', 'decision', group, DECISION_FORM_PATH),
+  ])
+}
+
+module.exports = seed
