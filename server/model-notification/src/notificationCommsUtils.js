@@ -6,7 +6,7 @@ const {
   getUserRolesInManuscript,
 } = require('../../model-user/src/userCommsUtils')
 
-const sendAlerts = async () => {
+const sendNotifications = async () => {
   // [TODO-1344]: add a comment describing the below query
   const notificationDigestRows = await models.NotificationDigest.query()
     .distinctOn(['user_id', 'path_string'])
@@ -16,7 +16,7 @@ const sendAlerts = async () => {
   notificationDigestRows.forEach(async notificationDigest => {
     if (notificationDigest.actioned) return
 
-    await sendAlertForMessage({
+    await sendNotificationForMessage({
       userId: notificationDigest.userId,
       messageId: notificationDigest.header,
       title: 'Unread messages in channel',
@@ -34,7 +34,7 @@ const sendAlerts = async () => {
   })
 }
 
-const sendAlertForMessage = async ({
+const sendNotificationForMessage = async ({
   userId,
   messageId,
   title,
@@ -158,8 +158,8 @@ const notificationEventHandler = async ({
 }
 
 module.exports = {
-  sendAlerts,
-  sendAlertForMessage,
+  sendNotifications,
+  sendNotificationForMessage,
   getNotificationOptionForUser,
   notificationEventHandler,
 }

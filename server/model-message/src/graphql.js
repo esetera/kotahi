@@ -15,7 +15,7 @@ const {
 
 const {
   notificationEventHandler,
-} = require('../../model-alert/src/alertCommsUtils')
+} = require('../../model-notification/src/notificationCommsUtils')
 
 const resolvers = {
   Query: {

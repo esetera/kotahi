@@ -15,7 +15,9 @@ const {
   sendAutomatedTaskEmailNotifications,
 } = require('../model-task/src/taskCommsUtils')
 
-const { sendAlerts } = require('../model-alert/src/alertCommsUtils')
+const {
+  sendNotifications,
+} = require('../model-notification/src/notificationCommsUtils')
 
 const {
   resetLastAlertTriggerTime,
@@ -100,10 +102,10 @@ const getJobs = async (activeConfig, groupId) => {
         rule: `* * * * *`,
       },
       fn: async () => {
-        const disableSendAlertsScheduler =
+        const disableSendNotificationsScheduler =
           process.env.DISABLE_EVENT_NOTIFICATIONS === 'true'
 
-        if (disableSendAlertsScheduler) {
+        if (disableSendNotificationsScheduler) {
           return
         }
 
@@ -113,7 +115,7 @@ const getJobs = async (activeConfig, groupId) => {
         )
 
         try {
-          await sendAlerts()
+          await sendNotifications()
         } catch (error) {
           console.error(error)
         }
