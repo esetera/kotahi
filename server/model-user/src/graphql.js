@@ -383,6 +383,18 @@ const resolvers = {
         }
       }
     },
+    reportUserIsActive: async (_, { channelId }, context) => {
+      if (channelId) {
+        await models.NotificationDigest.query()
+          .update({
+            actioned: true,
+          })
+          .where({
+            userId: context.user,
+            pathString: `chat/${channelId}`,
+          })
+      }
+    },
   },
   User: {
     async isOnline(parent) {
@@ -482,6 +494,7 @@ const typeDefs = `
     updateRecentTab(tab: String): User
     setGlobalRole(userId: ID!, role: String!, shouldEnable: Boolean!): User!
     setGroupRole(userId: ID!, role: String!, shouldEnable: Boolean!): User!
+    reportUserIsActive(channelId: String!): Boolean
   }
 
   type UpdateEmailResponse {
