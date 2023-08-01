@@ -1,8 +1,7 @@
 const he = require('he')
 
 // note this regex is intended for node, and doesn't work in some browsers (so it breaks Storybook on Safari)
-const paragraphOrListItemRegex =
-  /(?<=<p\b[^>]*>)[\s\S]*?(?=<\/p>)|(?<=<li>)(?:(?!<p\b)[\s\S])*?(?=<\/li>)/g
+const paragraphOrListItemRegex = /(?<=<p\b[^>]*>)[\s\S]*?(?=<\/p>)|(?<=<li>)(?:(?!<p\b)[\s\S])*?(?=<\/li>)/g
 
 const getParagraphOrListItems = html => {
   return html

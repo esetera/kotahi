@@ -228,8 +228,7 @@ const doiExists = async checkDOI => {
   }
 }
 
-const emailRegex =
-  /^[\p{L}\p{N}!/+\-_]+(\.[\p{L}\p{N}!/+\-_]+)*@[\p{L}\p{N}!/+\-_]+(\.[\p{L}_-]+)+$/u
+const emailRegex = /^[\p{L}\p{N}!/+\-_]+(\.[\p{L}\p{N}!/+\-_]+)*@[\p{L}\p{N}!/+\-_]+(\.[\p{L}_-]+)+$/u
 
 /** Send submission to register an article, with appropriate metadata */
 const publishArticleToCrossref = async manuscript => {
@@ -453,12 +452,9 @@ const publishReviewsToCrossref = async manuscript => {
         )
 
         const templateCopy = JSON.parse(JSON.stringify(jsonResult))
-        templateCopy.doi_batch.body[0].peer_review[0].review_date[0].day[0] =
-          day
-        templateCopy.doi_batch.body[0].peer_review[0].review_date[0].month[0] =
-          month
-        templateCopy.doi_batch.body[0].peer_review[0].review_date[0].year[0] =
-          year
+        templateCopy.doi_batch.body[0].peer_review[0].review_date[0].day[0] = day
+        templateCopy.doi_batch.body[0].peer_review[0].review_date[0].month[0] = month
+        templateCopy.doi_batch.body[0].peer_review[0].review_date[0].year[0] = year
         templateCopy.doi_batch.head[0].depositor[0].depositor_name[0] =
           activeConfig.formData.publishing.crossref.depositorName
         templateCopy.doi_batch.head[0].depositor[0].email_address[0] =
@@ -471,22 +467,22 @@ const publishReviewsToCrossref = async manuscript => {
         ).slice(0, 8)
 
         if (manuscript.submission[`review${reviewNumber}creator`]) {
-          const surname =
-            manuscript.submission[`review${reviewNumber}creator`].split(' ')[1]
+          const surname = manuscript.submission[
+            `review${reviewNumber}creator`
+          ].split(' ')[1]
 
-          templateCopy.doi_batch.body[0].peer_review[0].contributors[0].person_name[0] =
-            {
-              $: {
-                contributor_role: 'reviewer',
-                sequence: 'first',
-              },
-              given_name: [
-                manuscript.submission[`review${reviewNumber}creator`].split(
-                  ' ',
-                )[0],
-              ],
-              surname: [surname || ''],
-            }
+          templateCopy.doi_batch.body[0].peer_review[0].contributors[0].person_name[0] = {
+            $: {
+              contributor_role: 'reviewer',
+              sequence: 'first',
+            },
+            given_name: [
+              manuscript.submission[`review${reviewNumber}creator`].split(
+                ' ',
+              )[0],
+            ],
+            surname: [surname || ''],
+          }
         }
 
         templateCopy.doi_batch.body[0].peer_review[0] = {
@@ -501,32 +497,30 @@ const publishReviewsToCrossref = async manuscript => {
         templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Review: ${manuscript.submission.description}`
         templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = doi
         templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/artifacts/${artifactId}`
-        templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] =
-          {
+        templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
+          inter_work_relation: [
+            {
+              _: manuscript.submission.articleURL.split('.org/')[1],
+              $: {
+                'relationship-type': 'isReviewOf',
+                'identifier-type': 'doi',
+              },
+            },
+          ],
+        }
+
+        if (summaryDoi) {
+          templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] = {
             inter_work_relation: [
               {
-                _: manuscript.submission.articleURL.split('.org/')[1],
+                _: summaryDoi,
                 $: {
-                  'relationship-type': 'isReviewOf',
+                  'relationship-type': 'isSupplementTo',
                   'identifier-type': 'doi',
                 },
               },
             ],
           }
-
-        if (summaryDoi) {
-          templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[1] =
-            {
-              inter_work_relation: [
-                {
-                  _: summaryDoi,
-                  $: {
-                    'relationship-type': 'isSupplementTo',
-                    'identifier-type': 'doi',
-                  },
-                },
-              ],
-            }
         }
 
         return { reviewNumber, xml: builder.buildObject(templateCopy) }
@@ -549,8 +543,7 @@ const publishReviewsToCrossref = async manuscript => {
     const templateCopy = JSON.parse(JSON.stringify(jsonResult))
     const [year, month, day] = parseDate(manuscript.submission.summarydate)
     templateCopy.doi_batch.body[0].peer_review[0].review_date[0].day[0] = day
-    templateCopy.doi_batch.body[0].peer_review[0].review_date[0].month[0] =
-      month
+    templateCopy.doi_batch.body[0].peer_review[0].review_date[0].month[0] = month
     templateCopy.doi_batch.body[0].peer_review[0].review_date[0].year[0] = year
     templateCopy.doi_batch.head[0].depositor[0].depositor_name[0] =
       'eLife Kotahi'
@@ -565,15 +558,14 @@ const publishReviewsToCrossref = async manuscript => {
 
     if (manuscript.submission.summarycreator) {
       const surname = manuscript.submission.summarycreator.split(' ')[1]
-      templateCopy.doi_batch.body[0].peer_review[0].contributors[0].person_name[0] =
-        {
-          $: {
-            contributor_role: 'reviewer',
-            sequence: 'first',
-          },
-          given_name: [manuscript.submission.summarycreator.split(' ')[0]],
-          surname: [surname || ''],
-        }
+      templateCopy.doi_batch.body[0].peer_review[0].contributors[0].person_name[0] = {
+        $: {
+          contributor_role: 'reviewer',
+          sequence: 'first',
+        },
+        given_name: [manuscript.submission.summarycreator.split(' ')[0]],
+        surname: [surname || ''],
+      }
     }
 
     templateCopy.doi_batch.body[0].peer_review[0] = {
@@ -586,8 +578,7 @@ const publishReviewsToCrossref = async manuscript => {
     }
     templateCopy.doi_batch.body[0].peer_review[0].titles[0].title[0] = `Summary of: ${manuscript.submission.description}`
 
-    templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] =
-      summaryDoi
+    templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].doi[0] = summaryDoi
 
     templateCopy.doi_batch.body[0].peer_review[0].doi_data[0].resource[0] = `${config['pubsweet-client'].baseUrl}/versions/${manuscript.id}/artifacts/${artifactId}`
     templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {

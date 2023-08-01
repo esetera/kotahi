@@ -20,10 +20,11 @@ const getData = async (groupId, ctx) => {
     })
   }
 
-  const [europepmcImportSourceId] =
-    await models.ArticleImportSources.query().where({
-      server: 'europepmc',
-    })
+  const [
+    europepmcImportSourceId,
+  ] = await models.ArticleImportSources.query().where({
+    server: 'europepmc',
+  })
 
   const lastImportDate = await models.ArticleImportHistory.query()
     .select('date')

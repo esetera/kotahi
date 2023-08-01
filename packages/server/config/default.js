@@ -90,8 +90,14 @@ module.exports = {
     API_ENDPOINT: '/api',
     theme: process.env.PUBSWEET_THEME,
     baseUrl: deferConfig(cfg => {
-      const { publicProtocol, protocol, publicHost, host, publicPort, port } =
-        cfg['pubsweet-client']
+      const {
+        publicProtocol,
+        protocol,
+        publicHost,
+        host,
+        publicPort,
+        port,
+      } = cfg['pubsweet-client']
 
       const protocolToUse = publicProtocol || protocol
       let hostToUse = publicHost || host || 'localhost'

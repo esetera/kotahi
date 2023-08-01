@@ -106,8 +106,9 @@ const resolvers = {
     },
 
     deleteTaskNotification: async (_, { id }, ctx) => {
-      const taskEmailNotification =
-        await TaskEmailNotification.query().findById(id)
+      const taskEmailNotification = await TaskEmailNotification.query().findById(
+        id,
+      )
 
       const { taskId } = taskEmailNotification
 

@@ -30,15 +30,15 @@ const mapFieldsToSpreadsheetColumns = manuscript => {
     ? submission.initialTopicsOnImport
     : [submission.initialTopicsOnImport]
 
-  const topics = (
-    manuscript.isImported ? initialTopicsAsArray : topicsAsArray
+  const topics = (manuscript.isImported
+    ? initialTopicsAsArray
+    : topicsAsArray
   ).filter(topic => !!mapping[topic])
 
   // eslint-disable-next-line camelcase
-  const cross_post = (
-    manuscript.isImported
-      ? [...new Set(initialTopicsAsArray.concat(topicsAsArray))]
-      : topicsAsArray
+  const cross_post = (manuscript.isImported
+    ? [...new Set(initialTopicsAsArray.concat(topicsAsArray))]
+    : topicsAsArray
   ).filter(topic => !!mapping[topic])
 
   return {

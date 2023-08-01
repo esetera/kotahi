@@ -107,16 +107,18 @@ const tryPublishDocMaps = async manuscript => {
           fragmentOutput.content = []
 
           if (__contentVenues.includes('hypothesis')) {
-            const { artifactId, externalId: hypothesisId } =
-              await publishSpecificAnnotationToHypothesis(
-                content,
-                __content,
-                __tag,
-                uri,
-                manuscriptTitle,
-                manuscript.id,
-                manuscript.groupId,
-              )
+            const {
+              artifactId,
+              externalId: hypothesisId,
+            } = await publishSpecificAnnotationToHypothesis(
+              content,
+              __content,
+              __tag,
+              uri,
+              manuscriptTitle,
+              manuscript.id,
+              manuscript.groupId,
+            )
 
             // eslint-disable-next-line no-console
             console.log(

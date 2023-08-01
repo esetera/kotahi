@@ -333,8 +333,7 @@ const resolvers = {
         return { success: true }
       }
 
-      const emailValidationRegexp =
-        /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i
+      const emailValidationRegexp = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i
 
       const emailValidationResult = emailValidationRegexp.test(email)
 

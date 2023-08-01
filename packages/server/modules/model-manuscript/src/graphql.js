@@ -473,8 +473,9 @@ const resolvers = {
             // uploadedImagesWithUrl[index].name comes in as something like Image4.png
             // First, get the number so we can identify the image in the DOM
 
-            const imageNumber =
-              uploadedImagesWithUrl[index].name.match(/\d+/)[0]
+            const imageNumber = uploadedImagesWithUrl[index].name.match(
+              /\d+/,
+            )[0]
 
             // We are looking for the image with data-original-name in the form "Picture 4"
 
@@ -499,11 +500,10 @@ const resolvers = {
         }
       }
 
-      const updatedManuscript =
-        await models.Manuscript.query().updateAndFetchById(
-          manuscript.id,
-          manuscript,
-        )
+      const updatedManuscript = await models.Manuscript.query().updateAndFetchById(
+        manuscript.id,
+        manuscript,
+      )
 
       // newly uploaded files get tasks populated
       await populateTemplatedTasksForManuscript(manuscript.id)
@@ -740,8 +740,9 @@ const resolvers = {
           shortId: manuscript.shortId,
         }
 
-        const selectedEmailTemplate =
-          await models.EmailTemplate.query().findById(selectedTemplate)
+        const selectedEmailTemplate = await models.EmailTemplate.query().findById(
+          selectedTemplate,
+        )
 
         try {
           await sendEmailNotification(
@@ -813,8 +814,9 @@ const resolvers = {
           shortId: manuscript.shortId,
         }
 
-        const selectedEmailTemplate =
-          await models.EmailTemplate.query().findById(selectedTemplate)
+        const selectedEmailTemplate = await models.EmailTemplate.query().findById(
+          selectedTemplate,
+        )
 
         try {
           await sendEmailNotification(
@@ -943,8 +945,9 @@ const resolvers = {
               userId: manuscript.submitterId,
             })
 
-            const selectedEmailTemplate =
-              await models.EmailTemplate.query().findById(selectedTemplate)
+            const selectedEmailTemplate = await models.EmailTemplate.query().findById(
+              selectedTemplate,
+            )
 
             await sendEmailNotification(
               receiverEmail,
@@ -1214,8 +1217,10 @@ const resolvers = {
             .meta.abstract}, is illegal!`,
         )
 
-      const updatedManuscript =
-        await models.Manuscript.query().updateAndFetchById(id, update)
+      const updatedManuscript = await models.Manuscript.query().updateAndFetchById(
+        id,
+        update,
+      )
 
       return { manuscript: updatedManuscript, steps }
     },
@@ -1295,8 +1300,10 @@ const resolvers = {
           )
         ) {
           // eslint-disable-next-line no-param-reassign
-          latestVersion.hasOverdueTasksForUser =
-            manuscriptHasOverdueTasksForUser(latestVersion, ctx.user)
+          latestVersion.hasOverdueTasksForUser = manuscriptHasOverdueTasksForUser(
+            latestVersion,
+            ctx.user,
+          )
 
           userManuscriptsWithInfo[m.id] = m
         }

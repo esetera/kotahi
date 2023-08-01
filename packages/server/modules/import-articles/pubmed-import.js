@@ -66,10 +66,11 @@ const getData = async (groupId, ctx) => {
     })
   }
 
-  const [pubmedImportSourceId] =
-    await models.ArticleImportSources.query().where({
-      server: 'pubmed',
-    })
+  const [
+    pubmedImportSourceId,
+  ] = await models.ArticleImportSources.query().where({
+    server: 'pubmed',
+  })
 
   const lastImportDate = await models.ArticleImportHistory.query()
     .select('date')
@@ -265,8 +266,12 @@ const getData = async (groupId, ctx) => {
 
       const newManuscripts = withoutDuplicates
         .map(({ MedlineCitation }) => {
-          const { AuthorList, ArticleTitle, Abstract, Journal } =
-            MedlineCitation.Article
+          const {
+            AuthorList,
+            ArticleTitle,
+            Abstract,
+            Journal,
+          } = MedlineCitation.Article
 
           const year = Journal.JournalIssue.PubDate.Year
             ? Journal.JournalIssue.PubDate.Year._text

@@ -39,8 +39,7 @@ const resolvers = {
         mergedReview.isDecision = existingReview.isDecision
 
       // Ensure the following aren't null or undefined
-      mergedReview.canBePublishedPublicly =
-        !!mergedReview.canBePublishedPublicly
+      mergedReview.canBePublishedPublicly = !!mergedReview.canBePublishedPublicly
       mergedReview.isHiddenFromAuthor = !!mergedReview.isHiddenFromAuthor
       mergedReview.isHiddenReviewerName = !!mergedReview.isHiddenReviewerName
 

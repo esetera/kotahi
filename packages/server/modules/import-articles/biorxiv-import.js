@@ -42,10 +42,11 @@ const getData = async (groupId, ctx) => {
     })
   }
 
-  const [biorxivImportSourceId] =
-    await models.ArticleImportSources.query().where({
-      server: 'biorxiv',
-    })
+  const [
+    biorxivImportSourceId,
+  ] = await models.ArticleImportSources.query().where({
+    server: 'biorxiv',
+  })
 
   const lastImportDate = await models.ArticleImportHistory.query()
     .select('date')

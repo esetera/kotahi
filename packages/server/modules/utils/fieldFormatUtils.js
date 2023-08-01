@@ -45,7 +45,9 @@ const getPublishableTextFromValue = (value, field) => {
   if (field.component === 'LinksInput') {
     if (!value || !value.length) return null
 
-    return `<p>${escape(field.shortDescription || field.title)}:</p><ul>${value
+    return `<p>${escape(
+      field.shortDescription || field.title,
+    )}:</p><ul>${value
       .map(
         link =>
           `<li><a href="${escape(link.url)}">${escape(link.url)}</a></li>`,

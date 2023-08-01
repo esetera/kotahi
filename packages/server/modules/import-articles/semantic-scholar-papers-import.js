@@ -29,10 +29,11 @@ const getData = async (groupId, ctx) => {
     })
   }
 
-  const [semanticScholarImportSourceId] =
-    await models.ArticleImportSources.query().where({
-      server: 'semantic-scholar',
-    })
+  const [
+    semanticScholarImportSourceId,
+  ] = await models.ArticleImportSources.query().where({
+    server: 'semantic-scholar',
+  })
 
   const sourceId = semanticScholarImportSourceId.id
 

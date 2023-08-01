@@ -14,8 +14,7 @@ const Manuscript = require('../modules/model-manuscript/src/manuscript')
 /* eslint-disable-next-line import/no-unresolved, import/extensions */
 const PublishedArtifact = require('../modules/model-published-artifact/src/publishedArtifact')
 
-const fieldKeyRegex =
-  /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).([a-zA-Z]\w*|submission\.[a-zA-Z]\w*|meta.title|meta.abstract)(?::([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}))?$/
+const fieldKeyRegex = /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).([a-zA-Z]\w*|submission\.[a-zA-Z]\w*|meta.title|meta.abstract)(?::([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}))?$/
 
 const getFieldTitle = (
   fieldId,

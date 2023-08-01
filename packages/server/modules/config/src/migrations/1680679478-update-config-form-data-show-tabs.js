@@ -18,10 +18,9 @@ exports.up = async knex => {
           if (newConfig.formData.controlPanel.showTabs.includes('Workflow')) {
             const showTabAdditions = ['Team', 'Decision']
 
-            const filteredShowTabs =
-              newConfig.formData.controlPanel.showTabs.filter(
-                item => item !== 'Workflow',
-              )
+            const filteredShowTabs = newConfig.formData.controlPanel.showTabs.filter(
+              item => item !== 'Workflow',
+            )
 
             newConfig.formData.controlPanel.showTabs = [].concat(
               showTabAdditions,

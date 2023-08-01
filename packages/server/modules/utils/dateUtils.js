@@ -12,10 +12,9 @@ const transposeTimezoneToUtc = (date, timezoneOffsetMinutes) => {
 
 /** Format date as yyyy-MM-dd (using timezone if supplied, otherwise UTC) */
 const dateToIso8601 = (date, timezoneOffsetMinutes) => {
-  return (
-    timezoneOffsetMinutes
-      ? transposeUtcToTimezone(date, timezoneOffsetMinutes)
-      : new Date(date)
+  return (timezoneOffsetMinutes
+    ? transposeUtcToTimezone(date, timezoneOffsetMinutes)
+    : new Date(date)
   )
     .toISOString()
     .slice(0, 10)
