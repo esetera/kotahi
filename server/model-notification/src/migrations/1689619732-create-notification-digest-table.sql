@@ -9,5 +9,6 @@ CREATE TABLE notification_digest (
   content TEXT,
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   user_is_mentioned BOOLEAN DEFAULT false,
-  option TEXT
+  option TEXT,
+  actioned BOOLEAN DEFAULT false
 );
