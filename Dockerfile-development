@@ -1,5 +1,8 @@
 FROM node:16.19.0-bullseye
-RUN apt-get update && apt-get -y install curl vim bash nano
+RUN apt-get update && apt-get upgrade -y && apt-get -y install curl vim bash nano imagemagick
+
+RUN sed -i'.bak' '/\<policy domain="coder" rights="none" pattern="PS" \/\>/d' /etc/ImageMagick-6/policy.xml
+RUN sed -i'.bak' '/\<policy domain="coder" rights="none" pattern="EPS" \/\>/d' /etc/ImageMagick-6/policy.xml
 
 WORKDIR /home/node/app
 

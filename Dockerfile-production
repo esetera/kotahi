@@ -27,7 +27,7 @@ ENV PUBLIC_CLIENT_PROTOCOL $public_client_protocol
 ENV USE_COLAB_EMAIL $use_colab_email
 ENV FLAX_SITE_URL $flax_site_url
 
-RUN apk add --no-cache git python3 make g++ bash 
+RUN apk update && apk add --no-cache git python3 make g++ bash imagemagick potrace
 
 WORKDIR /home/node/app
 
