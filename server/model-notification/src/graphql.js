@@ -26,7 +26,6 @@ const resolvers = {
         })
         .first()
 
-      // [TODO-1344]: the code below can be replaced by a single upsert statement
       if (!globalChatOption) {
         const notificationOptionData = {
           created: new Date(),
@@ -39,7 +38,6 @@ const resolvers = {
           notificationOptionData.option = '30MinDigest'
         }
 
-        // [TODO-1344]: need to use model.save() instead of model.query().insert()
         await new NotificationUserOption(notificationOptionData)
           .$query()
           .insert()

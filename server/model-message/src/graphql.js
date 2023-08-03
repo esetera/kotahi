@@ -94,7 +94,6 @@ const resolvers = {
 
       await addUserToChatChannel({ channelId, userId })
 
-      // [TODO-1344]: the code below can also be moved to message model $afterInsert
       const channelMembers = await models.ChannelMember.query()
         .where({
           channelId: message.channelId,

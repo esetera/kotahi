@@ -7,7 +7,8 @@ const {
 } = require('../../model-user/src/userCommsUtils')
 
 const sendNotifications = async () => {
-  // [TODO-1344]: add a comment describing the below query
+  // The following query results first row for every user and path string combination
+  // in the notification digest, where max notification time is in the past.
   const notificationDigestRows = await models.NotificationDigest.query()
     .distinctOn(['user_id', 'path_string'])
     .where('max_notification_time', '<', new Date())
@@ -103,8 +104,6 @@ const sendNotificationForMessage = async ({
 }
 
 const getNotificationOptionForUser = async ({ userId, type, groupId }) => {
-  // [TODO-1344]: this function currently runs two queries to calculate the ['chat'] and [] options.
-  // We should have a query that can help return all 2 values (or 3values when we also pass channel id in the path)
   let notificationUserOption = await models.NotificationUserOption.query()
     .skipUndefined()
     .where({ userId, path: ['chat'], groupId })
@@ -122,10 +121,9 @@ const getNotificationOptionForUser = async ({ userId, type, groupId }) => {
     return notificationUserOption.option
   }
 
-  return '30MinDigest' // hardcoded default. [TODO-1344]: move to config
+  return '30MinDigest'
 }
 
-// [TODO-1344]: need to find a better file to store this event handler
 const notificationEventHandler = async ({
   time,
   path,
@@ -136,7 +134,7 @@ const notificationEventHandler = async ({
   users.forEach(async user => {
     const notificationUserOption = await getNotificationOptionForUser({
       userId: user.id,
-      type: 'chatChannel', // [TODO-1344]: hardcoded, need to rethink these values
+      type: 'chatChannel',
     })
 
     if (!notificationUserOption) return
