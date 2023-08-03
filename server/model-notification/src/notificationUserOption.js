@@ -30,6 +30,7 @@ class NotificationUserOption extends BaseModel {
         objectId: { type: ['string'], format: 'uuid' },
         path: { type: 'array', items: { type: 'string' }, notNull: true },
         option: { type: 'string', notNull: true },
+        groupId: { type: ['string'], format: 'uuid' },
       },
     }
   }

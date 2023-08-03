@@ -530,7 +530,6 @@ const typeDefs = `
     lastOnline: DateTime
     isOnline: Boolean
     recentTab: String
-    eventNotificationsOptIn: Boolean!
   }
 
   type CurrentRole {

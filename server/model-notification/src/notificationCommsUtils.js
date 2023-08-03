@@ -18,7 +18,7 @@ const sendNotifications = async () => {
 
     await sendNotificationForMessage({
       userId: notificationDigest.userId,
-      messageId: notificationDigest.header,
+      messageId: notificationDigest.context.messageId,
       title: 'Unread messages in channel',
     })
 
@@ -102,11 +102,12 @@ const sendNotificationForMessage = async ({
   }).save()
 }
 
-const getNotificationOptionForUser = async ({ userId, type }) => {
+const getNotificationOptionForUser = async ({ userId, type, groupId }) => {
   // [TODO-1344]: this function currently runs two queries to calculate the ['chat'] and [] options.
   // We should have a query that can help return all 2 values (or 3values when we also pass channel id in the path)
   let notificationUserOption = await models.NotificationUserOption.query()
-    .where({ userId, path: ['chat'] })
+    .skipUndefined()
+    .where({ userId, path: ['chat'], groupId })
     .first()
 
   if (notificationUserOption) {
@@ -128,8 +129,7 @@ const getNotificationOptionForUser = async ({ userId, type }) => {
 const notificationEventHandler = async ({
   time,
   path,
-  header,
-  content,
+  context,
   users,
   mentionedUsers,
 }) => {
@@ -149,8 +149,7 @@ const notificationEventHandler = async ({
       maxNotificationTime,
       pathString: path.join('/'),
       option: notificationUserOption,
-      header,
-      content,
+      context,
       userId: user.id,
       userIsMentioned: false, // hardcoded for now until we built the @ tagging feature
     }).save()

@@ -15,7 +15,6 @@ const GET_USER = gql`
       email
       globalRoles
       groupRoles
-      eventNotificationsOptIn
       defaultIdentity {
         identifier
         email

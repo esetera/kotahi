@@ -105,8 +105,7 @@ const resolvers = {
       notificationEventHandler({
         time: message.created,
         path: ['chat', message.channelId],
-        header: message.id, // [TODO-1344]: Need message ID to calculate email content. Need to rethink about header structure.
-        content: message.content,
+        context: { messageId: message.id },
         users: channelMembers.map(channelMember => channelMember.user),
         mentionedUsers: [], // hardcoded for now until we built the @ tagging feature
       })

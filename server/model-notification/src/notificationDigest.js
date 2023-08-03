@@ -29,12 +29,15 @@ class NotificationDigest extends BaseModel {
         time: { type: 'datetime', notNull: true },
         maxNotificationTime: { type: 'datetime', notNull: true },
         pathString: { type: 'string' },
-        header: { type: 'string' },
-        content: { type: 'string' },
         userId: { type: ['string'], format: 'uuid' },
         userIsMentioned: { type: 'boolean', default: false },
         option: { type: 'string' },
         actioned: { type: 'boolean', default: false },
+        context: {
+          type: 'object',
+          properties: { messageId: { type: 'string' } },
+          nullable: true,
+        },
       },
     }
   }

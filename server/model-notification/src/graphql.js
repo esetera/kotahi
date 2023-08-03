@@ -3,27 +3,34 @@ const NotificationUserOption = require('./notificationUserOption')
 
 const resolvers = {
   Query: {
-    getGlobalChatNotificationOption: async (_, __, context) => {
+    getGlobalChatNotificationOption: async (_, __, ctx) => {
       const notificationUserOption = await getNotificationOptionForUser({
-        userId: context.user,
+        userId: ctx.user,
         type: 'globalChat',
+        groupId: ctx.req.headers['group-id'],
       })
 
       return notificationUserOption === '30MinDigest'
     },
   },
   Mutation: {
-    updateGlobalChatNotificationOption: async (_, { option }, context) => {
+    updateGlobalChatNotificationOption: async (_, { option }, ctx) => {
+      const groupId = ctx.req.headers['group-id']
+
       const globalChatOption = await NotificationUserOption.query()
         .skipUndefined()
-        .where({ userId: context.user, path: ['chat'] })
+        .where({
+          userId: ctx.user,
+          path: ['chat'],
+          groupId,
+        })
         .first()
 
       // [TODO-1344]: the code below can be replaced by a single upsert statement
       if (!globalChatOption) {
         const notificationOptionData = {
           created: new Date(),
-          userId: context.user,
+          userId: ctx.user,
           path: '{chat}',
           option: 'off',
         }
@@ -44,7 +51,7 @@ const resolvers = {
         }
 
         await NotificationUserOption.query()
-          .where({ userId: context.user, path: ['chat'] })
+          .where({ userId: ctx.user, path: ['chat'], groupId })
           .patch({ option: optionToSave })
       }
     },
