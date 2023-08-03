@@ -20,7 +20,7 @@ const {
 } = require('../model-notification/src/notificationCommsUtils')
 
 const {
-  resetLastAlertTriggerTime,
+  deleteActionedEntries,
 } = require('../model-channel/src/channelCommsUtils')
 
 const getJobs = async (activeConfig, groupId) => {
@@ -121,9 +121,9 @@ const getJobs = async (activeConfig, groupId) => {
         }
       },
     },
-    // Job 5: Reset last alert trigger time for channel members
+    // Job 5: Delete actioned entries from notification digest
     {
-      name: 'Reset last alert trigger time for channel members',
+      name: 'Delete actioned entries from notification digest',
       rule: {
         tz: `${activeConfig.formData.taskManager.teamTimezone || 'Etc/UTC'}`,
         rule: `0 0 * * *`,
@@ -131,11 +131,11 @@ const getJobs = async (activeConfig, groupId) => {
       fn: async () => {
         // eslint-disable-next-line no-console
         console.info(
-          `Resetting last alert trigger for all channel members ${new Date().toISOString()}`,
+          `Deleting actioned entries from notification digest ${new Date().toISOString()}`,
         )
 
         try {
-          await resetLastAlertTriggerTime()
+          await deleteActionedEntries()
         } catch (error) {
           console.error(error)
         }
