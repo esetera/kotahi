@@ -206,34 +206,4 @@ module.exports = {
     host: '',
     protocol: '',
   },
-  imageVersionExtension: {
-    tiff: {
-      small: 'jpeg',
-      medium: 'jpeg',
-    },
-    tif: {
-      small: 'jpeg',
-      medium: 'jpeg',
-    },
-    svg: {
-      small: 'svg',
-      medium: 'svg',
-    },
-    png: {
-      small: 'png',
-      medium: 'png',
-    },
-    jpeg: {
-      small: 'jpeg',
-      medium: 'jpeg',
-    },
-    jpg: {
-      small: 'jpeg',
-      medium: 'jpeg',
-    },
-    default: {
-      small: 'jpeg',
-      medium: 'jpeg',
-    },
-  },
 }
