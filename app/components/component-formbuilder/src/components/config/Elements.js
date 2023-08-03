@@ -234,340 +234,327 @@ const doiUniqueSuffixValidationField = {
   defaultValue: 'false',
 }
 
-const presetNameField = name => ({
+const presetTextField = name => ({
   component: 'Hidden',
   defaultValue: name,
 })
 
-const customFields = {
-  ManuscriptFile: {
-    label: 'Attached manuscript',
-    isCustom: true,
-    properties: {
-      id: hiddenfield,
-      title: requiredTextField,
-      name: submissionNameField,
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      hideFromReviewers: hideFromReviewersField,
-      hideFromAuthors: hideFromAuthorsField,
-    },
-  },
-  SupplementaryFiles: {
-    label: 'Attachments',
-    isCustom: true,
-    properties: {
-      id: hiddenfield,
-      title: requiredTextField,
-      name: nameField,
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      validate: validateOther,
-      hideFromAuthors: hideFromAuthorsField,
-    },
-  },
-  VisualAbstract: {
-    label: 'Single image attachment',
-    isCustom: true,
-    properties: {
-      id: hiddenfield,
-      title: requiredTextField,
-      name: nameField,
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      validate: validateOther,
-      hideFromAuthors: hideFromAuthorsField,
-    },
-  },
-  AuthorsInput: {
-    label: 'List of contributors',
-    isCustom: true,
-    properties: {
-      id: hiddenfield,
-      title: requiredTextField,
-      name: nameField,
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      validate: validateOther,
-      hideFromAuthors: hideFromAuthorsField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-  LinksInput: {
-    label: 'List of links (URLs)',
-    isCustom: true,
-    properties: {
-      id: hiddenfield,
-      title: requiredTextField,
-      name: nameField,
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      validate: validateCollection,
-      hideFromAuthors: hideFromAuthorsField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-  AbstractEditor: {
-    label: 'Rich text',
-    isCustom: true,
-    properties: {
-      id: hiddenfield,
-      title: requiredTextField,
-      name: nameField,
-      placeholder: textfield,
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      validate: validateText,
-      hideFromAuthors: hideFromAuthorsField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-  ThreadedDiscussion: {
-    label: 'Discussion',
-    isCustom: true,
-    properties: {
-      id: hiddenfield,
-      title: requiredTextField,
-      name: nameField,
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      validate: validateOther,
-      hideFromReviewers: hideFromReviewersField,
-      hideFromAuthors: hideFromAuthorsField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-  TextField: {
-    label: 'Text',
-    isCustom: true,
-    properties: {
-      id: hiddenfield,
-      title: requiredTextField,
-      name: nameField,
-      placeholder: textfield,
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      validate: validateText,
-      parse: {
-        component: 'Select',
-        props: {
-          label: 'Special parsing',
-          options: [
-            {
-              value: 'false',
-              label: 'None',
-            },
-            {
-              value: 'split',
-              label: 'Split at commas',
-            },
-          ],
-        },
-      },
-      format: {
-        component: 'Select',
-        props: {
-          label: 'Special formatting',
-          options: [
-            {
-              value: 'false',
-              label: 'None',
-            },
-            {
-              value: 'join',
-              label: 'Join with commas',
-            },
-          ],
-        },
-      },
-      doiValidation: {
-        component: 'RadioBox',
-        props: {
-          inline: true,
-          options: [
-            {
-              value: 'true',
-              label: 'Yes',
-            },
-            {
-              value: 'false',
-              label: 'No',
-            },
-          ],
-          label: 'Validate as a DOI?',
-        },
-        defaultValue: 'false',
-      },
-      doiUniqueSuffixValidation: doiUniqueSuffixValidationField,
-      hideFromAuthors: hideFromAuthorsField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-  CheckboxGroup: {
-    label: 'Checkboxes',
-    isCustom: true,
-    properties: {
-      id: hiddenfield,
-      title: requiredTextField,
-      name: nameField,
-      description: editorfield,
-      options: optionfield,
-      shortDescription: shortDescriptionField,
-      validate: validateCollection,
-      hideFromAuthors: hideFromAuthorsField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-  Select: {
-    label: 'Dropdown selection',
-    isCustom: true,
-    properties: {
-      id: hiddenfield,
-      title: requiredTextField,
-      name: nameField,
-      placeholder: textfield,
-      description: editorfield,
-      options: optionfield,
-      shortDescription: shortDescriptionField,
-      validate: validateOther,
-      hideFromAuthors: hideFromAuthorsField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-  RadioGroup: {
-    label: 'Radio buttons',
-    isCustom: true,
-    properties: {
-      id: hiddenfield,
-      title: requiredTextField,
-      name: nameField,
-      description: editorfield,
-      options: optionfield,
-      inline: radiofield,
-      sectioncss: textarea,
-      shortDescription: shortDescriptionField,
-      validate: validateOther,
-      hideFromAuthors: hideFromAuthorsField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-}
-
-const submissionStandardFields = {
-  Title: {
-    label: 'Title',
-    properties: {
-      id: hiddenfield,
-      title: requiredTextFieldWithDefault('Title'),
-      name: presetNameField('meta.title'),
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      validate: validateText,
-      hideFromAuthors: hideFromAuthorsField,
-      hideFromReviewers: hideFromReviewersField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-  Authors: {
-    label: 'Authors',
-    properties: {
-      id: hiddenfield,
-      title: requiredTextFieldWithDefault('Authors'),
-      name: presetNameField('submission.authors'),
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      validate: validateOther,
-      hideFromAuthors: hideFromAuthorsField,
-      hideFromReviewers: hideFromReviewersField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-  Abstract: {
-    label: 'Abstract',
-    properties: {
-      id: hiddenfield,
-      title: requiredTextFieldWithDefault('Abstract'),
-      name: presetNameField('meta.abstract'),
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      validate: validateText,
-      hideFromAuthors: hideFromAuthorsField,
-      hideFromReviewers: hideFromReviewersField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-  Keywords: {
-    label: 'Keywords',
-    properties: {
-      id: hiddenfield,
-      title: requiredTextFieldWithDefault('Keywords'),
-      name: presetNameField('submission.keywords'),
-      description: editorfield,
-      shortDescription: shortDescriptionField,
-      validate: validateText,
-      hideFromAuthors: hideFromAuthorsField,
-      hideFromReviewers: hideFromReviewersField,
-      permitPublishing: permitPublishingField,
-      publishingTag: publishingTagField,
-    },
-  },
-}
-
-/** elements for submission form are exactly the same except
- * have different naming rules and add a hideFromReviewers option */
-const submissionElements = Object.fromEntries(
-  Object.entries(submissionStandardFields).concat(
-    Object.entries(customFields).map(([key, value]) => [
-      key,
+const parseField = {
+  component: 'Select',
+  props: {
+    label: 'Special parsing',
+    options: [
       {
-        ...value,
-        properties: {
-          ...value.properties,
-          name: submissionNameField,
-          hideFromReviewers: hideFromReviewersField,
-        },
+        value: 'false',
+        label: 'None',
       },
-    ]),
-  ),
-)
+      {
+        value: 'split',
+        label: 'Split at commas',
+      },
+    ],
+  },
+}
 
-const fieldOrder = [
-  'Title',
-  'Authors',
-  'Abstract',
-  'Keywords',
-  'TextField',
-  'AbstractEditor',
-  'Select',
-  'RadioGroup',
-  'CheckboxGroup',
-  'AuthorsInput',
-  'ThreadedDiscussion',
-  'LinksInput',
-  'SupplementaryFiles',
-  'VisualAbstract',
-  'ManuscriptFile',
+const formatField = {
+  component: 'Select',
+  props: {
+    label: 'Special formatting',
+    options: [
+      {
+        value: 'false',
+        label: 'None',
+      },
+      {
+        value: 'join',
+        label: 'Join with commas',
+      },
+    ],
+  },
+}
+
+const doiValidationField = {
+  component: 'RadioBox',
+  props: {
+    inline: true,
+    options: [
+      {
+        value: 'true',
+        label: 'Yes',
+      },
+      {
+        value: 'false',
+        label: 'No',
+      },
+    ],
+    label: 'Validate as a DOI?',
+  },
+  defaultValue: 'false',
+}
+
+const prototypeComponent = category => ({
+  id: hiddenfield,
+  title: requiredTextField,
+  name: category === 'submission' ? submissionNameField : nameField,
+  shortDescription: shortDescriptionField,
+  description: editorfield,
+  validate: validateOther,
+  hideFromAuthors: hideFromAuthorsField,
+  hideFromReviewers: hideFromReviewersField,
+  permitPublishing: permitPublishingField,
+  publishingTag: publishingTagField,
+})
+
+/** All properties from all components must appear in this list, to establish correct order of display */
+const propertiesOrder = [
+  'id',
+  'title',
+  'name',
+  'options',
+  'placeholder',
+  'shortDescription',
+  'description',
+  'inline',
+  'sectioncss',
+  'validate',
+  'parse',
+  'format',
+  'doiValidation', // TODO incorporate into validation
+  'doiUniqueSuffixValidation', // TODO incorporate into validation
+  'hideFromAuthors',
+  'hideFromReviewers',
+  'permitPublishing',
+  'publishingTag',
 ]
 
-const fieldTypes = fieldOrder.map(x => ({
-  ...customFields[x],
-  value: x,
-}))
+const getBaseComponentProperties = category => ({
+  ManuscriptFile: {
+    ...prototypeComponent(category),
+    label: 'Attached manuscript',
+    validate: undefined,
+    permitPublishing: undefined,
+    publishingTag: undefined,
+  },
+  SupplementaryFiles: {
+    ...prototypeComponent(category),
+    label: 'Attachments',
+    permitPublishing: undefined,
+    publishingTag: undefined,
+  },
+  VisualAbstract: {
+    ...prototypeComponent(category),
+    label: 'Single image attachment',
+    permitPublishing: undefined,
+    publishingTag: undefined,
+  },
+  AuthorsInput: {
+    ...prototypeComponent(category),
+    label: 'List of contributors',
+  },
+  LinksInput: {
+    ...prototypeComponent(category),
+    label: 'List of links (URLs)',
+    validate: validateCollection,
+  },
+  AbstractEditor: {
+    ...prototypeComponent(category),
+    label: 'Rich text',
+    placeholder: textfield,
+    validate: validateText,
+  },
+  ThreadedDiscussion: {
+    ...prototypeComponent(category),
+    label: 'Discussion',
+  },
+  TextField: {
+    ...prototypeComponent(category),
+    label: 'Text',
+    placeholder: textfield,
+    validate: validateText,
+    parse: parseField,
+    format: formatField,
+    doiValidation: doiValidationField,
+    doiUniqueSuffixValidation: doiUniqueSuffixValidationField,
+  },
+  CheckboxGroup: {
+    ...prototypeComponent(category),
+    label: 'Checkboxes',
+    options: optionfield,
+    validate: validateCollection,
+  },
+  Select: {
+    ...prototypeComponent(category),
+    label: 'Dropdown selection',
+    placeholder: textfield,
+    options: optionfield,
+  },
+  RadioGroup: {
+    ...prototypeComponent(category),
+    label: 'Radio buttons',
+    options: optionfield,
+    inline: radiofield,
+    sectioncss: textarea,
+  },
+})
 
-const submissionFieldTypes = fieldOrder.map(x => ({
-  ...submissionElements[x],
-  value: x,
-}))
+const genericFieldOptions = [
+  { isCustom: true, fieldType: 'text', component: 'TextField' },
+  {
+    isCustom: true,
+    fieldType: 'richText',
+    component: 'AbstractEditor',
+  },
+  { isCustom: true, fieldType: 'select', component: 'Select' },
+  { isCustom: true, fieldType: 'radioGroup', component: 'RadioGroup' },
+  {
+    isCustom: true,
+    fieldType: 'checkboxes',
+    component: 'CheckboxGroup',
+  },
+  {
+    isCustom: true,
+    fieldType: 'contributors',
+    component: 'AuthorsInput',
+  },
+  { isCustom: true, fieldType: 'links', component: 'LinksInput' },
+]
 
-export { fieldTypes, submissionFieldTypes }
+const submissionFieldOptions = [
+  {
+    fieldType: 'title',
+    label: 'Title',
+    component: 'TextField',
+    title: requiredTextFieldWithDefault('Title'),
+    name: presetTextField('meta.title'),
+  },
+  {
+    fieldType: 'authors',
+    label: 'Authors',
+    component: 'AuthorsInput',
+    title: requiredTextFieldWithDefault('Authors'),
+    name: presetTextField('submission.authors'),
+  },
+  {
+    fieldType: 'abstract',
+    label: 'Abstract',
+    component: 'AbstractEditor',
+    title: requiredTextFieldWithDefault('Abstract'),
+    name: presetTextField('meta.abstract'),
+  },
+  {
+    fieldType: 'visualAbstract',
+    label: 'VisualAbstract',
+    component: 'VisualAbstract',
+    title: requiredTextFieldWithDefault('Visual abstract'),
+    name: presetTextField('visualAbstract'),
+  },
+  {
+    fieldType: 'keywords',
+    label: 'Keywords',
+    component: 'TextField',
+    title: requiredTextFieldWithDefault('Keywords'),
+    name: presetTextField('submission.keywords'),
+  },
+  {
+    fieldType: 'attachments',
+    label: 'Attachments',
+    component: 'SupplementaryFiles',
+    title: requiredTextFieldWithDefault('Attachments'),
+    name: presetTextField('fileName'),
+  },
+  {
+    fieldType: 'doi',
+    label: 'DOI',
+    component: 'TextField',
+    title: requiredTextFieldWithDefault('DOI'),
+    name: presetTextField('submission.doi'),
+    doiValidation: { ...doiValidationField, defaultValue: 'true' },
+    doiUniqueSuffixValidation: null,
+    parse: null,
+    format: null,
+    validate: validateOther,
+  },
+  {
+    fieldType: 'attachedManuscript',
+    label: 'Attached manuscript',
+    component: 'ManuscriptFile',
+    title: requiredTextFieldWithDefault('Attached manuscript'),
+    name: presetTextField('manuscriptFile'),
+  },
+  ...genericFieldOptions,
+]
+
+const decisionFieldOptions = [
+  {
+    fieldType: 'verdict',
+    label: 'Verdict',
+    component: 'RadioGroup',
+    title: requiredTextFieldWithDefault('Decision'),
+    name: presetTextField('verdict'),
+  },
+  {
+    isCustom: true,
+    fieldType: 'discussion',
+    component: 'ThreadedDiscussion',
+  },
+  ...genericFieldOptions,
+]
+
+const reviewFieldOptions = [
+  {
+    fieldType: 'verdict',
+    label: 'Verdict',
+    component: 'RadioGroup',
+    title: requiredTextFieldWithDefault('Recommended action'),
+    name: presetTextField('verdict'),
+  },
+  ...genericFieldOptions,
+]
+
+const getFieldOptions = formCategory => {
+  let opts = []
+  if (formCategory === 'submission') opts = submissionFieldOptions
+  else if (formCategory === 'decision') opts = decisionFieldOptions
+  else if (formCategory === 'review') opts = reviewFieldOptions
+
+  const result = []
+
+  opts.forEach(opt => {
+    const baseProps =
+      getBaseComponentProperties(formCategory)[opt.component] || {}
+
+    const props = {}
+    propertiesOrder.forEach(propName => {
+      if (opt[propName] === null) return // to skip the property
+      if (opt[propName] || baseProps[propName])
+        props[propName] = opt[propName] || baseProps[propName]
+    })
+    result.push({
+      fieldType: opt.fieldType,
+      component: opt.component,
+      label: opt.label || baseProps.label,
+      isCustom: opt.isCustom,
+      value: opt.fieldType, // To work with Submit component
+      props,
+    })
+  })
+
+  return result
+}
+
+const fieldOptionsByCategory = {
+  submission: getFieldOptions('submission'),
+  decision: getFieldOptions('decision'),
+  review: getFieldOptions('review'),
+}
+
+const getFieldOptionByNameOrComponent = (name, component, category) => {
+  const fieldOptions = fieldOptionsByCategory[category] || []
+
+  return (
+    fieldOptions.find(opt => name && name === opt.props.name?.defaultValue) ||
+    fieldOptions.find(opt => opt.isCustom && component === opt.component)
+  )
+}
+
+export { fieldOptionsByCategory, getFieldOptionByNameOrComponent }

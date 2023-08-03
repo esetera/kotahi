@@ -8,7 +8,7 @@ import { Page } from './style'
 import { DragVerticalIcon } from '../../../shared/Icons'
 import lightenBy from '../../../../shared/lightenBy'
 import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
-import { fieldTypes, submissionFieldTypes } from './config/Elements'
+import { getFieldOptionByNameOrComponent } from './config/Elements'
 
 const FeildWrapper = styled.div`
   align-items: center;
@@ -89,23 +89,12 @@ const BuilderElement = ({
     margin: `0px 0px 8px`,
   })
 
-  let componentTypeOptions =
-    category === 'submission' ? submissionFieldTypes : fieldTypes
-
-  // Disable ThreadedDiscussion in submission and review forms
-  if (['submission', 'review'].includes(category))
-    componentTypeOptions = componentTypeOptions.filter(
-      o => o.value !== 'ThreadedDiscussion',
-    )
-  // Disable ManuscriptFile in review and decision forms
-  if (['review', 'decision'].includes(category))
-    componentTypeOptions = componentTypeOptions.filter(
-      o => o.value !== 'ManuscriptFile',
-    )
-
-  const fieldType = componentTypeOptions.find(
-    x => x.value === element.component,
-  )
+  // const fieldOptions = fieldOptionsByCategory[category]
+  const fieldTypeLabel = getFieldOptionByNameOrComponent(
+    element.name,
+    element.component,
+    category,
+  )?.label
 
   return (
     <Draggable draggableId={formFeildId} index={index} key={formFeildId}>
@@ -137,7 +126,7 @@ const BuilderElement = ({
             >
               <MainAction>
                 {element.shortDescription ?? element.title}{' '}
-                <FieldTypeLabel>({fieldType?.label})</FieldTypeLabel>
+                <FieldTypeLabel>({fieldTypeLabel})</FieldTypeLabel>
               </MainAction>
               <IconAction
                 onClick={e => {

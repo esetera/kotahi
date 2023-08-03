@@ -6,7 +6,10 @@ import { Formik } from 'formik'
 import { th } from '@pubsweet/ui-toolkit'
 import { v4 as uuid } from 'uuid'
 import ValidatedField from '../../../component-submit/src/components/ValidatedField'
-import { fieldTypes, submissionFieldTypes } from './config/Elements'
+import {
+  fieldOptionsByCategory,
+  getFieldOptionByNameOrComponent,
+} from './config/Elements'
 import * as elements from './builderComponents'
 import { Section, Legend, DetailText } from './style'
 import Modal from '../../../component-modal/src/Modal'
@@ -16,12 +19,25 @@ const InvalidWarning = styled.div`
   color: ${th('colorError')};
 `
 
-const getSettableComponentProperties = (
-  component,
+const filterOutPropsDisabledByConfig = (
+  fieldOpts,
   shouldAllowHypothesisTagging,
 ) =>
-  Object.entries(component).filter(
-    ([key]) => key !== 'publishingTag' || shouldAllowHypothesisTagging,
+  fieldOpts.map(opt => {
+    const props = Object.fromEntries(
+      Object.entries(opt.props).filter(
+        ([key]) => key !== 'publishingTag' || shouldAllowHypothesisTagging,
+      ),
+    )
+
+    return { ...opt, props }
+  })
+
+const getDefaults = fieldOption =>
+  Object.fromEntries(
+    Object.entries(fieldOption?.props || {})
+      .filter(([key, value]) => value.defaultValue !== undefined)
+      .map(([key, value]) => [key, value.defaultValue]),
   )
 
 const FieldSettingsModal = ({
@@ -34,43 +50,32 @@ const FieldSettingsModal = ({
 }) => {
   if (!isOpen) return null // To ensure Formik gets new initialValues whenever this is reopened
   if (!field) return null
-  const [componentType, setComponentType] = useState(field.component)
 
-  let componentTypeOptions =
-    category === 'submission' ? submissionFieldTypes : fieldTypes
-
-  // Disable ThreadedDiscussion in submission and review forms
-  if (['submission', 'review'].includes(category))
-    componentTypeOptions = componentTypeOptions.filter(
-      o => o.value !== 'ThreadedDiscussion',
-    )
-  // Disable ManuscriptFile in review and decision forms
-  if (['review', 'decision'].includes(category))
-    componentTypeOptions = componentTypeOptions.filter(
-      o => o.value !== 'ManuscriptFile',
-    )
-
-  const component =
-    componentTypeOptions.find(x => x.value === componentType)?.properties || {}
-
-  const editableProperties = getSettableComponentProperties(
-    component,
+  const fieldOpts = filterOutPropsDisabledByConfig(
+    fieldOptionsByCategory[category],
     shouldAllowHypothesisTagging,
-  ).filter(([key, value]) => value.component !== 'Hidden')
+  )
 
-  const defaults = {}
-  Object.entries(component).forEach(([key, value]) => {
-    const defaultValue = value?.defaultValue
-    if (defaultValue !== undefined) defaults[key] = defaultValue
-  })
+  const [fieldType, setFieldType] = useState(
+    getFieldOptionByNameOrComponent(field.name, field.component, category)
+      ?.fieldType,
+  )
+
+  const fieldOption = fieldOpts.find(opt => opt.fieldType === fieldType)
+  const defaults = getDefaults(fieldOption)
+
+  const editableProperties = Object.entries(fieldOption?.props || {}).filter(
+    ([key, value]) => value.component !== 'Hidden',
+  )
 
   return (
     <Formik
       initialValues={{
         ...defaults,
         ...field,
+        fieldType,
       }}
-      key={field.id}
+      key={`${field.id},${fieldType},${fieldOption?.component}`}
       onSubmit={(values, actions) => {
         onSubmit(prepareForSubmit(values))
         actions.resetForm()
@@ -78,15 +83,14 @@ const FieldSettingsModal = ({
       }}
     >
       {({ errors, handleSubmit, setFieldValue, values }) => {
-        const populateDefaultValues = compType => {
-          const comp =
-            componentTypeOptions.find(x => x.value === compType)?.properties ||
-            {}
+        const populateDefaultValues = newFieldType => {
+          const newFieldOption = fieldOpts.find(
+            opt => opt.fieldType === newFieldType,
+          )
 
-          getSettableComponentProperties(
-            comp,
-            shouldAllowHypothesisTagging,
-          ).forEach(([key, value]) => {
+          const newDefaults = getDefaults(newFieldOption)
+
+          Object.entries(newDefaults).forEach(([key, value]) => {
             if (value.defaultValue) setFieldValue(key, value.defaultValue)
           })
         }
@@ -122,24 +126,22 @@ const FieldSettingsModal = ({
                 <ValidatedField
                   component={Select}
                   hasGroupedOptions
-                  name="component"
+                  name="fieldType"
                   onChange={option => {
-                    setComponentType(option.value)
-                    setFieldValue('component', option.value)
+                    setFieldType(option.value)
+                    setFieldValue('fieldType', option.value)
                     populateDefaultValues(option.value)
                   }}
-                  options={
-                    /* componentTypeOptions */ [
-                      {
-                        label: 'Standard fields',
-                        options: componentTypeOptions.filter(x => !x.isCustom),
-                      },
-                      {
-                        label: 'Custom field types',
-                        options: componentTypeOptions.filter(x => x.isCustom),
-                      },
-                    ]
-                  }
+                  options={[
+                    {
+                      label: 'Generic field types',
+                      options: fieldOpts.filter(x => x.isCustom),
+                    },
+                    {
+                      label: 'Special fields',
+                      options: fieldOpts.filter(x => !x.isCustom),
+                    },
+                  ]}
                   required
                 />
               </Section>
@@ -189,7 +191,11 @@ FieldSettingsModal.propTypes = {
 FieldSettingsModal.defaultProps = {}
 
 const prepareForSubmit = values => {
-  const cleanedValues = omitBy(values, value => value === '')
+  const cleanedValues = omitBy(
+    values,
+    (value, key) => value === '' || key === 'fieldType',
+  )
+
   if (
     cleanedValues.component !== 'Select' &&
     cleanedValues.component !== 'CheckboxGroup' &&
