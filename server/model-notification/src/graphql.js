@@ -60,7 +60,7 @@ const typeDefs = `
   type NotificationUserOption {
     id: ID
     created: DateTime!
-    updated: Datetime
+    updated: DateTime
     userId: ID!
     path: [String!]!
     option: String!
