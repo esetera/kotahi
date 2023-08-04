@@ -10,7 +10,7 @@ const resolvers = {
         groupId: ctx.req.headers['group-id'],
       })
 
-      return notificationUserOption === '30MinDigest'
+      return notificationUserOption === '30MinSummary'
     },
   },
   Mutation: {
@@ -35,7 +35,7 @@ const resolvers = {
         }
 
         if (option === 'on') {
-          notificationOptionData.option = '30MinDigest'
+          notificationOptionData.option = '30MinSummary'
         }
 
         await new NotificationUserOption(notificationOptionData)
@@ -45,7 +45,7 @@ const resolvers = {
         let optionToSave = 'off'
 
         if (option === 'on') {
-          optionToSave = '30MinDigest'
+          optionToSave = '30MinSummary'
         }
 
         await NotificationUserOption.query()

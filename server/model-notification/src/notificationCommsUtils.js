@@ -121,7 +121,7 @@ const getNotificationOptionForUser = async ({ userId, type, groupId }) => {
     return notificationUserOption.option
   }
 
-  return '30MinDigest'
+  return '30MinSummary'
 }
 
 const notificationEventHandler = async ({
