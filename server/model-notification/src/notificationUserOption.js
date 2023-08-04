@@ -24,8 +24,6 @@ class NotificationUserOption extends BaseModel {
   static get schema() {
     return {
       properties: {
-        created: { type: 'datetime', notNull: true },
-        updated: { type: 'datetime' },
         userId: { type: ['string'], format: 'uuid' },
         objectId: { type: ['string'], format: 'uuid' },
         path: { type: 'array', items: { type: 'string' }, notNull: true },
