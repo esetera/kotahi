@@ -17,7 +17,7 @@ const sendNotifications = async () => {
   notificationDigestRows.forEach(async notificationDigest => {
     if (notificationDigest.actioned) return
 
-    await sendNotificationForMessage({
+    await sendEmailNotificationOfMessages({
       userId: notificationDigest.userId,
       messageId: notificationDigest.context.messageId,
       title: 'Unread messages in channel',
@@ -35,7 +35,7 @@ const sendNotifications = async () => {
   })
 }
 
-const sendNotificationForMessage = async ({
+const sendEmailNotificationOfMessages = async ({
   userId,
   messageId,
   title,
@@ -156,7 +156,7 @@ const notificationEventHandler = async ({
 
 module.exports = {
   sendNotifications,
-  sendNotificationForMessage,
+  sendEmailNotificationOfMessages,
   getNotificationOptionForUser,
   notificationEventHandler,
 }
