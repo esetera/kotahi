@@ -59,10 +59,10 @@ const resolvers = {
 const typeDefs = `
   type NotificationUserOption {
     id: ID
-    created: String
-    updated: String
+    created: DateTime!
+    updated: Datetime
     userId: ID!
-    path: [String]
+    path: [String!]!
     option: String!
   }
 
