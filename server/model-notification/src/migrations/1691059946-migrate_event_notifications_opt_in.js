@@ -14,7 +14,7 @@ exports.up = async knex => {
     const groups = await Group.query(trx)
 
     if (users.length > 0 && groups.length > 0) {
-      const path = '{chat}'
+      const path = ['chat']
 
       // eslint-disable-next-line no-restricted-syntax
       for (const user of users) {

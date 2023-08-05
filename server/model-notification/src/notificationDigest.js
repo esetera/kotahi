@@ -24,8 +24,8 @@ class NotificationDigest extends BaseModel {
   static get schema() {
     return {
       properties: {
-        time: { type: 'datetime', notNull: true },
-        maxNotificationTime: { type: 'datetime', notNull: true },
+        time: { type: 'datetime' },
+        maxNotificationTime: { type: 'datetime' },
         pathString: { type: 'string' },
         userId: { type: ['string'], format: 'uuid' },
         userIsMentioned: { type: 'boolean', default: false },

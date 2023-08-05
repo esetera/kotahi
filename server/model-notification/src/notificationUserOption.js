@@ -24,10 +24,10 @@ class NotificationUserOption extends BaseModel {
   static get schema() {
     return {
       properties: {
-        userId: { type: ['string'], format: 'uuid' },
+        userId: { type: 'string', format: 'uuid' },
         objectId: { type: ['string'], format: 'uuid' },
-        path: { type: 'array', items: { type: 'string' }, notNull: true },
-        option: { type: 'string', notNull: true },
+        path: { type: 'array', items: { type: 'string' } },
+        option: { type: 'string' },
         groupId: { type: ['string'], format: 'uuid' },
       },
     }

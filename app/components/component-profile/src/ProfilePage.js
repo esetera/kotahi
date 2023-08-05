@@ -49,14 +49,19 @@ const UPDATE_USERNAME = gql`
 `
 
 const GET_GLOBAL_CHAT_NOTIFICATION_OPTION = gql`
-  query getGlobalChatNotificationOption {
-    getGlobalChatNotificationOption
+  query notificationOption($path: [String!]!) {
+    notificationOption(path: $path) {
+      userId
+      path
+      groupId
+      option
+    }
   }
 `
 
 const UPDATE_GLOBAL_CHAT_NOTIFICATION_OPTION = gql`
-  mutation updateGlobalChatNotificationOption($option: String!) {
-    updateGlobalChatNotificationOption(option: $option) {
+  mutation updateNotificationOption($path: [String!]!, $option: String!) {
+    updateNotificationOption(path: $path, option: $option) {
       id
       created
       updated
@@ -96,7 +101,7 @@ const ProfilePage = ({ currentUser, match }) => {
     GET_GLOBAL_CHAT_NOTIFICATION_OPTION,
     {
       variables: {
-        userId: currentUser.id,
+        path: ['chat'],
       },
     },
   )
@@ -123,12 +128,12 @@ const ProfilePage = ({ currentUser, match }) => {
   return (
     <Profile
       currentUser={currentUser}
-      globalChatNotificationUserOption={
-        globalChatNotificationUserOption?.getGlobalChatNotificationOption
-      }
       kotahiVersion={kotahiVersion}
       logoutUser={logoutUser}
       match={match}
+      notificationUserOption={
+        globalChatNotificationUserOption?.notificationOption?.option
+      }
       replaceAvatarImage={replaceAvatarImage}
       updateGlobalChatNotificationOptIn={updateGlobalChatNotificationOptIn}
       updateProfilePicture={updateProfilePicture}

@@ -20,7 +20,7 @@ const sendNotifications = async () => {
     await sendEmailNotificationOfMessages({
       userId: notificationDigest.userId,
       messageId: notificationDigest.context.messageId,
-      title: 'Unread messages in channel',
+      title: 'Unread messages in chat',
     })
 
     // query to update all notificationdigest entries where user=user and path=path
@@ -35,12 +35,7 @@ const sendNotifications = async () => {
   })
 }
 
-const sendEmailNotificationOfMessages = async ({
-  userId,
-  messageId,
-  title,
-  triggerTime = new Date(),
-}) => {
+const sendEmailNotificationOfMessages = async ({ userId, messageId }) => {
   const user = await models.User.query().findById(userId)
   const message = await models.Message.query().findById(messageId)
   const channel = await models.Channel.query().findById(message.channelId)
@@ -93,65 +88,69 @@ const sendEmailNotificationOfMessages = async ({
   )
 
   await sendEmailNotification(user.email, selectedEmailTemplate, data, groupId)
-
-  await new models.Alert({
-    title,
-    userId: user.id,
-    messageId,
-    triggerTime,
-    isSent: true,
-  }).save()
 }
 
-const getNotificationOptionForUser = async ({ userId, type, groupId }) => {
-  let notificationUserOption = await models.NotificationUserOption.query()
-    .skipUndefined()
-    .where({ userId, path: ['chat'], groupId })
-    .first()
+const getNotificationOptionForUser = async ({ userId, path, groupId }) => {
+  if (!userId)
+    throw new Error('Cannot get notification option for unregistered user')
+  const lastPathSegment = path.length ? path[path.length - 1] : null
 
-  if (notificationUserOption) {
-    return notificationUserOption.option
-  }
+  // Get all records for this user in this group, that might relate to the current path,
+  // skipping those set to 'inherit'.
+  // A small number of non-relevant records may be included.
+  const records = await models.NotificationUserOption.query()
+    .where({ userId, groupId })
+    .where(builder =>
+      builder.where({ objectId: lastPathSegment }).orWhere({ objectId: null }),
+    )
+    .whereNot({ option: 'inherit' })
 
-  notificationUserOption = await models.NotificationUserOption.query()
-    .where({ userId, path: [] })
-    .first()
+  // We're only interested in records whose paths are subpaths of the specified path
+  const relevantRecords = records.filter(r => {
+    if (r.path.length > path.length) return false
 
-  if (notificationUserOption) {
-    return notificationUserOption.option
-  }
+    for (let i = 0; i < r.path.length; i += 1) {
+      if (r.path[i] !== path[i]) return false
+    }
 
-  return '30MinSummary'
-}
-
-const notificationEventHandler = async ({
-  time,
-  path,
-  context,
-  users,
-  mentionedUsers,
-}) => {
-  users.forEach(async user => {
-    const notificationUserOption = await getNotificationOptionForUser({
-      userId: user.id,
-      type: 'chatChannel',
-    })
-
-    if (!notificationUserOption) return
-
-    const maxNotificationTime = new Date(time)
-    maxNotificationTime.setMinutes(maxNotificationTime.getMinutes() + 30)
-
-    await new models.NotificationDigest({
-      time,
-      maxNotificationTime,
-      pathString: path.join('/'),
-      option: notificationUserOption,
-      context,
-      userId: user.id,
-      userIsMentioned: false, // hardcoded for now until we built the @ tagging feature
-    }).save()
+    return true
   })
+
+  relevantRecords.sort((a, b) => b.path.length - a.path.length)
+  const nearestAncestor = relevantRecords[0]
+
+  return nearestAncestor?.option || '30MinSummary' // Fallback if no options are set
+}
+
+const notificationEventHandler = async ({ path, context }) => {
+  const { users, time } = context
+  if (!users) return
+
+  await Promise.all(
+    // eslint-disable-next-line consistent-return
+    users.map(async user => {
+      const option = await getNotificationOptionForUser({
+        userId: user.id,
+        type: 'chatChannel', // Assuming you want to check the option for chatChannel type
+      })
+
+      if (option === '30MinSummary') {
+        const maxNotificationTime = new Date(time)
+        maxNotificationTime.setMinutes(maxNotificationTime.getMinutes() + 30)
+
+        // eslint-disable-next-line no-return-await
+        return await new models.NotificationDigest({
+          time,
+          maxNotificationTime,
+          pathString: path.join('/'),
+          option,
+          context,
+          userId: user.id,
+          userIsMentioned: false, // hardcoded for now until we build the @ tagging feature
+        }).save()
+      }
+    }),
+  )
 }
 
 module.exports = {

@@ -101,18 +101,18 @@ const Profile = ({
   updateUsername,
   updateGlobalChatNotificationOptIn,
   user,
-  globalChatNotificationUserOption,
+  notificationUserOption,
 }) => {
   const [
     hasGlobalChatNotificationOptIn,
     setHasGlobalChatNotificationOptIn,
-  ] = useState(globalChatNotificationUserOption)
+  ] = useState(notificationUserOption)
 
   useEffect(() => {
-    if (globalChatNotificationUserOption) {
-      setHasGlobalChatNotificationOptIn(globalChatNotificationUserOption)
+    if (notificationUserOption) {
+      setHasGlobalChatNotificationOptIn(notificationUserOption)
     }
-  }, [globalChatNotificationUserOption])
+  }, [notificationUserOption])
 
   const isCurrentUsersOwnProfile = user.id === currentUser.id
 
@@ -122,12 +122,15 @@ const Profile = ({
     currentUser.globalRoles.includes('admin')
 
   const toggleGlobalChatNotificationOptIn = async () => {
-    const updatedGlobalChatNotificationOptIn = !hasGlobalChatNotificationOptIn
+    const updatedGlobalChatNotificationOptIn =
+      hasGlobalChatNotificationOptIn === 'off' ? '30MinSummary' : 'off'
+
     setHasGlobalChatNotificationOptIn(updatedGlobalChatNotificationOptIn)
 
     await updateGlobalChatNotificationOptIn({
       variables: {
-        option: updatedGlobalChatNotificationOptIn ? 'on' : 'off',
+        path: ['chat'],
+        option: updatedGlobalChatNotificationOptIn,
       },
     })
   }
@@ -202,7 +205,7 @@ const Profile = ({
         </SectionContent>
         <SectionContent>
           <StyledCheckbox
-            checked={!hasGlobalChatNotificationOptIn}
+            checked={hasGlobalChatNotificationOptIn === 'off'}
             label="Mute all discussion email notifications"
             onChange={toggleGlobalChatNotificationOptIn}
           />
