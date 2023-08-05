@@ -113,7 +113,6 @@ const Profile = ({
       setHasGlobalChatNotificationOptIn(notificationUserOption)
     }
   }, [notificationUserOption])
-
   const isCurrentUsersOwnProfile = user.id === currentUser.id
 
   const canEditProfile =
