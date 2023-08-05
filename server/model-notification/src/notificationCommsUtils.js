@@ -106,11 +106,11 @@ const getNotificationOptionForUser = async ({ userId, path, groupId }) => {
     .whereNot({ option: 'inherit' })
 
   // We're only interested in records whose paths are subpaths of the specified path
-  const relevantRecords = records.filter(r => {
-    if (r.path.length > path.length) return false
+  const relevantRecords = records.filter(record => {
+    if (record.path.length > path.length) return false
 
-    for (let i = 0; i < r.path.length; i += 1) {
-      if (r.path[i] !== path[i]) return false
+    for (let i = 0; i < record.path.length; i += 1) {
+      if (record.path[i] !== path[i]) return false
     }
 
     return true
