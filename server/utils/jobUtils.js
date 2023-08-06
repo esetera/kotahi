@@ -111,7 +111,7 @@ const getJobs = async (activeConfig, groupId) => {
 
         // eslint-disable-next-line no-console
         console.info(
-          `Running scheduler to send alerts ${new Date().toISOString()}`,
+          `Running scheduler to send notifications ${new Date().toISOString()}`,
         )
 
         try {
