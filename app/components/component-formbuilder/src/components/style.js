@@ -14,7 +14,12 @@ export const Section = styled.div`
 export const Legend = styled.div`
   font-size: ${th('fontSizeBase')};
   font-weight: 600;
-  margin-bottom: ${({ space, theme }) => space && theme.gridUnit};
+`
+
+const ErrorMessageWrapper = styled.div`
+  color: ${color.error.base};
+  font-size: ${th('fontSizeBaseSmall')};
+  line-height: ${th('lineHeightBaseSmall')};
 `
 
 const Page = styled.div`
@@ -205,4 +210,5 @@ export {
   Collapse,
   CancelButton,
   CommentContainer,
+  ErrorMessageWrapper,
 }

@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import styled from 'styled-components'
 import { isEmpty, omitBy } from 'lodash'
-import { Formik } from 'formik'
-import { th } from '@pubsweet/ui-toolkit'
+import { ErrorMessage, Formik } from 'formik'
 import { v4 as uuid } from 'uuid'
 import ValidatedField from '../../../component-submit/src/components/ValidatedField'
 import {
@@ -11,13 +9,9 @@ import {
   getFieldOptionByNameOrComponent,
 } from './config/Elements'
 import * as elements from './builderComponents'
-import { Section, Legend, DetailText } from './style'
+import { Section, Legend, ErrorMessageWrapper, DetailText } from './style'
 import Modal from '../../../component-modal/src/Modal'
-import { ActionButton, Select } from '../../../shared'
-
-const InvalidWarning = styled.div`
-  color: ${th('colorError')};
-`
+import { ActionButton, MediumRow, Select } from '../../../shared'
 
 const filterOutPropsDisabledByConfig = (
   fieldOpts,
@@ -47,6 +41,7 @@ const FieldSettingsModal = ({
   shouldAllowHypothesisTagging,
   isOpen,
   onClose,
+  reservedFieldNames,
 }) => {
   if (!isOpen) return null // To ensure Formik gets new initialValues whenever this is reopened
   if (!field) return null
@@ -104,9 +99,9 @@ const FieldSettingsModal = ({
               isOpen={isOpen}
               leftActions={
                 !formIsValid && (
-                  <InvalidWarning>
+                  <ErrorMessageWrapper>
                     Correct invalid values before saving
-                  </InvalidWarning>
+                  </ErrorMessageWrapper>
                 )
               }
               onClose={onClose}
@@ -148,9 +143,14 @@ const FieldSettingsModal = ({
               {editableProperties.map(([key, value]) => {
                 return (
                   <Section key={key}>
-                    <Legend space>
-                      {value.props?.label ?? `Field ${key}`}
-                    </Legend>
+                    <MediumRow>
+                      <Legend space>
+                        {value.props?.label ?? `Field ${key}`}
+                      </Legend>
+                      <ErrorMessageWrapper>
+                        <ErrorMessage name={key} />
+                      </ErrorMessageWrapper>
+                    </MediumRow>
                     <ValidatedField
                       component={elements[value.component]}
                       name={key}
@@ -168,6 +168,17 @@ const FieldSettingsModal = ({
                         label: undefined,
                         description: undefined,
                       }}
+                      validate={
+                        key === 'name'
+                          ? val => {
+                              if (reservedFieldNames.includes(val))
+                                return 'This name is already in use for another field'
+                              if (value.props?.validate)
+                                return value.props.validate(val)
+                              return null
+                            }
+                          : value.props?.validate
+                      }
                     />
                     {value.props?.description && (
                       <DetailText>{value.props.description}</DetailText>

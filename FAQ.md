@@ -175,9 +175,9 @@ And the following form fields are required:
 
 ### Hypothesis
 
-[Hypothes.is](https://web.hypothes.is) is a tool for annotating webpages and sharing those annotations. It is powered by the hypothesis browser plugin, which displays annotations (retrieved from Hypothesis's servers) when you visit an annotated webpage. It allows evaluations of articles or other data to be shared (publicly or with a select group) directly on the page where the article lives. Kotahi supports publishing most form data as Hypothesis annotations.
+[Hypothesis](https://web.hypothes.is) is a tool for annotating webpages and sharing those annotations. It is powered by the hypothesis browser plugin, which displays annotations (retrieved from Hypothesis's servers) when you visit an annotated webpage. It allows evaluations of articles or other data to be shared (publicly or with a select group) directly on the page where the article lives. Kotahi supports publishing most form data as Hypothesis annotations.
 
-To enable this, you will need to first [generate a personal API token](https://h.readthedocs.io/en/latest/api/authorization/#access-tokens) for Hypothes.is, and a [group key](https://web.hypothes.is/blog/introducing-groups/) (e.g. `g4JPqbk5` if your group URL is `https://hypothes.is/groups/g4JPqbk5/my-journal-group`).
+To enable this, you will need to first [generate a personal API token](https://h.readthedocs.io/en/latest/api/authorization/#access-tokens) for Hypothesis, and a [group key](https://web.hypothes.is/blog/introducing-groups/) (e.g. `g4JPqbk5` if your group URL is `https://hypothes.is/groups/g4JPqbk5/my-journal-group`).
 
 Using these keys, set the following `.env` variables:
 
@@ -193,7 +193,7 @@ Once these preliminaries are in place, there are two approaches to publishing to
 
 #### Selecting individual fields to publish to Hypothesis
 
-In the form-builder, you can choose fields of the submission and decision forms to be published to Hypothesis, by setting the "Include when sharing or publishing" option for those fields to "Always" (currently unavailable for SupplementaryFiles and VisualAbstract field types). This will cause each of those fields to be published as Hypothesis annotations when a manuscript is published. If you want Hypothesis to apply a tag to the annotation, this can be specified in the "Hypothes.is tag" text box.
+In the form-builder, you can choose fields of the submission and decision forms to be published to Hypothesis, by setting the "Include when sharing or publishing" option for those fields to "Always" (currently unavailable for SupplementaryFiles and VisualAbstract field types). This will cause each of those fields to be published as Hypothesis annotations when a manuscript is published. If you want Hypothesis to apply a tag to the annotation, this can be specified in the "Hypothesis tag" text box.
 
 Alternatively, you may choose the "Ad hoc" option for a field, which will cause a "Publish" checkbox to appear next to that field in the Control page (in ThreadedDiscussion fields, each comment has its own separate checkbox). For any given manuscript, an editor must manually select that field (or comment) in order for it to publish to Hypothesis. They should select those they wish to publish, then hit the "Publish" button.
 

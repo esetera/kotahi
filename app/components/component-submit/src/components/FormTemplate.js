@@ -412,8 +412,8 @@ const FormTemplate = ({
 
                   // add an '*' to the markup if it is marked required
                   if (Array.isArray(element.validate)) {
-                    // TODO: why is validate an array? handle the cases where there are multiple validate values
-                    if (element.validate[0]?.value === 'required')
+                    // element.validate can specify multiple validation functions; we're looking for 'required'
+                    if (element.validate.some(v => v.value === 'required'))
                       markup = createMarkup(`${element.title} *`)
                   }
 

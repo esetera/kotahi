@@ -209,9 +209,9 @@ const permitPublishingField = {
 const publishingTagField = {
   component: 'TextField',
   props: {
-    label: 'Hypothes.is tag',
+    label: 'Hypothesis tag',
     description:
-      'You may specify a tag to use when sharing this field as a Hypothes.is annotation.',
+      'You may specify a tag to use when sharing this field as a Hypothesis annotation.',
   },
 }
 

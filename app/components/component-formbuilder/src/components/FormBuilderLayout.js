@@ -215,6 +215,10 @@ const FormBuilderLayout = ({
     elem => elem.id === selectedFieldId,
   ) || { id: selectedFieldId, component: null }
 
+  const reservedFieldNames = selectedForm.structure.children
+    .filter(field => field.id !== selectedFieldId)
+    .map(field => field.name)
+
   return (
     <>
       <Container
@@ -291,6 +295,7 @@ const FormBuilderLayout = ({
             },
           })
         }}
+        reservedFieldNames={reservedFieldNames}
         shouldAllowHypothesisTagging={shouldAllowHypothesisTagging}
       />
 
