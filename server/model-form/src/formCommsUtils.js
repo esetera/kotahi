@@ -1,11 +1,11 @@
 const models = require('@pubsweet/models')
 const { ref } = require('objection')
 
-const getActiveForms = async () => {
+const getActiveForms = async groupId => {
   const forms = await models.Form.query()
-    .where({ category: 'submission', purpose: 'submit' })
-    .orWhere({ category: 'review', purpose: 'review' })
-    .orWhere({ category: 'decision', purpose: 'decision' })
+    .where({ category: 'submission', purpose: 'submit', groupId })
+    .orWhere({ category: 'review', purpose: 'review', groupId })
+    .orWhere({ category: 'decision', purpose: 'decision', groupId })
 
   return {
     submissionForm: forms.find(f => f.purpose === 'submit'),
@@ -51,16 +51,21 @@ const migrateFieldName = async (formId, oldFieldName, newFieldName) => {
       `Cannot change field name in form ${formId} from '${oldFieldName}' to '${newFieldName}': illegal name`,
     )
 
+  const { groupId } = form
+
   if (form.purpose === 'submit') {
     const pgOldField = oldFieldName.replace('.', ':')
     const pgNewField = newFieldName.replace('.', ':')
 
-    await models.Manuscript.query().patch({
-      [pgNewField]: ref(pgOldField),
-      [pgOldField]: null,
-    })
+    await models.Manuscript.query()
+      .patch({
+        [pgNewField]: ref(pgOldField),
+        [pgOldField]: null,
+      })
+      .where({ groupId })
   } else if (form.purpose === 'review') {
-    await models.Review.query()
+    await models.Manuscript.relatedQuery('reviews')
+      .for(models.Manuscript.query().where({ groupId }))
       .patch({
         [newFieldName]: ref(oldFieldName),
         [oldFieldName]: null,
@@ -68,7 +73,8 @@ const migrateFieldName = async (formId, oldFieldName, newFieldName) => {
       .whereNot({ isDecision: true })
   } else {
     // form.purpose === 'decision'
-    await models.Review.query()
+    await models.Manuscript.relatedQuery('reviews')
+      .for(models.Manuscript.query().where({ groupId }))
       .patch({
         [newFieldName]: ref(oldFieldName),
         [oldFieldName]: null,

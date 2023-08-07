@@ -6,9 +6,9 @@ import { th, grid } from '@pubsweet/ui-toolkit'
 import { Icon, Action } from '@pubsweet/ui'
 import { Page } from './style'
 import { DragVerticalIcon } from '../../../shared/Icons'
-import lightenBy from '../../../../shared/lightenBy'
 import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
 import { getFieldOptionByNameOrComponent } from './config/Elements'
+import { color } from '../../../../theme'
 
 const FeildWrapper = styled.div`
   align-items: center;
@@ -17,23 +17,23 @@ const FeildWrapper = styled.div`
   padding: ${grid(0.5)};
 
   &.active {
-    background-color: ${lightenBy('colorPrimary', 0.7)};
+    background-color: ${color.brand1.tint70};
   }
 
   &:hover svg {
-    stroke: ${th('colorPrimary')};
+    stroke: ${color.brand1.base};
   }
 `
 
 const Element = styled.div`
-  background-color: ${th('colorSecondaryBackground')};
+  background-color: ${color.backgroundB};
   border-radius: ${th('borderRadius')};
   display: flex;
   justify-content: space-between;
   width: 100%;
 
   &.active {
-    background-color: ${lightenBy('colorPrimary', 0.7)};
+    background-color: ${color.brand1.tint70};
   }
 `
 
@@ -66,7 +66,7 @@ const SmallIcon = withTheme(({ children, theme }) => (
 ))
 
 const FieldTypeLabel = styled.span`
-  color: ${lightenBy('colorPrimary', 0.5)};
+  color: ${color.brand1.tint50};
   font-size: ${th('fontSizeBaseSmall')};
   margin-left: 0.5em;
 `

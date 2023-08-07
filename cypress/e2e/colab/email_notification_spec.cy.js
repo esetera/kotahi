@@ -4,6 +4,7 @@ import { Menu } from '../../page-object/page-component/menu'
 import { dashboard } from '../../support/routes'
 import { ManuscriptsPage } from '../../page-object/manuscripts-page'
 
+// eslint-disable-next-line jest/no-disabled-tests
 describe('Email Notification Tests', () => {
   it('can send existing user email notifications', () => {
     cy.task('restore', 'email_notification')
@@ -21,8 +22,10 @@ describe('Email Notification Tests', () => {
 
       /* Existing User */
       // Choose Recievers Dropdown
-      ControlPage.clickEmailNotificationNthDropdown(0)
-      cy.contains('Emily Clay').click()
+      ControlPage.getEmailNotificationDropdowns()
+        .eq(0)
+        .type('Emily{enter}', { delay: 200 })
+      // cy.contains('Emily Clay').click()
 
       // Choose Invitation Template Dropdown
       ControlPage.getEmailNotificationDropdowns()
@@ -36,11 +39,11 @@ describe('Email Notification Tests', () => {
 
       ControlPage.getMessageContainer().should(
         'contain',
-        'Author Invitation Email Template sent by Elaine Barnes to Emily Clay',
+        'Author Invitation sent by Elaine Barnes to Emily Clay',
       )
 
       /* New User */
-      cy.contains('New User').click()
+      cy.get('input[type="checkbox"]:last').click({ force: true })
 
       cy.get('[data-cy="new-user-email"]').type('jon@example.co')
       cy.get('[data-cy="new-user-name"]').type('Jon')
@@ -55,7 +58,7 @@ describe('Email Notification Tests', () => {
 
       ControlPage.getMessageContainer().should(
         'contain',
-        'Author Invitation Email Template sent by Elaine Barnes to Jon',
+        'Author Invitation sent by Elaine Barnes to Jon',
       )
     })
   })

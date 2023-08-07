@@ -4,7 +4,7 @@ const { readFileSync } = require('fs')
 const path = require('path')
 require('dotenv').config({ path: path.join(__dirname, './.env') })
 
-const seed = require('./scripts/clearAndSeed')
+const { resetDbAndApplyDump, applyDump } = require('./scripts/resetDb')
 
 const seedForms = require('./scripts/seedForms')
 
@@ -29,13 +29,22 @@ module.exports = defineConfig({
         restore: async name => {
           // eslint-disable-next-line no-console
           console.log(name, 'name')
-          return seed(readFileSync(dumpFile(name), 'utf-8'), { clear: true })
+          return resetDbAndApplyDump(
+            readFileSync(dumpFile(name), 'utf-8'),
+            name,
+          )
         },
         seed: async name => {
           // eslint-disable-next-line no-console
           console.log(name, 'name')
           // Restore without clear
-          return seed(readFileSync(dumpFile(name), 'utf-8'), { clear: false })
+          return applyDump(
+            readFileSync(dumpFile(name), 'utf-8'),
+            {
+              truncate: false,
+            },
+            name,
+          )
         },
         createToken: async username => {
           // eslint-disable-next-line global-require
@@ -60,9 +69,19 @@ module.exports = defineConfig({
           return jwt
         },
         seedForms: async () => {
+          // eslint-disable-next-line global-require
+          const { Group, Config } = require('@pubsweet/models')
+
           // eslint-disable-next-line no-console
           console.log('Seeding forms...')
-          await seedForms()
+          const group = await Group.query().findOne({ name: 'kotahi' })
+
+          const activeConfig = await Config.query().findOne({
+            groupId: group.id,
+            active: true,
+          })
+
+          await seedForms(group, activeConfig)
           return null
         },
         log(message) {

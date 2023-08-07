@@ -7,14 +7,12 @@ import { dashboard } from '../../support/routes'
 const reviewDataList = [
   {
     verdict: 'accept',
-    comment:
-      'The paper looks good to me overall! I appreciate the meticulous presentation of data.',
+    comment: 'The paper looks good to me overall!',
     radioButton: 'accept',
   },
   {
     verdict: 'accept',
-    comment:
-      'Disparity of the time-frame for negative and positive trial is too high. The article has a time-lag bias',
+    comment: 'The article has a time-lag bias',
     radioButton: 'reject',
   },
   {
@@ -25,7 +23,7 @@ const reviewDataList = [
   },
   {
     verdict: 'accept',
-    comment: 'Please use a linear scale instead of a logarithmic one.',
+    comment: 'Please use a linear scale.',
     radioButton: 'revise',
   },
 ]
@@ -47,13 +45,17 @@ describe('Completing a review', () => {
       cy.login(name.role.seniorEditor, dashboard)
 
       DashboardPage.clickDashboardTab(2)
-      DashboardPage.getInvitedReviewsStatus().should('have.text', '1 invited')
-      DashboardPage.getAcceptedReviewStatus().should('have.text', '1 accepted')
-      DashboardPage.getCompletedReviewsStatus().should(
-        'have.text',
-        '3 completed',
-      )
-      DashboardPage.getRejectedReviewsStatus().should('have.text', '1 rejected')
+      cy.get('[fill="#56b984"]')
+        .should('be.visible')
+        .trigger('mouseover', { force: true })
+      cy.contains('Completed: 3')
+      cy.get('[fill="#fff2cd"]').should('be.visible').trigger('mouseover')
+      cy.contains('Invited: 1')
+      cy.get('[fill="#d7efd4"]').should('be.visible').trigger('mouseover')
+      cy.contains('Accepted: 1')
+
+      cy.get('[fill="#c23d20"]').should('be.visible').trigger('mouseover')
+      cy.contains('Declined: 1')
     })
   })
 })
@@ -75,7 +77,11 @@ function doReview(name, reviewData) {
     if (reviewData.comment) {
       // Do the Review
       DashboardPage.clickDoReview()
-      ReviewPage.getReviewCommentField().type(reviewData.comment)
+      cy.awaitDisappearSpinner()
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(1000)
+      ReviewPage.getReviewCommentField().focus().type('comment', { delay: 200 })
+      ReviewPage.getReviewCommentField().fillInput(reviewData.comment)
       if (reviewData.radioButton === 'accept')
         ReviewPage.clickAcceptRadioButton()
       if (reviewData.radioButton === 'reject')
@@ -85,9 +91,13 @@ function doReview(name, reviewData) {
 
       // Submit the review
       ReviewPage.clickSubmitButton()
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(500)
       ReviewPage.clickConfirmSubmitButton()
 
       // Verify the review got completed
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(2000)
       cy.get('nav').contains('Dashboard').click()
       DashboardPage.getDoReviewButton().should('contain', 'Completed')
     }

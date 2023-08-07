@@ -114,4 +114,14 @@ module.exports = {
     semanticScholarImportsRecencyPeriodDays:
       'SEMANTIC_SCHOLAR_IMPORTS_RECENCY_PERIOD_DAYS',
   },
+
+  'flax-site': {
+    clientId: 'FLAX_CLIENT_ID',
+    clientSecret: 'FLAX_CLIENT_SECRET',
+    clientAPIURL: 'FLAX_CLIENT_API_URL',
+    clientFlaxSiteUrl: 'FLAX_SITE_URL',
+    port: 'FLAX_EXPRESS_PORT',
+    host: 'FLAX_EXPRESS_HOST',
+    protocol: 'FLAX_EXPRESS_PROTOCOL',
+  },
 }

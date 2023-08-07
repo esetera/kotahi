@@ -19,11 +19,11 @@ const stripTags = file => {
 }
 
 const cleanOutWmfs = file => {
-  const wmfRegex = /"data:image\/wmf;base64,[0-9a-zA-Z/+=]*"/g
+  const wmfRegex = /"data:image\/[ew]mf;base64,[0-9a-zA-Z/+=]*"/g
 
   return file.replaceAll(
     wmfRegex,
-    '"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAABYlAAAWJQFJUiTwAAAADElEQVQImWP4//8/AAX+Av5Y8msOAAAAAElFTkSuQmCC" data-original-name="broken-image.png"',
+    '"" alt="Broken image" data-original-name="broken-image"',
   )
 }
 
@@ -55,6 +55,13 @@ const checkForEmptyBlocks = file => {
       if (inside.childNodes[i].tagName === 'IMG') {
         console.error('Found unwrapped <img> tag:', inside.childNodes[i])
         const figure = doc.createElement('figure')
+
+        if (!inside.childNodes[i + 1]) {
+          console.error('No next sibling, adding dummy paragraph')
+          const dummyp = doc.createElement('p')
+          inside.appendChild(dummyp)
+        }
+
         figure.appendChild(inside.childNodes[i])
         inside.replaceChild(figure, inside.childNodes[i])
       }
@@ -278,16 +285,22 @@ const base64Images = source => {
   const doc = new DOMParser().parseFromString(source, 'text/html')
 
   const images = [...doc.images].map((e, index) => {
-    const mimeType = e.src.match(/[^:]\w+\/[\w\-+.]+(?=;base64,)/)[0]
-    const blob = base64toBlob(e.src, mimeType)
-    const mimeTypeSplit = mimeType.split('/')
-    const extFileName = mimeTypeSplit[1]
+    const isDataUrl = e.src.match(/[^:]\w+\/[\w\-+.]+(?=;base64,)/)
 
-    const file = new File([blob], `Image${index + 1}.${extFileName}`, {
-      type: mimeType,
-    })
+    if (isDataUrl) {
+      const mimeType = isDataUrl[0]
+      const blob = base64toBlob(e.src, mimeType)
+      const mimeTypeSplit = mimeType.split('/')
+      const extFileName = mimeTypeSplit[1]
 
-    return { dataSrc: e.src, mimeType, file }
+      const file = new File([blob], `Image${index + 1}.${extFileName}`, {
+        type: mimeType,
+      })
+
+      return { dataSrc: e.src, mimeType, file }
+    }
+
+    return null
   })
 
   return images || null
@@ -366,6 +379,7 @@ const createManuscriptPromise = (
   currentUser,
   fileURL,
   response,
+  config,
 ) => {
   // In the case of a Docx file, response is the HTML
   // In the case of another type of file, response is true/false
@@ -400,6 +414,7 @@ const createManuscriptPromise = (
       title,
       source,
     },
+    groupId: config.groupId,
   }
 
   return client.mutate({
@@ -435,10 +450,9 @@ const redirectPromise = (
   config,
 ) => {
   setConversionState(() => ({ converting: false, completed: true }))
-  const urlFrag = config.journal.metadata.toplevel_urlfragment
+  const { urlFrag } = config
 
   // redirect after a new submission path
-  // TODO: refactor redirection url values with config manager
   const route = `${urlFrag}/versions/${data.createManuscript.id}/${
     ['elife', 'ncrc'].includes(config.instanceName) ? 'evaluation' : 'submit'
   }`
@@ -497,6 +511,7 @@ export default ({
         currentUser,
         uploadResponse.fileURL,
         uploadResponse.response,
+        config,
       )
 
       // Moving the below logic to server-side 'createManuscript' to fix slow docx uploads
@@ -564,6 +579,7 @@ export default ({
         currentUser,
         undefined,
         undefined,
+        config,
       )
     }
 

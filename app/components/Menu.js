@@ -5,15 +5,16 @@ import { th, grid } from '@pubsweet/ui-toolkit'
 import { Link, useLocation } from 'react-router-dom'
 import { Icon } from '@pubsweet/ui'
 import { UserAvatar } from './component-avatar/src'
-import lightenBy from '../shared/lightenBy'
+import { color } from '../theme'
+import { convertCamelCaseToTitleCase } from '../shared/textUtils'
 
 const Root = styled.nav`
   background: linear-gradient(
     134deg,
-    ${th('colorPrimary')},
-    ${lightenBy('colorPrimary', 0.3)}
+    ${color.brand1.base},
+    ${color.brand1.tint25}
   );
-  border-right: 1px solid ${th('colorFurniture')};
+  border-right: 1px solid ${color.gray90};
   /* stylelint-disable-next-line declaration-no-important */
   font-family: ${th('fontInterface')}, sans-serif !important;
   grid-area: menu;
@@ -30,12 +31,14 @@ const NonLink = styled.div``
 const Section = styled.div``
 
 const RolesLabel = styled.div`
+  color: ${color.brand1.tint50};
   font-size: ${th('fontSizeBaseSmall')};
   font-weight: normal;
+  line-height: ${th('lineHeightBaseSmall')};
 `
 
 const AlertIndicator = styled.div`
-  background: ${th('colorError')};
+  background: ${color.error.base};
   border-radius: 50%;
   height: 10px;
   margin: 0 0.5em;
@@ -89,12 +92,10 @@ NavItem.defaultProps = {
 
 export const Item = styled(NavItem)`
   align-items: center;
-  background-color: ${props =>
-    props.active ? th('colorBackgroundHue') : 'unset'};
+  background-color: ${props => (props.active ? color.backgroundC : 'unset')};
   border-radius: 10px;
   /* stylelint-disable-next-line declaration-no-important */
-  color: ${props =>
-    props.active ? th('colorText') : th('colorTextReverse')} !important;
+  color: ${props => (props.active ? color.text : color.textReverse)} !important;
   display: flex;
   /* stylelint-disable-next-line declaration-no-important */
   font-size: ${th('fontSizeBase')} !important;
@@ -112,25 +113,24 @@ export const Item = styled(NavItem)`
   }
 
   svg {
-    stroke: ${props =>
-      props.active ? th('colorText') : th('colorTextReverse')};
+    stroke: ${props => (props.active ? color.text : color.textReverse)};
     width: 1em;
   }
 
   &:hover {
-    background-color: ${lightenBy('colorPrimary', 0.5)};
+    background-color: ${color.brand1.tint50};
     /* stylelint-disable-next-line declaration-no-important */
-    color: ${th('colorText')} !important;
-    stroke: ${th('colorText')};
+    color: ${color.text} !important;
+    stroke: ${color.text};
 
     svg {
-      stroke: ${th('colorText')};
+      stroke: ${color.text};
     }
   }
 `
 
 const UserItem = styled(Link)`
-  color: ${th('colorTextReverse')};
+  color: ${color.textReverse};
   display: flex;
   padding-bottom: ${grid(2)};
   /* stylelint-disable-next-line declaration-no-important */
@@ -138,7 +138,7 @@ const UserItem = styled(Link)`
 
   &:hover {
     /* stylelint-disable-next-line declaration-no-important */
-    color: ${th('colorTextReverse')} !important;
+    color: ${color.textReverse} !important;
   }
 `
 
@@ -232,16 +232,15 @@ const Menu = ({
   )
 }
 
-const unCamelCase = string =>
-  Array.from(string).reduce((acc, cur) => {
-    if (cur < 'A' || cur > 'Z') return acc + cur
-    return `${acc} ${cur.toLowerCase()}`
-  }, '')
-
 const FormattedGlobalAndGroupRoles = ({ user }) => {
-  const unCamelCasedRoles = user.globalRoles
-    .concat(user.groupRoles)
-    .map(role => unCamelCase(role))
+  const allRoles = user.globalRoles.concat(user.groupRoles)
+
+  const unCamelCasedRoles =
+    allRoles.includes('groupManager') || allRoles.includes('admin')
+      ? allRoles
+          .filter(role => role !== 'user')
+          .map(role => convertCamelCaseToTitleCase(role))
+      : allRoles.map(role => convertCamelCaseToTitleCase(role))
 
   if (!unCamelCasedRoles.length) return null
 

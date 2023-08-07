@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components'
 import { Button, Action } from '@pubsweet/ui'
 import { th, grid } from '@pubsweet/ui-toolkit'
 import { AlertCircle } from 'react-feather'
+import { color } from '../../../theme'
 
 export const StyledButton = styled(Button)`
   cursor: pointer;
@@ -51,8 +52,8 @@ export const ManuscriptsTableStyled = styled.div`
 
 export const ManuscriptsRow = styled.div`
   align-items: center;
-  background-color: ${th('colorBackground')};
-  border-top: 1px solid ${th('colorFurniture')};
+  background-color: ${color.backgroundA};
+  border-top: 1px solid ${color.gray90};
   column-gap: ${grid(2)};
   display: flex;
   flex-direction: row;
@@ -71,14 +72,14 @@ export const ManuscriptsRow = styled.div`
 `
 
 export const ClickableManuscriptsRow = styled(ManuscriptsRow)`
-  color: ${th('colorText')};
+  color: ${color.text};
 
   &:hover {
-    background-color: ${th('colorBackgroundHue')};
+    background-color: ${color.backgroundC};
     cursor: pointer;
 
     svg {
-      stroke: ${th('colorPrimary')};
+      stroke: ${color.brand1.base};
     }
   }
 `
@@ -120,7 +121,7 @@ export const HeadingCell = styled(Cell)`
 `
 
 export const SortArrow = styled.span`
-  color: ${th('colorPrimary')};
+  color: ${color.brand1.base};
   font-size: 70%;
   margin-left: 0.5em;
 

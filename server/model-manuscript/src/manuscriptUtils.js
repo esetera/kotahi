@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 const Handlebars = require('handlebars')
 const { set, get } = require('lodash')
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
@@ -25,8 +26,9 @@ const stripConfidentialDataFromReviews = (
   reviewForm,
   decisionForm,
   sharedReviewersIds,
-  manuscriptHasDecision,
   userId,
+  userRoles,
+  manuscriptHasDecision,
 ) => {
   if (!reviewForm || !decisionForm) return []
 
@@ -35,7 +37,12 @@ const stripConfidentialDataFromReviews = (
     .map(field => field.name)
 
   const confidentialDecisionFields = decisionForm.structure.children
-    .filter(field => field.hideFromAuthors === 'true')
+    .filter(
+      field =>
+        field.hideFromAuthors === 'true' &&
+        userRoles.author &&
+        field.component !== 'ThreadedDiscussion',
+    )
     .map(field => field.name)
 
   return reviews
@@ -53,6 +60,8 @@ const stripConfidentialDataFromReviews = (
         // what data we store in a Review object: it should really store status
         // and isShared, rather than requiring us to retrieve these from the
         // TeamMember object.
+        (userRoles.author && r.isDecision) ||
+        // decision will have restricted data stripped
         r.userId === userId ||
         (sharedReviewersIds.includes(r.userId) && !r.isDecision),
     )
@@ -276,6 +285,7 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
   submissionForm,
   timezoneOffsetMinutes,
   manuscriptIDs = null,
+  groupId = null,
 ) => {
   // These keep track of the various terms we're adding to SELECT, FROM, WHERE and ORDER BY, as well as params.
   const selectItems = { rawFragments: [], params: [] }
@@ -295,6 +305,10 @@ const buildQueryForManuscriptSearchFilterAndOrder = (
 
   if (manuscriptIDs) {
     addWhere('id = ANY(?)', manuscriptIDs)
+  }
+
+  if (groupId) {
+    addWhere('group_id = ?', groupId)
   }
 
   const searchFilter = filters.find(f => f.field === URI_SEARCH_PARAM)

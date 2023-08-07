@@ -12,7 +12,7 @@ import DueDateField from './DueDateField'
 import Modal from '../../component-modal/src/Modal'
 import SecondaryActionButton from '../../shared/SecondaryActionButton'
 import CounterField from '../../shared/CounterField'
-import theme from '../../../theme'
+import theme, { color } from '../../../theme'
 import { convertTimestampToDateString } from '../../../shared/dateUtils'
 
 const TitleCell = styled.div`
@@ -54,7 +54,7 @@ const TaskSectionContainer = styled.div`
 `
 
 const TaskTitle = styled.div`
-  color: ${theme.colors.neutral.gray20};
+  color: ${color.gray20};
   font-family: ${theme.fontInterface};
   font-size: ${theme.fontSizeBase};
   font-style: normal;
@@ -95,14 +95,14 @@ const TaskNotificationLogsContainer = styled.div`
 const NotificationLogsToggle = styled.button`
   background-color: transparent;
   border: none;
-  color: ${theme.colorPrimary};
+  color: ${color.brand1.base};
   font-size: ${theme.fontSizeBaseSmall};
   padding: 20px 10px;
   text-decoration: underline;
 `
 
 const NotificationLogs = styled.div`
-  color: ${theme.colorPrimary};
+  color: ${color.brand1.base};
   font-size: ${theme.fontSizeBaseSmall};
   margin: 10px 0;
   text-align: left;
@@ -134,6 +134,7 @@ const TaskEditModal = ({
   isOpen,
   onSave,
   onCancel,
+  emailTemplates,
 }) => {
   const [taskEmailNotifications, setTaskNotifications] = useState(
     task.emailNotifications ?? [],
@@ -173,7 +174,7 @@ const TaskEditModal = ({
     recipientUserId: taskNotification.recipientUserId || null,
     recipientType: taskNotification.recipientType || null,
     notificationElapsedDays: taskNotification.notificationElapsedDays || null,
-    emailTemplateKey: taskNotification.emailTemplateKey || null,
+    emailTemplateId: taskNotification.emailTemplateId || null,
     recipientName: taskNotification.recipientName || null,
     recipientEmail: taskNotification.recipientEmail || null,
   })
@@ -181,7 +182,7 @@ const TaskEditModal = ({
   const updateTaskNotification = async updatedTaskNotification => {
     if (
       updatedTaskNotification.recipientType ||
-      updatedTaskNotification.emailTemplateKey
+      updatedTaskNotification.emailTemplateId
     ) {
       persistTaskNotification({
         variables: {
@@ -330,6 +331,7 @@ const TaskEditModal = ({
                   currentUser={currentUser}
                   deleteTaskNotification={handleDeleteTaskNotification}
                   editAsTemplate={editAsTemplate}
+                  emailTemplates={emailTemplates}
                   key={notification.id}
                   manuscript={manuscript}
                   notificationOptions={notificationOptions}
@@ -345,21 +347,19 @@ const TaskEditModal = ({
           ) : null}
         </TaskRecipientsContainer>
         <TaskActionContainer>
-          {!isReadOnly && (
-            <SecondaryActionButton
-              disabled={
-                !editAsTemplate && taskEmailNotifications?.length
-                  ? taskEmailNotifications.some(
-                      t => !t.recipientType && !t.emailTemplateKey,
-                    )
-                  : false
-              }
-              onClick={addNewTaskNotification}
-              primary
-            >
-              Add Notification Recipient
-            </SecondaryActionButton>
-          )}
+          <SecondaryActionButton
+            disabled={
+              !editAsTemplate && taskEmailNotifications?.length
+                ? taskEmailNotifications.some(
+                    t => !t.recipientType && !t.emailTemplateId,
+                  )
+                : false
+            }
+            onClick={addNewTaskNotification}
+            primary
+          >
+            Add Notification Recipient
+          </SecondaryActionButton>
         </TaskActionContainer>
         {!editAsTemplate ? (
           task.notificationLogs &&

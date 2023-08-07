@@ -165,6 +165,14 @@ export const convertTimestampToDateWithoutTimeString = timestamp => {
   return `${month} ${pad(day)}, ${year}`
 }
 
+export const convertTimestampToTimeString = timestamp => {
+  const date = new Date(timestamp)
+  const hours = date.getHours()
+  const minutes = date.getMinutes()
+
+  return `${pad(hours)}:${pad(minutes)}`
+}
+
 export const convertTimestampToRelativeDateString = timestamp => {
   const updatedTime = new Date(timestamp)
   const currTime = new Date()
@@ -183,4 +191,15 @@ export const convertTimestampToRelativeDateString = timestamp => {
   }
 
   return convertTimestampToDateWithoutTimeString(timestamp)
+}
+
+export const convertTimestampToDateTimeString = timestamp => {
+  const date = new Date(timestamp)
+  const year = date.getFullYear()
+  const month = pad(date.getMonth() + 1)
+  const day = pad(date.getDate())
+  const hours = pad(date.getHours())
+  const minutes = pad(date.getMinutes())
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`
 }

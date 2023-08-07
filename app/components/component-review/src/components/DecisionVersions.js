@@ -58,8 +58,10 @@ const DecisionVersions = ({
   updateTaskNotification,
   deleteTaskNotification,
   createTaskEmailNotificationLog,
+  emailTemplates,
 }) => {
   const versions = gatherManuscriptVersions(manuscript)
+  const firstVersion = versions[versions.length - 1]
 
   const initialValue = useMemo(
     () =>
@@ -72,17 +74,24 @@ const DecisionVersions = ({
   )
 
   // Protect if channels don't exist for whatever reason
-  let editorialChannelId, allChannelId
+  let editorialChannel, allChannel
 
   if (Array.isArray(manuscript.channels) && manuscript.channels.length) {
-    editorialChannelId = manuscript.channels.find(c => c.type === 'editorial')
-      .id
-    allChannelId = manuscript.channels.find(c => c.type === 'all').id
+    editorialChannel = manuscript.channels.find(c => c.type === 'editorial')
+    allChannel = manuscript.channels.find(c => c.type === 'all')
   }
 
   const channels = [
-    { id: allChannelId, name: 'Discussion with author' },
-    { id: editorialChannelId, name: 'Editorial discussion' },
+    {
+      id: allChannel?.id,
+      name: 'Discussion with author',
+      type: allChannel?.type,
+    },
+    {
+      id: editorialChannel?.id,
+      name: 'Editorial discussion',
+      type: editorialChannel?.type,
+    },
   ]
 
   const manuscriptLatestVersionId = versions[0].manuscript.id
@@ -107,6 +116,7 @@ const DecisionVersions = ({
                 deleteTaskNotification={deleteTaskNotification}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
                 dois={dois}
+                emailTemplates={emailTemplates}
                 externalEmail={externalEmail}
                 form={form}
                 invitations={version.manuscript.invitations || []}
@@ -115,7 +125,7 @@ const DecisionVersions = ({
                 makeDecision={makeDecision}
                 manuscriptLatestVersionId={manuscriptLatestVersionId}
                 onChange={handleChange}
-                parent={manuscript}
+                parent={firstVersion.manuscript}
                 publishManuscript={publishManuscript}
                 refetch={refetch}
                 removeReviewer={removeReviewer}
@@ -145,9 +155,9 @@ const DecisionVersions = ({
                 updateSharedStatusForInvitedReviewer={
                   updateSharedStatusForInvitedReviewer
                 }
-                updateTask={index === 0 ? updateTask : null}
+                updateTask={updateTask}
                 updateTaskNotification={updateTaskNotification}
-                updateTasks={index === 0 ? updateTasks : null}
+                updateTasks={updateTasks}
                 updateTeam={updateTeam}
                 updateTeamMember={updateTeamMember}
                 urlFrag={urlFrag}

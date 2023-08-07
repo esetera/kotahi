@@ -5,7 +5,6 @@ const sortBy = require('lodash/sortBy')
 const { getDecisionForm } = require('../../model-review/src/reviewCommsUtils')
 
 const {
-  populateTemplatedTasksForManuscript,
   deleteAlertsForManuscript,
 } = require('../../model-task/src/taskCommsUtils')
 
@@ -184,7 +183,7 @@ class Manuscript extends BaseModel {
       isDecision: true,
     })
 
-    const decisionForm = await getDecisionForm()
+    const decisionForm = await getDecisionForm(this.groupId)
 
     const threadedDiscussionFieldNames = decisionForm
       ? decisionForm.structure.children
@@ -198,8 +197,11 @@ class Manuscript extends BaseModel {
       clonedDecision.jsonData = {}
 
       Object.entries(decision.jsonData)
-        .filter(e => threadedDiscussionFieldNames.includes(e.key))
-        .forEach(e => (clonedDecision.jsonData[e.key] = e.value))
+        .filter(([key]) => threadedDiscussionFieldNames.includes(key))
+        .forEach(([key, value]) => {
+          clonedDecision.jsonData[key] = value
+        })
+
       return clonedDecision
     })
 
@@ -209,7 +211,10 @@ class Manuscript extends BaseModel {
     newVersion.reviews = clonedDecisions
     newVersion.files = files
 
-    const activeConfig = await Config.query().first()
+    const activeConfig = await Config.query().findOne({
+      groupId: this.groupId,
+      active: true,
+    })
 
     if (
       activeConfig.formData.submission.allowAuthorsSubmitNewVersion ||
@@ -225,7 +230,6 @@ class Manuscript extends BaseModel {
       omit(cloneDeep(newVersion), ['id', 'created', 'updated', 'decision']),
     )
 
-    await populateTemplatedTasksForManuscript(manuscript.id)
     await deleteAlertsForManuscript(this.id)
 
     return manuscript
@@ -246,6 +250,8 @@ class Manuscript extends BaseModel {
     const PublishedArtifact = require('../../model-published-artifact/src/publishedArtifact')
     /* eslint-disable-next-line global-require */
     const ThreadedDiscussion = require('../../model-threaded-discussion/src/threadedDiscussion')
+    /* eslint-disable-next-line global-require */
+    const Group = require('../../model-group/src/group')
 
     return {
       submitter: {
@@ -332,6 +338,14 @@ class Manuscript extends BaseModel {
         relation: BaseModel.HasManyRelation,
         modelClass: ThreadedDiscussion,
       },
+      group: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: Group,
+        join: {
+          from: 'manuscripts.groupId',
+          to: 'groups.id',
+        },
+      },
     }
   }
 
@@ -390,6 +404,7 @@ class Manuscript extends BaseModel {
         formFieldsToPublish: { type: 'array' },
         doi: { type: ['string', 'null'] },
         searchableText: { type: 'string' },
+        groupId: { type: ['string', 'null'], format: 'uuid' },
       },
     }
   }

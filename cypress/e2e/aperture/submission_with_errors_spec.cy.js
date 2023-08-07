@@ -66,6 +66,10 @@ describe('Submission with errors test', () => {
         // Submit the form
         SubmissionFormPage.clickSubmitYourManuscript()
         // Contains new title
+        cy.awaitDisappearSpinner()
+        // the following line is added so that it gives enough time for the dom to update the title of the submission in dashboard.
+        DashboardPage.clickDashboardTab(1)
+        DashboardPage.clickDashboardTab(0)
         DashboardPage.getSubmissionTitle(0).should('contain', data.newTitle)
       })
     })

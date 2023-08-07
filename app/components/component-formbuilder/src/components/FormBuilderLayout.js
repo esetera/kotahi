@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { forEach } from 'lodash'
 import styled, { withTheme } from 'styled-components'
@@ -19,6 +19,8 @@ import {
 } from '../../../shared'
 import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
 import FormSummary from './FormSummary'
+import { color } from '../../../../theme'
+import { ConfigContext } from '../../../config/src'
 
 const AddFieldButton = styled(RoundIconButton)`
   flex: 0 0 40px;
@@ -37,7 +39,7 @@ const UnpaddedIcon = styled(Icon)`
 `
 
 const ControlIcon = withTheme(({ children, theme }) => (
-  <UnpaddedIcon color={theme.colorPrimary}>{children}</UnpaddedIcon>
+  <UnpaddedIcon color={color.brand1.base()}>{children}</UnpaddedIcon>
 ))
 
 const AddFormButton = styled(ActionButton)`
@@ -94,6 +96,7 @@ const FormBuilderLayout = ({
   const [formId, setFormId] = useState()
   const [isEditingFormSettings, setIsEditingFormSettings] = useState(false)
   const [isEditingFieldSettings, setIsEditingFieldSettings] = useState(false)
+  const config = useContext(ConfigContext)
 
   const openModalHandler = id => {
     setOpenModal(true)
@@ -266,7 +269,10 @@ const FormBuilderLayout = ({
         makeFormActive={() => makeFormActive(selectedForm)}
         onClose={() => setIsEditingFormSettings(false)}
         onSubmit={async updatedForm => {
-          const payload = { variables: { form: updatedForm } }
+          const payload = {
+            variables: { form: { ...updatedForm, groupId: config.groupId } },
+          }
+
           if (selectedForm.id) await updateForm(payload)
           else await createForm(payload)
         }}

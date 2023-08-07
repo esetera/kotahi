@@ -12,6 +12,7 @@ created
 updated
 purpose
 category
+groupId
 structure {
   name
   description
@@ -101,8 +102,8 @@ const deleteFormMutation = gql`
 `
 
 const query = gql`
-  query GET_FORM($category: String!) {
-    formsByCategory(category: $category) {
+  query GET_FORM($category: String!, $groupId: ID) {
+    formsByCategory(category: $category, groupId: $groupId) {
       ${formFieldsSegment}
     }
   }
@@ -117,30 +118,40 @@ const FormBuilderPage = ({ category }) => {
   const config = useContext(ConfigContext)
 
   const { loading, data, error } = useQuery(query, {
-    variables: { category },
+    variables: { category, groupId: config.groupId },
   })
 
   const cleanedForms = pruneEmpty(data?.formsByCategory)
 
   // TODO Structure forms for graphql and retrieve IDs from these mutations to allow Apollo Cache to do its magic, rather than forcing refetch.
   const [deleteForm] = useMutation(deleteFormMutation, {
-    refetchQueries: [{ query, variables: { category } }],
+    refetchQueries: [
+      { query, variables: { category, groupId: config.groupId } },
+    ],
   })
 
   const [deleteFormElement] = useMutation(deleteFormElementMutation, {
-    refetchQueries: [{ query, variables: { category } }],
+    refetchQueries: [
+      { query, variables: { category, groupId: config.groupId } },
+    ],
   })
 
   const [updateForm] = useMutation(updateFormMutation, {
-    refetchQueries: [{ query, variables: { category } }],
+    refetchQueries: [
+      { query, variables: { category, groupId: config.groupId } },
+    ],
   })
 
   const [updateFormElement] = useMutation(updateFormElementMutation, {
-    refetchQueries: [{ query, variables: { category } }],
+    refetchQueries: [
+      { query, variables: { category, groupId: config.groupId } },
+    ],
   })
 
   const [createForm] = useMutation(createFormMutation, {
-    refetchQueries: [{ query, variables: { category } }],
+    refetchQueries: [
+      { query, variables: { category, groupId: config.groupId } },
+    ],
   })
 
   const [selectedFormId, setSelectedFormId] = useState()

@@ -1,72 +1,24 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 
-import React, { useCallback } from 'react'
-import { Button } from '@pubsweet/ui'
-import gql from 'graphql-tag'
-import { useQuery, useMutation } from '@apollo/client'
+import React, { useCallback, useState, useEffect } from 'react'
+import { Button, Checkbox } from '@pubsweet/ui'
 import { useDropzone } from 'react-dropzone'
 import styled from 'styled-components'
+import { th, grid } from '@pubsweet/ui-toolkit'
 import Modal from '../../component-modal/src/ConfirmationModal'
-import { version as kotahiVersion } from '../../../../package.json'
+import { convertCamelCaseToTitleCase } from '../../../shared/textUtils'
 
 import {
-  Spinner,
   Container,
-  SectionHeader,
   SectionContent,
   HeadingWithAction,
   SectionRow,
   Heading,
-  Title,
-  CommsErrorBanner,
 } from '../../shared'
 import ChangeUsername from './ChangeUsername'
 import { BigProfileImage } from './ProfileImage'
 import ChangeEmail from './ChangeEmail'
 import EnterEmail from './EnterEmail'
-
-const GET_USER = gql`
-  query user($id: ID, $username: String) {
-    user(id: $id, username: $username) {
-      id
-      username
-      profilePicture
-      isOnline
-      email
-      globalRoles
-      groupRoles
-      defaultIdentity {
-        identifier
-        email
-        type
-        aff
-        id
-      }
-    }
-  }
-`
-
-const UPDATE_EMAIL = gql`
-  mutation updateEmail($id: ID!, $email: String!) {
-    updateEmail(id: $id, email: $email) {
-      success
-      error
-      user {
-        id
-        email
-      }
-    }
-  }
-`
-
-const UPDATE_USERNAME = gql`
-  mutation updateUsername($id: ID!, $username: String!) {
-    updateUsername(id: $id, username: $username) {
-      id
-      username
-    }
-  }
-`
 
 const VersionText = styled.div`
   color: #757575;
@@ -80,21 +32,31 @@ const ProfileContainer = styled(Container)`
   justify-content: space-between;
 `
 
-// eslint-disable-next-line react/prop-types
-const ProfileDropzone = ({ profilePicture, updateProfilePicture }) => {
+const StyledCheckbox = styled(Checkbox)`
+  padding: ${grid(2)} ${grid(3)};
+`
+
+const SpecialRolesLabel = styled.div`
+  color: ${th('colorPrimary')};
+`
+
+const UserPrivilegeAlert = styled.div`
+  background: ${th('colorWarningLight')};
+  border-left: 3px solid ${th('colorWarning')};
+  color: ${th('colorWarningDark')};
+  line-height: 1.8;
+  margin-top: 0.5em;
+  padding: 0.5em 1em 0.5em 0.5em;
+  width: 100%;
+`
+
+const ProfileDropzone = ({
+  profilePicture,
+  replaceAvatarImage,
+  updateProfilePicture,
+}) => {
   const onDrop = useCallback(async acceptedFiles => {
-    const body = new FormData()
-    body.append('file', acceptedFiles[0])
-
-    // eslint-disable-next-line no-unused-vars, prefer-const
-    let result = await fetch('/api/uploadProfile', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      body,
-    })
-
+    await replaceAvatarImage(acceptedFiles)
     updateProfilePicture()
   }, [])
 
@@ -103,48 +65,71 @@ const ProfileDropzone = ({ profilePicture, updateProfilePicture }) => {
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
-      {profilePicture ? (
-        <BigProfileImage src={profilePicture} />
-      ) : (
-        <BigProfileImage src="/profiles/default_avatar.svg" />
-      )}
-      {isDragActive ? <Button>Drop it here</Button> : <Button>Change</Button>}
+      <BigProfileImage src={profilePicture || '/profiles/default_avatar.svg'} />
+      <Button>
+        {isDragActive ? 'Drop it here' : 'Change profile picture'}
+      </Button>
     </div>
   )
 }
 
-const Profile = ({ currentUser, match }) => {
-  const { id } = match.params
+const SpecialRoles = ({ user, isCurrentUsersOwnProfile }) => {
+  const specialRoles = user.globalRoles
+    .concat(user.groupRoles)
+    .map(convertCamelCaseToTitleCase)
 
-  const { loading, error, data, client, refetch } = useQuery(GET_USER, {
-    variables: { id: id || currentUser?.id },
-    fetchPolicy: 'network-only',
-  })
+  if (!specialRoles.length)
+    return isCurrentUsersOwnProfile ? (
+      <UserPrivilegeAlert>
+        User Privileges Required
+        <br /> Please ensure that you have the appropriate role permissions or
+        contact your system administrator for assistance.
+      </UserPrivilegeAlert>
+    ) : null
 
-  // Mutations and Queries
-  const [updateUserEmail] = useMutation(UPDATE_EMAIL)
-  const [updateUsername] = useMutation(UPDATE_USERNAME)
+  return <SpecialRolesLabel>({specialRoles.join(', ')})</SpecialRolesLabel>
+}
 
-  if (loading) return <Spinner />
-  if (error) return <CommsErrorBanner error={error} />
+const Profile = ({
+  currentUser,
+  kotahiVersion,
+  logoutUser,
+  match,
+  replaceAvatarImage,
+  updateProfilePicture,
+  updateUserEmail,
+  updateUsername,
+  updateEventNotificationsOptIn,
+  user,
+}) => {
+  const [isEventNotificationsOptIn, setEventNotificationsOptIn] = useState(
+    user?.eventNotificationsOptIn,
+  )
 
-  const localStorage = window.localStorage || undefined
+  useEffect(() => {
+    if (user) {
+      setEventNotificationsOptIn(user.eventNotificationsOptIn)
+    }
+  }, [user])
 
-  const logoutUser = () => {
-    localStorage.removeItem('token')
-    client.resetStore()
-  }
-
-  // This is a bridge between the fetch results and the Apollo cache/state
-  const updateProfilePicture = () => refetch()
-
-  const { user } = data
   const isCurrentUsersOwnProfile = user.id === currentUser.id
 
   const canEditProfile =
     isCurrentUsersOwnProfile ||
     currentUser.groupRoles.includes('groupManager') ||
     currentUser.globalRoles.includes('admin')
+
+  const toggleEventNotificationsCheckbox = async () => {
+    const newEventNotificationsPreference = !isEventNotificationsOptIn
+    setEventNotificationsOptIn(newEventNotificationsPreference)
+
+    await updateEventNotificationsOptIn({
+      variables: {
+        id: user.id,
+        eventNotificationsOptIn: newEventNotificationsPreference,
+      },
+    })
+  }
 
   return (
     <ProfileContainer>
@@ -165,15 +150,18 @@ const Profile = ({ currentUser, match }) => {
           )}
         </HeadingWithAction>
 
+        <SpecialRoles
+          isCurrentUsersOwnProfile={isCurrentUsersOwnProfile}
+          user={user}
+        />
+
         <SectionContent>
-          <SectionHeader>
-            <Title>Profile picture</Title>
-          </SectionHeader>
           <SectionRow key="profilepicture">
             <div>
               {canEditProfile && isCurrentUsersOwnProfile ? (
                 <ProfileDropzone
                   profilePicture={user.profilePicture}
+                  replaceAvatarImage={replaceAvatarImage}
                   updateProfilePicture={updateProfilePicture}
                 />
               ) : (
@@ -210,6 +198,13 @@ const Profile = ({ currentUser, match }) => {
               )}
             </div>
           </SectionRow>
+        </SectionContent>
+        <SectionContent>
+          <StyledCheckbox
+            checked={!isEventNotificationsOptIn}
+            label="Mute all discussion email notifications"
+            onChange={toggleEventNotificationsCheckbox}
+          />
         </SectionContent>
       </div>
 

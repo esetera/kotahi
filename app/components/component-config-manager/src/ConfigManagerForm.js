@@ -1,7 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
+/* eslint-disable import/no-unresolved */
 import Form from '@rjsf/core'
-import { schema, uiSchema } from './ui/schema'
+import generateSchema from './ui/schema' // Import the function that generates the schema and uiSchema
+
 import {
   ActionButton,
   Container,
@@ -30,7 +32,33 @@ const ConfigManagerForm = ({
   omitExtraData = true,
   updateConfig,
   updateConfigStatus,
+  emailTemplates,
 }) => {
+  const emailNotificationOptions = emailTemplates.map(template => {
+    const emailOption = {
+      const: template.id,
+      title: template.emailContent.description,
+    }
+
+    return emailOption
+  })
+
+  // This will return first email template found of reviewer invitation type
+  const defaultReviewerInvitationEmail = emailTemplates.find(
+    emailTemplate => emailTemplate.emailTemplateType === 'reviewerInvitation',
+  )
+
+  // modifying the default reviewer invitation template into react json schema form structure
+  const defaultReviewerInvitationTemplate = {
+    const: defaultReviewerInvitationEmail.id,
+    title: defaultReviewerInvitationEmail.emailContent.description,
+  }
+
+  const { schema, uiSchema } = generateSchema(
+    emailNotificationOptions,
+    defaultReviewerInvitationTemplate,
+  )
+
   return (
     <>
       <link

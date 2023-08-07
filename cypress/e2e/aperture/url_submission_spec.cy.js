@@ -8,7 +8,7 @@ import { dashboard } from '../../support/routes'
 
 describe('Upload manuscript test', () => {
   it('can upload a manuscript and some metadata', () => {
-    // task to restore the database as per the  dumps/initialState.sql
+    // task to restore the database as per the  dumps/bootstrap.sql
     cy.task('restore', 'commons/bootstrap') // Populate the Database
     cy.task('seedForms')
 
@@ -33,6 +33,9 @@ describe('Upload manuscript test', () => {
 
       // assert form exists in dashboard
       DashboardPage.getSectionTitleWithText('My Submissions')
+      // the following line is added so that it gives enough time for the dom to update the title of the submission in dashboard. Only a switch between tabs.
+      DashboardPage.clickDashboardTab(1)
+      DashboardPage.clickDashboardTab(0)
       DashboardPage.getSubmissionTitle().should('contain', data.title1)
     })
   })

@@ -14,9 +14,13 @@ const resolvers = {
       const reviewDelta = { jsonData: {}, ...input }
       const existingReview = (await models.Review.query().findById(id)) || {}
 
+      const manuscript = await models.Manuscript.query().findById(
+        existingReview.manuscriptId || input.manuscriptId,
+      )
+
       const form = existingReview.isDecision
-        ? await getDecisionForm()
-        : await getReviewForm()
+        ? await getDecisionForm(manuscript.groupId)
+        : await getReviewForm(manuscript.groupId)
 
       await convertFilesToIdsOnly(reviewDelta, form)
 
@@ -99,21 +103,27 @@ const resolvers = {
       // TODO redact user if it's an anonymous review and ctx.user is not editor or admin
       return parent.user || models.User.query().findById(parent.userId)
     },
-    async isShared(parent) {
-      if (parent.isShared || parent.isShared === false) return parent.isShared
+    async isSharedWithCurrentUser(parent, _, ctx) {
+      if (
+        parent.isSharedWithCurrentUser ||
+        parent.isSharedWithCurrentUser === false
+      )
+        return !!parent.isSharedWithCurrentUser
 
-      const record = await models.Team.relatedQuery('members').for(
-        models.Team.query()
-          .where({
+      const sharedMembers = await models.Team.relatedQuery('members')
+        .for(
+          models.Team.query().where({
             role: 'reviewer',
             objectId: parent.manuscriptId,
-          })
-          .select('isShared')
-          .findOne({ userId: parent.userId }),
-      )
+          }),
+        )
+        .where({ isShared: true })
+        .where(builder =>
+          builder.where({ status: 'completed' }).orWhere({ userId: ctx.user }),
+        )
 
-      if (!record || !record.isShared) return false
-      return true
+      if (sharedMembers.some(m => m.userId === ctx.user)) return true
+      return false
     },
   },
 }
@@ -133,7 +143,7 @@ const typeDefs = `
     user: User
     isHiddenFromAuthor: Boolean
     isHiddenReviewerName: Boolean
-    isShared: Boolean!
+    isSharedWithCurrentUser: Boolean!
     canBePublishedPublicly: Boolean
     jsonData: String
     userId: String
