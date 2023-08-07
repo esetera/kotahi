@@ -11,5 +11,6 @@ CREATE TABLE notification_digest (
   user_is_mentioned BOOLEAN DEFAULT false,
   option TEXT,
   actioned BOOLEAN DEFAULT false,
+  context JSONB,
   group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE
 );

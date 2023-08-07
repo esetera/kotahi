@@ -122,8 +122,13 @@ const getNotificationOptionForUser = async ({ userId, path, groupId }) => {
   return nearestAncestor?.option || '30MinSummary' // Fallback if no options are set
 }
 
-const notificationEventHandler = async ({ path, context }) => {
-  const { users, time } = context
+const notificationEventHandler = async ({
+  path,
+  context,
+  time,
+  users,
+  groupId,
+}) => {
   if (!users) return
 
   await Promise.all(
@@ -131,7 +136,8 @@ const notificationEventHandler = async ({ path, context }) => {
     users.map(async user => {
       const option = await getNotificationOptionForUser({
         userId: user.id,
-        type: 'chatChannel', // Assuming you want to check the option for chatChannel type
+        path,
+        groupId,
       })
 
       if (option === '30MinSummary') {
@@ -147,6 +153,7 @@ const notificationEventHandler = async ({ path, context }) => {
           context,
           userId: user.id,
           userIsMentioned: false, // hardcoded for now until we build the @ tagging feature
+          groupId,
         }).save()
       }
     }),

@@ -36,6 +36,7 @@ class NotificationDigest extends BaseModel {
           properties: { messageId: { type: 'string' } },
           nullable: true,
         },
+        groupId: { type: ['string'], format: 'uuid' },
       },
     }
   }

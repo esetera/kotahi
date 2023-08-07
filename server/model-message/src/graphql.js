@@ -88,7 +88,7 @@ const resolvers = {
 
       const message = await models.Message.query()
         .findById(savedMessage.id)
-        .withGraphJoined('user')
+        .withGraphJoined('[user, channel]')
 
       pubsub.publish(`${MESSAGE_CREATED}.${channelId}`, message.id)
 
@@ -107,6 +107,7 @@ const resolvers = {
         context: { messageId: message.id },
         users: channelMembers.map(channelMember => channelMember.user),
         mentionedUsers: [], // hardcoded for now until we built the @ tagging feature
+        groupId: message.channel.groupId,
       })
 
       return message
