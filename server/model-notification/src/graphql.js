@@ -57,12 +57,15 @@ const resolvers = {
 
       // If no existing record, create a new one
       // eslint-disable-next-line no-return-await
-      return await NotificationUserOption.query().insert({
-        userId,
-        path,
-        groupId,
-        option,
-      })
+      return await NotificationUserOption.query().upsertGraphAndFetch(
+        {
+          userId,
+          path,
+          groupId,
+          option,
+        },
+        { insertMissing: true },
+      )
     },
   },
 }
