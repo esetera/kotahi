@@ -1,4 +1,5 @@
 const { BaseModel } = require('@coko/server')
+const { User } = require('@pubsweet/models')
 
 class NotificationUserOption extends BaseModel {
   static get tableName() {
@@ -6,9 +7,6 @@ class NotificationUserOption extends BaseModel {
   }
 
   static get relationMappings() {
-    // eslint-disable-next-line global-require
-    const { User } = require('@pubsweet/models')
-
     return {
       user: {
         relation: BaseModel.BelongsToOneRelation,
@@ -31,6 +29,16 @@ class NotificationUserOption extends BaseModel {
         groupId: { type: ['string'], format: 'uuid' },
       },
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  $formatDatabaseJson(json) {
+    if (json.path) {
+      // eslint-disable-next-line no-param-reassign
+      json.path = `{${json.path.join(',')}}`
+    }
+
+    return json
   }
 }
 

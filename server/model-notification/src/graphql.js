@@ -13,7 +13,7 @@ const resolvers = {
 
       const notificationOption = await NotificationUserOption.query().findOne({
         userId: ctx.user,
-        path: JSON.stringify(path),
+        path: `{${path.join(',')}}`,
         groupId,
       })
 
@@ -40,25 +40,29 @@ const resolvers = {
       const userId = ctx.user
 
       // Find the existing record based on userId, path, and groupId
-      const existingOption = await NotificationUserOption.query().findOne({
-        userId,
-        path: JSON.stringify(path),
-        groupId,
-      })
+      const existingOptions = await NotificationUserOption.query()
+        .where({ userId, groupId })
+        .whereRaw('path = ?', `{${path.join(',')}}`)
 
-      if (existingOption) {
+      if (existingOptions.length > 0) {
         // Update the 'option' field of the existing record
-        return NotificationUserOption.query().patchAndFetchById(
-          existingOption.id,
-          { option },
-        )
+        // eslint-disable-next-line no-restricted-syntax
+        for (const existingOption of existingOptions) {
+          return NotificationUserOption.query().patchAndFetchById(
+            existingOption.id,
+            { option },
+          )
+        }
       }
 
       // If no existing record, create a new one
-      return NotificationUserOption.query().upsertGraphAndFetch(
-        { userId, path, groupId, option },
-        { insertMissing: true },
-      )
+      // eslint-disable-next-line no-return-await
+      return await NotificationUserOption.query().insert({
+        userId,
+        path,
+        groupId,
+        option,
+      })
     },
   },
 }
