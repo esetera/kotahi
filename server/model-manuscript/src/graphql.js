@@ -103,11 +103,7 @@ const getCss = async () => {
  * all files attached to reviews, and stringify JSON data in preparation for serving to client.
  * Note: 'reviews' include the decision object.
  */
-const getRelatedReviews = async (
-  manuscript,
-  ctx,
-  forceRemovalOfConfidentialData,
-) => {
+const getRelatedReviews = async (manuscript, ctx) => {
   const reviewForm = await getReviewForm(manuscript.groupId)
   const decisionForm = await getDecisionForm(manuscript.groupId)
 
@@ -151,20 +147,15 @@ const getRelatedReviews = async (
     'published',
   ].includes(manuscript.status)
 
-  if (
-    forceRemovalOfConfidentialData ||
-    (!userRoles.admin && !userRoles.anyEditor)
-  ) {
-    reviews = stripConfidentialDataFromReviews(
-      reviews,
-      reviewForm,
-      decisionForm,
-      sharedReviewersIds,
-      manuscriptHasDecision,
-      ctx.user,
-      userRoles,
-    )
-  }
+  reviews = stripConfidentialDataFromReviews(
+    reviews,
+    reviewForm,
+    decisionForm,
+    sharedReviewersIds,
+    ctx.user,
+    userRoles,
+    manuscriptHasDecision,
+  )
 
   return reviews.map(review => ({
     ...review,
@@ -706,7 +697,7 @@ const resolvers = {
         })
 
         const selectedTemplate =
-          activeConfig.formData.eventNotification.reviewRejectedEmailTemplate
+          activeConfig.formData.eventNotification?.reviewRejectedEmailTemplate
 
         const emailValidationRegexp = /^[^\s@]+@[^\s@]+$/
         const emailValidationResult = emailValidationRegexp.test(receiverEmail)
@@ -740,27 +731,34 @@ const resolvers = {
           shortId: manuscript.shortId,
         }
 
-        const selectedEmailTemplate = await models.EmailTemplate.query().findById(
-          selectedTemplate,
-        )
-
-        try {
-          await sendEmailNotification(
-            receiverEmail,
-            selectedEmailTemplate,
-            data,
-            manuscript.groupId,
+        if (selectedTemplate) {
+          const selectedEmailTemplate = await models.EmailTemplate.query().findById(
+            selectedTemplate,
           )
 
-          // Send Notification in Editorial Discussion Panel
-          models.Message.createMessage({
-            content: `Review Rejection Email sent by Kotahi to ${receiverName}`,
-            channelId: editorialChannel.id,
-            userId: manuscript.submitterId,
-          })
-        } catch (e) {
-          /* eslint-disable-next-line */
-          console.log('email was not sent', e)
+          try {
+            await sendEmailNotification(
+              receiverEmail,
+              selectedEmailTemplate,
+              data,
+              manuscript.groupId,
+            )
+
+            // Send Notification in Editorial Discussion Panel
+            models.Message.createMessage({
+              content: `Review Rejection Email sent by Kotahi to ${receiverName}`,
+              channelId: editorialChannel.id,
+              userId: manuscript.submitterId,
+            })
+          } catch (e) {
+            /* eslint-disable-next-line */
+            console.log('email was not sent', e)
+          }
+        } else {
+          // eslint-disable-next-line no-console
+          console.info(
+            'No email template configured for notifying of invited reviewer declining invitation. Email not sent.',
+          )
         }
       }
 
@@ -1400,12 +1398,15 @@ const resolvers = {
 
       return { totalCount, manuscripts: result }
     },
-    // TODO: fetch manuscripts per group for flax?
+
     async manuscriptsPublishedSinceDate(_, { startDate, limit }, ctx) {
+      const groupId = ctx.req.headers['group-id']
+
       const query = models.Manuscript.query()
         .whereNotNull('published')
         .orderBy('published')
 
+      if (groupId) query.where('group_id', groupId)
       if (startDate) query.where('published', '>=', new Date(startDate))
       if (limit) query.limit(limit)
 
@@ -1551,8 +1552,8 @@ const resolvers = {
         )
       )
     },
-    async reviews(parent, { forceRemovalOfConfidentialData }, ctx) {
-      return getRelatedReviews(parent, ctx, forceRemovalOfConfidentialData)
+    async reviews(parent, _, ctx) {
+      return getRelatedReviews(parent, ctx)
     },
     async teams(parent, _, ctx) {
       return (
@@ -1721,7 +1722,7 @@ const typeDefs = `
     shortId: Int!
     files: [File]
     teams: [Team]
-    reviews(forceRemovalOfConfidentialData: Boolean): [Review]
+    reviews: [Review]
     status: String
     decision: String
     authors: [Author]
