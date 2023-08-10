@@ -6,7 +6,6 @@ CREATE TABLE notification_digest (
   max_notification_time TIMESTAMPTZ NOT NULL,
   path_string TEXT,
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  user_is_mentioned BOOLEAN DEFAULT false,
   option TEXT,
   actioned BOOLEAN DEFAULT false,
   context JSONB,

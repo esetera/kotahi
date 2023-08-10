@@ -28,7 +28,6 @@ class NotificationDigest extends BaseModel {
         maxNotificationTime: { type: 'datetime' },
         pathString: { type: 'string' },
         userId: { type: ['string'], format: 'uuid' },
-        userIsMentioned: { type: 'boolean', default: false },
         option: { type: 'string' },
         actioned: { type: 'boolean', default: false },
         context: {

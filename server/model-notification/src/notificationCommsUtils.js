@@ -152,7 +152,6 @@ const notificationEventHandler = async ({
           option,
           context,
           userId: user.id,
-          userIsMentioned: false, // hardcoded for now until we build the @ tagging feature
           groupId,
         }).save()
       }
