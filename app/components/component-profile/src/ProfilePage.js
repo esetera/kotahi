@@ -132,7 +132,8 @@ const ProfilePage = ({ currentUser, match }) => {
       logoutUser={logoutUser}
       match={match}
       notificationUserOption={
-        globalChatNotificationUserOption?.notificationOption?.option
+        globalChatNotificationUserOption?.notificationOption?.option ||
+        'inherit'
       }
       replaceAvatarImage={replaceAvatarImage}
       updateGlobalChatNotificationOptIn={updateGlobalChatNotificationOptIn}

@@ -17,11 +17,6 @@ const resolvers = {
         groupId,
       })
 
-      // If notificationOption is null, treat it as unmuted (inherit)
-      if (!notificationOption) {
-        return { userId: ctx.user, path, groupId, option: 'inherit' }
-      }
-
       return notificationOption
     },
   },
@@ -40,32 +35,26 @@ const resolvers = {
       const userId = ctx.user
 
       // Find the existing record based on userId, path, and groupId
-      const existingOptions = await NotificationUserOption.query()
+      const existingOption = await NotificationUserOption.query()
         .where({ userId, groupId })
         .whereRaw('path = ?', `{${path.join(',')}}`)
+        .first()
 
-      if (existingOptions.length > 0) {
-        // Update the 'option' field of the existing record
-        // eslint-disable-next-line no-restricted-syntax
-        for (const existingOption of existingOptions) {
-          return NotificationUserOption.query().patchAndFetchById(
-            existingOption.id,
-            { option },
-          )
-        }
+      if (existingOption) {
+        return NotificationUserOption.query().patchAndFetchById(
+          existingOption.id,
+          { option },
+        )
       }
 
       // If no existing record, create a new one
       // eslint-disable-next-line no-return-await
-      return await NotificationUserOption.query().upsertGraphAndFetch(
-        {
-          userId,
-          path,
-          groupId,
-          option,
-        },
-        { insertMissing: true },
-      )
+      return await NotificationUserOption.query().insert({
+        userId,
+        path,
+        groupId,
+        option,
+      })
     },
   },
 }

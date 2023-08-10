@@ -106,7 +106,6 @@ const resolvers = {
         path: ['chat', message.channelId],
         context: { messageId: message.id },
         users: channelMembers.map(channelMember => channelMember.user),
-        mentionedUsers: [], // hardcoded for now until we built the @ tagging feature
         groupId: message.channel.groupId,
       })
 
