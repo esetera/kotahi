@@ -1,38 +1,53 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { isEmpty, omitBy } from 'lodash'
+import { isEmpty } from 'lodash'
 import { ErrorMessage, Formik } from 'formik'
 import { v4 as uuid } from 'uuid'
 import ValidatedField from '../../../component-submit/src/components/ValidatedField'
 import {
   fieldOptionsByCategory,
-  getFieldOptionByNameOrComponent,
+  determineFieldAndComponent,
+  combineExistingPropValuesWithDefaults,
 } from './config/Elements'
 import * as elements from './builderComponents'
 import { Section, Legend, ErrorMessageWrapper, DetailText } from './style'
 import Modal from '../../../component-modal/src/Modal'
 import { ActionButton, MediumRow, Select } from '../../../shared'
 
+const getValuesPaddedWithDefaults = (
+  fieldValues,
+  fieldType,
+  componentOption,
+) => {
+  return combineExistingPropValuesWithDefaults(
+    {
+      ...fieldValues,
+      fieldType,
+      component: componentOption?.component || null,
+    },
+    componentOption,
+  )
+}
+
+/** Remove any field properties that may have been disabled by configuration,
+ * such as the Hypothesis tag.
+ */
 const filterOutPropsDisabledByConfig = (
   fieldOpts,
   shouldAllowHypothesisTagging,
 ) =>
-  fieldOpts.map(opt => {
-    const props = Object.fromEntries(
-      Object.entries(opt.props).filter(
-        ([key]) => key !== 'publishingTag' || shouldAllowHypothesisTagging,
-      ),
-    )
+  fieldOpts.map(opt => ({
+    ...opt,
+    componentOptions: opt.componentOptions.map(x => {
+      const props = Object.fromEntries(
+        Object.entries(x.props).filter(
+          ([key]) => key !== 'publishingTag' || shouldAllowHypothesisTagging,
+        ),
+      )
 
-    return { ...opt, props }
-  })
-
-const getDefaults = fieldOption =>
-  Object.fromEntries(
-    Object.entries(fieldOption?.props || {})
-      .filter(([key, value]) => value.defaultValue !== undefined)
-      .map(([key, value]) => [key, value.defaultValue]),
-  )
+      return { ...x, props }
+    }),
+  }))
 
 const FieldSettingsModal = ({
   category,
@@ -51,43 +66,66 @@ const FieldSettingsModal = ({
     shouldAllowHypothesisTagging,
   )
 
-  const [fieldType, setFieldType] = useState(
-    getFieldOptionByNameOrComponent(field.name, field.component, category)
-      ?.fieldType,
+  const {
+    fieldOption: initialFieldOption,
+    componentOption: initialComponentOption,
+  } = determineFieldAndComponent(field.name, field.component, category)
+
+  const [fieldType, setFieldType] = useState(initialFieldOption?.fieldType)
+
+  const [componentType, setComponentType] = useState(
+    initialComponentOption?.component,
   )
 
-  const fieldOption = fieldOpts.find(opt => opt.fieldType === fieldType)
-  const defaults = getDefaults(fieldOption)
+  const fieldOption = fieldOpts.find(x => x.value === fieldType)
 
-  const editableProperties = Object.entries(fieldOption?.props || {}).filter(
-    ([key, value]) => value.component !== 'Hidden',
+  const componentOption = fieldOption?.componentOptions.find(
+    x => x.value === componentType,
   )
+
+  const initialValues = getValuesPaddedWithDefaults(
+    field,
+    fieldType,
+    componentOption,
+  )
+
+  const editableProperties = Object.entries(
+    componentOption?.props || {},
+  ).filter(([key, value]) => value.component !== 'Hidden')
 
   return (
     <Formik
-      initialValues={{
-        ...defaults,
-        ...field,
-        fieldType,
-      }}
-      key={`${field.id},${fieldType},${fieldOption?.component}`}
+      initialValues={initialValues}
       onSubmit={(values, actions) => {
-        onSubmit(prepareForSubmit(values))
+        onSubmit(prepareForSubmit(values, componentOption.props))
         actions.resetForm()
         onClose()
       }}
+      validateOnBlur
     >
-      {({ errors, handleSubmit, setFieldValue, values }) => {
-        const populateDefaultValues = newFieldType => {
+      {({ errors, handleSubmit, setFieldValue, touched, values }) => {
+        const populateDefaultValues = (newFieldType, newComponentType) => {
           const newFieldOption = fieldOpts.find(
             opt => opt.fieldType === newFieldType,
           )
 
-          const newDefaults = getDefaults(newFieldOption)
+          const newComponentOption =
+            newFieldOption.componentOptions.find(
+              x => x.component === newComponentType,
+            ) || newFieldOption.componentOptions[0]
 
-          Object.entries(newDefaults).forEach(([key, value]) => {
-            if (value.defaultValue) setFieldValue(key, value.defaultValue)
-          })
+          const newValues = getValuesPaddedWithDefaults(
+            values,
+            newFieldOption.fieldType,
+            newComponentOption,
+          )
+
+          newValues.fieldType = newFieldOption.fieldType
+          newValues.component = newComponentOption.component
+
+          Object.entries(newValues).forEach(([key, value]) =>
+            setFieldValue(key, value),
+          )
         }
 
         const formIsValid = !Object.keys(errors).length
@@ -123,9 +161,15 @@ const FieldSettingsModal = ({
                   hasGroupedOptions
                   name="fieldType"
                   onChange={option => {
+                    const { component } = fieldOpts.find(
+                      opt => opt.value === option.value,
+                    ).componentOptions[0]
+
                     setFieldType(option.value)
                     setFieldValue('fieldType', option.value)
-                    populateDefaultValues(option.value)
+                    setComponentType(component)
+                    setFieldValue('component', component)
+                    populateDefaultValues(option.value, componentType)
                   }}
                   options={[
                     {
@@ -140,6 +184,22 @@ const FieldSettingsModal = ({
                   required
                 />
               </Section>
+              {fieldOption && fieldOption.componentOptions.length > 1 && (
+                <Section>
+                  <Legend space>Component</Legend>
+                  <ValidatedField
+                    component={Select}
+                    name="component"
+                    onChange={option => {
+                      setComponentType(option.value)
+                      setFieldValue('component', option.value)
+                      populateDefaultValues(fieldType, option.value)
+                    }}
+                    options={fieldOption.componentOptions}
+                    required
+                  />
+                </Section>
+              )}
               {editableProperties.map(([key, value]) => {
                 return (
                   <Section key={key}>
@@ -168,6 +228,7 @@ const FieldSettingsModal = ({
                         label: undefined,
                         description: undefined,
                       }}
+                      shouldAllowFieldSpecChanges
                       validate={
                         key === 'name'
                           ? val => {
@@ -201,28 +262,40 @@ FieldSettingsModal.propTypes = {
 
 FieldSettingsModal.defaultProps = {}
 
-const prepareForSubmit = values => {
-  const cleanedValues = omitBy(
-    values,
-    (value, key) => value === '' || key === 'fieldType',
+/** Because a user can switch between field/component types in the form, and it
+ * doesn't immediately delete unused properties, we need to scrub the data before
+ * it is submitted. This removes all but the relevant properties for the chosen
+ * field/component, and removes any unsupported options. It also adds a uuid to
+ * every item in an array property.
+ */
+const prepareForSubmit = (values, fieldProps) => {
+  const cleanedValues = Object.fromEntries(
+    Object.entries(fieldProps)
+      .map(([propName, propDefinition]) => {
+        let value = values[propName]
+        if (!value) return null
+
+        const props = propDefinition || {}
+
+        if (props.options) {
+          if (props.isMulti) {
+            value = value.filter(x =>
+              props.options.some(opt => opt.value === x.value),
+            )
+          } else if (
+            !propDefinition.props.options.some(opt => opt.value === value)
+          )
+            return null
+        }
+
+        if (Array.isArray(value)) value = value.map(x => ({ id: uuid(), ...x }))
+
+        return [propName, value]
+      })
+      .filter(Boolean),
   )
 
-  if (
-    cleanedValues.component !== 'Select' &&
-    cleanedValues.component !== 'CheckboxGroup' &&
-    cleanedValues.component !== 'RadioGroup'
-  )
-    cleanedValues.options = undefined
-
-  cleanedValues.options = cleanedValues.options?.map(x => ({
-    id: uuid(),
-    ...x,
-  }))
-  cleanedValues.validate = cleanedValues.validate?.map(x => ({
-    id: uuid(),
-    ...x,
-  }))
-
+  cleanedValues.component = values.component
   return cleanedValues
 }
 

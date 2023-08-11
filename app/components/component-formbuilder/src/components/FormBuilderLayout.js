@@ -24,7 +24,7 @@ import { ConfigContext } from '../../../config/src'
 
 const AddFieldButton = styled(RoundIconButton)`
   flex: 0 0 40px;
-  margin-left: 28px;
+  margin: 8px 0 0 28px;
 `
 
 const IconAction = styled(Action)`
@@ -170,7 +170,7 @@ const FormBuilderLayout = ({
                   setIsEditingFieldSettings(true)
                 }}
                 primary
-                title="Add field..."
+                title="Add a field..."
               />
             </div>
           </SectionRow>

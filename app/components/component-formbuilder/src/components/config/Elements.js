@@ -236,7 +236,7 @@ const doiUniqueSuffixValidationField = {
 
 const presetTextField = name => ({
   component: 'Hidden',
-  defaultValue: name,
+  forcedValue: name,
 })
 
 const parseField = {
@@ -292,6 +292,8 @@ const doiValidationField = {
   defaultValue: 'false',
 }
 
+/** Most fields have at least these properties.
+ * Components and fields can override these */
 const prototypeComponent = category => ({
   id: hiddenfield,
   title: requiredTextField,
@@ -305,7 +307,13 @@ const prototypeComponent = category => ({
   publishingTag: publishingTagField,
 })
 
-/** All properties from all components must appear in this list, to establish correct order of display */
+/** All properties from all components must appear in this list,
+ * which is used to establish correct order of display, and for
+ * generating default properties for any field. The defaults for
+ * a given field will contain all these properties, with properties
+ * not used by the field set to null: this is to make Formik behave
+ * nicely when we change field/component types and the form has to
+ * be reorganised. */
 const propertiesOrder = [
   'id',
   'title',
@@ -327,47 +335,49 @@ const propertiesOrder = [
   'publishingTag',
 ]
 
+/** Component types refer to the React component used to represent the field
+ * in a form.
+ *
+ * Every field type relies on an underlying component type, or in some cases,
+ * a choice between multiple underlying component types (e.g., an Abstract
+ * field could be represented by a Rich text component or a Text component).
+ *
+ * The properties for each of these component types override or extend those
+ * given in {@link prototypeComponent}. Overriding with null removes the field.
+ */
 const getBaseComponentProperties = category => ({
   ManuscriptFile: {
-    ...prototypeComponent(category),
     label: 'Attached manuscript',
-    validate: undefined,
-    permitPublishing: undefined,
-    publishingTag: undefined,
+    validate: null,
+    permitPublishing: null,
+    publishingTag: null,
   },
   SupplementaryFiles: {
-    ...prototypeComponent(category),
     label: 'Attachments',
-    permitPublishing: undefined,
-    publishingTag: undefined,
+    permitPublishing: null,
+    publishingTag: null,
   },
   VisualAbstract: {
-    ...prototypeComponent(category),
     label: 'Single image attachment',
-    permitPublishing: undefined,
-    publishingTag: undefined,
+    permitPublishing: null,
+    publishingTag: null,
   },
   AuthorsInput: {
-    ...prototypeComponent(category),
     label: 'List of contributors',
   },
   LinksInput: {
-    ...prototypeComponent(category),
     label: 'List of links (URLs)',
     validate: validateCollection,
   },
   AbstractEditor: {
-    ...prototypeComponent(category),
     label: 'Rich text',
     placeholder: textfield,
     validate: validateText,
   },
   ThreadedDiscussion: {
-    ...prototypeComponent(category),
     label: 'Discussion',
   },
   TextField: {
-    ...prototypeComponent(category),
     label: 'Text',
     placeholder: textfield,
     validate: validateText,
@@ -377,19 +387,16 @@ const getBaseComponentProperties = category => ({
     doiUniqueSuffixValidation: doiUniqueSuffixValidationField,
   },
   CheckboxGroup: {
-    ...prototypeComponent(category),
     label: 'Checkboxes',
     options: optionfield,
     validate: validateCollection,
   },
   Select: {
-    ...prototypeComponent(category),
     label: 'Dropdown selection',
     placeholder: textfield,
     options: optionfield,
   },
   RadioGroup: {
-    ...prototypeComponent(category),
     label: 'Radio buttons',
     options: optionfield,
     inline: radiofield,
@@ -397,35 +404,69 @@ const getBaseComponentProperties = category => ({
   },
 })
 
+/** Field types for free representation of arbitrary data, available in all forms.
+ * Importantly, these field types allow users to choose the field name, rather
+ * than imposing a preset name.
+ *
+ * Each of these generic field types corresponds to a single underlying component type.
+ */
 const genericFieldOptions = [
-  { isCustom: true, fieldType: 'text', component: 'TextField' },
+  { label: 'Text', isCustom: true, fieldType: 'text', component: 'TextField' },
   {
+    label: 'Rich text',
     isCustom: true,
     fieldType: 'richText',
     component: 'AbstractEditor',
   },
-  { isCustom: true, fieldType: 'select', component: 'Select' },
-  { isCustom: true, fieldType: 'radioGroup', component: 'RadioGroup' },
   {
+    label: 'Dropdown selection',
+    isCustom: true,
+    fieldType: 'select',
+    component: 'Select',
+  },
+  {
+    label: 'Radio buttons',
+    isCustom: true,
+    fieldType: 'radioGroup',
+    component: 'RadioGroup',
+  },
+  {
+    label: 'Checkboxes',
     isCustom: true,
     fieldType: 'checkboxes',
     component: 'CheckboxGroup',
   },
   {
+    label: 'List of contributors',
     isCustom: true,
     fieldType: 'contributors',
     component: 'AuthorsInput',
   },
-  { isCustom: true, fieldType: 'links', component: 'LinksInput' },
+  {
+    label: 'List of links (URLs)',
+    isCustom: true,
+    fieldType: 'links',
+    component: 'LinksInput',
+  },
 ]
 
+/** Field options for use in the submission form. Some are specialised, imposing
+ * preset names so they can be used for domain-specific functionality such as
+ * importing or exporting various types of standardised data. Some of the
+ * specialised fields support more than one underlying component type. e.g.
+ * Text or Rich text.
+ */
 const submissionFieldOptions = [
   {
     fieldType: 'title',
     label: 'Title',
-    component: 'TextField',
+    component: ['TextField', 'AbstractEditor'],
     title: requiredTextFieldWithDefault('Title'),
     name: presetTextField('meta.title'),
+    doiValidation: null,
+    doiUniqueSuffixValidation: null,
+    parse: null,
+    format: null,
   },
   {
     fieldType: 'authors',
@@ -437,9 +478,13 @@ const submissionFieldOptions = [
   {
     fieldType: 'abstract',
     label: 'Abstract',
-    component: 'AbstractEditor',
+    component: ['AbstractEditor', 'TextField'],
     title: requiredTextFieldWithDefault('Abstract'),
     name: presetTextField('meta.abstract'),
+    doiValidation: null,
+    doiUniqueSuffixValidation: null,
+    parse: null,
+    format: null,
   },
   {
     fieldType: 'visualAbstract',
@@ -448,13 +493,13 @@ const submissionFieldOptions = [
     title: requiredTextFieldWithDefault('Visual abstract'),
     name: presetTextField('visualAbstract'),
   },
-  {
+  /* {
     fieldType: 'keywords',
     label: 'Keywords',
     component: 'TextField',
     title: requiredTextFieldWithDefault('Keywords'),
     name: presetTextField('submission.keywords'),
-  },
+  }, */
   {
     fieldType: 'attachments',
     label: 'Attachments',
@@ -484,11 +529,14 @@ const submissionFieldOptions = [
   ...genericFieldOptions,
 ]
 
+/** Field options for use in the decision form, including specialised and
+ * generic types.
+ */
 const decisionFieldOptions = [
   {
     fieldType: 'verdict',
     label: 'Verdict',
-    component: 'RadioGroup',
+    component: ['RadioGroup', 'Select'],
     title: requiredTextFieldWithDefault('Decision'),
     name: presetTextField('verdict'),
   },
@@ -500,17 +548,25 @@ const decisionFieldOptions = [
   ...genericFieldOptions,
 ]
 
+/** Field options for use in the review form, including specialised and
+ * generic types.
+ */
 const reviewFieldOptions = [
   {
     fieldType: 'verdict',
     label: 'Verdict',
-    component: 'RadioGroup',
+    component: ['RadioGroup', 'Select'],
     title: requiredTextFieldWithDefault('Recommended action'),
     name: presetTextField('verdict'),
   },
   ...genericFieldOptions,
 ]
 
+/** Compile an array of field options for the given formCategory (submission, review
+ * or decision), each restructured to contain an array of componentOptions.
+ * Each componentOption contains the properties used by the field if that component
+ * is selected.
+ */
 const getFieldOptions = formCategory => {
   let opts = []
   if (formCategory === 'submission') opts = submissionFieldOptions
@@ -519,42 +575,117 @@ const getFieldOptions = formCategory => {
 
   const result = []
 
-  opts.forEach(opt => {
-    const baseProps =
-      getBaseComponentProperties(formCategory)[opt.component] || {}
+  const prototypeProps = prototypeComponent(formCategory)
 
-    const props = {}
-    propertiesOrder.forEach(propName => {
-      if (opt[propName] === null) return // to skip the property
-      if (opt[propName] || baseProps[propName])
-        props[propName] = opt[propName] || baseProps[propName]
+  opts.forEach(opt => {
+    const permittedComponents = Array.isArray(opt.component)
+      ? opt.component
+      : [opt.component]
+
+    const componentOptions = permittedComponents.map(compName => {
+      const baseProps = getBaseComponentProperties(formCategory)[compName] || {}
+
+      const props = {}
+      propertiesOrder.forEach(propName => {
+        if (opt[propName] === null) return // to skip the property
+
+        const prop =
+          opt[propName] || baseProps[propName] || prototypeProps[propName]
+
+        if (prop) props[propName] = prop
+      })
+
+      return {
+        props,
+        component: compName,
+        label: baseProps.label,
+        value: compName, // To work with Select component
+      }
     })
+
     result.push({
       fieldType: opt.fieldType,
-      component: opt.component,
-      label: opt.label || baseProps.label,
+      label: opt.label,
       isCustom: opt.isCustom,
-      value: opt.fieldType, // To work with Submit component
-      props,
+      value: opt.fieldType, // To work with Select component
+      componentOptions,
     })
   })
 
   return result
 }
 
+/** An object providing precompiled arrays of field options for different form categories
+ * (submission, review or decision). Each field option contains an array of one
+ * or more componentOptions, containing the properties used by the field if that
+ * component is selected.
+ */
 const fieldOptionsByCategory = {
   submission: getFieldOptions('submission'),
   decision: getFieldOptions('decision'),
   review: getFieldOptions('review'),
 }
 
-const getFieldOptionByNameOrComponent = (name, component, category) => {
+/** Determines which field option and component option to use for a given field.
+ * First, if a reserved field name is encountered, this will determine the
+ * field option, and best component option available for that field will be used
+ * (which may not match currentComponent). Otherwise, this chooses a generic field
+ * option that provides the specified component.
+ *
+ * Field type is not currently persisted for fields in a form, but is implied
+ * using this function.
+ */
+const determineFieldAndComponent = (fieldName, currentComponent, category) => {
   const fieldOptions = fieldOptionsByCategory[category] || []
 
-  return (
-    fieldOptions.find(opt => name && name === opt.props.name?.defaultValue) ||
-    fieldOptions.find(opt => opt.isCustom && component === opt.component)
-  )
+  const fieldOption =
+    fieldOptions.find(
+      opt =>
+        fieldName &&
+        opt.componentOptions.some(x => x.props.name?.forcedValue === fieldName),
+    ) ||
+    fieldOptions.find(
+      opt =>
+        opt.isCustom &&
+        opt.componentOptions.some(x => x.component === currentComponent),
+    )
+
+  const componentOption =
+    fieldOption?.componentOptions.find(x => x.component === currentComponent) ||
+    fieldOption?.componentOptions[0]
+
+  return { fieldOption, componentOption }
 }
 
-export { fieldOptionsByCategory, getFieldOptionByNameOrComponent }
+/** This fleshes out the provided values by adding defaults wherever a property is
+ * null/undefined/''; it also overrides existing values for certain "forced" fields;
+ * e.g., some component options may force the field name to have a particular value.
+ * The default and forced values are determined by the component option.
+ *
+ * All properties used by all possible field/component options will be added, and those
+ * not used by this particular field/component will be set to null. This is to
+ * facilitate easy switching between field/component options in a Formik form.
+ */
+const combineExistingPropValuesWithDefaults = (values, componentOption) => {
+  const result = {}
+
+  propertiesOrder.forEach(propName => {
+    const propSpec = componentOption?.props[propName] || {}
+    let propVal = propSpec.forcedValue
+    if (propVal === undefined || propVal === null) propVal = values[propName]
+    if (propVal === undefined || propVal === null || propVal === '')
+      propVal = propSpec.defaultValue
+    if (propVal === undefined || propVal === '') propVal = null
+    result[propName] = propVal
+  })
+
+  result.fieldType = values.fieldType
+  result.component = values.component || null
+  return result
+}
+
+export {
+  fieldOptionsByCategory,
+  determineFieldAndComponent,
+  combineExistingPropValuesWithDefaults,
+}

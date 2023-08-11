@@ -7,7 +7,7 @@ import { Icon, Action } from '@pubsweet/ui'
 import { Page } from './style'
 import { DragVerticalIcon } from '../../../shared/Icons'
 import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
-import { getFieldOptionByNameOrComponent } from './config/Elements'
+import { determineFieldAndComponent } from './config/Elements'
 import { color } from '../../../../theme'
 
 const FeildWrapper = styled.div`
@@ -90,11 +90,11 @@ const BuilderElement = ({
   })
 
   // const fieldOptions = fieldOptionsByCategory[category]
-  const fieldTypeLabel = getFieldOptionByNameOrComponent(
+  const fieldTypeLabel = determineFieldAndComponent(
     element.name,
     element.component,
     category,
-  )?.label
+  ).fieldOption?.label
 
   return (
     <Draggable draggableId={formFeildId} index={index} key={formFeildId}>
