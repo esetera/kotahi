@@ -71,11 +71,11 @@ const typeDefs = `
   }
 
   extend type Query {
-    notificationOption(path: [String!]!): NotificationUserOption!
+    notificationOption(path: [String!]!): NotificationUserOption
   }
 
   extend type Mutation {
-    updateNotificationOption(path: [String!]!, option: String!): NotificationUserOption
+    updateNotificationOption(path: [String!]!, option: String!): NotificationUserOption!
   }
 `
 

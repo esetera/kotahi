@@ -122,7 +122,7 @@ const Profile = ({
 
   const toggleGlobalChatNotificationOptIn = async () => {
     const updatedGlobalChatNotificationOptIn =
-      hasGlobalChatNotificationOptIn === 'off' ? '30MinSummary' : 'off'
+      hasGlobalChatNotificationOptIn === 'off' ? 'inherit' : 'off'
 
     setHasGlobalChatNotificationOptIn(updatedGlobalChatNotificationOptIn)
 

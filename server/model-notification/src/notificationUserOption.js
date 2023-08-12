@@ -1,5 +1,4 @@
 const { BaseModel } = require('@coko/server')
-const { User } = require('@pubsweet/models')
 
 class NotificationUserOption extends BaseModel {
   static get tableName() {
@@ -7,6 +6,9 @@ class NotificationUserOption extends BaseModel {
   }
 
   static get relationMappings() {
+    // eslint-disable-next-line global-require
+    const { User } = require('@pubsweet/models')
+
     return {
       user: {
         relation: BaseModel.BelongsToOneRelation,

@@ -32,8 +32,7 @@ class NotificationDigest extends BaseModel {
         actioned: { type: 'boolean', default: false },
         context: {
           type: 'object',
-          properties: { messageId: { type: 'string' } },
-          nullable: true,
+          properties: { messageId: { type: ['string', 'null'] } },
         },
         groupId: { type: ['string'], format: 'uuid' },
       },
