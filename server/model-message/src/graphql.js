@@ -14,7 +14,7 @@ const {
 } = require('../../model-channel/src/channelCommsUtils')
 
 const {
-  notificationEventHandler,
+  notify,
 } = require('../../model-notification/src/notificationCommsUtils')
 
 const resolvers = {
@@ -101,7 +101,7 @@ const resolvers = {
         .whereNot({ userId: message.userId })
         .withGraphJoined('user')
 
-      notificationEventHandler(['chat', message.channelId], {
+      notify(['chat', message.channelId], {
         time: message.created,
         context: { messageId: message.id },
         users: channelMembers.map(channelMember => channelMember.user),

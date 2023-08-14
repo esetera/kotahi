@@ -122,10 +122,7 @@ const getNotificationOptionForUser = async ({ userId, path, groupId }) => {
   return nearestAncestor?.option || '30MinSummary' // Fallback if no options are set
 }
 
-const notificationEventHandler = async (
-  path,
-  { context, time, users, groupId },
-) => {
+const notify = async (path, { context, time, users, groupId }) => {
   if (!users) return
 
   await Promise.all(
@@ -160,5 +157,5 @@ module.exports = {
   sendNotifications,
   sendEmailNotificationOfMessages,
   getNotificationOptionForUser,
-  notificationEventHandler,
+  notify,
 }
