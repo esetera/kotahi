@@ -1,3 +1,4 @@
+const models = require('@pubsweet/models')
 const NotificationUserOption = require('./notificationUserOption')
 
 const resolvers = {
@@ -56,6 +57,19 @@ const resolvers = {
         option,
       })
     },
+    reportUserIsActive: async (_, { path }, context) => {
+      if (path) {
+        const pathString = path.join('/')
+        await models.NotificationDigest.query()
+          .update({
+            actioned: true,
+          })
+          .where({
+            userId: context.user,
+            pathString,
+          })
+      }
+    },
   },
 }
 
@@ -76,6 +90,7 @@ const typeDefs = `
 
   extend type Mutation {
     updateNotificationOption(path: [String!]!, option: String!): NotificationUserOption!
+    reportUserIsActive(path: [String!]!): Boolean
   }
 `
 

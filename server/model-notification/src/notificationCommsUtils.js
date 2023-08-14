@@ -122,13 +122,10 @@ const getNotificationOptionForUser = async ({ userId, path, groupId }) => {
   return nearestAncestor?.option || '30MinSummary' // Fallback if no options are set
 }
 
-const notificationEventHandler = async ({
+const notificationEventHandler = async (
   path,
-  context,
-  time,
-  users,
-  groupId,
-}) => {
+  { context, time, users, groupId },
+) => {
   if (!users) return
 
   await Promise.all(

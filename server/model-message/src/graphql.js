@@ -101,9 +101,8 @@ const resolvers = {
         .whereNot({ userId: message.userId })
         .withGraphJoined('user')
 
-      notificationEventHandler({
+      notificationEventHandler(['chat', message.channelId], {
         time: message.created,
-        path: ['chat', message.channelId],
         context: { messageId: message.id },
         users: channelMembers.map(channelMember => channelMember.user),
         groupId: message.channel.groupId,

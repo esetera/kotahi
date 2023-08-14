@@ -66,7 +66,7 @@ const Chat = ({
     try {
       await reportUserIsActiveMutation({
         variables: {
-          channelId,
+          path: ['chat', channelId],
         },
       })
     } catch (error) {

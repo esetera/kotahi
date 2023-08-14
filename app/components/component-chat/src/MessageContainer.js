@@ -72,8 +72,8 @@ const CHANNEL_VIEWED = gql`
 `
 
 const REPORT_USER_IS_ACTIVE = gql`
-  mutation reportUserIsActive($channelId: String!) {
-    reportUserIsActive(channelId: $channelId)
+  mutation reportUserIsActive($path: [String!]!) {
+    reportUserIsActive(path: $path)
   }
 `
 
