@@ -7,6 +7,7 @@ const {
 
 const {
   addUserToManuscriptChatChannel,
+  removeUserFromManuscriptChatChannel,
 } = require('../../model-channel/src/channelCommsUtils')
 
 const resolvers = {
@@ -74,6 +75,19 @@ const resolvers = {
           .findById(id)
 
         await updateAlertsUponTeamUpdate(objectId, membersAdded, membersRemoved)
+
+        membersRemoved.forEach(async userId => {
+          await removeUserFromManuscriptChatChannel({
+            manuscriptId: objectId,
+            userId,
+            type: 'all',
+          })
+          await removeUserFromManuscriptChatChannel({
+            manuscriptId: objectId,
+            userId,
+            type: 'editorial',
+          })
+        })
 
         input.members.forEach(async member => {
           await addUserToManuscriptChatChannel({
