@@ -87,6 +87,19 @@ const resolvers = {
             userId,
             type: 'editorial',
           })
+
+          const manuscript = await models.Manuscript.query().findById(objectId)
+
+          const channels = await models.Channel.query().where({
+            manuscriptId: manuscript.parentId || objectId,
+          })
+
+          const pathStrings = channels.map(channel => `chat/${channel.id}`)
+
+          await models.NotificationDigest.query()
+            .delete()
+            .where({ user_id: userId })
+            .whereIn('path_string', pathStrings)
         })
 
         input.members.forEach(async member => {
