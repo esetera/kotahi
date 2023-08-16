@@ -61,9 +61,7 @@ const ArticleArtifactPage = ({ match }) => {
   }
 
   const relatedDocumentTitle =
-    manuscript.meta.title ||
-    manuscript.submission.title ||
-    manuscript.submission.description ||
+    manuscript.submission.$title ||
     (artifact.relatedDocumentUri
       ? `Click to view the related ${
           artifact.relatedDocumentType || 'document'

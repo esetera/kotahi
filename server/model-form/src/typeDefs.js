@@ -47,6 +47,7 @@ const typeDefs = `
     hideFromAuthors: String
     permitPublishing: String
     publishingTag: String
+    readonly: Boolean
   }
 
   input FormElementOptionInput {
@@ -102,6 +103,7 @@ const typeDefs = `
     hideFromAuthors: String
     permitPublishing: String
     publishingTag: String
+    readonly: Boolean
   }
 
   type FormElementOption {

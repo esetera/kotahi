@@ -111,15 +111,10 @@ const Frontpage = () => {
 
       {publishedManuscripts.length > 0 ? (
         publishedManuscripts.map(manuscript => {
-          const title =
-            config.instanceName === 'elife'
-              ? manuscript.submission.description
-              : manuscript.meta.title
-
           return (
             <SectionContent key={`manuscript-${manuscript.id}`}>
               <SectionHeader>
-                <Title>{title}</Title>
+                <Title>{manuscript.submission.$title}</Title>
               </SectionHeader>
               <SectionRow>
                 {[...manuscript.publishedArtifacts]
@@ -130,13 +125,13 @@ const Frontpage = () => {
                       key={artifact.id}
                     />
                   ))}
-                {manuscript.submission?.abstract && (
+                {manuscript.submission?.$abstract && (
                   <>
                     <Subheading>Abstract:</Subheading>
                     <Abstract
                       dangerouslySetInnerHTML={(() => {
                         return {
-                          __html: sanitize(manuscript.submission?.abstract),
+                          __html: sanitize(manuscript.submission?.$abstract),
                         }
                       })()}
                     />

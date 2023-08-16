@@ -3,7 +3,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { th } from '@pubsweet/ui-toolkit'
-import { get } from 'lodash'
 import lightenBy from '../../../../../shared/lightenBy'
 
 const Root = styled.div`
@@ -18,11 +17,8 @@ const ShortId = styled.div`
   min-width: 3em;
 `
 
-export default ({ version, shouldShowShortId, instanceName }) => {
-  const title =
-    instanceName === 'ncrc'
-      ? JSON.parse(version.submission).articleDescription
-      : get(version, 'meta.title') || 'Untitled'
+export default ({ version, shouldShowShortId }) => {
+  const title = JSON.parse(version.submission).$title || 'Untitled'
 
   return (
     <Root>

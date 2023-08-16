@@ -94,7 +94,7 @@ export const VersionSwitcher = ({ versions = [], children, top = 2 }) => {
               d.props.version.created,
               normalizedVersions.length - i,
               normalizedVersions.length,
-              d.props.version.meta.title,
+              d.props.version.submission.$title,
             ),
         }))}
         placeholder="Select version..."

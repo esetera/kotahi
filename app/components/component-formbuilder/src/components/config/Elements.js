@@ -58,14 +58,14 @@ const nameField = {
   },
 }
 
-const submissionNameFieldRegex = /^(?:submission\.[a-zA-Z]\w*|meta.title|meta.abstract|fileName|visualAbstract|manuscriptFile)$/
+const submissionNameFieldRegex = /^submission\.[a-zA-Z]\w*$/
 
 const submissionNameField = {
   component: 'TextField',
   props: {
     label: 'Name (internal field name)',
     description:
-      'Use either "submission.yourFieldNameHere", or one of the following: "meta.title" for manuscript title, "meta.abstract" for abstract, "fileName" for SupplementaryFiles, or "visualAbstract" for a VisualAbstract, or "manuscriptFile" for a ManuscriptFile.',
+      'Enter "submission." followed by a name including only letters, numbers or underscores, e.g. "submission.yourFieldNameHere"',
     validate: val =>
       submissionNameFieldRegex.test(val) ? null : 'Invalid name',
   },
@@ -462,33 +462,36 @@ const submissionFieldOptions = [
     label: 'Title',
     component: ['TextField', 'AbstractEditor'],
     title: requiredTextFieldWithDefault('Title'),
-    name: presetTextField('meta.title'),
+    name: presetTextField('submission.$title'),
     doiValidation: null,
     doiUniqueSuffixValidation: null,
     parse: null,
     format: null,
+    permitPublishing: { ...permitPublishingField, defaultValue: 'always' },
   },
   {
     fieldType: 'authors',
     label: 'Authors',
     component: 'AuthorsInput',
     title: requiredTextFieldWithDefault('Authors'),
-    name: presetTextField('submission.authors'),
+    name: presetTextField('submission.$authors'),
+    permitPublishing: { ...permitPublishingField, defaultValue: 'always' },
   },
   {
     fieldType: 'abstract',
     label: 'Abstract',
     component: ['AbstractEditor', 'TextField'],
     title: requiredTextFieldWithDefault('Abstract'),
-    name: presetTextField('meta.abstract'),
+    name: presetTextField('submission.$abstract'),
     doiValidation: null,
     doiUniqueSuffixValidation: null,
     parse: null,
     format: null,
+    permitPublishing: { ...permitPublishingField, defaultValue: 'always' },
   },
   {
     fieldType: 'visualAbstract',
-    label: 'VisualAbstract',
+    label: 'Visual abstract',
     component: 'VisualAbstract',
     title: requiredTextFieldWithDefault('Visual abstract'),
     name: presetTextField('visualAbstract'),
@@ -512,19 +515,89 @@ const submissionFieldOptions = [
     label: 'DOI',
     component: 'TextField',
     title: requiredTextFieldWithDefault('DOI'),
-    name: presetTextField('submission.doi'),
+    name: presetTextField('submission.$doi'),
     doiValidation: { ...doiValidationField, defaultValue: 'true' },
     doiUniqueSuffixValidation: null,
     parse: null,
     format: null,
     validate: validateOther,
+    permitPublishing: { ...permitPublishingField, defaultValue: 'always' },
+  },
+  {
+    fieldType: 'doiSuffix',
+    label: 'DOI suffix',
+    component: 'TextField',
+    title: requiredTextFieldWithDefault('DOI suffix'),
+    name: presetTextField('submission.$doiSuffix'),
+    doiValidation: null,
+    doiUniqueSuffixValidation: {
+      ...doiUniqueSuffixValidationField,
+      defaultValue: 'true',
+    },
+    parse: null,
+    format: null,
+  },
+  {
+    fieldType: 'sourceUri',
+    label: 'Manuscript source URI',
+    component: 'TextField',
+    title: requiredTextFieldWithDefault('Manuscript source URI'),
+    name: presetTextField('submission.$sourceUri'),
+    doiValidation: null,
+    doiUniqueSuffixValidation: null,
+    parse: null,
+    format: null,
+  },
+  {
+    fieldType: 'customStatus',
+    label: 'Custom status',
+    component: ['Select', 'RadioGroup'],
+    title: requiredTextFieldWithDefault('Label'),
+    name: presetTextField('submission.$customStatus'),
+    options: {
+      ...optionfield,
+      defaultValue: [
+        {
+          label: 'Ready to evaluate',
+          value: 'readyToEvaluate',
+          id: '90eeb071-b99c-482c-9b62-3ed3e98bd6e8',
+        },
+        {
+          label: 'Evaluated',
+          value: 'evaluated',
+          id: 'e10b7c15-7c3d-4eb6-b490-6194003a87d8',
+        },
+        {
+          label: 'Ready to publish',
+          value: 'readyToPublish',
+          id: '939e2f13-19ad-4c28-8a6a-142a97ddbbd2',
+        },
+      ],
+      doiValidation: null,
+      doiUniqueSuffixValidation: null,
+    },
+  },
+  {
+    fieldType: 'editDate',
+    label: 'Last edit date — read-only',
+    component: 'TextField',
+    title: requiredTextFieldWithDefault('Last edit date'),
+    name: presetTextField('submission.$editDate'),
+    readonly: true,
+    placeholder: null,
+    doiValidation: null,
+    doiUniqueSuffixValidation: null,
+    parse: null,
+    format: null,
+    validate: null,
   },
   {
     fieldType: 'attachedManuscript',
-    label: 'Attached manuscript',
+    label: 'Attached manuscript — read-only',
     component: 'ManuscriptFile',
     title: requiredTextFieldWithDefault('Attached manuscript'),
     name: presetTextField('manuscriptFile'),
+    validate: null,
   },
   ...genericFieldOptions,
 ]
@@ -538,14 +611,35 @@ const decisionFieldOptions = [
     label: 'Verdict',
     component: ['RadioGroup', 'Select'],
     title: requiredTextFieldWithDefault('Decision'),
-    name: presetTextField('verdict'),
+    name: presetTextField('$verdict'),
   },
   {
     isCustom: true,
     fieldType: 'discussion',
+    label: 'Discussion',
     component: 'ThreadedDiscussion',
   },
   ...genericFieldOptions,
+  {
+    isCustom: true,
+    fieldType: 'attachments',
+    label: 'Attachments',
+    component: 'SupplementaryFiles',
+  },
+  {
+    fieldType: 'doiSuffix',
+    label: 'DOI suffix',
+    component: 'TextField',
+    title: requiredTextFieldWithDefault('DOI suffix'),
+    name: presetTextField('$doiSuffix'),
+    doiValidation: null,
+    doiUniqueSuffixValidation: {
+      ...doiUniqueSuffixValidationField,
+      defaultValue: 'true',
+    },
+    parse: null,
+    format: null,
+  },
 ]
 
 /** Field options for use in the review form, including specialised and
@@ -557,9 +651,29 @@ const reviewFieldOptions = [
     label: 'Verdict',
     component: ['RadioGroup', 'Select'],
     title: requiredTextFieldWithDefault('Recommended action'),
-    name: presetTextField('verdict'),
+    name: presetTextField('$verdict'),
   },
   ...genericFieldOptions,
+  {
+    isCustom: true,
+    fieldType: 'attachments',
+    label: 'Attachments',
+    component: 'SupplementaryFiles',
+  },
+  {
+    fieldType: 'doiSuffix',
+    label: 'DOI suffix',
+    component: 'TextField',
+    title: requiredTextFieldWithDefault('DOI suffix'),
+    name: presetTextField('$doiSuffix'),
+    doiValidation: null,
+    doiUniqueSuffixValidation: {
+      ...doiUniqueSuffixValidationField,
+      defaultValue: 'true',
+    },
+    parse: null,
+    format: null,
+  },
 ]
 
 /** Compile an array of field options for the given formCategory (submission, review
@@ -608,6 +722,7 @@ const getFieldOptions = formCategory => {
       label: opt.label,
       isCustom: opt.isCustom,
       value: opt.fieldType, // To work with Select component
+      readonly: opt.readonly,
       componentOptions,
     })
   })

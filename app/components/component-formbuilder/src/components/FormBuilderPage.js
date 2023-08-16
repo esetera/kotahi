@@ -53,6 +53,7 @@ structure {
     hideFromAuthors
     permitPublishing
     publishingTag
+    readonly
   }
 }
 `

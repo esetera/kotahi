@@ -238,7 +238,7 @@ const sendEmailWithPreparedData = async (input, ctx, emailSender) => {
       receiverEmail,
       selectedEmailTemplateData,
       {
-        manuscriptTitle: manuscript.meta.title,
+        manuscriptTitle: manuscript.submission.$title,
         authorName,
         senderName: currentUser,
         recipientName: receiverName,

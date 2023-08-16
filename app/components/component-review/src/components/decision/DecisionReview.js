@@ -198,7 +198,7 @@ const DecisionReview = ({
     canBePublishedPublicly,
   } = review
 
-  const recommendation = ensureJsonIsParsed(review.jsonData)?.verdict
+  const recommendation = ensureJsonIsParsed(review.jsonData)?.$verdict
 
   const { user, ordinal } = reviewer
 

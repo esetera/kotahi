@@ -100,7 +100,7 @@ const Manuscripts = ({ history, ...props }) => {
     const newManuscriptsFromCurrentPage = manuscripts.filter(
       manuscript =>
         manuscript.status === articleStatuses.new &&
-        !manuscript.submission.labels,
+        !manuscript.submission.$customStatus,
     )
 
     const newManuscriptsFromCurrentPageIds = newManuscriptsFromCurrentPage.map(
@@ -125,7 +125,7 @@ const Manuscripts = ({ history, ...props }) => {
                 .filter(
                   manuscript =>
                     manuscript.status === articleStatuses.new &&
-                    !manuscript.submission.labels,
+                    !manuscript.submission.$customStatus,
                 )
                 .map(manuscript => manuscript.id),
             ]),
@@ -335,7 +335,7 @@ const Manuscripts = ({ history, ...props }) => {
                     manuscripts.filter(
                       manuscript =>
                         manuscript.status === articleStatuses.new &&
-                        !manuscript.submission.labels,
+                        !manuscript.submission.$customStatus,
                     ).length ===
                       manuscripts.filter(manuscript =>
                         selectedNewManuscripts.includes(manuscript.id),

@@ -40,7 +40,7 @@ const migrateFieldName = async (formId, oldFieldName, newFieldName) => {
 
   const nameValidationRegex =
     form.purpose === 'submit'
-      ? /^(?:submission\.[a-zA-Z]\w*|meta.title|meta.abstract|fileName|visualAbstract|manuscriptFile)$/
+      ? /^(?:submission\.\$?[a-zA-Z]\w*|fileName|visualAbstract|manuscriptFile)$/
       : /^[a-zA-Z]\w*$/
 
   if (

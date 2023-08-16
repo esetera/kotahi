@@ -12,8 +12,6 @@ const fragmentFields = `
   status
   meta {
     manuscriptId
-    title
-    abstract
   }
   submission
   files {

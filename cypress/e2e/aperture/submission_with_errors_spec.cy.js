@@ -53,8 +53,8 @@ describe('Submission with errors test', () => {
         cy.get('input[type=file]').selectFile('cypress/fixtures/test-pdf.pdf', {
           force: true,
         })
-        cy.get('[data-testid="meta.title"]').clear()
-        cy.get('[data-testid="meta.title"]').should('have.length', 1)
+        cy.get('[data-testid="submission.$title"]').clear()
+        cy.get('[data-testid="submission.$title"]').should('have.length', 1)
         SubmissionFormPage.clickSubmitResearch()
       })
 

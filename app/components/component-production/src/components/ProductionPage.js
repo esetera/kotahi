@@ -73,9 +73,7 @@ const fragmentFields = `
   }
 	submission
   meta {
-    title
     source
-		abstract
     manuscriptId
   }
 `

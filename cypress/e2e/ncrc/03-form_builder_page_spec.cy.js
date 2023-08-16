@@ -187,8 +187,8 @@ describe('form builder tests', () => {
     })
 
     it('message for DOI invalid should not exist ', () => {
-      SubmissionFormPage.fillInArticleUrl('google.com')
-      SubmissionFormPage.fillInArticleDescription('2')
+      SubmissionFormPage.fillInDoi('google.com')
+      SubmissionFormPage.fillInTitle('2')
       SubmissionFormPage.getValidationErrorMessage('DOI is invalid').should(
         'not.exist',
       )

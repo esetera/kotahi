@@ -93,8 +93,7 @@ const getCurrentCrossrefTimestamp = date => {
 /** Get the list of citations as a fragment of Crossref-flavoured XML.
  * Citations are read from HTML, from either submission.citations or submission.references, with one citation expected per paragraph. */
 const getCitations = manuscript => {
-  const rawCitationBlock =
-    manuscript.submission.citations || manuscript.submission.references
+  const rawCitationBlock = manuscript.submission.references
 
   let citations = []
 
@@ -113,7 +112,7 @@ const getCitations = manuscript => {
 }
 
 /** Used to get a review or submission field
- * checking submission.decisionForm[fieldName] or submission[fieldName] */
+ * checking decision.jsonData[fieldName] or manuscript.submission[fieldName] */
 const getReviewOrSubmissionField = (manuscript, fieldName) => {
   const decision = manuscript.reviews.find(r => r.isDecision)
   const decisionField = decision ? decision.jsonData[fieldName] : null
@@ -239,13 +238,14 @@ const publishArticleToCrossref = async manuscript => {
 
   if (!manuscript.submission)
     throw new Error('Manuscript has no submission object')
-  if (!manuscript.meta.title) throw new Error('Manuscript has no title')
-  if (!manuscript.meta.abstract && !manuscript.submission.abstract)
-    throw new Error('Manuscript has no abstract')
-  if (!manuscript.submission.authors)
-    throw new Error('Manuscript has no submission.authors field')
-  if (!Array.isArray(manuscript.submission.authors))
-    throw new Error('Manuscript.submission.authors is not an array')
+  if (!manuscript.submission.$title)
+    throw new Error('Manuscript has no submission.$title')
+  if (!manuscript.submission.$abstract)
+    throw new Error('Manuscript has no submission.$abstract')
+  if (!manuscript.submission.$authors)
+    throw new Error('Manuscript has no submission.$authors field')
+  if (!Array.isArray(manuscript.submission.$authors))
+    throw new Error('Manuscript.submission.$authors is not an array')
   if (
     !emailRegex.test(activeConfig.formData.publishing.crossref.depositorEmail)
   )
@@ -258,7 +258,7 @@ const publishArticleToCrossref = async manuscript => {
   const journalDoi = getDoi(0, activeConfig)
 
   const doiSuffix =
-    getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id
+    getReviewOrSubmissionField(manuscript, '$doiSuffix') || manuscript.id
 
   const doi = getDoi(doiSuffix, activeConfig)
   if (!(await doiIsAvailable(doi))) throw Error('Custom DOI is not available.')
@@ -283,10 +283,10 @@ const publishArticleToCrossref = async manuscript => {
       publication_date: { year: issueYear },
     },
     journal_article: {
-      titles: { title: manuscript.meta.title },
+      titles: { title: manuscript.submission.$title },
       contributors: {
         // This seems really counterintuitive but it's how xml2js requires it
-        person_name: manuscript.submission.authors.map(
+        person_name: manuscript.submission.$authors.map(
           (author, i) => getContributor(author, i).person_name,
         ),
       },
@@ -361,10 +361,7 @@ const publishArticleToCrossref = async manuscript => {
 
   const xml = builder
     .buildObject(json)
-    .replace(
-      ABSTRACT_PLACEHOLDER,
-      htmlToJats(manuscript.meta.abstract || manuscript.submission.abstract),
-    )
+    .replace(ABSTRACT_PLACEHOLDER, htmlToJats(manuscript.submission.$abstract))
     .replace(CITATIONS_PLACEHOLDER, citations)
 
   const dirName = `${+new Date()}-${manuscript.id}`
@@ -382,13 +379,8 @@ const publishReviewsToCrossref = async manuscript => {
     active: true,
   })
 
-  if (
-    !manuscript.submission.articleURL ||
-    !manuscript.submission.articleURL.startsWith('https://doi.org/')
-  )
-    throw new Error(
-      `Field submission.articleURL is not a DOI link: "${manuscript.submission.articleURL}"`,
-    )
+  if (!manuscript.submission.$doi)
+    throw new Error('Field submission.$doi is not present')
 
   const template = await fsPromised.readFile(
     path.resolve(__dirname, 'crossref_publish_xml_template.xml'),
@@ -443,7 +435,7 @@ const publishReviewsToCrossref = async manuscript => {
           platform: 'Crossref',
           externalId: doi,
           hostedInKotahi: true,
-          relatedDocumentUri: manuscript.submission.articleURL,
+          relatedDocumentUri: `https://doi.org/${manuscript.submission.$doi}`,
           relatedDocumentType: 'preprint',
         })
 
@@ -500,7 +492,7 @@ const publishReviewsToCrossref = async manuscript => {
         templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
           inter_work_relation: [
             {
-              _: manuscript.submission.articleURL.split('.org/')[1],
+              _: manuscript.submission.$doi,
               $: {
                 'relationship-type': 'isReviewOf',
                 'identifier-type': 'doi',
@@ -536,7 +528,7 @@ const publishReviewsToCrossref = async manuscript => {
       platform: 'Crossref',
       externalId: summaryDoi,
       hostedInKotahi: true,
-      relatedDocumentUri: manuscript.submission.articleURL,
+      relatedDocumentUri: `https://doi.org/${manuscript.submission.$doi}`,
       relatedDocumentType: 'preprint',
     })
 
@@ -584,7 +576,7 @@ const publishReviewsToCrossref = async manuscript => {
     templateCopy.doi_batch.body[0].peer_review[0].program[0].related_item[0] = {
       inter_work_relation: [
         {
-          _: manuscript.submission.articleURL.split('.org/')[1],
+          _: manuscript.submission.$doi,
           $: {
             'relationship-type': 'isReviewOf',
             'identifier-type': 'doi',

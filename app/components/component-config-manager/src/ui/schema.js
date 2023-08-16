@@ -525,7 +525,7 @@ const generateSchema = (
                     description:
                       'List columns to display on the Manuscripts page',
                     default:
-                      'shortId, meta.title, created, updated, status, submission.labels, author',
+                      'shortId, titleAndAbstract, created, updated, status, submission.$customStatus, author',
                   },
                   paginationCount: {
                     type: 'number',
@@ -933,7 +933,7 @@ const generateSchema = (
                     description:
                       'List columns to display on the Manuscripts page',
                     default:
-                      'shortId, meta.title, created, updated, status, submission.labels, author',
+                      'shortId, titleAndAbstract, created, updated, status, submission.$customStatus, author',
                   },
                   paginationCount: {
                     type: 'number',
@@ -1341,7 +1341,7 @@ const generateSchema = (
                     description:
                       'List columns to display on the Manuscripts page',
                     default:
-                      'shortId, meta.title, created, updated, status, submission.labels, author',
+                      'shortId, titleAndAbstract, created, updated, status, submission.$customStatus, author',
                   },
                   paginationCount: {
                     type: 'number',
@@ -1745,7 +1745,7 @@ const generateSchema = (
                     description:
                       'List columns to display on the Manuscripts page',
                     default:
-                      'shortId, meta.title, created, updated, status, submission.labels, author',
+                      'shortId, titleAndAbstract, created, updated, status, submission.$customStatus, author',
                   },
                   paginationCount: {
                     type: 'number',

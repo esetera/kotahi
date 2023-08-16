@@ -97,7 +97,9 @@ const FieldSettingsModal = ({
     <Formik
       initialValues={initialValues}
       onSubmit={(values, actions) => {
-        onSubmit(prepareForSubmit(values, componentOption.props))
+        onSubmit(
+          prepareForSubmit(values, componentOption.props, fieldOption.readonly),
+        )
         actions.resetForm()
         onClose()
       }}
@@ -247,6 +249,11 @@ const FieldSettingsModal = ({
                   </Section>
                 )
               })}
+              {!editableProperties.some(([key]) => key === 'name') && (
+                <Section key="name">
+                  <Legend>Internal field name</Legend> {values.name}
+                </Section>
+              )}
             </Modal>
           </form>
         )
@@ -268,7 +275,7 @@ FieldSettingsModal.defaultProps = {}
  * field/component, and removes any unsupported options. It also adds a uuid to
  * every item in an array property.
  */
-const prepareForSubmit = (values, fieldProps) => {
+const prepareForSubmit = (values, fieldProps, readonly) => {
   const cleanedValues = Object.fromEntries(
     Object.entries(fieldProps)
       .map(([propName, propDefinition]) => {
@@ -296,6 +303,7 @@ const prepareForSubmit = (values, fieldProps) => {
   )
 
   cleanedValues.component = values.component
+  cleanedValues.readonly = readonly
   return cleanedValues
 }
 

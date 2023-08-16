@@ -53,19 +53,19 @@ describe('Submission with errors test', () => {
       cy.get('input[type=file]').selectFile('cypress/fixtures/test-pdf.pdf', {
         force: true,
       })
-      cy.get('[data-testid="meta.title"]').clear()
-      cy.get('[data-testid="meta.title"]').should('have.length', 1)
+      cy.get('[data-testid="submission.$title"]').clear()
+      cy.get('[data-testid="submission.$title"]').should('have.length', 1)
       SubmissionFormPage.clickSubmitResearch()
 
       // Change the title so that we can look for it
       // eslint-disable-next-line jest/valid-expect-in-promise
       cy.fixture('submission_form_data').then(data => {
         SubmissionFormPage.fillInTitle(data.newTitle)
-        SubmissionFormPage.fillInDoiColab(data.doi)
+        SubmissionFormPage.fillInDoi(data.doi)
         SubmissionFormPage.fillInAbstractColab(data.abstract)
         SubmissionFormPage.fillInFirstAuthor(data.creator)
         SubmissionFormPage.fillInDatePublished(data.date)
-        SubmissionFormPage.fillInLink(data.link)
+        SubmissionFormPage.fillInPreprintUri(data.link)
         SubmissionFormPage.fillInOurTake(data.ourTake)
         SubmissionFormPage.fillInMainFindings(data.mainFindings)
         SubmissionFormPage.fillInStudyStrengths(data.studyStrengths)

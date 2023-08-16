@@ -86,14 +86,14 @@ describe('validating doi field in submission form', () => {
           Menu.clickManuscripts()
           ManuscriptsPage.getOptionsElifeText('Evaluation').click()
           SubmissionFormPage.fillInArticleld(data.articleId)
-          SubmissionFormPage.fillInArticleUrl(data.doi)
-          SubmissionFormPage.fillInBioRxivArticleUrl(data.articleId)
-          SubmissionFormPage.fillInDescription(data.description)
+          SubmissionFormPage.fillInDoi(data.doi)
+          SubmissionFormPage.fillInPreprintUri(data.articleId)
+          SubmissionFormPage.fillInTitle(data.description)
           SubmissionFormPage.clickSubmitResearch()
 
           // check for the submission form contains doi
           ManuscriptsPage.getOptionsElifeText('Evaluation').click()
-          SubmissionFormPage.getArticleUrl().should('have.value', data.doi)
+          SubmissionFormPage.getDoi().should('have.value', data.doi)
         })
       })
     })
@@ -111,7 +111,7 @@ describe('validating doi field in submission form', () => {
         // select Control on the Manuscripts page
         Menu.clickManuscripts()
         ManuscriptsPage.getOptionsElifeText('Evaluation').click()
-        SubmissionFormPage.fillInArticleUrl(invalidDoiLnk)
+        SubmissionFormPage.fillInDoi(invalidDoiLnk)
         SubmissionFormPage.clickSubmitResearch()
         SubmissionFormPage.getValidationErrorMessage('DOI is invalid')
       })

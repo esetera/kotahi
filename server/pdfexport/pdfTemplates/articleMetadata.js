@@ -77,21 +77,21 @@ const makeFormattedAuthors = (authors, correspondingAuthor) => {
 const articleMetadata = manuscript => {
   const meta = {}
 
-  if (manuscript && manuscript.meta && manuscript.meta.manuscriptId) {
+  if (manuscript?.meta?.manuscriptId) {
     meta.id = manuscript.meta.manuscriptId
   }
 
-  if (manuscript && manuscript.meta && manuscript.meta.title) {
-    meta.title = manuscript.meta.title
-  }
-
-  if (manuscript && manuscript.created) {
+  if (manuscript?.created) {
     // N.b. this is the internal date for Kotahi, not the date given in the form!
     meta.pubDate = manuscript.created
   }
 
-  if (manuscript && manuscript.submission) {
+  if (manuscript?.submission) {
     meta.submission = manuscript.submission
+
+    if (manuscript.submission.$title) {
+      meta.title = manuscript.submission.$title
+    }
 
     if (manuscript.submission.topic) {
       meta.topic = manuscript.submission.topic
@@ -101,8 +101,8 @@ const articleMetadata = manuscript => {
       meta.topics = manuscript.submission.topics
     }
 
-    if (manuscript.submission.DOI) {
-      meta.doi = manuscript.submission.DOI
+    if (manuscript.submission.$doi) {
+      meta.doi = manuscript.submission.$doi
     } else {
       meta.doi = 'DOI will be available soon.'
     }
@@ -115,8 +115,8 @@ const articleMetadata = manuscript => {
       meta.funding = manuscript.submission.Funding
     }
 
-    if (manuscript.submission.abstract) {
-      meta.abstract = manuscript.submission.abstract
+    if (manuscript.submission.$abstract) {
+      meta.abstract = manuscript.submission.$abstract
     }
 
     if (manuscript.submission.AuthorCorrespondence) {
@@ -130,13 +130,10 @@ const articleMetadata = manuscript => {
       )
     }
 
-    if (
-      manuscript.submission.authorNames &&
-      manuscript.submission.authorNames.length
-    ) {
+    if (manuscript.submission.$authors?.length) {
       meta.authors = []
 
-      meta.authors = manuscript.submission.authorNames.map(author => ({
+      meta.authors = manuscript.submission.$authors.map(author => ({
         email: author.email || '',
         firstName: author.firstName || '',
         lastName: author.lastName || '',

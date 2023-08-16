@@ -33,7 +33,7 @@ const ReviewPreview = ({
   return (
     <Page>
       <Heading>Summary</Heading>
-      <Title>{manuscript.meta.title}</Title>
+      <Title>{manuscript.submission.$title}</Title>
       <ReadonlyFormTemplate
         form={submissionForm}
         formData={{

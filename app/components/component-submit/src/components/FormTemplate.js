@@ -520,7 +520,6 @@ const FormTemplate = ({
                             setFieldValue(element.name, val, false)
                             innerOnChange(val, element.name)
                           }}
-                          readonly={element.name === 'submission.editDate'}
                           setTouched={setTouched}
                           spellCheck
                           threadedDiscussionProps={threadedDiscussionProps}
@@ -599,6 +598,7 @@ FormTemplate.propTypes = {
           PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         ),
         hideFromAuthors: PropTypes.string,
+        readonly: PropTypes.bool,
       }).isRequired,
     ).isRequired,
     popuptitle: PropTypes.string,

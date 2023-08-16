@@ -231,6 +231,7 @@ const formPropTypes = PropTypes.shape({
           PropTypes.number.isRequired,
         ]).isRequired,
       ),
+      readonly: PropTypes.bool,
     }).isRequired,
   ).isRequired,
   popuptitle: PropTypes.string,

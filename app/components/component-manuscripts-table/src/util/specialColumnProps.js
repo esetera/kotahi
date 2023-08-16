@@ -158,7 +158,7 @@ const buildSpecialColumnProps = (specialComponentValues, config) => {
       extraProps: { selectedNewManuscripts, toggleNewManuscriptCheck },
     },
     'submission.topics': { flex: '0 1 10em' },
-    'submission.labels': {
+    'submission.$customStatus': {
       flex: '0 1 10em',
       extraProps: { setReadyToEvaluateLabel },
       component: config?.manuscript?.labelColumn
@@ -167,18 +167,7 @@ const buildSpecialColumnProps = (specialComponentValues, config) => {
     },
     'submission.label': { flex: '0.2 1 10em' },
     'submission.journal': { flex: '0.2 1 12em' },
-    'submission.articleDescription': {
-      component:
-        config?.instanceName === 'ncrc'
-          ? TitleWithAbstractAsTooltip
-          : DefaultField,
-    },
-    'meta.title': {
-      component:
-        config?.instanceName === 'colab'
-          ? TitleWithAbstractAsTooltip
-          : DefaultField,
-    },
+    titleAndAbstract: { component: TitleWithAbstractAsTooltip },
   }
 
   return specialColumnProps

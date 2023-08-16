@@ -21,11 +21,11 @@ const TABLE_HEADER = '[class*=Table__Header]'
 const MANUSCRIPTS_TABLE_HEAD = '[class*=style__ManuscriptsHeaderRow]'
 const ARTICLE_TITLE = '[class*=Table__Row]>td:nth-child(1)'
 const ARTICLE_ID = '[name="submission.articleId"]'
-const ARTICLE_LABEL = '[name="submission.labels"]'
+const ARTICLE_LABEL = '[name="submission.$customStatus"]'
 const ARTICLE_TOPIC = '[class*=Table__Cell] > [title]'
 const TABLE_ROW = '[class*=style__ManuscriptsRow]'
 const TABLE_CELL = 'Table__Cell'
-const LABEL = '[name="submission.labels"]'
+const LABEL = '[name="submission.$customStatus"]'
 const BULKBUTTON = 'style__BulkActionModalButton'
 
 const ARTICLE_CHECKBOX =

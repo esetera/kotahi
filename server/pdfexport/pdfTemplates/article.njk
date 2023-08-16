@@ -56,7 +56,7 @@
 				<ul id="topicList">
 					{% for topic in article.articleMetadata.topics %}<li>{{ topic }}</li>{% endfor %}
 				</ul>
-        <h1 class="title">{{article.meta.title}}</h1>
+        <h1 class="title">{{article.articleMetadata.title}}</h1>
 				{{article.articleMetadata.formattedAuthors | safe}} 
       </header>			
       <aside class="marginData left">

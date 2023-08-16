@@ -132,8 +132,6 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
         shortId
         meta {
           manuscriptId
-          abstract
-          title
         }
         submission
         created
@@ -157,8 +155,6 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
           shortId
           meta {
             manuscriptId
-            abstract
-            title
           }
           submission
           created
@@ -238,6 +234,7 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
             labelColor
             value
           }
+          readonly
         }
       }
     }

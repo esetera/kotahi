@@ -20,7 +20,6 @@ teams {
 status
 meta {
   manuscriptId
-  title
   history {
     type
     date
@@ -62,6 +61,7 @@ const formForPurposeAndCategoryFragment = `formForPurposeAndCategory(purpose: "s
         labelColor
         value
       }
+      readonly
     }
   }
 }

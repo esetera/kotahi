@@ -33,14 +33,14 @@ describe('manuscripts page tests', () => {
         .clear()
         .focus()
         .type('Ready to evaluate{enter}', { delay: 20 })
-      // SubmissionFormPage.clickLabelsDropdown()
+      // SubmissionFormPage.clickCustomStatusDropdown()
       // SubmissionFormPage.selectDropdownOption(0)
       SubmissionFormPage.fillInTitle('123')
       Menu.clickDashboardAndVerifyPageLoaded()
       DashboardPage.clickSubmit()
       NewSubmissionPage.clickSubmitUrlAndWaitPageLoad()
       cy.contains('Labels').scrollIntoView()
-      // SubmissionFormPage.clickLabelsDropdown()
+      // SubmissionFormPage.clickCustomStatusDropdown()
       // SubmissionFormPage.selectDropdownOption(1)
       cy.get('[aria-label="Labels"]')
         .clear()
@@ -51,7 +51,7 @@ describe('manuscripts page tests', () => {
       DashboardPage.clickSubmit()
       NewSubmissionPage.clickSubmitUrlAndWaitPageLoad()
       cy.contains('Labels').scrollIntoView()
-      // SubmissionFormPage.clickLabelsDropdown()
+      // SubmissionFormPage.clickCustomStatusDropdown()
       // SubmissionFormPage.selectDropdownOption(0)
       cy.get('[aria-label="Labels"]')
         .clear()
@@ -87,11 +87,11 @@ describe('manuscripts page tests', () => {
       // fill the submit form and submit it
       // eslint-disable-next-line jest/valid-expect-in-promise
       cy.fixture('submission_form_data').then(data => {
-        SubmissionFormPage.fillInDoiColab(data.doi)
+        SubmissionFormPage.fillInDoi(data.doi)
         SubmissionFormPage.getWaxField(0).fillInput(data.abstract)
         SubmissionFormPage.fillInFirstAuthor(data.creator)
         SubmissionFormPage.fillInDatePublished(data.date)
-        SubmissionFormPage.fillInLink(data.doi)
+        SubmissionFormPage.fillInPreprintUri(data.doi)
         SubmissionFormPage.getWaxField(1).fillInput(data.ourTake)
         SubmissionFormPage.getWaxField(2).fillInput(data.mainFindings)
         SubmissionFormPage.getWaxField(3).fillInput(data.studyStrengths)
@@ -114,7 +114,7 @@ describe('manuscripts page tests', () => {
       ManuscriptsPage.getTableRowsCount().should('eq', 3)
       cy.url().should(
         'contain',
-        'status=new&pagenum=1&submission.labels=readyToEvaluate',
+        'status=new&pagenum=1&submission.$customStatus=readyToEvaluate',
       )
     })
   })

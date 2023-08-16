@@ -253,13 +253,13 @@ const ReviewData = ({
   const reviewFormData = ensureJsonIsParsed(review.jsonData) ?? {}
 
   const recommendationConfig = recommendations.find(
-    item => item.value === get(reviewFormData, 'verdict'),
+    item => item.value === get(reviewFormData, '$verdict'),
   )
 
   const isViewable = element =>
     (showEditorOnlyFields || element.hideFromAuthors !== 'true') &&
     element.hideFromReviewers !== 'true' &&
-    element.name !== 'verdict'
+    element.name !== '$verdict'
 
   const isFileField = element =>
     ['SupplementaryFiles', 'VisualAbstract'].includes(element.component)

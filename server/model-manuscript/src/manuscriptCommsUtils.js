@@ -44,8 +44,8 @@ const archiveOldManuscripts = async groupId => {
     .where('groupId', groupId)
     .whereNot('isHidden', true)
     .where(function subcondition() {
-      this.whereRaw(`submission->>'labels' = ''`).orWhereRaw(
-        `submission->>'labels' IS NULL`,
+      this.whereRaw(`submission->>'$customStatus' = ''`).orWhereRaw(
+        `submission->>'$customStatus' IS NULL`,
       )
     })
 
