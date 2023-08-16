@@ -213,10 +213,7 @@ describe('Manuscripts page tests', () => {
         SubmissionFormPage.getArticleld().should('have.value', data.articleId)
         SubmissionFormPage.getDoi().should('have.value', data.doi)
         // eslint-disable-next-line
-        SubmissionFormPage.getTitle().should(
-          'have.value',
-          data.description,
-        )
+        SubmissionFormPage.getTitle().should('have.value', data.description)
         SubmissionFormPage.getReview1()
           .find('p')
           .should('contain', data.review1)
@@ -301,10 +298,7 @@ describe('Manuscripts page tests', () => {
         )
         SubmissionFormPage.getDoi().should('not.have.value', data.doi)
         // eslint-disable-next-line
-        SubmissionFormPage.getTitle().should(
-          'not.have.value',
-          data.description,
-        )
+        SubmissionFormPage.getTitle().should('not.have.value', data.description)
         SubmissionFormPage.getReview1()
           .find('p')
           .should('not.contain', data.review1)
