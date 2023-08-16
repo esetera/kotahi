@@ -99,7 +99,7 @@ const renameDataInManuscript = (manuscript, instanceName) => {
     }
   })
 
-  Object.entries(manuscript.submission).forEach((key, value) => {
+  Object.entries(manuscript.submission).forEach(([key, value]) => {
     let newFieldName = fieldNameMap[`submission.${key}`]
     if (instanceName === 'ncrc' && key === 'articleURL')
       newFieldName = 'submission.$sourceUri' // elife and ncrc archetypes use articleURL differently
@@ -133,7 +133,7 @@ const renameDataInManuscript = (manuscript, instanceName) => {
 
 const renameDataInReview = (review, instanceName) => {
   const newJsonData = {}
-  Object.entries(JSON.parse(review.jsonData)).forEach(([key, value]) => {
+  Object.entries(review.jsonData).forEach(([key, value]) => {
     const newFieldName = fieldNameMap[key]
 
     if (newFieldName) {
