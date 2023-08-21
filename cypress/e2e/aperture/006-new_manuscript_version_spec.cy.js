@@ -13,12 +13,12 @@ describe('checking manuscript version', () => {
   it('editor checks for new manuscript version', () => {
     cy.task('restore', 'commons/bootstrap')
     cy.task('seed', 'three_reviews_completed')
-    cy.task('seedForms')
 
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('role_names').then(name => {
       /* login as admin */
       cy.login(name.role.admin, dashboard)
+      // eslint-disable-next-line jest/valid-expect-in-promise
       DashboardPage.clickManuscriptNavButton()
       ManuscriptsPage.selectOptionWithText('Control')
       /* Assign Editor */
@@ -51,7 +51,7 @@ describe('checking manuscript version', () => {
       // Verify Decision Content
       DashboardPage.getDecisionField(0).should('contain', decisionTextContent)
       DashboardPage.getDecisionField(1).should('contain', decisionFileName)
-      DashboardPage.getDecisionField(2).should('contain', 'revise')
+      DashboardPage.getDecisionField(2).should('contain', 'Revise')
       /* Create new manuscript version */
       DashboardPage.clickCreateNewVersionButton()
       SubmissionFormPage.getTypeOfResearchObject()

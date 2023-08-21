@@ -103,6 +103,7 @@ const Footer = ({
             <PartnerListing
               files={files}
               formikProps={formikProps}
+              key={files?.length}
               triggerAutoSave={triggerAutoSave}
               {...props}
             />

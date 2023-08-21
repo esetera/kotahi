@@ -3,16 +3,14 @@ import styled, { css } from 'styled-components'
 import Color from 'color'
 import { th, grid } from '@pubsweet/ui-toolkit'
 
-const LabelBadgeDiv = ({ color, children, ...rest }) => (
+const BadgeDiv = ({ color, children, ...rest }) => (
   <div {...rest}>{children}</div>
 )
 
-/** Displays the label as a badge colored according to props.color */
-const LabelBadge = styled(LabelBadgeDiv)`
+/** Displays a badge with rounded corners colored according to props.color */
+export const ColorBadge = styled(BadgeDiv)`
   border-radius: 8px;
   display: inline-block;
-  font-size: ${th('fontSizeBaseSmall')};
-  font-variant: all-small-caps;
   line-height: 1.1em;
   max-width: 100%;
   ${props =>
@@ -27,7 +25,12 @@ const LabelBadge = styled(LabelBadgeDiv)`
     `}
   overflow-wrap: normal;
   padding: ${grid(0.5)} ${grid(1)};
-  text-overflow: clip;
 `
 
-export default LabelBadge
+/** Displays the label as a badge colored according to props.color, with small all-caps font */
+export const LabelBadge = styled(ColorBadge)`
+  font-size: ${th('fontSizeBaseSmall')};
+  font-variant: all-small-caps;
+  line-height: 1.1em;
+  text-overflow: clip;
+`

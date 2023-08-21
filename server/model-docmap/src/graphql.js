@@ -3,8 +3,17 @@ const { GraphQLError } = require('graphql')
 
 const resolvers = {
   Query: {
-    async docmap(_, { externalId }, ctx) {
-      const record = await models.Docmap.query().findOne({ externalId })
+    async docmap(_, { externalId, groupName = null }, ctx) {
+      const groups = await models.Group.query().where({ isArchived: false })
+      let group = null
+      if (groupName) group = groups.find(g => g.name === groupName)
+      else if (groups.length === 1) [group] = groups
+      if (!group) throw new Error(`Group with name '${groupName}' not found`)
+
+      const record = await models.Docmap.query().findOne({
+        externalId,
+        groupId: group.id,
+      })
 
       if (!record)
         throw new GraphQLError('Resource not found', {
@@ -25,7 +34,7 @@ const resolvers = {
 
 const typeDefs = `
   extend type Query {
-    docmap(externalId: String!): String!
+    docmap(externalId: String!, groupName: String): String!
   }
 `
 

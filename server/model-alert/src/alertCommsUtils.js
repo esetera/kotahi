@@ -62,7 +62,7 @@ const sendAlertForMessage = async ({
   let discussionUrl = baseUrl
 
   if (!channel.manuscriptId) {
-    discussionUrl += `/admin/manuscripts` // admin discussion
+    discussionUrl += `/admin/manuscripts` // group manager discussion
   } else {
     discussionUrl += `/versions/${channel.manuscriptId}`
     const roles = await getUserRolesInManuscript(user.id, channel.manuscriptId)
@@ -93,13 +93,25 @@ const sendAlertForMessage = async ({
   })
 
   const selectedTemplate =
-    activeConfig.formData.eventNotification.alertUnreadMessageDigestTemplate
+    activeConfig.formData.eventNotification?.alertUnreadMessageDigestTemplate
 
-  const selectedEmailTemplate = await models.EmailTemplate.query().findById(
-    selectedTemplate,
-  )
+  if (selectedTemplate) {
+    const selectedEmailTemplate = await models.EmailTemplate.query().findById(
+      selectedTemplate,
+    )
 
-  await sendEmailNotification(user.email, selectedEmailTemplate, data, groupId)
+    await sendEmailNotification(
+      user.email,
+      selectedEmailTemplate,
+      data,
+      groupId,
+    )
+  } else {
+    // eslint-disable-next-line no-console
+    console.info(
+      'No email template is configured for notifying of unread message. Skipping sendig email.',
+    )
+  }
 
   await new models.Alert({
     title,
