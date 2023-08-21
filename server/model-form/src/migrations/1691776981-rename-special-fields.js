@@ -99,8 +99,11 @@ const renameDataInManuscript = (manuscript, instanceType) => {
     const newFieldName = getNewFieldName(key, instanceType)
     const newValue = tweakDataValueByField(value, newFieldName)
 
+    // Test for data collisions. We could have messy data if fields have been
+    // renamed at some point, or if bulk imports are populating the wrong fields.
     if (get(delta, newFieldName)) {
       if (!newValue) return // continue, rather than overwrite wth blank data
+      if (newValue === get(delta, newFieldName)) return // continue: because the two fields have the same data anyway
       throw new Error(`Data conflict! Two fields mapped to ${newFieldName}.`)
     }
 
@@ -180,7 +183,7 @@ const updateConfig = async (config, instanceType, trx) => {
     })
   }
 
-  await Config.query(trx).patchById(config.id, {
+  await Config.query(trx).patchAndFetchById(config.id, {
     formData: {
       ...config.formData,
       manuscript: {
