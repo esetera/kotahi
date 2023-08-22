@@ -11,6 +11,10 @@ export const Section = styled.div`
   }
 `
 
+export const Subsection = styled.div`
+  margin: 0 50% ${grid(4)} ${grid(4)};
+`
+
 export const Legend = styled.div`
   font-size: ${th('fontSizeBase')};
   font-weight: 600;

@@ -10,9 +10,61 @@ import {
   combineExistingPropValuesWithDefaults,
 } from './config/Elements'
 import * as elements from './builderComponents'
-import { Section, Legend, ErrorMessageWrapper, DetailText } from './style'
+import {
+  Section,
+  Subsection,
+  Legend,
+  ErrorMessageWrapper,
+  DetailText,
+} from './style'
 import Modal from '../../../component-modal/src/Modal'
 import { ActionButton, MediumRow, Select } from '../../../shared'
+
+const ValidationSubFields = ({ values, setFieldValue }) => {
+  const subFields = (values.validate || []).filter(x =>
+    ['minChars', 'maxChars', 'minSize'].includes(x.value),
+  )
+
+  if (!subFields.length) return null
+
+  return (
+    <Subsection>
+      {subFields.map(vOption => (
+        <div key={vOption.value}>
+          <MediumRow>
+            <Legend space>{vOption.label}</Legend>
+            <ErrorMessageWrapper>
+              <ErrorMessage name={`validateValue.${vOption.value}`} />
+            </ErrorMessageWrapper>
+          </MediumRow>
+          <ValidatedField
+            component={elements.TextField}
+            name={`validateValue.${vOption.value}`}
+            onChange={val => {
+              if (isEmpty(val)) {
+                setFieldValue(`validateValue.${vOption.value}`, null)
+                return
+              }
+
+              setFieldValue(
+                `validateValue.${vOption.value}`,
+                val.target ? val.target.value : val,
+              )
+            }}
+            required
+            shouldAllowFieldSpecChanges
+            validate={val => {
+              const n = Math.floor(Number(val))
+              if (n === Infinity || String(n) !== val || n <= 0)
+                return 'Must be an integer > 0'
+              return null
+            }}
+          />
+        </div>
+      ))}
+    </Subsection>
+  )
+}
 
 const getValuesPaddedWithDefaults = (
   fieldValues,
@@ -210,49 +262,60 @@ const FieldSettingsModal = ({
               )}
               {editableProperties.map(([key, value]) => {
                 return (
-                  <Section key={key}>
-                    <MediumRow>
-                      <Legend space>
-                        {value.props?.label ?? `Field ${key}`}
-                      </Legend>
-                      <ErrorMessageWrapper>
-                        <ErrorMessage name={key} />
-                      </ErrorMessageWrapper>
-                    </MediumRow>
-                    <ValidatedField
-                      component={elements[value.component]}
-                      name={key}
-                      onChange={val => {
-                        if (isEmpty(val)) {
-                          setFieldValue(key, null)
-                          return
-                        }
+                  <>
+                    <Section key={key}>
+                      <MediumRow>
+                        <Legend space>
+                          {value.props?.label ?? `Field ${key}`}
+                        </Legend>
+                        <ErrorMessageWrapper>
+                          <ErrorMessage name={key} />
+                        </ErrorMessageWrapper>
+                      </MediumRow>
+                      <ValidatedField
+                        component={elements[value.component]}
+                        name={key}
+                        onChange={val => {
+                          if (isEmpty(val)) {
+                            setFieldValue(key, null)
+                            return
+                          }
 
-                        setFieldValue(key, val.target ? val.target.value : val)
-                      }}
-                      required={key === 'name' || key === 'title'}
-                      {...{
-                        ...value.props,
-                        label: undefined,
-                        description: undefined,
-                      }}
-                      shouldAllowFieldSpecChanges
-                      validate={
-                        key === 'name'
-                          ? val => {
-                              if (reservedFieldNames.includes(val))
-                                return 'This name is already in use for another field'
-                              if (value.props?.validate)
-                                return value.props.validate(val)
-                              return null
-                            }
-                          : value.props?.validate
-                      }
-                    />
-                    {value.props?.description && (
-                      <DetailText>{value.props.description}</DetailText>
+                          setFieldValue(
+                            key,
+                            val.target ? val.target.value : val,
+                          )
+                        }}
+                        required={key === 'name' || key === 'title'}
+                        {...{
+                          ...value.props,
+                          label: undefined,
+                          description: undefined,
+                        }}
+                        shouldAllowFieldSpecChanges
+                        validate={
+                          key === 'name'
+                            ? val => {
+                                if (reservedFieldNames.includes(val))
+                                  return 'This name is already in use for another field'
+                                if (value.props?.validate)
+                                  return value.props.validate(val)
+                                return null
+                              }
+                            : value.props?.validate
+                        }
+                      />
+                      {value.props?.description && (
+                        <DetailText>{value.props.description}</DetailText>
+                      )}
+                    </Section>
+                    {key === 'validate' && (
+                      <ValidationSubFields
+                        setFieldValue={setFieldValue}
+                        values={values}
+                      />
                     )}
-                  </Section>
+                  </>
                 )
               })}
               {!editableProperties.some(([key]) => key === 'name') &&
@@ -311,6 +374,9 @@ const prepareForSubmit = (values, fieldProps, readonly) => {
 
   cleanedValues.component = values.component
   cleanedValues.readonly = readonly
+  cleanedValues.validateValue = Object.keys(values.validateValue || {}).length
+    ? values.validateValue
+    : null
   return cleanedValues
 }
 

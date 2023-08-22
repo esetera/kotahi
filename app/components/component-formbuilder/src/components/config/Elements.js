@@ -796,6 +796,7 @@ const combineExistingPropValuesWithDefaults = (values, componentOption) => {
 
   result.fieldType = values.fieldType
   result.component = values.component || null
+  result.validateValue = values.validateValue || null
   return result
 }
 
