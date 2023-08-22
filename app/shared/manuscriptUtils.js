@@ -3,7 +3,7 @@ import { get } from 'lodash'
 import { validateFormField } from './formValidation'
 import { convertTimestampToRelativeDateString } from './dateUtils'
 import { StatusBadge } from '../components/shared'
-import { TitleWithAbstractAsTooltip } from '../components/component-manuscripts-table/src/cell-components'
+import TitleWithAbstractAsTooltip from '../components/component-manuscripts-table/src/cell-components/TitleWithAbstractAsTooltip'
 
 /** Validate just manuscript.submission, based on the supplied array of field definitions */
 export const validateManuscriptSubmission = async (
