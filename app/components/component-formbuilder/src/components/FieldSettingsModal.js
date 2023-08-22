@@ -49,6 +49,12 @@ const filterOutPropsDisabledByConfig = (
     }),
   }))
 
+const usesReservedName = (fieldOpt, reservedFieldNames) => {
+  const forcedName = fieldOpt.componentOptions[0].props.name?.forcedValue
+  if (forcedName && reservedFieldNames.includes(forcedName)) return true
+  return false
+}
+
 const FieldSettingsModal = ({
   category,
   field,
@@ -64,7 +70,7 @@ const FieldSettingsModal = ({
   const fieldOpts = filterOutPropsDisabledByConfig(
     fieldOptionsByCategory[category],
     shouldAllowHypothesisTagging,
-  )
+  ).filter(fieldOpt => !usesReservedName(fieldOpt, reservedFieldNames))
 
   const {
     fieldOption: initialFieldOption,
@@ -249,11 +255,12 @@ const FieldSettingsModal = ({
                   </Section>
                 )
               })}
-              {!editableProperties.some(([key]) => key === 'name') && (
-                <Section key="name">
-                  <Legend>Internal field name</Legend> {values.name}
-                </Section>
-              )}
+              {!editableProperties.some(([key]) => key === 'name') &&
+                values.name && (
+                  <Section key="name">
+                    <Legend>Internal field name</Legend> {values.name}
+                  </Section>
+                )}
             </Modal>
           </form>
         )
