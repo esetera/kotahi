@@ -155,7 +155,7 @@ const DecisionVersion = ({
       ? createBlankSubmissionBasedOnForm(form)
       : {}
 
-    Object.assign(submissionValues, JSON.parse(version.submission))
+    Object.assign(submissionValues, version.submission)
 
     const versionValues = {
       ...version,
@@ -171,10 +171,7 @@ const DecisionVersion = ({
             <ReadonlyFormTemplate
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
               form={form}
-              formData={{
-                ...version,
-                submission: JSON.parse(version.submission),
-              }}
+              formData={version}
               manuscript={version}
               showEditorOnlyFields
               threadedDiscussionProps={threadedDiscussionExtendedProps}

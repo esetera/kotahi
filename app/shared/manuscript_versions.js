@@ -23,7 +23,10 @@ const manuscriptVersions = manuscript => {
         : `${moment(manuscript.created).format('YYYY-MM-DD')} (${
             versions.length - index
           })`,
-    manuscript,
+    manuscript: {
+      ...manuscript,
+      submission: JSON.parse(manuscript.submission),
+    },
   }))
 }
 

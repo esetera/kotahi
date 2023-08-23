@@ -114,10 +114,7 @@ const ReviewLayout = ({
           )}
           <ReadonlyFormTemplate // Display manuscript metadata
             form={submissionForm}
-            formData={{
-              ...latestVersion,
-              submission: JSON.parse(latestVersion.submission),
-            }}
+            formData={latestVersion}
             manuscript={latestVersion}
             showEditorOnlyFields={false}
             threadedDiscussionProps={threadedDiscussionProps}

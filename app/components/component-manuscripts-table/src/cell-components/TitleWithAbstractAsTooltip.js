@@ -4,6 +4,7 @@ import Tooltip from 'rc-tooltip'
 import { InfoIcon } from '../style'
 import { stripHtml } from '../../../component-review/src/components/review/util'
 import { SemanticScholarIcon } from '../../../shared/Icons'
+import { PlainOrRichText } from '../../../shared'
 
 const FloatingIcon = styled.div`
   float: right;
@@ -25,7 +26,7 @@ const getAbstractAsPlainText = manuscript =>
  * failing that, if submission.$doi exists, the title will be hyperlinked to a DOI link.
  * */
 const TitleWithAbstractAsTooltip = ({ manuscript }) => {
-  const title = manuscript.submission.$title || ''
+  const title = <PlainOrRichText value={manuscript.submission.$title} />
 
   const isManuscriptFromSemanticScholar = !!(
     manuscript.importSourceServer &&

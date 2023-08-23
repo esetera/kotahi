@@ -129,7 +129,11 @@ const ProductionPage = ({ currentUser, match, ...props }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const { manuscript } = data
+  const manuscript = {
+    ...data.manuscript,
+    submission: JSON.parse(data.manuscript.submission),
+  }
+
   return (
     <Composed
       client={client}

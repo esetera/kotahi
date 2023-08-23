@@ -3,7 +3,6 @@ import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/client'
 import { th, grid } from '@pubsweet/ui-toolkit'
-import { sanitize } from 'isomorphic-dompurify'
 import { ConfigContext } from '../../config/src'
 import queries from './queries'
 import FullWaxEditor from '../../wax-collab/src/FullWaxEditor'
@@ -18,6 +17,7 @@ import {
   HeadingWithAction,
   Pagination,
   CommsErrorBanner,
+  PlainOrRichText,
 } from '../../shared'
 import { PaginationContainer } from '../../shared/Pagination'
 import PublishedArtifactWithLink from './PublishedArtifactWithLink'
@@ -114,7 +114,9 @@ const Frontpage = () => {
           return (
             <SectionContent key={`manuscript-${manuscript.id}`}>
               <SectionHeader>
-                <Title>{manuscript.submission.$title}</Title>
+                <Title>
+                  <PlainOrRichText value={manuscript.submission.$title} />
+                </Title>
               </SectionHeader>
               <SectionRow>
                 {[...manuscript.publishedArtifacts]
@@ -128,13 +130,11 @@ const Frontpage = () => {
                 {manuscript.submission?.$abstract && (
                   <>
                     <Subheading>Abstract:</Subheading>
-                    <Abstract
-                      dangerouslySetInnerHTML={(() => {
-                        return {
-                          __html: sanitize(manuscript.submission?.$abstract),
-                        }
-                      })()}
-                    />
+                    <Abstract>
+                      <PlainOrRichText
+                        value={manuscript.submission?.$abstract}
+                      />
+                    </Abstract>
                   </>
                 )}
                 {manuscript.visualAbstract && (

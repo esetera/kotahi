@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { grid } from '@pubsweet/ui-toolkit'
 import { Select } from './Select'
+import PlainOrRichText from './PlainOrRichText'
 
 const Container = styled.div`
   margin-top: ${props => grid(props.top)};
@@ -39,7 +40,9 @@ const StyledSelect = styled(Select)`
 const generateLabel = (created, versionNumber, count, manuscriptName) => {
   return (
     <VerisonLabelWrapper>
-      <Title>{manuscriptName}</Title>
+      <Title>
+        <PlainOrRichText value={manuscriptName} />
+      </Title>
       <VersionIndicator>
         {versionNumber >= count
           ? `— Current version (${versionNumber})`

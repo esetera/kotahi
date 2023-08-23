@@ -308,7 +308,7 @@ const commonUpdateManuscript = async (id, input, ctx) => {
   // or even
   // CREATE INDEX idx_manuscripts_submission_gin ON manuscripts USING GIN (submission);
   // The latter will help with queries against other submission fields.
-  if (msDelta.submission.$doi) updatedMs.doi = msDelta.submission.$doi
+  if (msDelta.submission?.$doi) updatedMs.doi = msDelta.submission.$doi
 
   updatedMs.submission.$editDate = new Date().toISOString().split('T')[0]
 
@@ -861,7 +861,7 @@ const resolvers = {
 
         if (emailValidationResult && receiverName) {
           const data = {
-            articleTitle: JSON.parse(manuscript.submission).$title,
+            articleTitle: manuscript.submission.$title,
             authorName:
               manuscript.submitter.username ||
               manuscript.submitter.defaultIdentity.name ||

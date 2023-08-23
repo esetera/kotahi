@@ -432,7 +432,7 @@ const createManuscriptPromise = (
   const manuscript = {
     files,
     meta: { source },
-    submission: { $title: title },
+    submission: JSON.stringify({ $title: title }),
     groupId: config.groupId,
   }
 

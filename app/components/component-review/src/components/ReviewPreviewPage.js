@@ -88,7 +88,10 @@ const ReviewPreviewPage = ({ match, currentUser }) => {
 
   return (
     <ReviewPreview
-      manuscript={manuscript}
+      manuscript={{
+        ...manuscript,
+        submission: JSON.parse(manuscript.submission),
+      }}
       submissionForm={submissionForm}
       threadedDiscussionProps={threadedDiscussionDummyProps}
     />
