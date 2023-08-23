@@ -36,6 +36,11 @@ const getEmptySubmission = async groupId => {
   return emptySubmission
 }
 
+const getExistingManuscripts = async groupId => {
+  // eslint-disable-next-line no-return-await
+  return await models.Manuscript.query().where('group_id', groupId)
+}
+
 const getBroker = (groupId, workerName) => {
   let importWorkers = importWorkersByGroup[groupId]
 
@@ -83,8 +88,10 @@ const getBroker = (groupId, workerName) => {
       teams: [],
     }),
     getSubmissionForm: () => getSubmissionForm(groupId),
+    // eslint-disable-next-line no-return-await
+    getExistingManuscripts: async () => await getExistingManuscripts(groupId),
     groupId,
-    logger: console, // TODO modify console to include group and plugin name identifier
+    logger: console,
   }
 }
 
