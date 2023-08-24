@@ -9,6 +9,9 @@ const cheerio = require('cheerio')
 const { raw } = require('objection')
 const { importManuscripts } = require('./importManuscripts')
 const { manuscriptHasOverdueTasksForUser } = require('./manuscriptCommsUtils')
+const { rebuildCMSSite } = require('../../flax-site/flax-api')
+
+const { getPublishableReviewFields } = require('../../publishing/flax/tools')
 
 const {
   publishToCrossref,
@@ -21,7 +24,7 @@ const {
 const checkIsAbstractValueEmpty = require('../../utils/checkIsAbstractValueEmpty')
 
 const {
-  hasEvaluations,
+  hasElifeStyleEvaluations,
   stripConfidentialDataFromReviews,
   buildQueryForManuscriptSearchFilterAndOrder,
   applyTemplatesToArtifacts,
@@ -103,11 +106,7 @@ const getCss = async () => {
  * all files attached to reviews, and stringify JSON data in preparation for serving to client.
  * Note: 'reviews' include the decision object.
  */
-const getRelatedReviews = async (
-  manuscript,
-  ctx,
-  forceRemovalOfConfidentialData,
-) => {
+const getRelatedReviews = async (manuscript, ctx) => {
   const reviewForm = await getReviewForm(manuscript.groupId)
   const decisionForm = await getDecisionForm(manuscript.groupId)
 
@@ -151,20 +150,15 @@ const getRelatedReviews = async (
     'published',
   ].includes(manuscript.status)
 
-  if (
-    forceRemovalOfConfidentialData ||
-    (!userRoles.admin && !userRoles.anyEditor)
-  ) {
-    reviews = stripConfidentialDataFromReviews(
-      reviews,
-      reviewForm,
-      decisionForm,
-      sharedReviewersIds,
-      manuscriptHasDecision,
-      ctx.user,
-      userRoles,
-    )
-  }
+  reviews = stripConfidentialDataFromReviews(
+    reviews,
+    reviewForm,
+    decisionForm,
+    sharedReviewersIds,
+    ctx.user,
+    userRoles,
+    manuscriptHasDecision,
+  )
 
   return reviews.map(review => ({
     ...review,
@@ -251,14 +245,10 @@ const uploadAndConvertBase64ImagesInManuscript = async manuscript => {
     const images = base64Images(source)
 
     if (images.length > 0) {
-      const uploadedImages = []
-
-      await Promise.all(
+      const uploadedImages = await Promise.all(
         map(images, async image => {
-          if (image.blob) {
-            const uploadedImage = await uploadImage(image, manuscript.id)
-            uploadedImages.push(uploadedImage)
-          }
+          const uploadedImage = await uploadImage(image, manuscript.id)
+          return uploadedImage
         }),
       )
 
@@ -361,6 +351,11 @@ const tryPublishingWebhook = async manuscriptId => {
   }
 }
 
+const publishOnCMS = async (groupId, manuscriptId) => {
+  await rebuildCMSSite(groupId, { manuscriptId })
+  return true // rebuildCMSSite will throw an exception on any failure, so no need to check its response
+}
+
 const resolvers = {
   Mutation: {
     async createManuscript(_, vars, ctx) {
@@ -451,54 +446,7 @@ const resolvers = {
         { relate: true },
       )
 
-      // Base64 conversion moved to server-side as a performance imporvement
-      const { source } = manuscript.meta
-
-      if (typeof source === 'string') {
-        const images = await base64Images(source)
-
-        if (images.length > 0) {
-          const uploadedImages = await Promise.all(
-            map(images, async image => {
-              const uploadedImage = await uploadImage(image, manuscript.id)
-              return uploadedImage
-            }),
-          )
-
-          const uploadedImagesWithUrl = await getFilesWithUrl(uploadedImages)
-
-          const $ = cheerio.load(source)
-
-          map(images, (image, index) => {
-            // uploadedImagesWithUrl[index].name comes in as something like Image4.png
-            // First, get the number so we can identify the image in the DOM
-
-            const imageNumber = uploadedImagesWithUrl[index].name.match(
-              /\d+/,
-            )[0]
-
-            // We are looking for the image with data-original-name in the form "Picture 4"
-
-            const elem = $(`img[data-original-name="Picture ${imageNumber}"]`)
-
-            // elem.length will be 0 if there is an image without a corresponding file
-
-            if (elem.length) {
-              const $elem = $(elem)
-              $elem.attr('data-fileid', uploadedImagesWithUrl[index].id)
-              $elem.attr('alt', uploadedImagesWithUrl[index].name)
-              $elem.attr(
-                'src',
-                uploadedImagesWithUrl[index].storedObjects.find(
-                  storedObject => storedObject.type === 'medium',
-                ).url,
-              )
-            }
-          })
-
-          manuscript.meta.source = $.html()
-        }
-      }
+      await uploadAndConvertBase64ImagesInManuscript(manuscript)
 
       const updatedManuscript = await models.Manuscript.query().updateAndFetchById(
         manuscript.id,
@@ -706,7 +654,7 @@ const resolvers = {
         })
 
         const selectedTemplate =
-          activeConfig.formData.eventNotification.reviewRejectedEmailTemplate
+          activeConfig.formData.eventNotification?.reviewRejectedEmailTemplate
 
         const emailValidationRegexp = /^[^\s@]+@[^\s@]+$/
         const emailValidationResult = emailValidationRegexp.test(receiverEmail)
@@ -740,27 +688,34 @@ const resolvers = {
           shortId: manuscript.shortId,
         }
 
-        const selectedEmailTemplate = await models.EmailTemplate.query().findById(
-          selectedTemplate,
-        )
-
-        try {
-          await sendEmailNotification(
-            receiverEmail,
-            selectedEmailTemplate,
-            data,
-            manuscript.groupId,
+        if (selectedTemplate) {
+          const selectedEmailTemplate = await models.EmailTemplate.query().findById(
+            selectedTemplate,
           )
 
-          // Send Notification in Editorial Discussion Panel
-          models.Message.createMessage({
-            content: `Review Rejection Email sent by Kotahi to ${receiverName}`,
-            channelId: editorialChannel.id,
-            userId: manuscript.submitterId,
-          })
-        } catch (e) {
-          /* eslint-disable-next-line */
-          console.log('email was not sent', e)
+          try {
+            await sendEmailNotification(
+              receiverEmail,
+              selectedEmailTemplate,
+              data,
+              manuscript.groupId,
+            )
+
+            // Send Notification in Editorial Discussion Panel
+            models.Message.createMessage({
+              content: `Review Rejection Email sent by Kotahi to ${receiverName}`,
+              channelId: editorialChannel.id,
+              userId: manuscript.submitterId,
+            })
+          } catch (e) {
+            /* eslint-disable-next-line */
+            console.log('email was not sent', e)
+          }
+        } else {
+          // eslint-disable-next-line no-console
+          console.info(
+            'No email template configured for notifying of invited reviewer declining invitation. Email not sent.',
+          )
         }
       }
 
@@ -795,7 +750,7 @@ const resolvers = {
 
         const selectedTemplate =
           activeConfig.formData.eventNotification
-            .submissionConfirmationEmailTemplate
+            ?.submissionConfirmationEmailTemplate
 
         const emailValidationRegexp = /^[^\s@]+@[^\s@]+$/
         const emailValidationResult = emailValidationRegexp.test(receiverEmail)
@@ -814,31 +769,38 @@ const resolvers = {
           shortId: manuscript.shortId,
         }
 
-        const selectedEmailTemplate = await models.EmailTemplate.query().findById(
-          selectedTemplate,
-        )
-
-        try {
-          await sendEmailNotification(
-            receiverEmail,
-            selectedEmailTemplate,
-            data,
-            manuscript.groupId,
+        if (selectedTemplate) {
+          const selectedEmailTemplate = await models.EmailTemplate.query().findById(
+            selectedTemplate,
           )
 
-          // Get channel ID
-          const channelId = manuscript.channels.find(
-            channel => channel.topic === 'Editorial discussion',
-          ).id
+          try {
+            await sendEmailNotification(
+              receiverEmail,
+              selectedEmailTemplate,
+              data,
+              manuscript.groupId,
+            )
 
-          models.Message.createMessage({
-            content: `Submission Confirmation Email sent by Kotahi to ${manuscript.submitter.username}`,
-            channelId,
-            userId: manuscript.submitterId,
-          })
-        } catch (e) {
-          /* eslint-disable-next-line */
-          console.log('email was not sent', e)
+            // Get channel ID
+            const channelId = manuscript.channels.find(
+              channel => channel.topic === 'Editorial discussion',
+            ).id
+
+            models.Message.createMessage({
+              content: `Submission Confirmation Email sent by Kotahi to ${manuscript.submitter.username}`,
+              channelId,
+              userId: manuscript.submitterId,
+            })
+          } catch (e) {
+            /* eslint-disable-next-line */
+            console.log('email was not sent', e)
+          }
+        } else {
+          // eslint-disable-next-line no-console
+          console.info(
+            'No email template configured for notifying of submission confirmation. Email not sent.',
+          )
         }
       }
 
@@ -907,7 +869,7 @@ const resolvers = {
 
         const selectedTemplate =
           activeConfig.formData.eventNotification
-            .evaluationCompleteEmailTemplate
+            ?.evaluationCompleteEmailTemplate
 
         const emailValidationRegexp = /^[^\s@]+@[^\s@]+$/
         const emailValidationResult = emailValidationRegexp.test(receiverEmail)
@@ -923,41 +885,48 @@ const resolvers = {
             shortId: manuscript.shortId,
           }
 
-          try {
-            // Add Email Notification Record in Editorial Discussion Panel
-            const author = manuscript.teams.find(team => {
-              if (team.role === 'author') {
-                return team
-              }
-
-              return null
-            }).members[0].user
-
-            const body = `Editor Decision sent by Kotahi to ${author.username}`
-
-            const channelId = manuscript.channels.find(
-              channel => channel.topic === 'Editorial discussion',
-            ).id
-
-            models.Message.createMessage({
-              content: body,
-              channelId,
-              userId: manuscript.submitterId,
-            })
-
+          if (selectedTemplate) {
             const selectedEmailTemplate = await models.EmailTemplate.query().findById(
               selectedTemplate,
             )
 
-            await sendEmailNotification(
-              receiverEmail,
-              selectedEmailTemplate,
-              data,
-              manuscript.groupId,
+            try {
+              // Add Email Notification Record in Editorial Discussion Panel
+              const author = manuscript.teams.find(team => {
+                if (team.role === 'author') {
+                  return team
+                }
+
+                return null
+              }).members[0].user
+
+              const body = `Editor Decision sent by Kotahi to ${author.username}`
+
+              const channelId = manuscript.channels.find(
+                channel => channel.topic === 'Editorial discussion',
+              ).id
+
+              models.Message.createMessage({
+                content: body,
+                channelId,
+                userId: manuscript.submitterId,
+              })
+
+              await sendEmailNotification(
+                receiverEmail,
+                selectedEmailTemplate,
+                data,
+                manuscript.groupId,
+              )
+            } catch (e) {
+              /* eslint-disable-next-line */
+              console.log('email was not sent', e)
+            }
+          } else {
+            // eslint-disable-next-line no-console
+            console.info(
+              'No email template configured for notifying of evaluation complete. Email not sent.',
             )
-          } catch (e) {
-            /* eslint-disable-next-line */
-            console.log('email was not sent', e)
           }
         }
       }
@@ -1092,25 +1061,38 @@ const resolvers = {
         .findById(id)
         .withGraphFetched('[reviews, publishedArtifacts]')
 
+      const containsElifeStyleEvaluations = hasElifeStyleEvaluations(manuscript)
+
       const activeConfig = await models.Config.query().findOne({
         groupId: manuscript.groupId,
         active: true,
       })
 
-      /** Crude hack to circumvent and help diagnose bug 1193 */
-      const oldMetaAbstract =
-        manuscript && manuscript.meta ? manuscript.meta.abstract : null
+      // We will roll back to the following values if all publishing steps fail:
+      const prevPublishedDate = manuscript.published
+      const prevStatus = manuscript.status
 
-      const update = {} // This will collect any properties we may want to update in the DB
+      const newPublishedDate = new Date()
+      // We update the manuscript in advance, so that external services such as Flax
+      // will be able to retrieve it as a "published" manuscript. If all publishing steps
+      // fail, we will revert these changes at the end.
+      await models.Manuscript.query().patchAndFetchById(id, {
+        published: newPublishedDate,
+        status: 'published',
+      })
+
+      const update = { published: newPublishedDate, status: 'published' } // This will also collect any properties we may want to update in the DB
       const steps = []
-      const containsEvaluations = hasEvaluations(manuscript)
 
       if (activeConfig.formData.publishing.crossref.login) {
         const stepLabel = 'Crossref'
         let succeeded = false
         let errorMessage
 
-        if (containsEvaluations || manuscript.status !== 'evaluated') {
+        if (
+          containsElifeStyleEvaluations ||
+          manuscript.status !== 'evaluated'
+        ) {
           try {
             await publishToCrossref(manuscript)
             succeeded = true
@@ -1147,8 +1129,6 @@ const resolvers = {
         }
 
         steps.push({ succeeded, errorMessage, stepLabel })
-      } else if (['colab'].includes(activeConfig.formData.instanceName)) {
-        // TODO: A note in the code said that for Colab instance, submission.editDate should be updated. Is this true? (See commonUpdateManuscript() for example code.)
       }
 
       if (activeConfig.formData.publishing.hypothesis.apiKey) {
@@ -1177,6 +1157,7 @@ const resolvers = {
           await tryPublishingWebhook(manuscript.id)
           steps.push({ stepLabel: 'Publishing webhook', succeeded: true })
         } catch (err) {
+          console.error(err)
           steps.push({
             stepLabel: 'Publishing webhook',
             succeeded: false,
@@ -1197,30 +1178,32 @@ const resolvers = {
         })
       }
 
-      if (!steps.length || steps.some(step => step.succeeded)) {
-        update.published = new Date()
-
-        // A 'published' article without evaluations will become 'evaluated'.
-        // The intention is that an evaluated article should never revert to any state prior to "evaluated",
-        // but that only articles with evaluations can be 'published'.
-        update.status =
-          !activeConfig.formData.publishing.crossref.login ||
-          containsEvaluations
-            ? 'published'
-            : 'evaluated'
+      try {
+        if (await publishOnCMS(manuscript.groupId, manuscript.id))
+          steps.push({ stepLabel: 'Publishing CMS', succeeded: true })
+      } catch (err) {
+        console.error(err)
+        steps.push({
+          stepLabel: 'Publishing CMS',
+          succeeded: false,
+          errorMessage: err.message,
+        })
       }
 
-      // TODO remove this check once bug 1193 is diagnosed/fixed
-      if (oldMetaAbstract && update.meta && !update.meta.abstract)
-        throw new Error(
-          `Deleting meta.abstract from manuscript ${id}, replacing ${oldMetaAbstract} with ${typeof update
-            .meta.abstract}, is illegal!`,
-        )
+      let updatedManuscript
 
-      const updatedManuscript = await models.Manuscript.query().updateAndFetchById(
-        id,
-        update,
-      )
+      if (steps.some(step => step.succeeded)) {
+        updatedManuscript = await models.Manuscript.query().patchAndFetchById(
+          id,
+          update,
+        )
+      } else {
+        // Revert the changes to published date and status
+        updatedManuscript = await models.Manuscript.query().patchAndFetchById(
+          id,
+          { published: prevPublishedDate, status: prevStatus },
+        )
+      }
 
       return { manuscript: updatedManuscript, steps }
     },
@@ -1364,6 +1347,7 @@ const resolvers = {
         manuscripts,
       }
     },
+
     async paginatedManuscripts(
       _,
       { sort, offset, limit, filters, timezoneOffsetMinutes, groupId },
@@ -1401,30 +1385,52 @@ const resolvers = {
       return { totalCount, manuscripts: result }
     },
 
-    async manuscriptsPublishedSinceDate(_, { startDate, limit }, ctx) {
-      const groupId = ctx.req.headers['group-id']
+    async manuscriptsPublishedSinceDate(
+      _,
+      { startDate, limit, offset, groupName },
+      ctx,
+    ) {
+      const groups = await models.Group.query().where({ isArchived: false })
+      let group = null
+      const groupIdFromHeader = ctx.req.headers['group-id']
+
+      if (groupIdFromHeader)
+        group = groups.find(g => g.id === groupIdFromHeader)
+      else if (groupName) group = groups.find(g => g.name === groupName)
+      else if (groups.length === 1) [group] = groups
+
+      if (!group) throw new Error(`Group with name '${groupName}' not found`)
+
+      const subQuery = models.Manuscript.query()
+        .select('short_id')
+        .max('created as latest_created')
+        .where('group_id', group.id)
+        .groupBy('short_id')
 
       const query = models.Manuscript.query()
-        .whereNotNull('published')
-        .orderBy('published')
+        .select('m.*', raw('count(*) over () as totalCount'))
+        .from(models.Manuscript.query().as('m'))
+        .innerJoin(subQuery.as('sub'), 'm.short_id', 'sub.short_id')
+        .andWhere('m.created', '=', raw('sub.latest_created'))
+        .whereNotNull('m.published')
+        .where('m.group_id', group.id)
+        .orderBy('m.published', 'desc')
 
-      if (groupId) query.where('group_id', groupId)
-      if (startDate) query.where('published', '>=', new Date(startDate))
+      if (startDate) query.where('m.published', '>=', new Date(startDate))
       if (limit) query.limit(limit)
+      if (offset) query.offset(offset)
 
       return query
     },
     async publishedManuscript(_, { id }, ctx) {
       return models.Manuscript.query().findById(id).whereNotNull('published')
     },
-    async unreviewedPreprints(_, { token, groupName }, ctx) {
-      const group = await models.Group.query().findOne({
-        name: groupName,
-        isArchived: false,
-      })
-
-      if (!group)
-        throw new Error('Group does not exist or it has been archived!')
+    async unreviewedPreprints(_, { token, groupName = null }, ctx) {
+      const groups = await models.Group.query().where({ isArchived: false })
+      let group = null
+      if (groupName) group = groups.find(g => g.name === groupName)
+      else if (groups.length === 1) [group] = groups
+      if (!group) throw new Error(`Group with name '${groupName}' not found`)
 
       const activeConfig = await models.Config.query().findOne({
         groupId: group.id,
@@ -1554,8 +1560,8 @@ const resolvers = {
         )
       )
     },
-    async reviews(parent, { forceRemovalOfConfidentialData }, ctx) {
-      return getRelatedReviews(parent, ctx, forceRemovalOfConfidentialData)
+    async reviews(parent, _, ctx) {
+      return getRelatedReviews(parent, ctx)
     },
     async teams(parent, _, ctx) {
       return (
@@ -1636,6 +1642,103 @@ const resolvers = {
     async publishedDate(parent) {
       return parent.published
     },
+    async reviews(parent, { _ }, ctx) {
+      let reviews = await getRelatedReviews(parent, ctx)
+
+      if (!Array.isArray(reviews)) {
+        return []
+      }
+
+      reviews = reviews.filter(review => !review.isDecision)
+      const reviewForm = await getReviewForm(parent.groupId)
+
+      const threadedDiscussions =
+        parent.threadedDiscussions ||
+        (await getThreadedDiscussionsForManuscript(parent, getUsersById))
+
+      return getPublishableReviewFields(
+        reviews,
+        reviewForm,
+        threadedDiscussions,
+        parent,
+      )
+    },
+
+    async decisions(parent, { _ }, ctx) {
+      // filtering decisions in Kotahi itself so that we can change
+      // the logic easily in future.
+      const reviews = await getRelatedReviews(parent, ctx)
+
+      if (!Array.isArray(reviews)) {
+        return []
+      }
+
+      const decisions = reviews.filter(review => review.isDecision)
+      const decisionForm = await getDecisionForm(parent.groupId)
+
+      const threadedDiscussions =
+        parent.threadedDiscussions ||
+        (await getThreadedDiscussionsForManuscript(parent, getUsersById))
+
+      return getPublishableReviewFields(
+        decisions,
+        decisionForm,
+        threadedDiscussions,
+        parent,
+      )
+    },
+    async editors(parent) {
+      const teams = await models.Team.query()
+        .where({ objectId: parent.id })
+        .whereIn('role', ['seniorEditor', 'handlingEditor', 'editor'])
+
+      const teamMembers = await models.TeamMember.query().whereIn(
+        'team_id',
+        teams.map(t => t.id),
+      )
+
+      const editorAndRoles = await Promise.all(
+        teamMembers.map(async member => {
+          const user = await models.User.query().findById(member.userId)
+          const team = teams.find(t => t.id === member.teamId)
+          return {
+            name: user.username,
+            role: team.role,
+          }
+        }),
+      )
+
+      return editorAndRoles
+    },
+    async submissionWithFields(parent) {
+      // need form structure as well to get all the values for select and checkbox group.
+      // We will move this to tool.js in the next MR
+      const submissionForm = await getSubmissionForm(parent.groupId)
+      const fieldStructure = submissionForm.structure.children
+      const submission = parent.submission
+
+      const submissionKeyPrefix = 'submission.'
+
+      const modifiedSubmission = Object.fromEntries(
+        Object.entries(submission).map(([key, value]) => [
+          key,
+          {
+            value,
+            structure: fieldStructure.find(
+              c => c.name === submissionKeyPrefix + key,
+            ),
+          },
+        ]),
+      )
+
+      return JSON.stringify(modifiedSubmission)
+    },
+
+    // Since we can not change the api response structure right now
+    // So Adding the totalCount field in the manuscript itself.
+    async totalCount(parent) {
+      return parent.totalcount
+    },
   },
   ManuscriptMeta: {
     async source(parent, _, ctx, info) {
@@ -1652,6 +1755,16 @@ const resolvers = {
       return replaceImageSrc(parent.source, files, 'medium')
     },
   },
+  PublishedReview: {
+    async user(parent) {
+      if (parent.isHiddenReviewerName) {
+        return { id: '', username: 'Anonymous User' }
+      }
+
+      const user = await models.User.query().findById(parent.userId)
+      return user
+    },
+  },
 }
 
 const typeDefs = `
@@ -1666,10 +1779,10 @@ const typeDefs = `
     validateSuffix(suffix: String, groupId: ID!): validateDOIResponse
 
     """ Get published manuscripts with irrelevant fields stripped out. Optionally, you can specify a startDate and/or limit. """
-    manuscriptsPublishedSinceDate(startDate: DateTime, limit: Int): [PublishedManuscript]!
+    manuscriptsPublishedSinceDate(startDate: DateTime, limit: Int, offset: Int, groupName: String): [PublishedManuscript!]!
     """ Get a published manuscript by ID, or null if this manuscript is not published or not found """
     publishedManuscript(id: ID!): PublishedManuscript
-    unreviewedPreprints(token: String!, groupName: String!): [Preprint]
+    unreviewedPreprints(token: String!, groupName: String): [Preprint!]!
     doisToRegister(id: ID!): [String]
   }
 
@@ -1724,7 +1837,7 @@ const typeDefs = `
     shortId: Int!
     files: [File]
     teams: [Team]
-    reviews(forceRemovalOfConfidentialData: Boolean): [Review]
+    reviews: [Review]
     status: String
     decision: String
     authors: [Author]
@@ -1852,12 +1965,46 @@ const typeDefs = `
     status: String
     meta: ManuscriptMeta
     submission: String
+    submissionWithFields: String
     publishedArtifacts: [PublishedArtifact!]!
     publishedDate: DateTime
 		printReadyPdfUrl: String
 		styledHtml: String
 		css: String
+    decision: String
+    totalCount: Int
+    editors: [Editor!]
+    reviews: [PublishedReview!]
+    decisions: [PublishedReview!]
   }
+
+  type PublishedReview {
+    id: ID!
+    created: DateTime!
+    updated: DateTime
+    isDecision: Boolean
+    open: Boolean
+    user: ReviewUser
+    isHiddenFromAuthor: Boolean
+    isHiddenReviewerName: Boolean
+    isSharedWithCurrentUser: Boolean!
+    canBePublishedPublicly: Boolean
+    jsonData: String
+    userId: String
+    files: [File]
+  }
+
+  type Editor {
+    id: ID
+    name: String!
+    role: String!
+  }
+
+  type ReviewUser {
+    id: ID
+    username: String
+  }
+  
 `
 
 module.exports = {

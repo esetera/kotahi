@@ -13,12 +13,12 @@ describe('Completing a review', () => {
   it('accept and do a review', () => {
     cy.task('restore', 'commons/bootstrap')
     cy.task('seed', 'three_reviews_completed') // restore the database as per dumps/three_reviews_completed.sql
-    cy.task('seedForms')
 
     // eslint-disable-next-line jest/valid-expect-in-promise
     cy.fixture('role_names').then(name => {
       /* Group Manager assigns Editor to manuscript */
       cy.login(name.role.admin, dashboard)
+      // eslint-disable-next-line jest/valid-expect-in-promise
       DashboardPage.clickManuscriptNavButton()
       ManuscriptsPage.selectOptionWithText('Control')
       ControlPage.getAssignSeniorEditorDropdown()
@@ -49,7 +49,7 @@ describe('Completing a review', () => {
       // Verify Decision Content
       DashboardPage.getDecisionField(0).should('contain', decisionTextContent)
       DashboardPage.getDecisionField(1).should('contain', decisionFileName)
-      DashboardPage.getDecisionField(2).should('contain', 'revise')
+      DashboardPage.getDecisionField(2).should('contain', 'Revise')
       DashboardPage.clickCreateNewVersionButton() // Create new manuscript version
       SubmissionFormPage.getTypeOfResearchObject()
         .click()
