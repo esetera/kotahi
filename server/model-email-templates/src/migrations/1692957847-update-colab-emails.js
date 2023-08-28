@@ -9,16 +9,21 @@ exports.up = async knex => {
     return useTransaction(async trx => {
       // eslint-disable-next-line func-names
 
-      await updateAuthorInvitationEmailContent()
-      await updateReviewerInvitationEmailContent()
-      await updateNewReviewerRevisedPreprintInvitationEmailContent()
+      if (
+        process.env.USE_COLAB_EMAIL &&
+        process.env.USE_COLAB_EMAIL.toLowerCase() === 'true'
+      ) {
+        await updateAuthorInvitationEmailContent(trx)
+        await updateReviewerInvitationEmailContent(trx)
+        await updateNewReviewerRevisedPreprintInvitationEmailContent(trx)
+      }
     })
   } catch (error) {
     throw new Error(error)
   }
 }
 
-const updateAuthorInvitationEmailContent = async () => {
+const updateAuthorInvitationEmailContent = async trx => {
   const updatedBody = `<p>Dear {{ recipientName }}</p>
     <p>
     I’m a member of the launch team for <a href="https://www.sciencecolab.org/" target="_blank">Biophysics Colab</a>, a collaboration of biophysicists working in partnership with eLife to improve how research is evaluated. Later this year, we will launch a ‘publish, review, curate’ service that will support authors to create citeable, indexed versions of their work from published preprints. Until then, we are leveraging the knowledge and expertise of the global biophysics community to provide a <b>free preprint review service</b> that provides constructive, journal-agnostic feedback to authors.
@@ -60,7 +65,7 @@ const updateAuthorInvitationEmailContent = async () => {
     </p>`
 
   try {
-    const numUpdated = await EmailTemplate.query()
+    const numUpdated = await EmailTemplate.query(trx)
       .whereRaw(`email_content->>'description' = 'Author Invitation'`)
       .patch({
         email_content: EmailTemplate.raw(
@@ -78,7 +83,7 @@ const updateAuthorInvitationEmailContent = async () => {
   }
 }
 
-const updateReviewerInvitationEmailContent = async () => {
+const updateReviewerInvitationEmailContent = async trx => {
   const updatedBody = `<p>Dear {{ recipientName }}</p>
     <p>
       I’m a member of the launch team for <a href="https://www.sciencecolab.org/" target="_blank">Biophysics Colab</a>, a collaboration of biophysicists working in partnership with eLife to improve how research is evaluated. Later this year, we will launch a ‘publish, review, curate’ service that will support authors to create citeable, indexed versions of their work from published preprints. Until then, we are leveraging the knowledge and expertise of the global biophysics community to provide a <b>free preprint review service</b> that provides constructive, journal-agnostic feedback to authors.
@@ -121,7 +126,7 @@ const updateReviewerInvitationEmailContent = async () => {
     </p>`
 
   try {
-    const numUpdated = await EmailTemplate.query()
+    const numUpdated = await EmailTemplate.query(trx)
       .whereRaw(`email_content->>'description' = 'Reviewer Invitation'`)
       .patch({
         email_content: EmailTemplate.raw(
@@ -139,7 +144,7 @@ const updateReviewerInvitationEmailContent = async () => {
   }
 }
 
-const updateNewReviewerRevisedPreprintInvitationEmailContent = async () => {
+const updateNewReviewerRevisedPreprintInvitationEmailContent = async trx => {
   const updatedBody = `<p>Dear {{ recipientName }}</p>
     <p>Dear {{ recipientName }}</p>
     <p>I’m a member of the launch team for <a href="http://www.sciencecolab.org/" target="_blank">Biophysics Colab</a>, a collaboration of biophysicists working in partnership with eLife to improve how research is evaluated. Later this year, we will launch a ‘publish, review, curate’ service that will support authors to create citeable, indexed versions of their work from published preprints. Until then, we are leveraging the knowledge and expertise of the global biophysics community to provide a <b>free preprint review service</b> that provides constructive, journal-agnostic feedback to authors.</p>
@@ -179,7 +184,7 @@ const updateNewReviewerRevisedPreprintInvitationEmailContent = async () => {
     </p>`
 
   try {
-    const numUpdated = await EmailTemplate.query()
+    const numUpdated = await EmailTemplate.query(trx)
       .whereRaw(
         `email_content->>'description' = 'Reviewer invitation - new reviewer for a revised preprint'`,
       )
