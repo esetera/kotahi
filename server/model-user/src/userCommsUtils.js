@@ -255,8 +255,8 @@ const sendEmailWithPreparedData = async (input, ctx, emailSender) => {
         toEmail,
         invitationId,
         submissionLink: ctx
-          ? JSON.parse(manuscript.submission).link
-          : manuscript.submission.link,
+          ? JSON.parse(manuscript.submission).$sourceUri
+          : manuscript.submission.$sourceUri,
         purpose,
         status,
         senderId,

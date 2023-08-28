@@ -130,7 +130,7 @@ const getReviewOrSubmissionField = (manuscript, fieldName) => {
 
 /** Get DOI in form 10.12345/<suffix>
  * If the configured prefix includes 'https://doi.org/' and/or a trailing slash, these are dealt with gracefully. */
-const getDoi = async (suffix, activeConfig) => {
+const getDoi = (suffix, activeConfig) => {
   let prefix = activeConfig.formData.publishing.crossref.doiPrefix
   if (!prefix) throw new Error('No DOI prefix configured.')
   if (prefix.startsWith(DOI_PATH_PREFIX))

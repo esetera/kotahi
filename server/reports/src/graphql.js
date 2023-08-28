@@ -456,7 +456,7 @@ const getManuscriptsActivity = async (startDate, endDate, groupId, ctx) => {
     return {
       shortId: m.shortId.toString(),
       entryDate: getIsoDateString(m.created),
-      title: JSON.parse(lastVer.submission).$title,
+      title: lastVer.submission.$title,
       authors: getTeamUsers(m, 'Author'),
       editors: getTeamUsers(m, editorTeams),
       reviewers: getReviewersAndLatestStatuses(m),

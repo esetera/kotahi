@@ -666,7 +666,7 @@ const resolvers = {
         }
 
         const data = {
-          articleTitle: JSON.parse(manuscript.submission).$title,
+          articleTitle: manuscript.submission.$title,
           authorName:
             manuscript.submitter.username ||
             manuscript.submitter.defaultIdentity.name ||
@@ -749,7 +749,7 @@ const resolvers = {
         }
 
         const data = {
-          articleTitle: JSON.parse(manuscript.submission).$title,
+          articleTitle: manuscript.submission.$title,
           authorName:
             manuscript.submitter.username ||
             manuscript.submitter.defaultIdentity.name ||
