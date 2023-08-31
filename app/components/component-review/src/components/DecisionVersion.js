@@ -322,6 +322,7 @@ const DecisionVersion = ({
             removeReviewer={removeReviewer}
             reviewForm={reviewForm}
             reviews={reviewers}
+            showEditorOnlyFields
             updateReview={updateReview}
             updateSharedStatusForInvitedReviewer={
               updateSharedStatusForInvitedReviewer
@@ -391,6 +392,7 @@ const DecisionVersion = ({
               manuscript={version}
               reviewers={reviewers}
               reviewForm={reviewForm}
+              showEditorOnlyFields
               threadedDiscussionProps={threadedDiscussionExtendedProps}
               updateReview={updateReview}
               updateSharedStatusForInvitedReviewer={

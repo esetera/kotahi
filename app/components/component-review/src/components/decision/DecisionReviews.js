@@ -34,6 +34,7 @@ const DecisionReviews = ({
   urlFrag,
   updateSharedStatusForInvitedReviewer,
   updateTeamMember,
+  showEditorOnlyFields,
   currentUser,
 }) => {
   const reviewsToShow = manuscript?.reviews?.length
@@ -82,6 +83,7 @@ const DecisionReviews = ({
                   review.user,
                 )}
                 reviewForm={reviewForm}
+                showEditorOnlyFields={showEditorOnlyFields}
                 teams={manuscript.teams}
                 threadedDiscussionProps={threadedDiscussionProps}
                 updateReview={updateReview}

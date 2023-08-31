@@ -78,6 +78,7 @@ const KanbanCard = ({
   updateSharedStatusForInvitedReviewer,
   updateTeamMember,
   updateReview,
+  showEditorOnlyFields,
   showEmailInvitation,
 }) => {
   const [open, setOpen] = useState(false)
@@ -94,6 +95,7 @@ const KanbanCard = ({
         review={review}
         reviewerTeamMember={reviewer}
         reviewForm={reviewForm}
+        showEditorOnlyFields={showEditorOnlyFields}
         status={status}
         updateReview={updateReview}
         updateSharedStatusForInvitedReviewer={
