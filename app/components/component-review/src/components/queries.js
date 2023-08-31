@@ -162,37 +162,7 @@ const formFields = `
     haspopup
     popuptitle
     popupdescription
-    children {
-      title
-      shortDescription
-      id
-      component
-      name
-      description
-      doiValidation
-      doiUniqueSuffixValidation
-      placeholder
-      permitPublishing
-      parse
-      format
-      options {
-        id
-        label
-        labelColor
-        value
-      }
-      validate {
-        id
-        label
-        value
-      }
-      validateValue {
-        minChars
-        maxChars
-        minSize
-      }
-      readonly
-    }
+    children
   }
 `
 

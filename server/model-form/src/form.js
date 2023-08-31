@@ -63,6 +63,7 @@ class Form extends BaseModel {
                     },
                     type: ['array', 'null'],
                   },
+                  children: { type: ['array', 'null'] },
                   title: { type: ['string', 'null'] },
                   shortDescription: { type: ['string', 'null'] },
                   id: { type: 'string', format: 'uuid' },

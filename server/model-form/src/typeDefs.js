@@ -23,44 +23,7 @@ const typeDefs = `
     haspopup: String!
     popuptitle: String
     popupdescription: String
-    children: [FormElementInput!]!
-  }
-
-  input FormElementInput {
-    options: [FormElementOptionInput!]
-    title: String
-    shortDescription: String
-    id: ID!
-    component: String
-    name: String
-    description: String
-    doiValidation: String
-    doiUniqueSuffixValidation: String
-    placeholder: String
-    parse: String
-    format: String
-    inline: String
-    sectioncss: String
-    validate: [FormElementOptionInput!]
-    validateValue: FormElementValidationInput
-    hideFromReviewers: String
-    hideFromAuthors: String
-    permitPublishing: String
-    publishingTag: String
-    readonly: Boolean
-  }
-
-  input FormElementOptionInput {
-    label: String!
-    value: String!
-    labelColor: String
-    id: ID!
-  }
-
-  input FormElementValidationInput {
-    minChars: String
-    maxChars: String
-    minSize: String
+    children: JSON!
   }
 
   type Form {
@@ -79,44 +42,7 @@ const typeDefs = `
     haspopup: String!
     popuptitle: String
     popupdescription: String
-    children: [FormElement!]!
-  }
-
-  type FormElement {
-    options: [FormElementOption!]
-    title: String
-    shortDescription: String
-    id: ID!
-    component: String
-    name: String
-    description: String
-    doiValidation: String
-    doiUniqueSuffixValidation: String
-    placeholder: String
-    parse: String
-    format: String
-    inline: String
-    sectioncss: String
-    validate: [FormElementOption!]
-    validateValue: FormElementValidation
-    hideFromReviewers: String
-    hideFromAuthors: String
-    permitPublishing: String
-    publishingTag: String
-    readonly: Boolean
-  }
-
-  type FormElementOption {
-    label: String!
-    value: String!
-    labelColor: String
-    id: ID!
-  }
-
-  type FormElementValidation {
-    minChars: String
-    maxChars: String
-    minSize: String
+    children: JSON!
   }
 
   type DeleteFormPayload {
@@ -133,7 +59,7 @@ const typeDefs = `
   extend type Mutation {
     createForm(form: CreateFormInput!): Form
     updateForm(form: FormInput!): Form
-    updateFormElement(element: FormElementInput!, formId: ID!): Form
+    updateFormElement(element: JSON!, formId: ID!, parentElementId: ID): Form
     deleteFormElement(formId: ID!, elementId: ID!): Form
     deleteForm(formId: ID!): DeleteFormPayload
   }

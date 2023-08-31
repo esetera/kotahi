@@ -37,32 +37,7 @@ invitations {
 
 const formForPurposeAndCategoryFragment = `formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
   structure {
-    children {
-      id
-      component
-      name
-      title
-      shortDescription
-      validate {
-        id
-        label
-        value
-        labelColor
-      }
-      validateValue {
-        minChars
-        maxChars
-        minSize
-      }
-      doiValidation
-      options {
-        id
-        label
-        labelColor
-        value
-      }
-      readonly
-    }
+    children
   }
 }
 `

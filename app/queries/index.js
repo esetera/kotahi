@@ -209,33 +209,7 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
       groupId: $groupId
     ) {
       structure {
-        children {
-          id
-          component
-          name
-          title
-          shortDescription
-          validate {
-            id
-            label
-            value
-            labelColor
-          }
-          validateValue {
-            minChars
-            maxChars
-            minSize
-          }
-          doiValidation
-          doiUniqueSuffixValidation
-          options {
-            id
-            label
-            labelColor
-            value
-          }
-          readonly
-        }
+        children
       }
     }
   }

@@ -28,38 +28,7 @@ const formFields = `
     haspopup
     popuptitle
     popupdescription
-    children {
-      title
-      shortDescription
-      id
-      component
-      name
-      description
-      doiValidation
-      doiUniqueSuffixValidation
-      placeholder
-      parse
-      format
-      options {
-        id
-        label
-        value
-        labelColor
-      }
-      validate {
-        id
-        label
-        value
-      }
-      validateValue {
-        minChars
-        maxChars
-        minSize
-      }
-      hideFromAuthors
-      permitPublishing
-      readonly
-    }
+    children
   }
 `
 

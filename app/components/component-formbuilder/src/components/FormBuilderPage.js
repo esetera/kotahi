@@ -19,42 +19,7 @@ structure {
   haspopup
   popuptitle
   popupdescription
-  children {
-    title
-    shortDescription
-    id
-    component
-    name
-    description
-    doiValidation
-    doiUniqueSuffixValidation
-    placeholder
-    inline
-    sectioncss
-    parse
-    format
-    options {
-      id
-      label
-      labelColor
-      value
-    }
-    validate {
-      id
-      label
-      value
-    }
-    validateValue {
-      minChars
-      maxChars
-      minSize
-    }
-    hideFromReviewers
-    hideFromAuthors
-    permitPublishing
-    publishingTag
-    readonly
-  }
+  children
 }
 `
 
@@ -75,8 +40,12 @@ const updateFormMutation = gql`
 `
 
 const updateFormElementMutation = gql`
-  mutation($element: FormElementInput!, $formId: ID!) {
-    updateFormElement(element: $element, formId: $formId) {
+  mutation($element: JSON!, $formId: ID!, $parentElementId: ID) {
+    updateFormElement(
+      element: $element
+      formId: $formId
+      parentElementId: $parentElementId
+    ) {
       id
     }
   }

@@ -616,9 +616,6 @@ const permissions = {
   ),
   Form: allow,
   FormStructure: allow,
-  FormElement: allow,
-  FormElementOption: allow,
-  FormElementValidation: allow,
   UploadResult: isAuthenticated,
   Review: or(
     isPublicReviewFromPublishedManuscript,

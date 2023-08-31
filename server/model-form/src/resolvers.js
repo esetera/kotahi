@@ -18,11 +18,11 @@ const resolvers = {
         child => child.id !== elementId,
       )
 
-      const formRes = await Form.query().patchAndFetchById(formId, {
+      const result = await Form.query().patchAndFetchById(formId, {
         structure: form.structure,
       })
 
-      return formRes
+      return result
     },
     createForm: async (_, { form }) => {
       return Form.query().insertAndFetch(form)

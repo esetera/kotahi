@@ -116,37 +116,7 @@ const formStructure = `
     haspopup
     popuptitle
     popupdescription
-    children {
-      title
-      shortDescription
-      id
-      component
-      name
-      description
-      doiValidation
-      doiUniqueSuffixValidation
-      placeholder
-      parse
-      format
-      options {
-        id
-        label
-        labelColor
-        value
-      }
-      validate {
-        id
-        label
-        value
-      }
-      validateValue {
-        minChars
-        maxChars
-        minSize
-      }
-      hideFromReviewers
-      readonly
-    }
+    children
   }
 `
 
