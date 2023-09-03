@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Wax } from 'wax-prosemirror-core'
 import color from '../../../../theme/color'
 import {
-  convertTimestampToDateTimeString,
+  convertTimestampToDateWithTimeString,
   convertTimestampToTimeString,
 } from '../../../../shared/dateUtils'
 import chatWaxEditorConfig from '../ChatWaxEditor/ChatWaxEditorConfig'
@@ -22,7 +22,7 @@ const ModalContainer = styled.div`
 const ModalContent = styled.div`
   background-color: ${color.gray100};
   border-radius: 4px;
-  height: ${props => (props.isEdit ? '500px' : '242px')};
+  min-height: ${props => (props.isEdit ? '350px' : '250px')};
   padding: 15px 15px 27px 15px;
   position: relative;
   text-align: center;
@@ -38,6 +38,10 @@ const ModalContent = styled.div`
     align-items: center;
     display: flex;
     justify-content: space-between;
+  }
+
+  .waxmenu + div {
+    height: 130px;
   }
 `
 
@@ -119,7 +123,10 @@ const WaxEditorContainer = styled.div`
   overflow-y: auto;
 `
 
-const Time = styled.span``
+const Time = styled.span`
+  font-size: 14px;
+  line-height: 18px;
+`
 
 const ButtonRow = styled.div`
   align-items: center;
@@ -241,7 +248,7 @@ const EditDeleteMessageModal = ({
                 <Time>
                   {isToday(new Date(message.created))
                     ? convertTimestampToTimeString(new Date(message.created))
-                    : convertTimestampToDateTimeString(
+                    : convertTimestampToDateWithTimeString(
                         new Date(message.created),
                       )}
                 </Time>
