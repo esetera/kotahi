@@ -8,7 +8,7 @@ import NextPageButton from '../../../NextPageButton'
 import {
   convertTimestampToDateWithoutTimeString,
   convertTimestampToTimeString,
-  convertTimestampToDateTimeString,
+  convertTimestampToDateWithTimeString,
 } from '../../../../shared/dateUtils'
 import { CommsErrorBanner } from '../../../shared'
 import VideoChat from '../VideoChat'
@@ -230,8 +230,8 @@ const Messages = ({
                     <>
                       <EditedTime>Edited</EditedTime>
                       <Tooltip
-                        className="custom-tooltip"
-                        content={convertTimestampToDateTimeString(
+                        className="message-tooltip"
+                        content={convertTimestampToDateWithTimeString(
                           message.updated,
                         )}
                       />

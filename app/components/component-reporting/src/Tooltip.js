@@ -28,10 +28,9 @@ const Tip = styled.div`
   width: max-content;
   z-index: 999;
 
-  &.custom-tooltip {
-    position: absolute;
-    right: -392px;
-    top: 10px;
+  &.message-tooltip {
+    right: -275px;
+    top: -4px;
   }
 `
 
