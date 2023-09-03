@@ -10,7 +10,7 @@ const DropdownContainer = styled.div`
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   position: absolute;
   right: -3px;
-  width: 176px;
+  width: 145px;
   z-index: 1000;
 `
 
@@ -20,7 +20,7 @@ const DropdownItem = styled.div`
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
-  padding: 17px 14px 13px 13px;
+  padding: 6px 14px 6px 14px;
 
   &:hover {
     background-color: #f8f8f9;
@@ -130,16 +130,18 @@ const ChatPostDropdown = ({ show, message, currentUser = {} }) => {
               style={{ left: '70%', marginTop: '5px' }}
             />
           </div>
-          {canEditPost && (
-            <DropdownItem onClick={() => handleAction('edit')}>
-              Edit
-            </DropdownItem>
-          )}
-          {canDeletePost && (
-            <DropdownItem onClick={() => handleAction('delete')}>
-              Delete
-            </DropdownItem>
-          )}
+          <div>
+            {canEditPost && (
+              <DropdownItem onClick={() => handleAction('edit')}>
+                Edit
+              </DropdownItem>
+            )}
+            {canDeletePost && (
+              <DropdownItem onClick={() => handleAction('delete')}>
+                Delete
+              </DropdownItem>
+            )}
+          </div>
         </DropdownContainer>
       )}
       {showModal && (

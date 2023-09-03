@@ -23,11 +23,19 @@ const ModalContent = styled.div`
   background-color: ${color.gray100};
   border-radius: 4px;
   height: ${props => (props.isEdit ? '500px' : '242px')};
+  padding: 15px 15px 27px 15px;
   position: relative;
   text-align: center;
   width: ${props => (props.isEdit ? '50%' : '518px')};
 
+  .contentRow {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
   .buttonRow {
+    align-items: center;
     display: flex;
     justify-content: space-between;
   }
@@ -42,7 +50,6 @@ const Title = styled.h2`
   justify-content: space-between;
   line-height: 18px;
   margin: 0;
-  padding-top: 16px;
 `
 
 const Message = styled.p`
@@ -50,8 +57,6 @@ const Message = styled.p`
   font-weight: 400;
   line-height: 22px;
   margin: 0;
-  padding-bottom: 27px;
-  padding-left: 15px;
   padding-top: ${props => (props.isEdit ? '20px' : '0')};
   text-align: left;
 `
@@ -59,26 +64,24 @@ const Message = styled.p`
 const DeleteChatText = styled.span`
   align-items: center;
   display: flex;
-  padding-left: 16px;
 `
 
 const CloseButton = styled.button`
   align-items: center;
+  background: transparent;
   border: 4px;
   color: ${color.gray0};
   cursor: pointer;
   display: flex;
-  font-size: 22px;
-  height: 13.52px;
+  font-size: 34px;
   justify-content: center;
-  margin-right: 16px;
-  width: 13.52px;
+  line-height: none;
 `
 
 const MessageContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 208px;
+  height: 100%;
   justify-content: space-between;
   text-align: left;
 `
@@ -87,12 +90,12 @@ const MessageGroupHeader = styled.div`
   align-items: center;
   display: flex;
   justify-content: space-between;
-  padding-top: 25px;
 `
 
 const MessageGroupContainer = styled.div`
-  padding-left: 44px;
-  padding-right: 71px;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 25px;
 `
 
 const Username = styled.span`
@@ -101,8 +104,6 @@ const Username = styled.span`
 `
 
 const MessageText = styled.span`
-  -webkit-box-orient: vertical;
-  display: -webkit-box;
   font-weight: 400;
   line-height: 22px;
   max-height: 66px;
@@ -125,7 +126,6 @@ const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-start;
   margin-top: ${props => (props.isEdit ? '20px' : '0')};
-  padding-bottom: 27px;
 `
 
 const ShadowButton = styled.button`
@@ -149,7 +149,6 @@ const Button = styled(ShadowButton)`
     border: 1px solid #6c6c6c;
     color: #6c6c6c;
     margin-left: 6px;
-    margin-right: 15px;
   }
 `
 
@@ -230,22 +229,26 @@ const EditDeleteMessageModal = ({
   return (
     <ModalContainer>
       <ModalContent isEdit={isEdit}>
-        <Title>
-          <DeleteChatText>{title}</DeleteChatText>
-          <CloseButton onClick={close}>&#215;</CloseButton>
-        </Title>
         <MessageContainer>
-          <MessageGroupContainer>
-            <MessageGroupHeader>
-              <Username>{message.user.username}</Username>
-              <Time>
-                {isToday(new Date(message.created))
-                  ? convertTimestampToTimeString(new Date(message.created))
-                  : convertTimestampToDateTimeString(new Date(message.created))}
-              </Time>
-            </MessageGroupHeader>
-            {renderEditDeleteModalComponent()}
-          </MessageGroupContainer>
+          <div className="contentRow">
+            <Title>
+              <DeleteChatText>{title}</DeleteChatText>
+              <CloseButton onClick={close}>&#215;</CloseButton>
+            </Title>
+            <MessageGroupContainer>
+              <MessageGroupHeader>
+                <Username>{message.user.username}</Username>
+                <Time>
+                  {isToday(new Date(message.created))
+                    ? convertTimestampToTimeString(new Date(message.created))
+                    : convertTimestampToDateTimeString(
+                        new Date(message.created),
+                      )}
+                </Time>
+              </MessageGroupHeader>
+              {renderEditDeleteModalComponent()}
+            </MessageGroupContainer>
+          </div>
           <div className="buttonRow">
             <Message isEdit={isEdit}>
               Are you sure you want to {isEdit ? 'edit' : 'delete'} this chat?
