@@ -1,6 +1,6 @@
 /* eslint-disable prefer-object-spread */
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { UserAvatar } from '../../../component-avatar/src'
 import { sortAndGroupMessages } from '../../../../sortAndGroup'
@@ -8,10 +8,13 @@ import NextPageButton from '../../../NextPageButton'
 import {
   convertTimestampToDateWithoutTimeString,
   convertTimestampToTimeString,
+  convertTimestampToDateTimeString,
 } from '../../../../shared/dateUtils'
-import MessageRenderer from './MessageRenderer'
 import { CommsErrorBanner } from '../../../shared'
 import VideoChat from '../VideoChat'
+
+import ChatPostDropdown from './ChatPostDropdown'
+import Tooltip from '../../../component-reporting/src/Tooltip'
 
 import {
   Time,
@@ -29,6 +32,8 @@ import {
   UnreadLabel,
   DateLabelContainer,
   DateLabel,
+  Ellipsis,
+  EditedTime,
 } from './style'
 
 const Messages = ({
@@ -40,6 +45,7 @@ const Messages = ({
   unreadMessagesCount,
   updateChannelViewed,
   manuscriptId = null,
+  currentUser,
 }) => {
   const { loading, error, data } = queryData
 
@@ -52,6 +58,15 @@ const Messages = ({
       })
     }
   }, [data])
+  const [activeMessageDropdownId, setActiveMessageDropdownId] = useState(null)
+
+  const showDropdown = messageId => {
+    setActiveMessageDropdownId(prevId =>
+      prevId === messageId ? null : messageId,
+    )
+  }
+
+  const mainRef = useRef(null)
 
   const scrollToBottom = () => {
     const main = document.getElementById('messages')
@@ -68,7 +83,7 @@ const Messages = ({
     scrollToBottom()
 
     return () => {}
-  })
+  }, [mainRef.current])
 
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
@@ -103,9 +118,43 @@ const Messages = ({
     </UnreadLabelContainer>
   )
 
+  const { globalRoles = [] } = currentUser
+  const isAdmin = globalRoles.includes('admin')
+  const isGroupManager = currentUser.groupRoles.includes('groupManager')
+
+  // eslint-disable-next-line no-shadow
+  const renderDropdownAndEllipsis = (isAdmin, isGroupManager, message) => {
+    if ((isAdmin && isGroupManager) || currentUser.id === message.user.id) {
+      return (
+        <>
+          <Ellipsis
+            className="message-ellipsis"
+            onClick={() => showDropdown(message.id)}
+          />
+          {activeMessageDropdownId === message.id && (
+            <ChatPostDropdown
+              currentUser={currentUser}
+              message={message}
+              show
+            />
+          )}
+        </>
+      )
+    }
+
+    return <></>
+  }
+
+  // eslint-disable-next-line no-shadow
+  const MessageRenderer = ({ message }) => {
+    // eslint-disable-next-line react/no-danger
+    return <div dangerouslySetInnerHTML={{ __html: message.content }} />
+  }
+
   return (
     <MessagesGroup
       id="messages"
+      ref={mainRef}
       style={{ paddingBottom: unreadMessagesCount !== 0 ? '20px' : '8px' }}
     >
       {manuscriptId ? <VideoChat manuscriptId={manuscriptId} /> : ''}
@@ -150,19 +199,44 @@ const Messages = ({
                   {index === 0 && (
                     <Byline>
                       {message.user.username}
-                      <Time>
-                        {convertTimestampToTimeString(message.created)}
-                      </Time>
+                      <div className="message-time">
+                        <Time>
+                          {convertTimestampToTimeString(message.created)}
+                        </Time>
+                        {renderDropdownAndEllipsis(
+                          isAdmin,
+                          isGroupManager,
+                          message,
+                        )}
+                      </div>
                     </Byline>
                   )}
                   <Bubble>
                     <MessageRenderer message={message} />
                     {index !== 0 && (
-                      <InlineTime className="message-timestamp">
-                        {convertTimestampToTimeString(message.created)}
-                      </InlineTime>
+                      <>
+                        <InlineTime className="message-timestamp">
+                          {convertTimestampToTimeString(message.created)}
+                        </InlineTime>
+                        {renderDropdownAndEllipsis(
+                          isAdmin,
+                          isGroupManager,
+                          message,
+                        )}
+                      </>
                     )}
                   </Bubble>
+                  {message.created !== message.updated && (
+                    <>
+                      <EditedTime>Edited</EditedTime>
+                      <Tooltip
+                        className="custom-tooltip"
+                        content={convertTimestampToDateTimeString(
+                          message.updated,
+                        )}
+                      />
+                    </>
+                  )}
                 </InnerMessageContainer>
               </Message>
             ))}

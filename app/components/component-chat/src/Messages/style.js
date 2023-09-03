@@ -2,6 +2,8 @@
 
 import styled from 'styled-components'
 import { th } from '@pubsweet/ui-toolkit'
+import { MoreVertical } from 'react-feather'
+import { color } from '../../../../theme'
 
 export { Spinner } from '../../../shared'
 
@@ -9,7 +11,8 @@ export const Time = styled.span`
   color: ${th('colorText')};
   font-size: 14px;
   font-weight: 500;
-  margin: 0 24px;
+  margin: 0px 40px;
+  padding-right: 20px;
   text-align: center;
 `
 
@@ -18,6 +21,7 @@ export const InlineTime = styled.span`
   font-size: 14px;
   font-weight: 300;
   margin: 0 24px;
+  padding-right: 11px;
   text-align: center;
 `
 
@@ -52,7 +56,17 @@ export const Message = styled.div`
   padding-right: 4px;
   position: relative;
 
+  .message-time {
+    align-items: center;
+    display: flex;
+  }
+
   .message-timestamp {
+    opacity: 0;
+    padding-right: 37px;
+  }
+
+  .message-ellipsis {
     opacity: 0;
   }
 
@@ -64,6 +78,10 @@ export const Message = styled.div`
     }
 
     .message-timestamp {
+      opacity: 1;
+    }
+
+    .message-ellipsis {
       opacity: 1;
     }
   }
@@ -198,4 +216,42 @@ export const DateLabel = styled(ChatLabel)`
   background-color: #ffffff;
   color: #6c6c6c;
   padding: 2px 12px;
+`
+
+export const Ellipsis = styled(MoreVertical)`
+  background-color: #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
+  height: 20.25px;
+  padding: 3px;
+  position: absolute;
+  right: 32px;
+  width: 20.25px;
+
+  &:hover {
+    background-color: ${color.gray90};
+    border-radius: 50%;
+  }
+
+  @media (min-width: 1440px) {
+    right: 20px;
+  }
+
+  @media (min-width: 2560px) {
+    right: 20px;
+  }
+`
+
+export const EditedTime = styled.div`
+  color: #343332;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 22px;
+  margin-bottom: 8px;
+  margin-left: auto;
+  margin-right: 60px;
+  margin-top: 8px;
+  top: 26px;
+  z-index: 900;
 `

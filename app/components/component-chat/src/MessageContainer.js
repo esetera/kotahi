@@ -37,8 +37,42 @@ const GET_MESSAGES = gql`
 `
 
 const MESSAGES_SUBSCRIPTION = gql`
-  subscription messageCreated($channelId: ID) {
+  subscription messageCreated($channelId: ID!) {
     messageCreated(channelId: $channelId) {
+      id
+      created
+      updated
+      content
+      user {
+        id
+        username
+        profilePicture
+        isOnline
+        defaultIdentity {
+          identifier
+          email
+          type
+          aff
+          id
+          name
+        }
+      }
+    }
+  }
+`
+
+const MESSAGE_DELETED_SUBSCRIPTION = gql`
+  subscription messageDeleted($channelId: ID!) {
+    messageDeleted(channelId: $channelId) {
+      id
+      content
+    }
+  }
+`
+
+const MESSAGE_UPDATED_SUBSCRIPTION = gql`
+  subscription messageUpdated($channelId: ID!) {
+    messageUpdated(channelId: $channelId) {
       id
       created
       updated
@@ -134,26 +168,60 @@ const sortSuggestions = (a, b, queryString) => {
   return aNameIndex - bNameIndex || aUsernameIndex - bUsernameIndex
 }
 
+const handleMessageSubscriptionUpdate = (prev, subscriptionData, idKey) => {
+  if (!subscriptionData.data) return prev
+
+  const newData = subscriptionData.data[idKey]
+
+  const exists = prev.messages.edges.find(({ id }) => id === newData.id)
+
+  if (exists) return prev
+
+  return {
+    ...prev,
+    messages: {
+      ...prev.messages,
+      edges: [...prev.messages.edges, newData],
+    },
+  }
+}
+
 const subscribeToNewMessages = (subscribeToMore, channelId) =>
   subscribeToMore({
     document: MESSAGES_SUBSCRIPTION,
     variables: { channelId },
+    updateQuery: (prev, { subscriptionData }) =>
+      handleMessageSubscriptionUpdate(prev, subscriptionData, 'messageCreated'),
+  })
+
+const subscribeToUpdatedMessage = (subscribeToMore, channelId) =>
+  subscribeToMore({
+    document: MESSAGE_UPDATED_SUBSCRIPTION,
+    variables: { channelId },
+    updateQuery: (prev, { subscriptionData }) =>
+      handleMessageSubscriptionUpdate(prev, subscriptionData, 'messageUpdated'),
+  })
+
+const subscribeToDeletedMessage = (subscribeToMore, channelId) =>
+  subscribeToMore({
+    document: MESSAGE_DELETED_SUBSCRIPTION,
+    variables: { channelId },
     updateQuery: (prev, { subscriptionData }) => {
       if (!subscriptionData.data) return prev
-      const { messageCreated } = subscriptionData.data
 
-      const exists = prev.messages.edges.find(
-        ({ id }) => id === messageCreated.id,
+      const deletedId = subscriptionData.data.messageDeleted.id
+
+      const updatedEdges = prev.messages.edges.filter(
+        ({ id }) => id !== deletedId,
       )
 
-      if (exists) return prev
-
-      return Object.assign({}, prev, {
+      return {
+        ...prev,
         messages: {
           ...prev.messages,
-          edges: [...prev.messages.edges, messageCreated],
+          edges: updatedEdges,
         },
-      })
+      }
     },
   })
 
@@ -244,13 +312,25 @@ const chatComponent = (
   const [reportUserIsActiveMutation] = useMutation(REPORT_USER_IS_ACTIVE)
 
   useEffect(() => {
-    const unsubscribeToNewMessages = subscribeToNewMessages(
+    const newMessagesSubscription = subscribeToNewMessages(
+      subscribeToMore,
+      channelId,
+    )
+
+    const updatedMessagesSubscription = subscribeToUpdatedMessage(
+      subscribeToMore,
+      channelId,
+    )
+
+    const deletedMessagesSubscription = subscribeToDeletedMessage(
       subscribeToMore,
       channelId,
     )
 
     return () => {
-      unsubscribeToNewMessages()
+      newMessagesSubscription()
+      updatedMessagesSubscription()
+      deletedMessagesSubscription()
     }
   }, [])
 
@@ -402,15 +482,28 @@ const Container = ({
   const [reportUserIsActiveMutation] = useMutation(REPORT_USER_IS_ACTIVE)
 
   useEffect(() => {
-    const unsubscribeToNewMessages = subscribeToNewMessages(
+    const newMessagesSubscription = subscribeToNewMessages(
+      subscribeToMore,
+      channelId,
+    )
+
+    const updatedMessagesSubscription = subscribeToUpdatedMessage(
+      subscribeToMore,
+      channelId,
+    )
+
+    const deletedMessagesSubscription = subscribeToDeletedMessage(
       subscribeToMore,
       channelId,
     )
 
     return () => {
-      unsubscribeToNewMessages()
+      newMessagesSubscription()
+      updatedMessagesSubscription()
+      deletedMessagesSubscription()
     }
   }, [])
+
   const firstMessage = data?.messages.edges[0]
   const unreadMessagesCount = data?.messages.unreadMessagesCount
   const firstUnreadMessageId = data?.messages.firstUnreadMessageId
