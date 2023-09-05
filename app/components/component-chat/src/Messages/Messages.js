@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react'
 import PropTypes from 'prop-types'
+import { sanitize } from 'isomorphic-dompurify'
 import { UserAvatar } from '../../../component-avatar/src'
 import { sortAndGroupMessages } from '../../../../sortAndGroup'
 import NextPageButton from '../../../NextPageButton'
@@ -60,7 +61,7 @@ const Messages = ({
   }, [data])
   const [activeMessageDropdownId, setActiveMessageDropdownId] = useState(null)
 
-  const showDropdown = messageId => {
+  const showOrToggleDropdown = messageId => {
     setActiveMessageDropdownId(prevId =>
       prevId === messageId ? null : messageId,
     )
@@ -124,12 +125,15 @@ const Messages = ({
 
   // eslint-disable-next-line no-shadow
   const renderDropdownAndEllipsis = (isAdmin, isGroupManager, message) => {
+    // Too many users are currently assigned as Group Managers, and we don't want them
+    // all to be able to modify other users messages; but Admin users may not have
+    // access to this page; so we require that they be Admin AND Group Manager.
     if ((isAdmin && isGroupManager) || currentUser.id === message.user.id) {
       return (
         <>
           <Ellipsis
             className="message-ellipsis"
-            onClick={() => showDropdown(message.id)}
+            onClick={() => showOrToggleDropdown(message.id)}
           />
           {activeMessageDropdownId === message.id && (
             <ChatPostDropdown
@@ -147,8 +151,10 @@ const Messages = ({
 
   // eslint-disable-next-line no-shadow
   const MessageRenderer = ({ message }) => {
-    // eslint-disable-next-line react/no-danger
-    return <div dangerouslySetInnerHTML={{ __html: message.content }} />
+    return (
+      // eslint-disable-next-line react/no-danger
+      <div dangerouslySetInnerHTML={{ __html: sanitize(message.content) }} />
+    )
   }
 
   return (

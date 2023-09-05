@@ -4,9 +4,10 @@ import { useMutation } from '@apollo/client'
 import EditDeleteMessageModal from './EditDeleteMessageModal'
 import { DELETE_MESSAGE, UPDATE_MESSAGE } from '../../../../queries'
 import { Ellipsis } from './style'
+import color from '../../../../theme/color'
 
 const DropdownContainer = styled.div`
-  background-color: #ffffff;
+  background-color: ${color.gray100};
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   position: absolute;
   right: -3px;
@@ -15,7 +16,7 @@ const DropdownContainer = styled.div`
 `
 
 const DropdownItem = styled.div`
-  color: #000000;
+  color: ${color.black};
   cursor: pointer;
   font-size: 16px;
   font-weight: 400;
@@ -23,7 +24,7 @@ const DropdownItem = styled.div`
   padding: 6px 14px 6px 14px;
 
   &:hover {
-    background-color: #f8f8f9;
+    background-color: ${color.gray97};
   }
 `
 

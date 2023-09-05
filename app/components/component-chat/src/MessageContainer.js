@@ -312,25 +312,25 @@ const chatComponent = (
   const [reportUserIsActiveMutation] = useMutation(REPORT_USER_IS_ACTIVE)
 
   useEffect(() => {
-    const newMessagesSubscription = subscribeToNewMessages(
+    const unsubscribeToNewMessages = subscribeToNewMessages(
       subscribeToMore,
       channelId,
     )
 
-    const updatedMessagesSubscription = subscribeToUpdatedMessage(
+    const unsubscribeToUpdatedMessages = subscribeToUpdatedMessage(
       subscribeToMore,
       channelId,
     )
 
-    const deletedMessagesSubscription = subscribeToDeletedMessage(
+    const unsubscribeToDeletedMessages = subscribeToDeletedMessage(
       subscribeToMore,
       channelId,
     )
 
     return () => {
-      newMessagesSubscription()
-      updatedMessagesSubscription()
-      deletedMessagesSubscription()
+      unsubscribeToNewMessages()
+      unsubscribeToUpdatedMessages()
+      unsubscribeToDeletedMessages()
     }
   }, [])
 
@@ -482,25 +482,25 @@ const Container = ({
   const [reportUserIsActiveMutation] = useMutation(REPORT_USER_IS_ACTIVE)
 
   useEffect(() => {
-    const newMessagesSubscription = subscribeToNewMessages(
+    const unsubscribeToNewMessages = subscribeToNewMessages(
       subscribeToMore,
       channelId,
     )
 
-    const updatedMessagesSubscription = subscribeToUpdatedMessage(
+    const unsubscribeToUpdatedMessages = subscribeToUpdatedMessage(
       subscribeToMore,
       channelId,
     )
 
-    const deletedMessagesSubscription = subscribeToDeletedMessage(
+    const unsubscribeToDeletedMessages = subscribeToDeletedMessage(
       subscribeToMore,
       channelId,
     )
 
     return () => {
-      newMessagesSubscription()
-      updatedMessagesSubscription()
-      deletedMessagesSubscription()
+      unsubscribeToNewMessages()
+      unsubscribeToUpdatedMessages()
+      unsubscribeToDeletedMessages()
     }
   }, [])
 

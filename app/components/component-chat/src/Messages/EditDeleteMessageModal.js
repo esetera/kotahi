@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Wax } from 'wax-prosemirror-core'
+import { sanitize } from 'isomorphic-dompurify'
 import color from '../../../../theme/color'
 import {
   convertTimestampToDateWithTimeString,
@@ -8,35 +9,23 @@ import {
 } from '../../../../shared/dateUtils'
 import chatWaxEditorConfig from '../ChatWaxEditor/ChatWaxEditorConfig'
 import ContentEditorLayout from '../../../component-cms-manager/src/editor/layout/ContentEditorLayout'
-
-const ModalContainer = styled.div`
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  inset: 0;
-  justify-content: center;
-  position: fixed;
-  z-index: 10000;
-`
+import Modal from '../../../component-modal/src/Modal'
 
 const ModalContent = styled.div`
   background-color: ${color.gray100};
   border-radius: 4px;
-  min-height: ${props => (props.isEdit ? '350px' : '250px')};
-  padding: 15px 15px 27px 15px;
   position: relative;
   text-align: center;
-  width: ${props => (props.isEdit ? '50%' : '518px')};
-
-  .contentRow {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
 
   .buttonRow {
     align-items: center;
     display: flex;
+    justify-content: space-between;
+  }
+
+  .contentRow {
+    display: flex;
+    flex-direction: column;
     justify-content: space-between;
   }
 
@@ -45,41 +34,14 @@ const ModalContent = styled.div`
   }
 `
 
-const Title = styled.h2`
-  align-items: center;
-  color: ${color.gray0};
-  display: flex;
-  font-size: 16px;
-  font-weight: 600;
-  justify-content: space-between;
-  line-height: 18px;
-  margin: 0;
-`
-
 const Message = styled.p`
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
   margin: 0;
+  margin-right: 45px;
   padding-top: ${props => (props.isEdit ? '20px' : '0')};
   text-align: left;
-`
-
-const DeleteChatText = styled.span`
-  align-items: center;
-  display: flex;
-`
-
-const CloseButton = styled.button`
-  align-items: center;
-  background: transparent;
-  border: 4px;
-  color: ${color.gray0};
-  cursor: pointer;
-  display: flex;
-  font-size: 34px;
-  justify-content: center;
-  line-height: none;
 `
 
 const MessageContainer = styled.div`
@@ -90,30 +52,29 @@ const MessageContainer = styled.div`
   text-align: left;
 `
 
+const MessageGroupContainer = styled.div`
+  padding-left: 30px;
+  padding-right: 30px;
+`
+
 const MessageGroupHeader = styled.div`
   align-items: center;
   display: flex;
   justify-content: space-between;
 `
 
-const MessageGroupContainer = styled.div`
-  padding-left: 30px;
-  padding-right: 30px;
-  padding-top: 25px;
+const MessageText = styled.span`
+  display: inline-block;
+  font-weight: 400;
+  line-height: 22px;
+  margin-bottom: 30px;
+  max-height: 66px;
+  padding-right: 39px;
 `
 
 const Username = styled.span`
   font-weight: 600;
   line-height: 18px;
-`
-
-const MessageText = styled.span`
-  font-weight: 400;
-  line-height: 22px;
-  max-height: 66px;
-  overflow-y: auto;
-  padding-right: 39px;
-  text-overflow: ellipsis;
 `
 
 const WaxEditorContainer = styled.div`
@@ -210,6 +171,7 @@ const EditDeleteMessageModal = ({
     setIsButtonDisabled(shouldDisableButton)
   }
 
+  // eslint-disable-next-line consistent-return
   const renderEditDeleteModalComponent = () => {
     if (isEdit) {
       return (
@@ -228,20 +190,16 @@ const EditDeleteMessageModal = ({
     return (
       <MessageText
         contentEditable={isEdit}
-        dangerouslySetInnerHTML={{ __html: message.content }}
+        dangerouslySetInnerHTML={{ __html: sanitize(message.content) }}
       />
     )
   }
 
   return (
-    <ModalContainer>
+    <Modal isOpen onClose={close} title={title}>
       <ModalContent isEdit={isEdit}>
         <MessageContainer>
           <div className="contentRow">
-            <Title>
-              <DeleteChatText>{title}</DeleteChatText>
-              <CloseButton onClick={close}>&#215;</CloseButton>
-            </Title>
             <MessageGroupContainer>
               <MessageGroupHeader>
                 <Username>{message.user.username}</Username>
@@ -281,7 +239,7 @@ const EditDeleteMessageModal = ({
           </div>
         </MessageContainer>
       </ModalContent>
-    </ModalContainer>
+    </Modal>
   )
 }
 
