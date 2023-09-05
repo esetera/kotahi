@@ -28,9 +28,9 @@ const Tip = styled.div`
   width: max-content;
   z-index: 999;
 
-  &.message-tooltip {
-    right: -275px;
-    top: -4px;
+  &.tooltip-message {
+    right: 0;
+    top: 0;
   }
 `
 

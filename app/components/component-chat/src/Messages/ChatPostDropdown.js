@@ -125,12 +125,10 @@ const ChatPostDropdown = ({ show, message, currentUser = {} }) => {
     <>
       {isOpen && (
         <DropdownContainer ref={dropdownRef} style={{ top: '0%' }}>
-          <div>
-            <Ellipsis
-              onClick={() => setIsOpen(!isOpen)}
-              style={{ left: '70%', marginTop: '5px' }}
-            />
-          </div>
+          <Ellipsis
+            className="dropdown-ellipsis"
+            onClick={() => setIsOpen(!isOpen)}
+          />
           <div>
             {canEditPost && (
               <DropdownItem onClick={() => handleAction('edit')}>

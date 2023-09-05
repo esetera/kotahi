@@ -34,6 +34,7 @@ import {
   DateLabelContainer,
   DateLabel,
   Ellipsis,
+  EditedTimeContainer,
   EditedTime,
 } from './style'
 
@@ -220,7 +221,7 @@ const Messages = ({
                   <Bubble>
                     <MessageRenderer message={message} />
                     {index !== 0 && (
-                      <>
+                      <div className="message-time">
                         <InlineTime className="message-timestamp">
                           {convertTimestampToTimeString(message.created)}
                         </InlineTime>
@@ -229,19 +230,19 @@ const Messages = ({
                           isGroupManager,
                           message,
                         )}
-                      </>
+                      </div>
                     )}
                   </Bubble>
                   {message.created !== message.updated && (
-                    <>
+                    <EditedTimeContainer>
                       <EditedTime>Edited</EditedTime>
                       <Tooltip
-                        className="message-tooltip"
+                        className="tooltip-message"
                         content={convertTimestampToDateWithTimeString(
                           message.updated,
                         )}
                       />
-                    </>
+                    </EditedTimeContainer>
                   )}
                 </InnerMessageContainer>
               </Message>

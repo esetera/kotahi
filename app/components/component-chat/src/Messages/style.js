@@ -11,7 +11,8 @@ export const Time = styled.span`
   color: ${th('colorText')};
   font-size: 14px;
   font-weight: 500;
-  margin: 0px 40px;
+  /* margin: 0px 40px; */
+  margin-right: 15px;
   text-align: center;
 `
 
@@ -20,7 +21,7 @@ export const InlineTime = styled.span`
   font-size: 14px;
   font-weight: 300;
   margin-right: 15px;
-  padding-right: 10px;
+  /* padding-right: 10px; */
   text-align: center;
 `
 
@@ -58,11 +59,12 @@ export const Message = styled.div`
   .message-time {
     align-items: center;
     display: flex;
+    justify-content: flex-end;
+    margin-right: 15px;
   }
 
   .message-timestamp {
     opacity: 0;
-    padding-right: 25px;
   }
 
   .message-ellipsis {
@@ -223,8 +225,6 @@ export const Ellipsis = styled(MoreVertical)`
   cursor: pointer;
   height: 20.25px;
   padding: 3px;
-  position: absolute;
-  right: 15px;
   width: 20.25px;
 
   &:hover {
@@ -232,13 +232,19 @@ export const Ellipsis = styled(MoreVertical)`
     border-radius: 50%;
   }
 
-  @media (min-width: 1440px) {
-    right: 15px;
+  &.dropdown-ellipsis {
+    position: absolute;
+    right: 18px;
+    top: 4px;
   }
+`
 
-  @media (min-width: 2560px) {
-    right: 15px;
-  }
+export const EditedTimeContainer = styled.div`
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  padding-right: 50px;
+  text-align: right;
 `
 
 export const EditedTime = styled.div`
@@ -247,5 +253,4 @@ export const EditedTime = styled.div`
   font-style: italic;
   font-weight: 400;
   line-height: 22px;
-  margin: 0 40px 4px auto;
 `
