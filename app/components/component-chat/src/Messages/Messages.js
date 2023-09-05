@@ -136,13 +136,12 @@ const Messages = ({
             className="message-ellipsis"
             onClick={() => showOrToggleDropdown(message.id)}
           />
-          {activeMessageDropdownId === message.id && (
-            <ChatPostDropdown
-              currentUser={currentUser}
-              message={message}
-              show
-            />
-          )}
+          <ChatPostDropdown
+            currentUser={currentUser}
+            message={message}
+            onDropdownHide={() => setActiveMessageDropdownId(null)}
+            show={activeMessageDropdownId === message.id}
+          />
         </>
       )
     }

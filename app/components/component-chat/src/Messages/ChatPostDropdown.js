@@ -29,7 +29,12 @@ const DropdownItem = styled.div`
   }
 `
 
-const ChatPostDropdown = ({ show, message, currentUser = {} }) => {
+const ChatPostDropdown = ({
+  show,
+  message,
+  currentUser = {},
+  onDropdownHide = () => {},
+}) => {
   const { globalRoles = [], groupRoles = [] } = currentUser
   const [isOpen, setIsOpen] = useState(show)
   const [modalAction, setModalAction] = useState(false)
@@ -100,6 +105,11 @@ const ChatPostDropdown = ({ show, message, currentUser = {} }) => {
     }
   }
 
+  const hideDropdown = () => {
+    setIsOpen(false)
+    onDropdownHide()
+  }
+
   const dropdownRef = useRef(null)
 
   useEffect(() => {
@@ -107,7 +117,7 @@ const ChatPostDropdown = ({ show, message, currentUser = {} }) => {
 
     const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false)
+        hideDropdown()
       }
     }
 
@@ -128,7 +138,7 @@ const ChatPostDropdown = ({ show, message, currentUser = {} }) => {
         <DropdownContainer ref={dropdownRef}>
           <Ellipsis
             className="dropdown-ellipsis"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => hideDropdown()}
           />
           <div>
             {canEditPost && (
