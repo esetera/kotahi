@@ -55,6 +55,10 @@ const MessageContainer = styled.div`
 const MessageGroupContainer = styled.div`
   padding-left: 30px;
   padding-right: 30px;
+
+  @media (min-width: 1200px) {
+    width: 675px;
+  }
 `
 
 const MessageGroupHeader = styled.div`

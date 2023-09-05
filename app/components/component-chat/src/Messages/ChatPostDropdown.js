@@ -10,7 +10,8 @@ const DropdownContainer = styled.div`
   background-color: ${color.gray100};
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   position: absolute;
-  right: -3px;
+  right: 0;
+  top: -4px;
   width: 145px;
   z-index: 1000;
 `
@@ -124,7 +125,7 @@ const ChatPostDropdown = ({ show, message, currentUser = {} }) => {
   return (
     <>
       {isOpen && (
-        <DropdownContainer ref={dropdownRef} style={{ top: '0%' }}>
+        <DropdownContainer ref={dropdownRef}>
           <Ellipsis
             className="dropdown-ellipsis"
             onClick={() => setIsOpen(!isOpen)}

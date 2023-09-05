@@ -11,8 +11,8 @@ export const Time = styled.span`
   color: ${th('colorText')};
   font-size: 14px;
   font-weight: 500;
-  /* margin: 0px 40px; */
   margin-right: 15px;
+  margin-top: 3px;
   text-align: center;
 `
 
@@ -21,7 +21,6 @@ export const InlineTime = styled.span`
   font-size: 14px;
   font-weight: 300;
   margin-right: 15px;
-  /* padding-right: 10px; */
   text-align: center;
 `
 
@@ -57,10 +56,11 @@ export const Message = styled.div`
   position: relative;
 
   .message-time {
-    align-items: center;
+    align-items: flex-start;
     display: flex;
     justify-content: flex-end;
-    margin-right: 15px;
+    padding-right: 15px;
+    position: relative;
   }
 
   .message-timestamp {
@@ -234,7 +234,7 @@ export const Ellipsis = styled(MoreVertical)`
 
   &.dropdown-ellipsis {
     position: absolute;
-    right: 18px;
+    right: 15px;
     top: 4px;
   }
 `
