@@ -22,6 +22,10 @@ const WaxEditorContainer = styled.div`
   line-height: 22px;
   margin-top: 6px;
   overflow-y: auto;
+
+  & > div {
+    margin-right: 50px;
+  }
 `
 
 const isToday = date => {
