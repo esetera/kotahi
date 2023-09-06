@@ -2,9 +2,12 @@ import React, { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import { useMutation } from '@apollo/client'
 import EditDeleteMessageModal from './EditDeleteMessageModal'
+import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
 import { DELETE_MESSAGE, UPDATE_MESSAGE } from '../../../../queries'
 import { Ellipsis } from './style'
 import color from '../../../../theme/color'
+import IsolatedMessageWithDetails from './IsolatedMessageWithDetails'
+import { LooseColumn } from '../../../shared'
 
 const DropdownContainer = styled.div`
   background-color: ${color.gray100};
@@ -37,9 +40,8 @@ const ChatPostDropdown = ({
 }) => {
   const { globalRoles = [], groupRoles = [] } = currentUser
   const [isOpen, setIsOpen] = useState(show)
-  const [modalAction, setModalAction] = useState(false)
-  const [showModal, setShowModal] = useState(false)
-  const [isEdit, setIsEdit] = useState(false)
+  const [isEditingMessage, setIsEditingMessage] = useState(false)
+  const [isDeletingMessage, setIsDeletingMessage] = useState(false)
 
   const [deleteMessage] = useMutation(DELETE_MESSAGE)
   const [updateMessage] = useMutation(UPDATE_MESSAGE)
@@ -49,12 +51,6 @@ const ChatPostDropdown = ({
   const isGroupManager = groupRoles.includes('groupManager')
   const canDeletePost = isAuthor || (isAdmin && isGroupManager)
   const canEditPost = isAuthor
-
-  const handleAction = action => {
-    setModalAction(action)
-    setShowModal(true)
-    setIsOpen(false)
-  }
 
   const handleEditConfirmation = async editedMessage => {
     try {
@@ -77,7 +73,7 @@ const ChatPostDropdown = ({
         },
       })
 
-      setShowModal(false)
+      setIsEditingMessage(false)
     } catch (error) {
       console.error('Error updating message:', error)
     }
@@ -98,8 +94,6 @@ const ChatPostDropdown = ({
           cache.evict({ id: cacheKey })
         },
       })
-
-      setShowModal(false)
     } catch (error) {
       console.error('Error deleting message:', error)
     }
@@ -128,10 +122,6 @@ const ChatPostDropdown = ({
     }
   }, [show])
 
-  useEffect(() => {
-    setIsEdit(modalAction === 'edit')
-  }, [modalAction])
-
   return (
     <>
       {isOpen && (
@@ -142,27 +132,39 @@ const ChatPostDropdown = ({
           />
           <div>
             {canEditPost && (
-              <DropdownItem onClick={() => handleAction('edit')}>
+              <DropdownItem onClick={() => setIsEditingMessage(true)}>
                 Edit
               </DropdownItem>
             )}
             {canDeletePost && (
-              <DropdownItem onClick={() => handleAction('delete')}>
+              <DropdownItem onClick={() => setIsDeletingMessage(true)}>
                 Delete
               </DropdownItem>
             )}
           </div>
         </DropdownContainer>
       )}
-      {showModal && (
+      <ConfirmationModal
+        closeModal={() => setIsDeletingMessage(false)}
+        confirmationAction={handleDeleteConfirmation}
+        confirmationButtonText="Delete"
+        isOpen={isDeletingMessage}
+        message={
+          <LooseColumn>
+            Are you sure you want to delete this message?
+            <IsolatedMessageWithDetails message={message} />
+          </LooseColumn>
+        }
+      />
+      {isEditingMessage && (
         <EditDeleteMessageModal
           cancelText="No"
-          close={() => setShowModal(false)}
-          confirmText={isEdit ? 'Update' : 'Yes'}
-          isEdit={isEdit}
+          close={() => setIsEditingMessage(false)}
+          confirmText="Update"
+          isEdit
           message={message}
-          onConfirm={isEdit ? handleEditConfirmation : handleDeleteConfirmation}
-          title={`${isEdit ? 'Edit' : 'Delete'} chat`}
+          onConfirm={handleEditConfirmation}
+          title="Edit message"
         />
       )}
     </>
