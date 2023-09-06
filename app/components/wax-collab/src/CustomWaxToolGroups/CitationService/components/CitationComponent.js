@@ -24,11 +24,9 @@ import {
 
 // TODO LIST FOR THIS COMPONENT:
 //
-// 1) Make sure that no other nodeview is open – close if it is. How?
-// 4) style everything
-//
 // Possible functionality going forward:
 // 1) run recheck if we don't have Crossref versions when component is opened?
+// 2) needs to interact with ReferenceList component
 
 const decodeEntities = s => {
   let temp = document.createElement('p')
@@ -90,8 +88,7 @@ const CitationComponent = ({ node, getPos }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState(false)
-  const [currentCsl, setCurrentCsl] = useState({})
-
+  const [currentCsl, setCurrentCsl] = useState(structure || {})
   // Note: state is maintained on the attributes of the node.
   // But that doesn't trigger a re-render (or useEffects), so we need to maintain
   // a version of that; these variables do this.
@@ -131,43 +128,6 @@ const CitationComponent = ({ node, getPos }) => {
 
     return nodeFound
   }
-
-  // const setAttrs = attrs => {
-  //   const thisNode = getNodeWithId(refId)
-  //   // This function replaces the current node with a version with new attributes
-  //   let { tr } = activeView.state
-  //   const startPosition = getPos()
-  //   const endPosition = startPosition + thisNode.content.size + 1
-
-  //   const newNode = activeView.state.schema.nodes.reference.create({
-  //     class: 'ref',
-  //     refId,
-  //     originalText: formattedOriginalText,
-  //     needsReview,
-  //     needsValidation,
-  //     structure,
-  //     possibleStructures: structures,
-  //     valid,
-  //   })
-
-  //   newNode.content = thisNode.content
-
-  //   // eslint-disable-next-line
-  //   for (const [key, value] of Object.entries(attrs)) {
-  //     // check if the value is different from the current value
-  //     const originalValue = node.attrs[key]
-
-  //     if (originalValue !== value) {
-  //       // console.log('Attr change! Key: ', key, 'Value: ', value)
-  //       newNode.attrs[key] = value
-  //     } else {
-  //       // console.log('Not changing: Key: ', key, 'Value: ', value)
-  //     }
-  //   }
-
-  //   tr = tr.replaceWith(startPosition, endPosition, newNode)
-  //   activeView.dispatch(tr) // .scrollIntoView()) // can we take out the .scrollIntoView?
-  // }
 
   const setContent = (attrs, fragment, onlyAttrs) => {
     // This function replaces the current node with a version with new attributes and new content
@@ -361,19 +321,6 @@ const CitationComponent = ({ node, getPos }) => {
             select={() => {
               setCurrentCsl({})
               setCurrentText(formattedOriginalText)
-              setContent(
-                {
-                  structure: {},
-                  valid: true,
-                  needsValidation: false,
-                  needsReview: false,
-                },
-                null,
-                true,
-              ) // TODO: set structure to originalText (how?)
-
-              setInternalNeedsValidation(false)
-              setInternalNeedsReview(false)
             }}
             selected={
               decodeEntities(formattedOriginalText) ===
@@ -387,18 +334,6 @@ const CitationComponent = ({ node, getPos }) => {
               select={() => {
                 setCurrentText(structures.anyStyle.formattedCitation)
                 setCurrentCsl(structures.anyStyle)
-                setContent(
-                  {
-                    structure: structures.anyStyle,
-                    valid: true,
-                    needsValidation: false,
-                    needsReview: false,
-                  },
-                  null,
-                  true,
-                )
-                setInternalNeedsValidation(false)
-                setInternalNeedsReview(false)
               }}
               selected={
                 decodeEntities(structures.anyStyle.formattedCitation) ===
@@ -420,18 +355,6 @@ const CitationComponent = ({ node, getPos }) => {
                       select={() => {
                         setCurrentText(crossRefVersion.formattedCitation)
                         setCurrentCsl(crossRefVersion)
-                        setContent(
-                          {
-                            structure: crossRefVersion,
-                            valid: true,
-                            needsValidation: false,
-                            needsReview: false,
-                          },
-                          null,
-                          true,
-                        )
-                        setInternalNeedsValidation(false)
-                        setInternalNeedsReview(false)
                       }}
                       selected={
                         decodeEntities(crossRefVersion.formattedCitation) ===
@@ -453,18 +376,6 @@ const CitationComponent = ({ node, getPos }) => {
               select={() => {
                 setCurrentText(structures.custom.formattedCitation)
                 setCurrentCsl(structures.custom)
-                setContent(
-                  {
-                    structure: structures.custom,
-                    valid: true,
-                    needsValidation: false,
-                    needsReview: false,
-                  },
-                  null,
-                  true,
-                )
-                setInternalNeedsValidation(false)
-                setInternalNeedsReview(false)
               }}
               selected={
                 decodeEntities(structures.custom.formattedCitation) ===
@@ -487,6 +398,20 @@ const CitationComponent = ({ node, getPos }) => {
             <Button
               onClick={e => {
                 e.preventDefault()
+
+                setContent(
+                  {
+                    structure: currentCsl,
+                    valid: true,
+                    needsValidation: false,
+                    needsReview: false,
+                  },
+                  null,
+                  true,
+                )
+                setInternalNeedsValidation(false)
+                setInternalNeedsReview(false)
+
                 setIsOpen(false)
               }}
               primary
