@@ -17,6 +17,7 @@ const EditModal = ({
   styleReference,
 }) => {
   const [currentText, setCurrentText] = useState(formattedCitation)
+  const [reRender, setReRender] = useState(-1)
 
   const [currentCitation, setCurrentCitation] = useState({})
 
@@ -64,7 +65,7 @@ const EditModal = ({
           }}
         />
       </CitationVersionWrapper>
-      <form>
+      <form key={`form-${reRender}`}>
         {currentCitation.author && currentCitation.author.length
           ? currentCitation.author.map((author, index) => (
               <InputP
@@ -84,6 +85,8 @@ const EditModal = ({
                         const newCitation = {
                           ...currentCitation,
                         }
+
+                        // This is working correctly BUT we're not re-rendering as we should
 
                         newCitation.author[index].family = e.target.value
                         setCurrentCitation(newCitation)
@@ -120,9 +123,12 @@ const EditModal = ({
 
                     const newCitation = {
                       ...currentCitation,
-                      author: currentCitation.author.splice(index, 1),
+                      author: currentCitation.author.filter(
+                        (x, index2) => index !== index2,
+                      ),
                     }
 
+                    setReRender(() => 0 - reRender)
                     setCurrentCitation(newCitation)
                   }}
                 >
