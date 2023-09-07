@@ -198,7 +198,7 @@ const resolvers = {
         parent.emailNotifications ||
         Task.relatedQuery('emailNotifications')
           .for(parent.id)
-          .orderBy('created')
+          .orderBy('created', 'desc')
       )
     },
     notificationLogs: async parent => {
