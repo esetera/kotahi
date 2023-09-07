@@ -9,6 +9,10 @@ const Config = require('../../config/src/config')
 // eslint-disable-next-line new-cap
 const sys = new citeproc.simpleSys()
 
+// const getStyleNameFromTitle = title => {
+//   return title
+// }
+
 const formatCitation = async (stringifiedCSL, groupId) => {
   // This takes stringified CSL. Feeding it an object will not work.
   // The output is JATS-flavored HTML as a string.
@@ -19,9 +23,16 @@ const formatCitation = async (stringifiedCSL, groupId) => {
   })
 
   const localeName =
-    activeConfig.formData.publishing.crossref.localeName || 'en-US'
+    activeConfig.formData.production?.crossref.localeName ||
+    activeConfig.formData.publishing.crossref.localeName ||
+    'en-US'
 
-  const styleName = activeConfig.formData.publishing.crossref.styleName || 'apa'
+  const styleName =
+    activeConfig.formData.production?.crossref.styleName ||
+    activeConfig.formData.publishing.crossref.localeName ||
+    'apa'
+
+  // const styleName = getStyleNameFromTitle(styleTitle)
 
   // console.log('Citeproc settings: ', localeName, styleName)
 
