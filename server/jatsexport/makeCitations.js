@@ -165,66 +165,72 @@ const findCslCitations = (cleanedHtml, refCount, refList) => {
 
     try {
       parsedStructure = JSON.parse(structure)
-      // console.log('Parsed structure: ', parsedStructure)
-      thisJatsReference += '<element-citation>'
 
-      if (parsedStructure['citation-number']) {
-        thisJatsReference += `<label>${parsedStructure['citation-number']}</label>`
+      if (structure === '"{}"') {
+        // If we are here, we only have the text. Go with that.
+        const textContent = $(citation).text()
+        thisJatsReference += `<mixed-citation>${textContent}</mixed-citation></ref>`
+      } else {
+        thisJatsReference += '<element-citation>'
+
+        if (parsedStructure['citation-number']) {
+          thisJatsReference += `<label>${parsedStructure['citation-number']}</label>`
+        }
+
+        if (parsedStructure.author && parsedStructure.author.length) {
+          thisJatsReference += `<person-group person-group-type="author">${parsedStructure.author
+            .map(author => {
+              let thisAuthor = '<name>'
+
+              if (author.family) {
+                thisAuthor += `<surname>${author.family}</surname>`
+              }
+
+              if (author.given) {
+                thisAuthor += `<given-names>${author.given}</given-names>`
+              }
+
+              // TODO: there can also be sequence – what do we do with that?
+              // This doesn't quite map on to <role />
+
+              thisAuthor += '</name>'
+              return thisAuthor
+            })
+            .join('')}</person-group>`
+        }
+
+        if (parsedStructure.title) {
+          thisJatsReference += `<article-title>${parsedStructure.title}</article-title>`
+        }
+
+        if (parsedStructure['container-title']) {
+          thisJatsReference += `<@source>${parsedStructure['container-title']}</@source>`
+        }
+
+        if (parsedStructure.issued) {
+          thisJatsReference += `<year>${parsedStructure.issued}</year>`
+        }
+
+        if (parsedStructure.volume) {
+          thisJatsReference += `<volume>${parsedStructure.volume}</volume>`
+        }
+
+        if (parsedStructure.issue) {
+          thisJatsReference += `<issue>${parsedStructure.volume}</issue>`
+        }
+
+        if (parsedStructure.page) {
+          thisJatsReference += `<fpage>${parsedStructure.page}</fpage>`
+        }
+
+        if (parsedStructure.doi) {
+          thisJatsReference += `<ext-link ext-link-type="doi" xlink:href="${parsedStructure.doi}">${parsedStructure.doi}</ext-link>`
+        }
+
+        // todo: doi
+
+        thisJatsReference += `</element-citation></ref>`
       }
-
-      if (parsedStructure.author && parsedStructure.author.length) {
-        thisJatsReference += `<person-group person-group-type="author">${parsedStructure.author
-          .map(author => {
-            let thisAuthor = '<name>'
-
-            if (author.family) {
-              thisAuthor += `<surname>${author.family}</surname>`
-            }
-
-            if (author.given) {
-              thisAuthor += `<given-names>${author.given}</given-names>`
-            }
-
-            // TODO: there can also be sequence – what do we do with that?
-            // This doesn't quite map on to <role />
-
-            thisAuthor += '</name>'
-            return thisAuthor
-          })
-          .join('')}</person-group>`
-      }
-
-      if (parsedStructure.title) {
-        thisJatsReference += `<article-title>${parsedStructure.title}</article-title>`
-      }
-
-      if (parsedStructure['container-title']) {
-        thisJatsReference += `<@source>${parsedStructure['container-title']}</@source>`
-      }
-
-      if (parsedStructure.issued) {
-        thisJatsReference += `<year>${parsedStructure.issued}</year>`
-      }
-
-      if (parsedStructure.volume) {
-        thisJatsReference += `<volume>${parsedStructure.volume}</volume>`
-      }
-
-      if (parsedStructure.issue) {
-        thisJatsReference += `<issue>${parsedStructure.volume}</issue>`
-      }
-
-      if (parsedStructure.page) {
-        thisJatsReference += `<fpage>${parsedStructure.page}</fpage>`
-      }
-
-      if (parsedStructure.doi) {
-        thisJatsReference += `<ext-link ext-link-type="doi" xlink:href="${parsedStructure.doi}">${parsedStructure.doi}</ext-link>`
-      }
-
-      // todo: doi
-
-      thisJatsReference += `</element-citation></ref>`
     } catch {
       console.error('Could not parse reference structure: ', structure)
       // console.error('Using text: ', textContent)
