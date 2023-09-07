@@ -147,13 +147,16 @@ const findCitationSpans = (html, refCount, refList = '') => {
     currentIndex += 1
   })
   // console.log(citations, currentIndex)
-  return { cleanedHtml: $.html(), cleanedRefList: refList + citations.join('') }
+  return {
+    cleanedHtml: $.html() || '',
+    cleanedRefList: refList + citations.join(''),
+  }
 }
 
-const findCslCitations = (cleanedHtml, refCount, refList) => {
+const findCslCitations = (html, refCount, refList) => {
   const reCleanedRefList = [...refList]
 
-  const dom = htmlparser2.parseDocument(cleanedHtml)
+  const dom = htmlparser2.parseDocument(html)
   const $ = cheerio.load(dom, { xmlMode: true })
   const cslCitations = $('p.ref')
   cslCitations.each((index, citation) => {
@@ -243,16 +246,25 @@ const findCslCitations = (cleanedHtml, refCount, refList) => {
     $(citation).replaceWith('')
   })
   return {
-    reCleanedHtml: $.html(),
-    reCleanedRefList: reCleanedRefList.join(''),
+    cleanedHtml: $.html() || '',
+    cleanedRefList: reCleanedRefList.join(''),
   }
 }
 
 const makeCitations = html => {
-  let deCitedHtml = html
   let refList = '' // this is the ref-list that we're building
   let refCount = 0 // this is to give refs IDs
   const potentialRefs = []
+
+  // This deals with CSL references. If we want to take out non-CSL references, delete above this?
+
+  const { cleanedHtml, cleanedRefList } = findCslCitations(
+    html,
+    refCount,
+    refList,
+  )
+
+  let deCitedHtml = cleanedHtml
 
   while (deCitedHtml.indexOf('<section class="reflist">') > -1) {
     let thisRefList = deCitedHtml
@@ -357,16 +369,8 @@ const makeCitations = html => {
     refCount += 1
   }
 
-  const { cleanedHtml, cleanedRefList } = findCitationSpans(
+  const { reCleanedHtml, reCleanedRefList } = findCitationSpans(
     deCitedHtml,
-    refCount,
-    refList,
-  )
-
-  // This deals with CSL references. If we want to take out non-CSL references, delete above this?
-
-  const { reCleanedHtml, reCleanedRefList } = findCslCitations(
-    cleanedHtml,
     refCount,
     refList,
   )
@@ -375,17 +379,17 @@ const makeCitations = html => {
     // After parsing is done and this is just a string,<@ource> can go back
     // to being <source>
     refList = `<ref-list>${replaceAll(
-      replaceAll(cleanedRefList, '</@source>', '</source>'),
+      replaceAll(cleanedRefList || '', '</@source>', '</source>'),
       '<@source>',
       '<source>',
     )}${replaceAll(
-      replaceAll(reCleanedRefList, '</@source>', '</source>'),
+      replaceAll(reCleanedRefList || '', '</@source>', '</source>'),
       '<@source>',
       '<source>',
     )}</ref-list>`
   }
 
-  const processedHtml = reCleanedHtml
+  const processedHtml = reCleanedHtml || '' // If we have a state where there is only a RefList in the body, we need to make sure we're passing a string back
 
   return { processedHtml, refList }
 }
