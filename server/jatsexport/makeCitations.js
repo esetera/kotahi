@@ -148,8 +148,8 @@ const findCitationSpans = (html, refCount, refList = '') => {
   })
   // console.log(citations, currentIndex)
   return {
-    cleanedHtml: $.html() || '',
-    cleanedRefList: refList + citations.join(''),
+    reCleanedHtml: $.html() || '',
+    reCleanedRefList: refList + citations.join(''),
   }
 }
 
