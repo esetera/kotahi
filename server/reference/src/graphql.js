@@ -22,10 +22,11 @@ const resolvers = {
         active: true,
       })
 
-      const {
-        crossrefRetrievalEmail,
-        crossrefSearchResultCount,
-      } = activeConfig.formData.production.crossref
+      const crossrefRetrievalEmail =
+        activeConfig.formData.production?.crossrefRetrievalEmail
+
+      const crossrefSearchResultCount =
+        activeConfig.formData.production?.crossrefSearchResultCount
 
       try {
         const matches = await getMatchingReferencesFromCrossRef(
@@ -50,12 +51,10 @@ const resolvers = {
       })
 
       const crossrefRetrievalEmail =
-        activeConfig.formData.production?.crossref.crossrefRetrievalEmail ||
-        activeConfig.formData.publishing.crossref.crossrefRetrievalEmail
+        activeConfig.formData.production?.crossrefRetrievalEmail
 
       const crossrefSearchResultCount =
-        activeConfig.formData.production?.crossref.crossrefSearchResultCount ||
-        activeConfig.formData.publishing.crossref.crossrefSearchResultCount
+        activeConfig.formData.production?.crossrefSearchResultCount
 
       try {
         const matches = await getFormattedReferencesFromCrossRef(
@@ -81,8 +80,7 @@ const resolvers = {
       })
 
       const crossrefRetrievalEmail =
-        activeConfig.formData.production?.crossref.crossrefRetrievalEmail ||
-        activeConfig.formData.publishing.crossref.crossrefRetrievalEmail
+        activeConfig.formData.production?.crossrefRetrievalEmail
 
       try {
         const reference = await getReferenceWithDoi(doi, crossrefRetrievalEmail)

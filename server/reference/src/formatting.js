@@ -22,15 +22,9 @@ const formatCitation = async (stringifiedCSL, groupId) => {
     active: true,
   })
 
-  const localeName =
-    activeConfig.formData.production?.crossref.localeName ||
-    activeConfig.formData.publishing.crossref.localeName ||
-    'en-US'
+  const localeName = activeConfig.formData.production?.localeName || 'en-US'
 
-  const styleName =
-    activeConfig.formData.production?.crossref.styleName ||
-    activeConfig.formData.publishing.crossref.localeName ||
-    'apa'
+  const styleName = activeConfig.formData.production?.styleName || 'apa'
 
   // const styleName = getStyleNameFromTitle(styleTitle)
 
