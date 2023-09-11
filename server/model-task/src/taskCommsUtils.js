@@ -420,7 +420,7 @@ const sendAutomatedTaskEmailNotifications = async () => {
 
 const getTeamRecipients = async (emailNotification, roles) => {
   // task notifications through scheduler are supposed to be sent only to team members from latest version of manuscript
-  const latestManuscriptVersionId = getIdOfLatestVersionOfManuscript(
+  const latestManuscriptVersionId = await getIdOfLatestVersionOfManuscript(
     emailNotification.task.manuscriptId,
   )
 
@@ -432,7 +432,11 @@ const getTeamRecipients = async (emailNotification, roles) => {
     .whereIn('role', roles) // no await here because it's a sub-query
 
   const teamMembers = await models.Team.relatedQuery('members')
-    .whereNotIn('status', ['invited', 'rejected'])
+    .where(builder => {
+      builder
+        .whereNull('status')
+        .orWhereNotIn('status', ['invited', 'rejected'])
+    })
     .for(teamQuery)
     .withGraphFetched('user')
 
