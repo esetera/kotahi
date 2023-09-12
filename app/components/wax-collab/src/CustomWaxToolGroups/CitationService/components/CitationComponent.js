@@ -244,7 +244,13 @@ const CitationComponent = ({ node, getPos }) => {
       })
     }
 
-    if (needsValidation && !loading) {
+    if (
+      needsValidation &&
+      !loading &&
+      !(structure.crossRef && structure.crossRef.length) &&
+      !(structure.anyStyle && structure.anyStyle.length)
+    ) {
+      // TODO: we shouldn't do this if we already have crossref/anystyle versions
       getVersions()
     }
   }, [formattedOriginalText, internalNeedsValidation])
