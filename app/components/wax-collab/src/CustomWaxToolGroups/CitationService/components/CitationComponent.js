@@ -77,6 +77,8 @@ const CitationComponent = ({ node, getPos }) => {
     refId,
   } = node.attrs
 
+  // console.log(originalText, needsReview, needsValidation, valid)
+
   const makeHtmlFrom = content => {
     const serialize = serializer(activeView.state.schema)
     return serialize(content)
@@ -247,8 +249,8 @@ const CitationComponent = ({ node, getPos }) => {
     if (
       needsValidation &&
       !loading &&
-      !(structure.crossRef && structure.crossRef.length) &&
-      !(structure.anyStyle && structure.anyStyle.length)
+      !structures.crossRef.length &&
+      !(JSON.stringify(structures.anyStyle).length > 2)
     ) {
       // TODO: we shouldn't do this if we already have crossref/anystyle versions
       getVersions()
