@@ -3,14 +3,13 @@ import { sanitize } from 'isomorphic-dompurify'
 import { InputP, Button, StatusBar, CitationVersionWrapper } from './styles'
 
 // TODO:
-// 3. style it as per figma
 
 // PROBLEMS:
 //  - sometimes journal comes in as "container-title", sometimes it comes in as "journalTitle"
 //  - maybe: switch based on type?
 
 const EditModal = ({
-  citationData,
+  citationData, // why is this sometimes coming in as a string? That's probably leading to problems.
   formattedCitation,
   setCitationData,
   closeModal,
@@ -37,6 +36,8 @@ const EditModal = ({
   }
 
   useEffect(() => {
+    // citationData is sometimes coming in as a string – why?
+
     const newCitation = {
       author: [],
       title: '',
@@ -47,14 +48,16 @@ const EditModal = ({
       type: '', // do we need this?
       volume: '',
       'container-title': '',
-      ...citationData,
+      ...(citationData === '{}' ? {} : citationData),
     }
 
-    // console.log('Initial citation data: ', newCitation)
+    // console.log(citationData, typeof citationData)
+    // console.log('citation data changed: ', newCitation)
     setCurrentCitation(newCitation)
   }, [citationData])
-
-  return (
+  // console.log('Re-rendering:', currentCitation)
+  return typeof currentCitation === 'object' &&
+    JSON.stringify(currentCitation) !== '{}' ? (
     <div>
       <h4>Edit citation</h4>
       <CitationVersionWrapper className="selected">
@@ -82,12 +85,12 @@ const EditModal = ({
                       e.preventDefault()
 
                       if (e.currentTarget.name === 'family') {
-                        const newCitation = {
+                        // eslint-disable-next-line
+                        let newCitation = {
                           ...currentCitation,
                         }
 
                         // This is working correctly BUT we're not re-rendering as we should
-
                         newCitation.author[index].family = e.target.value
                         setCurrentCitation(newCitation)
                       }
@@ -106,7 +109,8 @@ const EditModal = ({
                       e.preventDefault()
 
                       if (e.currentTarget.name === 'given') {
-                        const newCitation = {
+                        // eslint-disable-next-line
+                        let newCitation = {
                           ...currentCitation,
                         }
 
@@ -404,7 +408,7 @@ const EditModal = ({
         </StatusBar>
       </form>
     </div>
-  )
+  ) : null
 }
 
 export default EditModal

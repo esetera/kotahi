@@ -88,7 +88,6 @@ const CitationComponent = ({ node, getPos }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState(false)
-  const [currentCsl, setCurrentCsl] = useState(structure || {})
   // Note: state is maintained on the attributes of the node.
   // But that doesn't trigger a re-render (or useEffects), so we need to maintain
   // a version of that; these variables do this.
@@ -105,7 +104,16 @@ const CitationComponent = ({ node, getPos }) => {
     custom: possibleStructures?.custom || '',
   })
 
+  // These are what's shown in the component
+
   const [currentText, setCurrentText] = useState(
+    `<p class="ref">${makeHtmlFrom(node.content)}</p>`,
+  )
+
+  // These are what's passed back
+  const [potentialCsl, setPotentialCsl] = useState(structure || {})
+
+  const [potentialText, setPotentialText] = useState(
     `<p class="ref">${makeHtmlFrom(node.content)}</p>`,
   )
 
@@ -130,6 +138,7 @@ const CitationComponent = ({ node, getPos }) => {
   }
 
   const setContent = (attrs, fragment, onlyAttrs) => {
+    // console.log('Running setContent, fragemnt:', fragment, 'attrs:', attrs)
     // This function replaces the current node with a version with new attributes and new content
     // if onlyAttrs is true, we're only changing the attributes, not the content
     const thisNode = getNodeWithId(refId)
@@ -241,6 +250,8 @@ const CitationComponent = ({ node, getPos }) => {
   }, [formattedOriginalText, internalNeedsValidation])
 
   useEffect(() => {
+    // console.log('sturcures useeffect')
+
     if (JSON.stringify(structures) !== JSON.stringify(possibleStructures)) {
       setContent(
         {
@@ -258,13 +269,16 @@ const CitationComponent = ({ node, getPos }) => {
   }, [structures])
 
   useEffect(() => {
+    // This is firing whenever we change currentText.
     const newFragment = makeFragmentFrom(currentText)
 
     // If currentText has changed in some way, we need to save it to the node.
     if (JSON.stringify(newFragment) !== JSON.stringify(node.content)) {
       // console.log('something is changed: ', newFragment, node.content)
+      // This should probably not be happening all the time. If you then click CLOSE, it's already been set.
       setContent(
         {
+          structure: potentialCsl,
           needsValidation: false,
           needsReview: false,
           valid: true,
@@ -281,17 +295,17 @@ const CitationComponent = ({ node, getPos }) => {
       {editing ? (
         <EditModal
           citationData={
-            JSON.stringify(currentCsl) === '{}' ? structure : currentCsl
+            JSON.stringify(potentialCsl) === '{}' ? structure : potentialCsl
           }
           closeModal={() => {
             setEditing(false)
           }}
-          formattedCitation={currentText}
+          formattedCitation={potentialText}
           setCitationData={currentCitation => {
             const newStructures = { ...structures, custom: currentCitation }
             setStructures(newStructures)
-            setCurrentText(currentCitation.formattedCitation)
-            setCurrentCsl(currentCitation)
+
+            // Question: is it possible someone clicks "close" before formattedCitation has been generated?
 
             const newFragment = makeFragmentFrom(
               currentCitation.formattedCitation,
@@ -306,10 +320,15 @@ const CitationComponent = ({ node, getPos }) => {
                 valid: true,
               },
               newFragment,
+              false,
             )
 
             setInternalNeedsValidation(false)
             setInternalNeedsReview(false)
+            setCurrentText(currentCitation.formattedCitation) // is this going to do a double-save?
+            // When apply is clicked, we're closing this.
+
+            setIsOpen(false)
           }}
           styleReference={CiteProcTransformation}
         />
@@ -319,12 +338,12 @@ const CitationComponent = ({ node, getPos }) => {
 
           <CitationVersion
             select={() => {
-              setCurrentCsl({})
-              setCurrentText(formattedOriginalText)
+              setPotentialCsl({})
+              setPotentialText(formattedOriginalText)
             }}
             selected={
               decodeEntities(formattedOriginalText) ===
-              decodeEntities(currentText)
+              decodeEntities(potentialText)
             }
             text={formattedOriginalText}
             type="original"
@@ -332,12 +351,12 @@ const CitationComponent = ({ node, getPos }) => {
           {structures.anyStyle && (
             <CitationVersion
               select={() => {
-                setCurrentText(structures.anyStyle.formattedCitation)
-                setCurrentCsl(structures.anyStyle)
+                setPotentialCsl(structures.anyStyle)
+                setPotentialText(structures.anyStyle.formattedCitation)
               }}
               selected={
                 decodeEntities(structures.anyStyle.formattedCitation) ===
-                decodeEntities(currentText)
+                decodeEntities(potentialText)
               }
               text={structures.anyStyle.formattedCitation}
               type="anystyle"
@@ -353,12 +372,12 @@ const CitationComponent = ({ node, getPos }) => {
                         `citationversion-${crossRefId}`
                       }
                       select={() => {
-                        setCurrentText(crossRefVersion.formattedCitation)
-                        setCurrentCsl(crossRefVersion)
+                        setPotentialCsl(crossRefVersion)
+                        setPotentialText(crossRefVersion.formattedCitation)
                       }}
                       selected={
                         decodeEntities(crossRefVersion.formattedCitation) ===
-                        decodeEntities(currentText)
+                        decodeEntities(potentialText)
                       }
                       text={crossRefVersion.formattedCitation}
                       type="crossref"
@@ -374,12 +393,12 @@ const CitationComponent = ({ node, getPos }) => {
           {structures.custom ? (
             <CitationVersion
               select={() => {
-                setCurrentText(structures.custom.formattedCitation)
-                setCurrentCsl(structures.custom)
+                setPotentialCsl(structures.custom)
+                setPotentialText(structures.custom.formattedCitation)
               }}
               selected={
                 decodeEntities(structures.custom.formattedCitation) ===
-                decodeEntities(currentText)
+                decodeEntities(potentialText)
               }
               text={structures.custom.formattedCitation}
               type="custom"
@@ -398,17 +417,22 @@ const CitationComponent = ({ node, getPos }) => {
             <Button
               onClick={e => {
                 e.preventDefault()
-
+                // this changes the display text. It also kicks off the useEffect
+                setCurrentText(potentialText)
+                // This needs to geive it PotentialText as a fragment
+                const newFragment = makeFragmentFrom(potentialText)
+                // second save does the text
                 setContent(
                   {
-                    structure: currentCsl,
+                    structure: potentialCsl,
                     valid: true,
                     needsValidation: false,
                     needsReview: false,
                   },
-                  null,
+                  newFragment,
                   true,
                 )
+
                 setInternalNeedsValidation(false)
                 setInternalNeedsReview(false)
 
