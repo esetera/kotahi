@@ -1433,12 +1433,17 @@ const resolvers = {
       if (
         activeConfig.formData.publishing.crossref.publicationType === 'article'
       ) {
-        const manuscriptDOI = await getDoi(
-          getReviewOrSubmissionField(manuscript, 'doiSuffix') || manuscript.id,
-        )
+        try {
+          const manuscriptDOI = await getDoi(
+            getReviewOrSubmissionField(manuscript, 'doiSuffix') ||
+              manuscript.id,
+          )
 
-        if (manuscriptDOI) {
-          DOIs.push(manuscriptDOI)
+          if (manuscriptDOI) {
+            DOIs.push(manuscriptDOI)
+          }
+        } catch (error) {
+          console.error('Error while getting manuscript DOI:', error)
         }
       } else {
         const notEmptyReviews = Object.entries(manuscript.submission)
@@ -1452,15 +1457,24 @@ const resolvers = {
 
         // eslint-disable-next-line no-restricted-syntax
         for (const reviewNumber of notEmptyReviews) {
-          DOIs.push(
+          let doi = null
+
+          try {
             // eslint-disable-next-line no-await-in-loop
-            await getDoi(
+            doi = await getDoi(
               getReviewOrSubmissionField(
                 manuscript,
                 `review${reviewNumber}suffix`,
               ) || `${manuscript.id}/${reviewNumber}`,
-            ),
-          )
+            )
+          } catch (error) {
+            console.error(
+              `Error while getting review ${reviewNumber} DOI:`,
+              error,
+            )
+          }
+
+          if (doi) DOIs.push(doi)
         }
 
         if (
@@ -1469,13 +1483,17 @@ const resolvers = {
               key === 'summary' && !checkIsAbstractValueEmpty(value),
           )
         ) {
-          const summaryDOI = await getDoi(
-            getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
-              `${manuscript.id}/`,
-          )
+          try {
+            const summaryDOI = await getDoi(
+              getReviewOrSubmissionField(manuscript, 'summarysuffix') ||
+                `${manuscript.id}/`,
+            )
 
-          if (summaryDOI) {
-            DOIs.push(summaryDOI)
+            if (summaryDOI) {
+              DOIs.push(summaryDOI)
+            }
+          } catch (error) {
+            console.error('Error while getting summary DOI:', error)
           }
         }
       }
