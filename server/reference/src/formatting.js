@@ -82,9 +82,11 @@ const formatCitation = async (stringifiedCSL, groupId) => {
       result = results[0]
       // This is CSL-flavored HTML, need to make it JATS-flavored HTML.
       // Not 100% sure that all of the HTML coming out of this will work for us, keep an eye out.
+
+      // Worth noting that sometimes there are spaces between tags, sometimes not. We're going to remove them all.
       result = result
-        .replace(/<div class="csl-entry">/g, '<p class="ref">')
-        .replace(/<\/div>/g, '</p>')
+        .replace(/<div class="csl-entry">\s*/g, '<p class="ref">')
+        .replace(/\s*<\/div>/g, '</p>')
         .replace(/<i>/g, '<em>')
         .replace(/<\/i>/g, '</em>')
         .replace(/<b>/g, '<strong>')
