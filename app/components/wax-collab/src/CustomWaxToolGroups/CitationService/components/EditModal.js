@@ -86,11 +86,12 @@ const EditModal = ({
 
                       if (e.currentTarget.name === 'family') {
                         // eslint-disable-next-line
-                        let newCitation = {
-                          ...currentCitation,
-                        }
+                        let newCitation = JSON.parse(
+                          JSON.stringify(currentCitation),
+                        )
 
                         // This is working correctly BUT we're not re-rendering as we should
+
                         newCitation.author[index].family = e.target.value
                         setCurrentCitation(newCitation)
                       }
@@ -110,9 +111,9 @@ const EditModal = ({
 
                       if (e.currentTarget.name === 'given') {
                         // eslint-disable-next-line
-                        let newCitation = {
-                          ...currentCitation,
-                        }
+                        let newCitation = JSON.parse(
+                          JSON.stringify(currentCitation),
+                        )
 
                         newCitation.author[index].given = e.target.value
                         setCurrentCitation(newCitation)
