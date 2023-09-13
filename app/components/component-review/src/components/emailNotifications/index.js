@@ -122,7 +122,7 @@ const EmailNotifications = ({
               selectedEmailIsBlacklisted,
             )
 
-            if (!output) {
+            if (!output?.emailStatus) {
               setNotificationStatus('failure')
               return
             }

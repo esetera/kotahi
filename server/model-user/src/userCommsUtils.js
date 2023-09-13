@@ -234,29 +234,34 @@ const sendEmailWithPreparedData = async (input, ctx, emailSender) => {
   const ccEmails = await getEditorEmails(manuscriptId)
 
   try {
-    await sendEmailNotification(receiverEmail, selectedEmailTemplateData, {
-      manuscriptTitle: manuscript.meta.title,
-      authorName,
-      senderName: currentUser,
-      recipientName: receiverName,
-      manuscriptNumber: manuscript.shortId,
-      currentUser,
-      receiverName,
-      ccEmails,
-      shortId: manuscript.shortId,
-      instance,
-      toEmail,
-      invitationId,
-      submissionLink: ctx
-        ? JSON.parse(manuscript.submission).link
-        : manuscript.submission.link,
-      purpose,
-      status,
-      senderId,
-      appUrl,
-      manuscriptLink: manuscriptPageUrl,
-    })
-    return { success: true }
+    const result = await sendEmailNotification(
+      receiverEmail,
+      selectedEmailTemplateData,
+      {
+        manuscriptTitle: manuscript.meta.title,
+        authorName,
+        senderName: currentUser,
+        recipientName: receiverName,
+        manuscriptNumber: manuscript.shortId,
+        currentUser,
+        receiverName,
+        ccEmails,
+        shortId: manuscript.shortId,
+        instance,
+        toEmail,
+        invitationId,
+        submissionLink: ctx
+          ? JSON.parse(manuscript.submission).link
+          : manuscript.submission.link,
+        purpose,
+        status,
+        senderId,
+        appUrl,
+        manuscriptLink: manuscriptPageUrl,
+      },
+    )
+
+    return { success: result }
   } catch (e) {
     console.error(e)
     return { success: false }
