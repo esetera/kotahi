@@ -415,6 +415,7 @@ const CitationComponent = ({ node, getPos }) => {
           ) : null}
           <StatusBar>
             <Button
+              disabled={loading} // This is now set to disabled if there are still versions to come in
               onClick={e => {
                 e.preventDefault()
                 setEditing(true)
