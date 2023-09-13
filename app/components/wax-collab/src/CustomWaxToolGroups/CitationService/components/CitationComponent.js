@@ -333,6 +333,7 @@ const CitationComponent = ({ node, getPos }) => {
 
             setInternalNeedsValidation(false)
             setInternalNeedsReview(false)
+            setPotentialText(currentCitation.formattedCitation) // seeing if this fixes the problem.
             setCurrentText(currentCitation.formattedCitation) // is this going to do a double-save?
             // When apply is clicked, we're closing this.
 
