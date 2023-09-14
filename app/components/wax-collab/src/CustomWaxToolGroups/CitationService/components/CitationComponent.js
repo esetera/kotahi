@@ -1,7 +1,7 @@
 /* eslint react/prop-types: 0 */
 import React, { useEffect, useState, useContext } from 'react'
 import { DOMParser, DOMSerializer, Fragment } from 'prosemirror-model'
-import { WaxContext } from 'wax-prosemirror-core'
+import { WaxContext, DocumentHelpers } from 'wax-prosemirror-core'
 import { sanitize } from 'isomorphic-dompurify'
 import striptags from 'striptags'
 import { List, AlertCircle, CheckCircle } from 'react-feather'
@@ -90,6 +90,7 @@ const CitationComponent = ({ node, getPos }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState(false)
+
   // Note: state is maintained on the attributes of the node.
   // But that doesn't trigger a re-render (or useEffects), so we need to maintain
   // a version of that; these variables do this.
@@ -229,6 +230,8 @@ const CitationComponent = ({ node, getPos }) => {
 
         setStructures(newStructures)
         // console.log("Versions found. Setting status to 'needs review'")
+        setInternalNeedsValidation(false)
+        setInternalNeedsReview(true)
         setContent(
           {
             needsValidation: false,
@@ -240,8 +243,6 @@ const CitationComponent = ({ node, getPos }) => {
           null,
           true,
         )
-        setInternalNeedsValidation(false)
-        setInternalNeedsReview(true)
         setLoading(false)
       })
     }
@@ -252,15 +253,16 @@ const CitationComponent = ({ node, getPos }) => {
       !structures.crossRef.length &&
       !(JSON.stringify(structures.anyStyle).length > 2)
     ) {
-      // TODO: we shouldn't do this if we already have crossref/anystyle versions
+      // we shouldn't do this if we already have crossref/anystyle versions
       getVersions()
     }
   }, [formattedOriginalText, internalNeedsValidation])
 
   useEffect(() => {
-    // console.log('sturcures useeffect')
-
-    if (JSON.stringify(structures) !== JSON.stringify(possibleStructures)) {
+    if (
+      JSON.stringify(structures) !== JSON.stringify(possibleStructures) &&
+      !loading
+    ) {
       setContent(
         {
           needsValidation: true,
@@ -298,166 +300,200 @@ const CitationComponent = ({ node, getPos }) => {
     }
   }, [currentText])
 
-  const CitationPopUp = () => (
-    <PopUpWrapper>
-      {editing ? (
-        <EditModal
-          citationData={
-            JSON.stringify(potentialCsl) === '{}' ? structure : potentialCsl
-          }
-          closeModal={() => {
-            setEditing(false)
-          }}
-          formattedCitation={potentialText}
-          setCitationData={currentCitation => {
-            const newStructures = { ...structures, custom: currentCitation }
-            setStructures(newStructures)
+  const CitationPopUp = () => {
+    const areOtherComponentsLoading = () => {
+      // console.log('Running areOtherComponentsLoading')
 
-            // Question: is it possible someone clicks "close" before formattedCitation has been generated?
+      const activeLoading = DocumentHelpers.findChildrenByType(
+        activeView.state.doc,
+        activeView.state.schema.nodes.reference,
+      ).filter(x => x.node.attrs.needsValidation)
 
-            const newFragment = makeFragmentFrom(
-              currentCitation.formattedCitation,
-            )
+      // console.log('Other loading components: ', activeLoading)
 
-            setContent(
-              {
-                structure: currentCitation,
-                possibleStructures: newStructures,
-                needsValidation: false,
-                needsReview: false,
-                valid: true,
-              },
-              newFragment,
-              false,
-            )
+      return activeLoading.length > 0
+    }
 
-            setInternalNeedsValidation(false)
-            setInternalNeedsReview(false)
-            setPotentialText(currentCitation.formattedCitation) // seeing if this fixes the problem.
-            setCurrentText(currentCitation.formattedCitation) // is this going to do a double-save?
-            // When apply is clicked, we're closing this.
+    const [otherLoading, setOtherLoading] = useState(
+      areOtherComponentsLoading(),
+    )
 
-            setIsOpen(false)
-          }}
-          styleReference={CiteProcTransformation}
-        />
-      ) : (
-        <div>
-          <h4>Select citation</h4>
+    useEffect(() => {
+      // This checks if other references are in a loading state.
+      if (otherLoading) {
+        const timer = setTimeout(() => {
+          // console.log('Checking other loading!')
+          setOtherLoading(areOtherComponentsLoading())
+        }, 1000)
 
-          <CitationVersion
-            select={() => {
-              setPotentialCsl({})
-              setPotentialText(formattedOriginalText)
-            }}
-            selected={
-              decodeEntities(formattedOriginalText) ===
-              decodeEntities(potentialText)
+        return () => clearTimeout(timer)
+      }
+
+      // console.log('Other loading has been turned off.')
+      return undefined
+    }, [otherLoading])
+
+    return (
+      <PopUpWrapper>
+        {editing ? (
+          <EditModal
+            citationData={
+              JSON.stringify(potentialCsl) === '{}' ? structure : potentialCsl
             }
-            text={formattedOriginalText}
-            type="original"
-          />
-          {structures.anyStyle && (
-            <CitationVersion
-              select={() => {
-                setPotentialCsl(structures.anyStyle)
-                setPotentialText(structures.anyStyle.formattedCitation)
-              }}
-              selected={
-                decodeEntities(structures.anyStyle.formattedCitation) ===
-                decodeEntities(potentialText)
-              }
-              text={structures.anyStyle.formattedCitation}
-              type="anystyle"
-            />
-          )}
-          {structures.crossRef
-            ? structures.crossRef.map(
-                (crossRefVersion, crossRefId) =>
-                  crossRefVersion.formattedCitation && (
-                    <CitationVersion
-                      key={
-                        // eslint-disable-next-line
-                        `citationversion-${crossRefId}`
-                      }
-                      select={() => {
-                        setPotentialCsl(crossRefVersion)
-                        setPotentialText(crossRefVersion.formattedCitation)
-                      }}
-                      selected={
-                        decodeEntities(crossRefVersion.formattedCitation) ===
-                        decodeEntities(potentialText)
-                      }
-                      text={crossRefVersion.formattedCitation}
-                      type="crossref"
-                    />
-                  ),
+            closeModal={() => {
+              setEditing(false)
+            }}
+            formattedCitation={potentialText}
+            setCitationData={currentCitation => {
+              const newStructures = { ...structures, custom: currentCitation }
+              setStructures(newStructures)
+
+              // Question: is it possible someone clicks "close" before formattedCitation has been generated?
+
+              const newFragment = makeFragmentFrom(
+                currentCitation.formattedCitation,
               )
-            : null}
-          {loading ? (
-            <div style={{ marginTop: '16px' }}>
-              <Spinner />
-            </div>
-          ) : null}
-          {structures.custom ? (
+
+              setContent(
+                {
+                  structure: currentCitation,
+                  possibleStructures: newStructures,
+                  needsValidation: false,
+                  needsReview: false,
+                  valid: true,
+                },
+                newFragment,
+                false,
+              )
+
+              setInternalNeedsValidation(false)
+              setInternalNeedsReview(false)
+              setPotentialText(currentCitation.formattedCitation) // seeing if this fixes the problem.
+              setCurrentText(currentCitation.formattedCitation) // is this going to do a double-save?
+              // When apply is clicked, we're closing this.
+
+              setIsOpen(false)
+            }}
+            styleReference={CiteProcTransformation}
+          />
+        ) : (
+          <div>
+            <h4>Select citation</h4>
+
             <CitationVersion
               select={() => {
-                setPotentialCsl(structures.custom)
-                setPotentialText(structures.custom.formattedCitation)
+                setPotentialCsl({})
+                setPotentialText(formattedOriginalText)
               }}
               selected={
-                decodeEntities(structures.custom.formattedCitation) ===
+                decodeEntities(formattedOriginalText) ===
                 decodeEntities(potentialText)
               }
-              text={structures.custom.formattedCitation}
-              type="custom"
+              text={formattedOriginalText}
+              type="original"
             />
-          ) : null}
-          <StatusBar>
-            <Button
-              disabled={loading} // This is now set to disabled if there are still versions to come in
-              onClick={e => {
-                e.preventDefault()
-                setEditing(true)
-              }}
-              type="button"
-            >
-              Edit
-            </Button>
-            <Button
-              onClick={e => {
-                e.preventDefault()
-                // this changes the display text. It also kicks off the useEffect
-                setCurrentText(potentialText)
-                // This needs to geive it PotentialText as a fragment
-                const newFragment = makeFragmentFrom(potentialText)
-                // second save does the text
-                setContent(
-                  {
-                    structure: potentialCsl,
-                    valid: true,
-                    needsValidation: false,
-                    needsReview: false,
-                  },
-                  newFragment,
-                  true,
+            {structures.anyStyle && (
+              <CitationVersion
+                select={() => {
+                  setPotentialCsl(structures.anyStyle)
+                  setPotentialText(structures.anyStyle.formattedCitation)
+                }}
+                selected={
+                  decodeEntities(structures.anyStyle.formattedCitation) ===
+                  decodeEntities(potentialText)
+                }
+                text={structures.anyStyle.formattedCitation}
+                type="anystyle"
+              />
+            )}
+            {structures.crossRef
+              ? structures.crossRef.map(
+                  (crossRefVersion, crossRefId) =>
+                    crossRefVersion.formattedCitation && (
+                      <CitationVersion
+                        key={
+                          // eslint-disable-next-line
+                          `citationversion-${crossRefId}`
+                        }
+                        select={() => {
+                          setPotentialCsl(crossRefVersion)
+                          setPotentialText(crossRefVersion.formattedCitation)
+                        }}
+                        selected={
+                          decodeEntities(crossRefVersion.formattedCitation) ===
+                          decodeEntities(potentialText)
+                        }
+                        text={crossRefVersion.formattedCitation}
+                        type="crossref"
+                      />
+                    ),
                 )
+              : null}
+            {loading ? (
+              <div style={{ marginTop: '16px' }}>
+                <Spinner />
+              </div>
+            ) : null}
+            {structures.custom ? (
+              <CitationVersion
+                select={() => {
+                  setPotentialCsl(structures.custom)
+                  setPotentialText(structures.custom.formattedCitation)
+                }}
+                selected={
+                  decodeEntities(structures.custom.formattedCitation) ===
+                  decodeEntities(potentialText)
+                }
+                text={structures.custom.formattedCitation}
+                type="custom"
+              />
+            ) : null}
+            <StatusBar>
+              <Button
+                disabled={loading || otherLoading} // This is now set to disabled if there are still versions to come in
+                onClick={e => {
+                  e.preventDefault()
+                  setEditing(true)
+                }}
+                type="button"
+              >
+                Edit
+              </Button>
+              <Button
+                onClick={e => {
+                  e.preventDefault()
+                  // this changes the display text. It also kicks off the useEffect
+                  setCurrentText(potentialText)
+                  // This needs to geive it PotentialText as a fragment
+                  const newFragment = makeFragmentFrom(potentialText)
+                  // second save does the text
+                  setContent(
+                    {
+                      structure: potentialCsl,
+                      valid: true,
+                      needsValidation: false,
+                      needsReview: false,
+                    },
+                    newFragment,
+                    true,
+                  )
 
-                setInternalNeedsValidation(false)
-                setInternalNeedsReview(false)
+                  setInternalNeedsValidation(false)
+                  setInternalNeedsReview(false)
 
-                setIsOpen(false)
-              }}
-              primary
-              type="primary"
-            >
-              Apply
-            </Button>
-          </StatusBar>
-        </div>
-      )}
-    </PopUpWrapper>
-  )
+                  setIsOpen(false)
+                }}
+                primary
+                type="primary"
+              >
+                Apply
+              </Button>
+            </StatusBar>
+          </div>
+        )}
+      </PopUpWrapper>
+    )
+  }
 
   return (
     <CitationOuterWrapper>
