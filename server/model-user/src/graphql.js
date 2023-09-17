@@ -188,6 +188,13 @@ const resolvers = {
         users,
       }
     },
+    channelUsersForMention: async (_, { channelId }) => {
+      const users = await models.User.query()
+        .join('channel_members', 'users.id', 'channel_members.userId')
+        .where('channel_members.channelId', channelId)
+
+      return users
+    },
     // Authentication
     async currentUser(_, vars, ctx) {
       if (!ctx.user) return null
@@ -455,6 +462,7 @@ const typeDefs = `
     users: [User]
     paginatedUsers(sort: UsersSort, offset: Int, limit: Int): PaginatedUsers
     searchUsers(teamId: ID, query: String): [User]
+    channelUsersForMention(channelId: ID!): [User]
   }
 
   type PaginatedUsers {
