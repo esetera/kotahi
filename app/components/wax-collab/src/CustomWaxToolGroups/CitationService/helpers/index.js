@@ -211,7 +211,9 @@ function liftOutOfList(state, dispatch, range, newType, newClass) {
     } else {
       // const $pos = state.doc.resolve(pos)
       // const index = $pos.index()
-      applicable = node.type.name === 'paragraph' // || $pos.parent.canReplaceWith(index, index + 1, newType)
+      applicable = node.type.name === 'paragraph'
+      //  ||
+      // $pos.parent.canReplaceWith(index, index + 1, newType)
     }
 
     if (applicable) {
