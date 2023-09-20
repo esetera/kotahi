@@ -23,16 +23,19 @@ class ReferenceTool extends Tools {
       )
 
       if (isInAList) {
+        let done = false
         state.doc.nodesBetween(
           state.selection.$from.pos,
           state.selection.$to.pos,
           node => {
-            if (node.type.name === 'list_item') {
+            if (node.type.name === 'list_item' && !done) {
+              // console.log('in list item, running liftListItemToType')
               liftListItemToType(
                 state.schema.nodes.list_item,
                 state.config.schema.nodes.reference,
                 'ref',
               )(state, dispatch)
+              done = true
             }
           },
         )

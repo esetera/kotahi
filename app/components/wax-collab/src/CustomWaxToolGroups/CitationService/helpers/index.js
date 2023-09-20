@@ -1,4 +1,3 @@
-// import { Commands } from 'wax-prosemirror-core'
 import { ReplaceAroundStep, liftTarget, canJoin } from 'prosemirror-transform'
 import { NodeRange, Fragment, Slice } from 'prosemirror-model'
 
@@ -71,7 +70,7 @@ function liftListItem(itemType) {
 }
 
 function liftListItemToType(itemType, newType, newClass) {
-  console.log('in liftLsitItmeToType', itemType, newType, newClass)
+  // console.log('in liftListItemToType', itemType, newType, newClass)
 
   return (state, dispatch) => {
     const { $from, $to } = state.selection
@@ -88,11 +87,11 @@ function liftListItemToType(itemType, newType, newClass) {
     // eslint-disable-next-line eqeqeq
     if ($from.node(range.depth - 1).type == itemType) {
       // Inside a parent list
-      console.log('going to lift to outer list')
+      // console.log('going to lift to outer list')
       return liftToOuterList(state, dispatch, itemType, range)
     }
 
-    console.log('going to lift out of list')
+    // console.log('going to lift out of list')
     return liftOutOfList(state, dispatch, range, newType, newClass)
   }
 }
@@ -138,7 +137,7 @@ function liftToOuterList(state, dispatch, itemType, range) {
 }
 
 function liftOutOfList(state, dispatch, range, newType, newClass) {
-  console.log('in lift out of list', newType, newClass)
+  // console.log('in lift out of list', newType.name)
   const { tr } = state
   const list = range.parent
 
@@ -149,12 +148,14 @@ function liftOutOfList(state, dispatch, range, newType, newClass) {
     // eslint-disable-next-line no-plusplus
     i--
   ) {
+    // console.log('list.child(i).nodeSize: ', list.child(i).nodeSize)
     pos -= list.child(i).nodeSize
     tr.delete(pos - 1, pos + 1)
   }
 
   const $start = tr.doc.resolve(range.start)
   const item = $start.nodeAfter
+  // console.log('$start.nodeAfter.nodeSize: ', $start.nodeAfter.nodeSize)
   // eslint-disable-next-line eqeqeq
   if (tr.mapping.map(range.end) != range.start + $start.nodeAfter.nodeSize)
     return false
@@ -173,6 +174,7 @@ function liftOutOfList(state, dispatch, range, newType, newClass) {
   )
     return false
   const start = $start.pos
+  // console.log('item.nodeSize: ', item.nodeSize)
   const end = start + item.nodeSize
   // Strip off the surrounding list. At the sides where we're not at
   // the end of the list, the existing list is closed. At sides where
@@ -195,13 +197,11 @@ function liftOutOfList(state, dispatch, range, newType, newClass) {
       ),
       atStart ? 0 : 1,
     ),
-    // setBlockType(from, to, newType, { ...node.attrs, class: newClass }),
   )
-  // STARTING THE COMMANDS BLOCK
 
   const { from, to } = state.selection
   state.doc.nodesBetween(from, to, (node, pos) => {
-    console.log('node:', node, node.type)
+    // console.log('node:', node.type)
     if (!node.isTextblock || node.hasMarkup(newType, { class: newClass }))
       return
     let applicable = false
@@ -217,8 +217,12 @@ function liftOutOfList(state, dispatch, range, newType, newClass) {
     }
 
     if (applicable) {
-      console.log('applicable: ', applicable, node.type.name)
-      tr.setBlockType(from, to, newType, { ...node.attrs, class: newClass })
+      // console.log('applicable: ', applicable, node.type.name)
+      // console.log('from: ', from, 'to: ', to, node, pos)
+      tr.setBlockType(from, to - node.content.size, newType, {
+        ...node.attrs,
+        class: newClass,
+      })
       // should we then stop?
     }
   })
