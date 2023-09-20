@@ -29,7 +29,11 @@ const sendAlerts = async () => {
       .orderBy('created')
       .first()
 
-    if (!earliestUnreadMessage) {
+    // if the earliestUnreadMessage isn't found or 30 min hasn't elapsed since the earliest unread message, do not send the notification
+    if (
+      !earliestUnreadMessage ||
+      earliestUnreadMessage.created > new Date(Date.now() - 1000 * 60 * 30)
+    ) {
       return
     }
 
