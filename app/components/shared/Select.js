@@ -43,6 +43,11 @@ const styles = th => ({
     },
   }),
 
+  valueContainer: (provided, state) => ({
+    ...provided,
+    minHeight: '38px',
+  }),
+
   singleValue: (provided, state) => {
     const opacity = state.isDisabled ? 0.5 : 1
     const transition = 'opacity 300ms'
