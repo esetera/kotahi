@@ -1,4 +1,5 @@
 const { BaseModel } = require('@coko/server')
+const { deepFreeze } = require('../../utils/objectUtils')
 
 // const INVALIDATE_CACHE_PERIOD_MS = 10000 // Refetch from DB if ten seconds have elapsed
 
@@ -26,7 +27,7 @@ class Config extends BaseModel {
     let config = this.cachedConfigsByGroupId[groupId]
 
     if (!config) {
-      config = await this.query().findOne({ groupId, active: true })
+      config = deepFreeze(await this.query().findOne({ groupId, active: true }))
       // Check again in case another task has set it in the meantime
       if (!this.cachedConfigsByGroupId[groupId])
         this.cachedConfigsByGroupId[groupId] = config
