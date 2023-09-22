@@ -36,6 +36,7 @@ const styles = th => ({
       boxShadow: `1px solid ${color.gray70}`,
     },
     fontSize: th.fontSizeBaseSmall,
+    lineHeight: th.lineHeightBaseSmall,
     minHeight: `calc(${th.gridUnit} * 5)`,
     div: {
       color: color.gray20,
