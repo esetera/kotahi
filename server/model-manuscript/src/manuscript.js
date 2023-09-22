@@ -2,7 +2,7 @@ const { BaseModel } = require('@coko/server')
 const omit = require('lodash/omit')
 const cloneDeep = require('lodash/cloneDeep')
 const sortBy = require('lodash/sortBy')
-const { getDecisionForm } = require('../../model-review/src/reviewCommsUtils')
+const { getDecisionForm } = require('../../model-form/src/formCommsUtils')
 
 const {
   deleteAlertsForManuscript,

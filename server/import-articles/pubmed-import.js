@@ -5,7 +5,7 @@ const FormData = require('form-data')
 const fetch = require('node-fetch')
 const models = require('@pubsweet/models')
 const flattenObj = require('../utils/flattenObj')
-const { getSubmissionForm } = require('../model-review/src/reviewCommsUtils')
+const { getSubmissionForm } = require('../model-form/src/formCommsUtils')
 
 const selectVersionRegexp = /(v)(?!.*\1)/g
 

@@ -13,7 +13,7 @@ const {
   pharmaceuticalInterventions,
 } = require('./topics')
 
-const { getSubmissionForm } = require('../model-review/src/reviewCommsUtils')
+const { getSubmissionForm } = require('../model-form/src/formCommsUtils')
 
 const getData = async (groupId, ctx) => {
   const dateTwoWeeksAgo =

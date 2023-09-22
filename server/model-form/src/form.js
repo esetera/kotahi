@@ -1,4 +1,5 @@
 const { BaseModel } = require('@coko/server')
+const { deepFreeze } = require('../../utils/objectUtils')
 
 class Form extends BaseModel {
   static get tableName() {
@@ -8,6 +9,31 @@ class Form extends BaseModel {
   constructor(properties) {
     super(properties)
     this.type = 'Form'
+  }
+
+  static formsCache = {}
+
+  static async getCached(groupId, category, purpose) {
+    const key = `${groupId}·${category}·${purpose}`
+    let form = this.formsCache[key]
+
+    if (!form) {
+      form = deepFreeze(
+        await this.query().findOne({ groupId, category, purpose }),
+      )
+      // Check again in case another task has set it in the meantime
+      if (!this.formsCache[key]) this.formsCache[key] = form
+    }
+
+    return form
+  }
+
+  static async beforeUpdate(opt, queryContext) {
+    this.formsCache = {}
+  }
+
+  static async beforeDelete(queryContext) {
+    this.formsCache = {}
   }
 
   static get modifiers() {

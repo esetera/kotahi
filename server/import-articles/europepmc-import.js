@@ -1,7 +1,7 @@
 /* eslint-disable camelcase, consistent-return */
 const axios = require('axios')
 const models = require('@pubsweet/models')
-const { getSubmissionForm } = require('../model-review/src/reviewCommsUtils')
+const { getSubmissionForm } = require('../model-form/src/formCommsUtils')
 
 // Not sure if this code is used anymore could not find any relevant import triggers for europepmc?
 const getData = async (groupId, ctx) => {

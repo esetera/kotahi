@@ -6,7 +6,7 @@ const {
   getReviewForm,
   getDecisionForm,
   // eslint-disable-next-line import/no-unresolved
-} = require('../server/model-review/src/reviewCommsUtils')
+} = require('../server/model-form/src/formCommsUtils')
 
 // Paths are relative to the generated migrations folder
 /* eslint-disable-next-line import/no-unresolved */

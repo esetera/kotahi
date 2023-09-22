@@ -1,7 +1,11 @@
 const models = require('@pubsweet/models')
 const { getFilesWithUrl } = require('../../utils/fileStorageUtils')
 const { deepMergeObjectsReplacingArrays } = require('../../utils/objectUtils')
-const { getReviewForm, getDecisionForm } = require('./reviewCommsUtils')
+
+const {
+  getReviewForm,
+  getDecisionForm,
+} = require('../../model-form/src/formCommsUtils')
 
 const {
   convertFilesToIdsOnly,

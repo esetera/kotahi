@@ -57,11 +57,7 @@ const resolvers = {
 
     /** Returns the specific requested form, with any incomplete fields omitted */
     formForPurposeAndCategory: async (_, { purpose, category, groupId }) => {
-      const form = await Form.query().findOne({
-        purpose,
-        category,
-        groupId,
-      })
+      const form = await Form.getCached(groupId, category, purpose)
 
       if (!form) {
         throw notFoundError(

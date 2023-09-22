@@ -1,5 +1,5 @@
 const models = require('@pubsweet/models')
-const { getSubmissionForm } = require('../model-review/src/reviewCommsUtils')
+const { getSubmissionForm } = require('../model-form/src/formCommsUtils')
 const { importWorkersByGroup } = require('./imports')
 
 const assertArgTypes = (args, ...typeSpecs) => {

@@ -53,7 +53,13 @@ const publishToGoogleSpreadSheet = require('../../publishing/google-spreadsheet'
 const validateApiToken = require('../../utils/validateApiToken')
 const { deepMergeObjectsReplacingArrays } = require('../../utils/objectUtils')
 const { tryPublishDocMaps } = require('../../publishing/docmaps')
-const { getActiveForms } = require('../../model-form/src/formCommsUtils')
+
+const {
+  getReviewForm,
+  getDecisionForm,
+  getSubmissionForm,
+  getActiveForms,
+} = require('../../model-form/src/formCommsUtils')
 
 const {
   populateTemplatedTasksForManuscript,
@@ -63,12 +69,6 @@ const {
 const {
   convertFilesToFullObjects,
 } = require('../../model-review/src/reviewUtils')
-
-const {
-  getReviewForm,
-  getDecisionForm,
-  getSubmissionForm,
-} = require('../../model-review/src/reviewCommsUtils')
 
 const {
   getThreadedDiscussionsForManuscript,

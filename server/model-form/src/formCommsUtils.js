@@ -1,30 +1,29 @@
 const models = require('@pubsweet/models')
 
 const getActiveForms = async groupId => {
-  const forms = await models.Form.query()
-    .where({ category: 'submission', purpose: 'submit', groupId })
-    .orWhere({ category: 'review', purpose: 'review', groupId })
-    .orWhere({ category: 'decision', purpose: 'decision', groupId })
+  const submissionForm = await models.Form.getCached(
+    groupId,
+    'submission',
+    'submit',
+  )
 
-  return {
-    submissionForm: forms.find(f => f.purpose === 'submit'),
-    reviewForm: forms.find(f => f.purpose === 'review'),
-    decisionForm: forms.find(f => f.purpose === 'decision'),
-  }
+  const reviewForm = await models.Form.getCached(groupId, 'review', 'review')
+
+  const decisionForm = await models.Form.getCached(
+    groupId,
+    'decision',
+    'decision',
+  )
+
+  return { submissionForm, reviewForm, decisionForm }
 }
 
 /** For form for given purpose and category, return a list of all fields that are not confidential, each structured as
  * { name, title, component }
  */
 const getPublicFields = async (purpose, category, groupId) => {
-  const forms = await models.Form.query().where({
-    category,
-    purpose,
-    groupId,
-  })
-
-  if (!forms.length) return []
-  const form = forms[0]
+  const form = await models.Form.getCached(groupId, category, purpose)
+  if (!form) return []
 
   return form.structure.children
     .filter(field => !field.hideFromAuthors)
@@ -35,4 +34,28 @@ const getPublicFields = async (purpose, category, groupId) => {
     }))
 }
 
-module.exports = { getPublicFields, getActiveForms }
+const getForm = async ({ groupId, category, purpose }) => {
+  const form = await models.Form.getCached(groupId, category, purpose)
+  if (!form)
+    throw new Error(
+      `No form found in group ${groupId} for category "${category}", purpose "${purpose}"`,
+    )
+  return form
+}
+
+const getReviewForm = async groupId =>
+  getForm({ category: 'review', purpose: 'review', groupId })
+
+const getDecisionForm = async groupId =>
+  getForm({ category: 'decision', purpose: 'decision', groupId })
+
+const getSubmissionForm = async groupId =>
+  getForm({ category: 'submission', purpose: 'submit', groupId })
+
+module.exports = {
+  getReviewForm,
+  getDecisionForm,
+  getSubmissionForm,
+  getPublicFields,
+  getActiveForms,
+}
