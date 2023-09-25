@@ -1,5 +1,4 @@
 import { emDash, ellipsis } from 'prosemirror-inputrules'
-import { columnResizing, tableEditing } from 'prosemirror-tables'
 import {
   InlineAnnotationsService,
   AnnotationToolGroupService,
@@ -8,8 +7,6 @@ import {
   LinkService,
   ListsService,
   ListToolGroupService,
-  TablesService,
-  TableToolGroupService,
   BaseService,
   BaseToolGroupService,
   DisplayBlockLevelService,
@@ -33,10 +30,13 @@ import {
   TrackingAndEditingToolGroupService,
   EditingSuggestingService,
 } from 'wax-prosemirror-services'
+import { TablesService, tableEditing, columnResizing } from 'wax-table-service'
 import { KotahiBlockDropDownToolGroupService } from '../CustomWaxToolGroups'
 import JatsTagsService from '../JatsTags'
 import CharactersList from './CharactersList'
 import KotahiSchema from './KotahiSchema'
+import CitationService from '../CustomWaxToolGroups/CitationService/CitationService'
+import 'wax-table-service/dist/index.css'
 
 const updateTrackStatus = change => {
   // this returns "true" when Suggesting Mode is turned on.
@@ -122,7 +122,12 @@ const fullWaxEditorConfig = handleAssetManager => ({
 
   ImageService: handleAssetManager ? { handleAssetManager } : {},
 
-  // end insertion
+  CitationService: {
+    AnyStyleTransformation: () => {},
+    CrossRefTransformation: () => {},
+    CiteProcTransformation: () => {}, // We may need to pass this in if we're letting this editor change these.
+    readOnly: true,
+  },
 
   services: [
     new AnnotationToolGroupService(),
@@ -144,7 +149,6 @@ const fullWaxEditorConfig = handleAssetManager => ({
     new SpecialCharactersService(),
     new SpecialCharactersToolGroupService(),
     new TablesService(),
-    new TableToolGroupService(),
     new TextBlockLevelService(),
     new TextToolGroupService(),
     // needed for track changes
@@ -162,6 +166,7 @@ const fullWaxEditorConfig = handleAssetManager => ({
     new TrackCommentOptionsToolGroupService(),
     new TrackOptionsToolGroupService(),
     new JatsTagsService(),
+    new CitationService(),
   ],
 })
 

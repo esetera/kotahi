@@ -147,14 +147,124 @@ const findCitationSpans = (html, refCount, refList = '') => {
     currentIndex += 1
   })
   // console.log(citations, currentIndex)
-  return { cleanedHtml: $.html(), cleanedRefList: refList + citations.join('') }
+  return {
+    reCleanedHtml: $.html() || '',
+    reCleanedRefList: refList + citations.join(''),
+  }
+}
+
+const findCslCitations = (html, refCount, refList) => {
+  const reCleanedRefList = [...refList]
+
+  const dom = htmlparser2.parseDocument(html)
+  const $ = cheerio.load(dom, { xmlMode: true })
+  const cslCitations = $('p.ref')
+  cslCitations.each((index, citation) => {
+    // console.log('index: ', index)
+    const { attribs } = $(citation)[0]
+    const structure = attribs['data-structure']
+    let parsedStructure = {}
+    let thisJatsReference = `<ref id='ref-${index + refCount}'>`
+
+    try {
+      parsedStructure = JSON.parse(structure)
+
+      if (structure === '"{}"') {
+        // If we are here, we only have the text. Go with that.
+        const textContent = $(citation).text()
+        thisJatsReference += `<mixed-citation>${textContent}</mixed-citation></ref>`
+      } else {
+        thisJatsReference += '<element-citation>'
+
+        if (parsedStructure['citation-number']) {
+          thisJatsReference += `<label>${parsedStructure['citation-number']}</label>`
+        }
+
+        if (parsedStructure.author && parsedStructure.author.length) {
+          thisJatsReference += `<person-group person-group-type="author">${parsedStructure.author
+            .map(author => {
+              let thisAuthor = '<name>'
+
+              if (author.family) {
+                thisAuthor += `<surname>${author.family}</surname>`
+              }
+
+              if (author.given) {
+                thisAuthor += `<given-names>${author.given}</given-names>`
+              }
+
+              // TODO: there can also be sequence – what do we do with that?
+              // This doesn't quite map on to <role />
+
+              thisAuthor += '</name>'
+              return thisAuthor
+            })
+            .join('')}</person-group>`
+        }
+
+        if (parsedStructure.title) {
+          thisJatsReference += `<article-title>${parsedStructure.title}</article-title>`
+        }
+
+        if (parsedStructure['container-title']) {
+          thisJatsReference += `<@source>${parsedStructure['container-title']}</@source>`
+        }
+
+        if (parsedStructure.issued) {
+          thisJatsReference += `<year>${parsedStructure.issued}</year>`
+        }
+
+        if (parsedStructure.volume) {
+          thisJatsReference += `<volume>${parsedStructure.volume}</volume>`
+        }
+
+        if (parsedStructure.issue) {
+          thisJatsReference += `<issue>${parsedStructure.volume}</issue>`
+        }
+
+        if (parsedStructure.page) {
+          thisJatsReference += `<fpage>${parsedStructure.page}</fpage>`
+        }
+
+        if (parsedStructure.doi) {
+          thisJatsReference += `<ext-link ext-link-type="doi" xlink:href="${parsedStructure.doi}">${parsedStructure.doi}</ext-link>`
+        }
+
+        // todo: doi
+
+        thisJatsReference += `</element-citation></ref>`
+      }
+    } catch {
+      console.error('Could not parse reference structure: ', structure)
+      // console.error('Using text: ', textContent)
+      const textContent = $(citation).text()
+      thisJatsReference += `<mixed-citation>${textContent}</mixed-citation></ref>`
+    }
+
+    // console.log('Result: ', thisJatsReference)
+    reCleanedRefList.push(thisJatsReference)
+    $(citation).replaceWith('')
+  })
+  return {
+    cleanedHtml: $.html() || '',
+    cleanedRefList: reCleanedRefList.join(''),
+  }
 }
 
 const makeCitations = html => {
-  let deCitedHtml = html
   let refList = '' // this is the ref-list that we're building
   let refCount = 0 // this is to give refs IDs
   const potentialRefs = []
+
+  // This deals with CSL references. If we want to take out non-CSL references, delete above this?
+
+  const { cleanedHtml, cleanedRefList } = findCslCitations(
+    html,
+    refCount,
+    refList,
+  )
+
+  let deCitedHtml = cleanedHtml
 
   while (deCitedHtml.indexOf('<section class="reflist">') > -1) {
     let thisRefList = deCitedHtml
@@ -259,23 +369,27 @@ const makeCitations = html => {
     refCount += 1
   }
 
-  const { cleanedHtml, cleanedRefList } = findCitationSpans(
+  const { reCleanedHtml, reCleanedRefList } = findCitationSpans(
     deCitedHtml,
     refCount,
     refList,
   )
 
-  if (cleanedRefList) {
+  if (cleanedRefList || reCleanedRefList) {
     // After parsing is done and this is just a string,<@ource> can go back
     // to being <source>
     refList = `<ref-list>${replaceAll(
-      replaceAll(cleanedRefList, '</@source>', '</source>'),
+      replaceAll(cleanedRefList || '', '</@source>', '</source>'),
+      '<@source>',
+      '<source>',
+    )}${replaceAll(
+      replaceAll(reCleanedRefList || '', '</@source>', '</source>'),
       '<@source>',
       '<source>',
     )}</ref-list>`
   }
 
-  const processedHtml = cleanedHtml
+  const processedHtml = reCleanedHtml || '' // If we have a state where there is only a RefList in the body, we need to make sure we're passing a string back
 
   return { processedHtml, refList }
 }

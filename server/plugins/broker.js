@@ -53,20 +53,24 @@ const getBroker = (groupId, workerName) => {
   return {
     addManuscriptImporter: (importType, doImport) => {
       assertArgTypes([importType, doImport], 'string', 'function')
-      importWorkers.push({ name: workerName, importType, doImport })
+      importWorkers.push({
+        name: workerName,
+        importType,
+        doImport,
+      })
     },
     findManuscriptWithDoi: async doi =>
       doi
         ? models.Manuscript.query()
             .where({ groupId })
-            .whereRaw("submission->>'$doi'", '=', doi)
+            .whereRaw("submission->>'$doi' = ?", [doi])
             .first()
         : null,
     findManuscriptWithUri: async uri =>
       uri
         ? models.Manuscript.query()
             .where({ groupId })
-            .whereRaw("submission->>'$sourceUri'", '=', uri)
+            .whereRaw("submission->>'$sourceUri' = ?", [uri])
             .first()
         : null,
     getStubManuscriptObject: async () => ({

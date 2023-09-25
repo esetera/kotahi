@@ -1,4 +1,4 @@
-/* stylelint-disable selector-type-no-unknown */
+/* stylelint-disable selector-type-no-unknown, no-descending-specificity */
 import { css } from 'styled-components'
 import { grid, th } from '@pubsweet/ui-toolkit'
 import lightenBy from '../../../../shared/lightenBy'
@@ -221,7 +221,9 @@ const EditorStyles = css`
   /* -- Inline Math --------------------------------------- */
 
   math-inline {
-    display: inline;
+    display: inline-block;
+    max-width: 800px;
+    overflow-x: scroll;
     white-space: nowrap;
   }
 
@@ -245,6 +247,8 @@ const EditorStyles = css`
 
   math-display {
     display: block;
+    max-width: 800px;
+    overflow-x: scroll;
   }
 
   math-display .math-render {
@@ -438,7 +442,7 @@ const EditorStyles = css`
       margin-bottom: 0;
     }
 
-    & p {
+    & p:not(.ref) {
       --citationColorValues: ${th('colorCitation')};
       --citationTextColor: black;
       --citationOffset: 2px;

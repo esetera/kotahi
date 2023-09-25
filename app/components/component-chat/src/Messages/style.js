@@ -1,7 +1,9 @@
 /* stylelint-disable property-no-vendor-prefix */
 
 import styled from 'styled-components'
-import { th } from '@pubsweet/ui-toolkit'
+import { th, grid } from '@pubsweet/ui-toolkit'
+import { MoreVertical } from 'react-feather'
+import { color } from '../../../../theme'
 
 export { Spinner } from '../../../shared'
 
@@ -9,7 +11,8 @@ export const Time = styled.span`
   color: ${th('colorText')};
   font-size: 14px;
   font-weight: 500;
-  margin: 0 24px;
+  margin-right: 15px;
+  margin-top: 3px;
   text-align: center;
 `
 
@@ -17,7 +20,7 @@ export const InlineTime = styled.span`
   color: ${th('colorText')};
   font-size: 14px;
   font-weight: 300;
-  margin: 0 24px;
+  margin-right: 15px;
   text-align: center;
 `
 
@@ -52,7 +55,19 @@ export const Message = styled.div`
   padding-right: 4px;
   position: relative;
 
+  .message-time {
+    align-items: flex-start;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 20px;
+    position: relative;
+  }
+
   .message-timestamp {
+    opacity: 0;
+  }
+
+  .message-ellipsis {
     opacity: 0;
   }
 
@@ -64,6 +79,10 @@ export const Message = styled.div`
     }
 
     .message-timestamp {
+      opacity: 1;
+    }
+
+    .message-ellipsis {
       opacity: 1;
     }
   }
@@ -198,4 +217,43 @@ export const DateLabel = styled(ChatLabel)`
   background-color: #ffffff;
   color: #6c6c6c;
   padding: 2px 12px;
+`
+export const Ellipsis = styled(MoreVertical)`
+  background-color: #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
+  height: 20.25px;
+  margin: ${grid(0.25)} ${grid(1)} ${grid(1)} ${grid(2)};
+  padding: 3px;
+  position: absolute;
+  right: 0;
+  width: 20.25px;
+  z-index: 999;
+
+  &:hover {
+    background-color: ${color.gray90};
+    border-radius: 50%;
+  }
+
+  &.dropdown-ellipsis {
+    position: absolute;
+    right: 0;
+    top: 4px;
+  }
+`
+
+export const EditedTimeContainer = styled.div`
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  padding-right: 35px;
+  text-align: right;
+`
+
+export const EditedTime = styled.div`
+  color: #343332;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 22px;
 `
