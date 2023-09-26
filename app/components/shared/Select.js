@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import ReactSelect from 'react-select'
+import ReactSelect, { components } from 'react-select'
 import { ThemeContext } from 'styled-components'
 import { color } from '../../theme'
 
@@ -63,6 +63,22 @@ const styles = th => ({
   }),
 })
 
+const ValueContainerWithTestId = dataTestid => ({
+  children,
+  innerProps,
+  ...props
+}) => {
+  return (
+    <components.ValueContainer
+      {...props}
+      data-testid={dataTestid}
+      innerProps={{ ...innerProps, 'data-testid': dataTestid }}
+    >
+      {children}
+    </components.ValueContainer>
+  )
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export const Select = ({
   value,
@@ -70,6 +86,7 @@ export const Select = ({
   options,
   customStyles,
   hasGroupedOptions = false,
+  'data-testid': dataTestid,
   ...otherProps
 }) => {
   const th = useContext(ThemeContext)
@@ -97,6 +114,7 @@ export const Select = ({
 
   return (
     <ReactSelect
+      components={{ ValueContainer: ValueContainerWithTestId(dataTestid) }}
       isMulti={isMulti}
       options={options}
       {...otherProps}
