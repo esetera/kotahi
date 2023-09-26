@@ -215,7 +215,7 @@ const CitationComponent = ({ node, getPos }) => {
 
   const sendToCrossRef = async text => {
     const response = await CrossRefTransformation(text)
-    return { crossRef: response }
+    return { crossRef: typeof response === 'object' ? response : [] }
   }
 
   useEffect(() => {
@@ -337,7 +337,6 @@ const CitationComponent = ({ node, getPos }) => {
       // console.log('Other loading has been turned off.')
       return undefined
     }, [otherLoading])
-
     return (
       <PopUpWrapper>
         {editing ? (

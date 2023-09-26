@@ -41,6 +41,7 @@ const createReference = data => {
     volume,
     title: pluckTitle(title),
     journalTitle: pluckJournalTitle(journalTitle),
+    ...data,
   }
 }
 
@@ -57,6 +58,7 @@ const createFormattedReference = async (data, groupId) => {
 
   const outputData = {
     doi,
+    DOI: doi,
     author: pluckAuthors(author),
     page,
     issue,
@@ -65,7 +67,10 @@ const createFormattedReference = async (data, groupId) => {
     journalTitle: pluckJournalTitle(journalTitle),
   }
 
-  const formattedCitation = await formatCitation(JSON.stringify(data), groupId)
+  const formattedCitation = await formatCitation(
+    JSON.stringify(outputData),
+    groupId,
+  )
 
   outputData.formattedCitation = formattedCitation.result
 
@@ -109,6 +114,10 @@ const getMatchingReferencesFromCrossRef = async (
         [],
       )
     })
+    .catch(e => {
+      console.error('Crossref failure!', e)
+      return []
+    })
 }
 
 const getFormattedReferencesFromCrossRef = async (
@@ -127,6 +136,7 @@ const getFormattedReferencesFromCrossRef = async (
         select: 'DOI,author,issue,page,title,volume,container-title',
         mailto: crossrefRetrievalEmail || '',
       },
+      // timeout: 5000,
       headers: {
         'User-Agent': `Kotahi (Axios 0.21; mailto:${
           crossrefRetrievalEmail || ''
@@ -141,6 +151,10 @@ const getFormattedReferencesFromCrossRef = async (
         },
         [],
       )
+    })
+    .catch(e => {
+      console.error('Crossref failure!', e.message)
+      return []
     })
 }
 
