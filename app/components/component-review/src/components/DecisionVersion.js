@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import DecisionReviews from './decision/DecisionReviews'
 import AssignEditorsReviewers from './assignEditors/AssignEditorsReviewers'
 import AssignEditor from './assignEditors/AssignEditor'
+import AssignAuthorForProofing from './assignAuthors/AssignAuthorForProofing'
 import EmailNotifications from './emailNotifications'
 import ReadonlyFormTemplate from './metadata/ReadonlyFormTemplate'
 import EditorSection from './decision/EditorSection'
@@ -347,6 +348,11 @@ const DecisionVersion = ({
                 }
                 updateTeamMember={updateTeamMember}
               />
+            </AdminSection>
+          )}
+          {isCurrentVersion && (
+            <AdminSection>
+              <AssignAuthorForProofing />
             </AdminSection>
           )}
         </>

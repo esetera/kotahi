@@ -111,6 +111,19 @@ export const BadgeContainer = styled.div`
   gap: 4px 18px;
 `
 
+export const StatusInfoText = styled.div`
+  display: flex;
+  font-size: ${th('fontSizeBaseSmall')};
+  font-weight: 400;
+  margin-right: 16px;
+`
+
+export const FlexCenter = styled.div`
+  align-items: end;
+  display: flex;
+  justify-content: flex-end;
+`
+
 export {
   Title,
   SectionHeader,
