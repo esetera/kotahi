@@ -14,7 +14,8 @@ const EMAIL_NOTIFICATION_SECTION = 'emailNotifications__RowGridStyled'
 const NEW_USER_CHECKBOX = '[class*=emailNotifications__RowGridStyled] > label'
 const NEW_USER_EMAIL_FIELD = '[placeholder="Email"]'
 const NEW_USER_NAME_FIELD = '[placeholder="Name"]'
-const EMAIL_NOTIFICATION_DROPDOWNS = 'reviewerSelect'
+const EMAIL_NOTIFICATION_DROPDOWNS =
+  '[class*=emailNotifications__RowGridStyled] > div'
 
 const ASSIGN_SENIOR_EDITOR_DROPDOWN = 'Assign seniorEditor'
 const ASSIGN_HANDLING_EDITOR_DROPDOWN = 'Assign handlingEditor'
@@ -273,7 +274,7 @@ export const ControlPage = {
     this.getNewUserNameField().fillInput(name)
   },
   getEmailNotificationDropdowns() {
-    return cy.getByDataTestId(EMAIL_NOTIFICATION_DROPDOWNS)
+    return cy.get(EMAIL_NOTIFICATION_DROPDOWNS)
   },
   clickEmailNotificationNthDropdown(nth) {
     this.getEmailNotificationDropdowns().eq(nth).click({ force: true })
