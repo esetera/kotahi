@@ -150,17 +150,19 @@ const getJobs = async (activeConfig, groupId) => {
 const initiateJobSchedules = async () => {
   const groups = await models.Group.query().where({ isArchived: false })
 
-  groups.forEach(async group => {
-    const activeConfig = await models.Config.getCached(group.id)
-    const jobs = await getJobs(activeConfig, group.id)
+  await Promise.all(
+    groups.map(async group => {
+      const activeConfig = await models.Config.getCached(group.id)
+      const jobs = await getJobs(activeConfig, group.id)
 
-    // eslint-disable-next-line no-console
-    console.info(`Schedule Jobs for group "${group.name}"`)
-    jobs.forEach(job => {
-      const schedule = new ScheduleManager()
-      schedule.start(job.name, job.rule, job.fn)
-    })
-  })
+      // eslint-disable-next-line no-console
+      console.info(`Schedule Jobs for group "${group.name}"`)
+      jobs.forEach(job => {
+        const schedule = new ScheduleManager()
+        schedule.start(job.name, job.rule, job.fn)
+      })
+    }),
+  )
 }
 
 module.exports = {

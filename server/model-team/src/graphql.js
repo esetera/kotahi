@@ -33,18 +33,20 @@ const resolvers = {
         eager: '[members.[user.teams, alias]]',
       }
 
-      input.members.forEach(async member => {
-        await addUserToManuscriptChatChannel({
-          manuscriptId: input.objectId,
-          userId: member.user.id,
-          type: 'all',
-        })
-        await addUserToManuscriptChatChannel({
-          manuscriptId: input.objectId,
-          userId: member.user.id,
-          type: 'editorial',
-        })
-      })
+      await Promise.all(
+        input.members.map(async member => {
+          await addUserToManuscriptChatChannel({
+            manuscriptId: input.objectId,
+            userId: member.user.id,
+            type: 'all',
+          })
+          await addUserToManuscriptChatChannel({
+            manuscriptId: input.objectId,
+            userId: member.user.id,
+            type: 'editorial',
+          })
+        }),
+      )
 
       return models.Team.query().insertGraphAndFetch(input, options)
     },
@@ -75,18 +77,20 @@ const resolvers = {
 
         await updateAlertsUponTeamUpdate(objectId, membersAdded, membersRemoved)
 
-        input.members.forEach(async member => {
-          await addUserToManuscriptChatChannel({
-            manuscriptId: objectId,
-            userId: member.user.id,
-            type: 'all',
-          })
-          await addUserToManuscriptChatChannel({
-            manuscriptId: objectId,
-            userId: member.user.id,
-            type: 'editorial',
-          })
-        })
+        await Promise.all(
+          input.members.map(async member => {
+            await addUserToManuscriptChatChannel({
+              manuscriptId: objectId,
+              userId: member.user.id,
+              type: 'all',
+            })
+            await addUserToManuscriptChatChannel({
+              manuscriptId: objectId,
+              userId: member.user.id,
+              type: 'editorial',
+            })
+          }),
+        )
       }
 
       return models.Team.query().upsertGraphAndFetch(

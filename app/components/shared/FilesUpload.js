@@ -91,10 +91,12 @@ const DropzoneAndList = ({
         disabled={disabled}
         multiple={acceptMultiple}
         onDrop={async dropFiles => {
-          Array.from(dropFiles).forEach(async file => {
-            const data = await createFile(file)
-            push(data.createFile)
-          })
+          await Promise.all(
+            Array.from(dropFiles).map(async file => {
+              const data = await createFile(file)
+              push(data.createFile)
+            }),
+          )
         }}
       >
         {({ getRootProps, getInputProps }) => (
