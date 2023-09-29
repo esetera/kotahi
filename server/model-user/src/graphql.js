@@ -190,8 +190,12 @@ const resolvers = {
     },
     channelUsersForMention: async (_, { channelId }) => {
       const users = await models.User.query()
-        .join('channel_members', 'users.id', 'channel_members.userId')
-        .where('channel_members.channelId', channelId)
+        .join('team_members', 'users.id', 'team_members.user_id')
+        .join('teams', 'team_members.team_id', 'teams.id')
+        .leftJoin('channel_members', 'users.id', 'channel_members.user_id') // need left join here to also include users who are in team but not in channel member, i.e. group managers
+        .where('teams.role', '=', 'groupManager')
+        .orWhere('channel_members.channel_id', '=', channelId)
+        .distinct('users.*')
 
       return users
     },
