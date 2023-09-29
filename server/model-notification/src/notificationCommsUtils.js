@@ -127,9 +127,9 @@ const notify = async (path, { context, time, users, groupId }) => {
 
   await Promise.all(
     // eslint-disable-next-line consistent-return
-    users.map(async user => {
+    users.map(async userId => {
       const option = await getNotificationOptionForUser({
-        userId: user.id,
+        userId,
         path,
         groupId,
       })
@@ -145,7 +145,7 @@ const notify = async (path, { context, time, users, groupId }) => {
           pathString: path.join('/'),
           option,
           context,
-          userId: user.id,
+          userId,
           groupId,
         }).save()
       }
