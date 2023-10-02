@@ -843,6 +843,13 @@ const generateSchema = (
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
                   },
+                  mentionNotificationTemplate: {
+                    description:
+                      'Immediate Notification for users @mentioned in a message',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                  },
                 },
               },
               report: {
@@ -1278,6 +1285,13 @@ const generateSchema = (
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
                   },
+                  mentionNotificationTemplate: {
+                    description:
+                      'Immediate Notification for users @mentioned in a message',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                  },
                 },
               },
               report: {
@@ -1705,6 +1719,13 @@ const generateSchema = (
                   },
                   alertUnreadMessageDigestTemplate: {
                     description: 'Unread discussion message',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                  },
+                  mentionNotificationTemplate: {
+                    description:
+                      'Immediate Notification for users @mentioned in a message',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
@@ -2155,6 +2176,13 @@ const generateSchema = (
                   },
                   alertUnreadMessageDigestTemplate: {
                     description: 'Unread discussion message',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                  },
+                  mentionNotificationTemplate: {
+                    description:
+                      'Immediate Notification for users @mentioned in a message',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,

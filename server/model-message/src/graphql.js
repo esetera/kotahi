@@ -80,11 +80,11 @@ const resolvers = {
   Mutation: {
     createMessage: async (_, { content, channelId }, context) => {
       const pubsub = await getPubsub()
-      const userId = context.user
+      const currentUserId = context.user
 
       const savedMessage = await new models.Message({
         content,
-        userId,
+        userId: currentUserId,
         channelId,
       }).save()
 
@@ -113,11 +113,23 @@ const resolvers = {
 
       await addUsersToChatChannel(channelId, [...taggedUserIds, context.user])
 
+      // Notify non-mentioned users
       notify(['chat', message.channelId], {
         time: message.created,
         context: { messageId: message.id },
-        users: channelMembers.map(channelMember => channelMember.userId),
+        users: channelMembers
+          .filter(member => !taggedUserIds.has(member.userId))
+          .map(member => member.userId),
         groupId: message.channel.groupId,
+      })
+
+      // Notify mentioned users
+      notify(['chat', message.channelId], {
+        time: message.created,
+        context: { messageId: message.id, isMentioned: true },
+        users: [...taggedUserIds],
+        groupId: message.channel.groupId,
+        currentUserId,
       })
 
       return message

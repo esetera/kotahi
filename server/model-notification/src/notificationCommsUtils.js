@@ -17,8 +17,8 @@ const sendNotifications = async () => {
   notificationDigestRows.forEach(async notificationDigest => {
     if (notificationDigest.actioned) return
 
-    await sendEmailNotificationOfMessages({
-      userId: notificationDigest.userId,
+    await sendChatNotification({
+      recipientId: notificationDigest.userId,
       messageId: notificationDigest.context.messageId,
       title: 'Unread messages in chat',
     })
@@ -35,8 +35,13 @@ const sendNotifications = async () => {
   })
 }
 
-const sendEmailNotificationOfMessages = async ({ userId, messageId }) => {
-  const user = await models.User.query().findById(userId)
+const sendChatNotification = async ({
+  recipientId,
+  messageId,
+  currentUserId = null,
+  isMentioned = false,
+}) => {
+  const recipient = await models.User.query().findById(recipientId)
   const message = await models.Message.query().findById(messageId)
   const channel = await models.Channel.query().findById(message.channelId)
   const { groupId } = channel
@@ -51,7 +56,11 @@ const sendEmailNotificationOfMessages = async ({ userId, messageId }) => {
     discussionUrl += `/admin/manuscripts` // admin discussion
   } else {
     discussionUrl += `/versions/${channel.manuscriptId}`
-    const roles = await getUserRolesInManuscript(user.id, channel.manuscriptId)
+
+    const roles = await getUserRolesInManuscript(
+      recipient.id,
+      channel.manuscriptId,
+    )
 
     if (roles.groupManager || roles.anyEditor) {
       discussionUrl += '/decision'
@@ -68,9 +77,16 @@ const sendEmailNotificationOfMessages = async ({ userId, messageId }) => {
     }
   }
 
+  let currentUser
+
+  if (currentUserId) {
+    currentUser = await models.User.query().findById(currentUserId)
+  }
+
   const data = {
-    recipientName: user.username,
+    recipientName: recipient.username,
     discussionUrl,
+    currentUser: currentUser?.username,
   }
 
   const activeConfig = await models.Config.query().findOne({
@@ -78,8 +94,9 @@ const sendEmailNotificationOfMessages = async ({ userId, messageId }) => {
     active: true,
   })
 
-  const selectedTemplate =
-    activeConfig.formData.eventNotification.alertUnreadMessageDigestTemplate
+  const selectedTemplate = isMentioned
+    ? activeConfig.formData.eventNotification.mentionNotificationTemplate
+    : activeConfig.formData.eventNotification.alertUnreadMessageDigestTemplate
 
   if (!selectedTemplate) return
 
@@ -87,7 +104,12 @@ const sendEmailNotificationOfMessages = async ({ userId, messageId }) => {
     selectedTemplate,
   )
 
-  await sendEmailNotification(user.email, selectedEmailTemplate, data, groupId)
+  await sendEmailNotification(
+    recipient.email,
+    selectedEmailTemplate,
+    data,
+    groupId,
+  )
 }
 
 const getNotificationOptionForUser = async ({ userId, path, groupId }) => {
@@ -122,40 +144,52 @@ const getNotificationOptionForUser = async ({ userId, path, groupId }) => {
   return nearestAncestor?.option || '30MinSummary' // Fallback if no options are set
 }
 
-const notify = async (path, { context, time, users, groupId }) => {
+const notify = async (
+  path,
+  { context, time, users, groupId, currentUserId },
+) => {
   if (!users) return
 
-  await Promise.all(
-    // eslint-disable-next-line consistent-return
-    users.map(async userId => {
-      const option = await getNotificationOptionForUser({
-        userId,
-        path,
-        groupId,
+  // eslint-disable-next-line consistent-return
+  const notificationPromises = users.map(async userId => {
+    if (context.isMentioned) {
+      // Immediate notification recipients
+      return sendChatNotification({
+        recipientId: userId,
+        messageId: context.messageId,
+        isMentioned: context.isMentioned,
+        currentUserId,
       })
+    }
 
-      if (option === '30MinSummary') {
-        const maxNotificationTime = new Date(time)
-        maxNotificationTime.setMinutes(maxNotificationTime.getMinutes() + 30)
+    const option = await getNotificationOptionForUser({
+      userId,
+      path,
+      groupId,
+    })
 
-        // eslint-disable-next-line no-return-await
-        return await new models.NotificationDigest({
-          time,
-          maxNotificationTime,
-          pathString: path.join('/'),
-          option,
-          context,
-          userId,
-          groupId,
-        }).save()
-      }
-    }),
-  )
+    if (option === '30MinSummary') {
+      const maxNotificationTime = new Date(time)
+      maxNotificationTime.setMinutes(maxNotificationTime.getMinutes() + 30)
+
+      return new models.NotificationDigest({
+        time,
+        maxNotificationTime,
+        pathString: path.join('/'),
+        option,
+        context,
+        userId,
+        groupId,
+      }).save()
+    }
+  })
+
+  await Promise.all(notificationPromises)
 }
 
 module.exports = {
   sendNotifications,
-  sendEmailNotificationOfMessages,
+  sendChatNotification,
   getNotificationOptionForUser,
   notify,
 }
