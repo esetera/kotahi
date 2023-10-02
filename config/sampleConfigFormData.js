@@ -21,6 +21,12 @@ module.exports = {
   submission: {
     allowAuthorsSubmitNewVersion: true,
   },
+  production: {
+    crossrefRetrievalEmail: 'test@coko.foundation',
+    styleName: 'apa',
+    localeName: 'en-US',
+    crossrefSearchResultCount: 3,
+  },
   publishing: {
     hypothesis: {
       group: 'test',

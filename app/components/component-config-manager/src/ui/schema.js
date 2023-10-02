@@ -656,6 +656,49 @@ const generateSchema = (
                   },
                 },
               },
+              production: {
+                type: 'object',
+                title: 'Production',
+                properties: {
+                  crossrefRetrievalEmail: {
+                    type: ['string', 'null'],
+                    description: 'Email to use for citation search',
+                    default: '',
+                  },
+                  crossrefSearchResultCount: {
+                    type: 'number',
+                    description:
+                      'Number of results to return from citation search',
+                    default: 3,
+                  },
+                  styleName: {
+                    type: ['string', 'null'],
+                    description: 'Select style formatting for citations',
+                    oneOf: [
+                      {
+                        const: 'apa',
+                        title: 'American Psychological Association (APA)',
+                      },
+                      {
+                        const: 'chicago-note-bibliogrpahy',
+                        title: 'Chicago Manual of Style (CMOS)',
+                      },
+                      {
+                        const: 'counctil-of-science-editors-alphabetical',
+                        title: 'Council of Science Editors (CSE)',
+                      },
+                    ],
+                    default: 'apa',
+                  },
+                  localeName: {
+                    type: ['string', 'null'],
+                    description: 'Select locale for citations',
+                    enum: ['en-US', 'en-GB'],
+                    default: 'en-US',
+                  },
+                },
+              },
+
               publishing: {
                 type: 'object',
                 title: 'Publishing',
@@ -1065,6 +1108,48 @@ const generateSchema = (
                   },
                 },
               },
+              production: {
+                type: 'object',
+                title: 'Production',
+                properties: {
+                  crossrefRetrievalEmail: {
+                    type: ['string', 'null'],
+                    description: 'Email to use for citation search',
+                    default: '',
+                  },
+                  crossrefSearchResultCount: {
+                    type: 'number',
+                    description:
+                      'Number of results to return from citation search',
+                    default: 3,
+                  },
+                  styleName: {
+                    type: ['string', 'null'],
+                    description: 'Select style formatting for citations',
+                    oneOf: [
+                      {
+                        const: 'apa',
+                        title: 'American Psychological Association (APA)',
+                      },
+                      {
+                        const: 'chicago-note-bibliogrpahy',
+                        title: 'Chicago Manual of Style (CMOS)',
+                      },
+                      {
+                        const: 'counctil-of-science-editors-alphabetical',
+                        title: 'Council of Science Editors (CSE)',
+                      },
+                    ],
+                    default: 'apa',
+                  },
+                  localeName: {
+                    type: ['string', 'null'],
+                    description: 'Select locale for citations',
+                    enum: ['en-US', 'en-GB'],
+                    default: 'en-US',
+                  },
+                },
+              },
               publishing: {
                 type: 'object',
                 title: 'Publishing',
@@ -1469,6 +1554,48 @@ const generateSchema = (
                   },
                 },
               },
+              production: {
+                type: 'object',
+                title: 'Production',
+                properties: {
+                  crossrefRetrievalEmail: {
+                    type: ['string', 'null'],
+                    description: 'Email to use for citation search',
+                    default: '',
+                  },
+                  crossrefSearchResultCount: {
+                    type: 'number',
+                    description:
+                      'Number of results to return from citation search',
+                    default: 3,
+                  },
+                  styleName: {
+                    type: ['string', 'null'],
+                    description: 'Select style formatting for citations',
+                    oneOf: [
+                      {
+                        const: 'apa',
+                        title: 'American Psychological Association (APA)',
+                      },
+                      {
+                        const: 'chicago-note-bibliogrpahy',
+                        title: 'Chicago Manual of Style (CMOS)',
+                      },
+                      {
+                        const: 'counctil-of-science-editors-alphabetical',
+                        title: 'Council of Science Editors (CSE)',
+                      },
+                    ],
+                    default: 'apa',
+                  },
+                  localeName: {
+                    type: ['string', 'null'],
+                    description: 'Select locale for citations',
+                    enum: ['en-US', 'en-GB'],
+                    default: 'en-US',
+                  },
+                },
+              },
               publishing: {
                 type: 'object',
                 title: 'Publishing',
@@ -1870,6 +1997,48 @@ const generateSchema = (
                     type: 'boolean',
                     title: 'Reviewers can see the Decision form data ',
                     default: false,
+                  },
+                },
+              },
+              production: {
+                type: 'object',
+                title: 'Production',
+                properties: {
+                  crossrefRetrievalEmail: {
+                    type: ['string', 'null'],
+                    description: 'Email to use for citation search',
+                    default: '',
+                  },
+                  crossrefSearchResultCount: {
+                    type: 'number',
+                    description:
+                      'Number of results to return from citation search',
+                    default: 3,
+                  },
+                  styleName: {
+                    type: ['string', 'null'],
+                    description: 'Select style formatting for citations',
+                    oneOf: [
+                      {
+                        const: 'apa',
+                        title: 'American Psychological Association (APA)',
+                      },
+                      {
+                        const: 'chicago-note-bibliogrpahy',
+                        title: 'Chicago Manual of Style (CMOS)',
+                      },
+                      {
+                        const: 'counctil-of-science-editors-alphabetical',
+                        title: 'Council of Science Editors (CSE)',
+                      },
+                    ],
+                    default: 'apa',
+                  },
+                  localeName: {
+                    type: ['string', 'null'],
+                    description: 'Select locale for citations',
+                    enum: ['en-US', 'en-GB'],
+                    default: 'en-US',
                   },
                 },
               },

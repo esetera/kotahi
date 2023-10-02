@@ -17,10 +17,7 @@ const renderTemplate = async (templateContent, data) => {
 }
 
 const sendEmailNotification = async (receiver, template, data, groupId) => {
-  const activeConfig = await models.Config.query().findOne({
-    groupId,
-    active: true,
-  })
+  const activeConfig = await models.Config.getCached(groupId)
 
   let ccEmails = template.emailContent?.cc || ''
 
@@ -58,6 +55,43 @@ const sendEmailNotification = async (receiver, template, data, groupId) => {
   }
 
   mailOptions.from = activeConfig.formData.notification.gmailSenderEmail
+
+  // Override recipient(s) if not running in production.
+  // To avoid inadvertently emailing customers during testing/debugging.
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    ['localhost', '0.0.0.0', '127.0.0.1'].includes(
+      config['pubsweet-client'].publicHost,
+    )
+  ) {
+    const description = `email with subject '${mailOptions.subject}' to ${
+      mailOptions.to
+    }${
+      mailOptions.cc && ` (CCing ${mailOptions.cc})`
+    }, because Kotahi is running in ${process.env.NODE_ENV} mode on ${
+      config['pubsweet-client'].publicHost
+    }`
+
+    const overrideRecipient =
+      config['notification-email'].testEmailRecipient || ''
+
+    if (!overrideRecipient) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `Suppressing ${description}. Set TEST_EMAIL_RECIPIENT in your .env file if you wish to redirect rather than suppress emails.`,
+      )
+      return true
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(
+      `Overriding recipient(s) for ${description}. This is instead being sent to ${overrideRecipient}.`,
+    )
+
+    mailOptions.to = overrideRecipient
+    mailOptions.cc = ''
+    mailOptions.bcc = ''
+  }
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',

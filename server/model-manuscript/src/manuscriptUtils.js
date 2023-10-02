@@ -49,6 +49,7 @@ const stripConfidentialDataFromReviews = (
     .map(review => {
       const hasPrivilegedAccess =
         review.userId === userId ||
+        (review.isDecision && userRoles.reviewer && manuscriptHasDecision) ||
         userRoles.anyEditorOrManager ||
         review.isSharedWithCurrentUser
 

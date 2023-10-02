@@ -48,7 +48,7 @@ const resolvers = {
               .merge()
               .returning('*')
               .withGraphFetched(
-                '[assignee, notificationLogs, emailNotifications(orderByCreated).recipientUser]',
+                '[assignee, notificationLogs(orderByCreatedDesc), emailNotifications(orderByCreated).recipientUser]',
               ),
           )
         }
@@ -86,7 +86,7 @@ const resolvers = {
       return Task.query()
         .findById(task.id)
         .withGraphFetched(
-          '[assignee, emailNotifications(orderByCreated).recipientUser, notificationLogs]',
+          '[assignee, emailNotifications(orderByCreated).recipientUser, notificationLogs(orderByCreatedDesc)]',
         )
     },
 
@@ -99,7 +99,7 @@ const resolvers = {
       const associatedTask = await Task.query()
         .findById(taskNotification.taskId)
         .withGraphFetched(
-          '[emailNotifications(orderByCreated).recipientUser, notificationLogs, assignee]',
+          '[emailNotifications(orderByCreated).recipientUser, notificationLogs(orderByCreatedDesc), assignee]',
         )
 
       return associatedTask
@@ -117,7 +117,7 @@ const resolvers = {
       const associatedTask = await Task.query()
         .findById(taskId)
         .withGraphFetched(
-          '[assignee, emailNotifications(orderByCreated).recipientUser, notificationLogs]',
+          '[assignee, emailNotifications(orderByCreated).recipientUser, notificationLogs(orderByCreatedDesc)]',
         )
 
       return associatedTask
@@ -145,10 +145,7 @@ const resolvers = {
       ) {
         const taskDurationDays = dbTask.defaultDurationDays
 
-        const activeConfig = await models.Config.query().findOne({
-          groupId: dbTask.groupId,
-          active: true,
-        })
+        const activeConfig = await models.Config.getCached(dbTask.groupId)
 
         data.dueDate =
           taskDurationDays !== null
@@ -162,7 +159,7 @@ const resolvers = {
       const updatedTask = await Task.query()
         .patchAndFetchById(task.id, data)
         .withGraphFetched(
-          '[assignee, notificationLogs, emailNotifications(orderByCreated).recipientUser]',
+          '[assignee, notificationLogs(orderByCreatedDesc), emailNotifications(orderByCreated).recipientUser]',
         )
 
       await updateAlertsForTask(updatedTask)
@@ -180,7 +177,7 @@ const resolvers = {
       const associatedTask = await Task.query()
         .findById(taskEmailNotificationLog.taskId)
         .withGraphFetched(
-          '[assignee, emailNotifications.recipientUser, notificationLogs]',
+          '[assignee, emailNotifications.recipientUser, notificationLogs(orderByCreatedDesc)]',
         )
 
       return associatedTask
@@ -192,7 +189,7 @@ const resolvers = {
         .where({ manuscriptId, groupId })
         .orderBy('sequenceIndex')
         .withGraphFetched(
-          '[assignee, notificationLogs, emailNotifications(orderByCreated).recipientUser]',
+          '[assignee, notificationLogs(orderByCreatedDesc), emailNotifications(orderByCreated).recipientUser]',
         )
     },
     userHasTaskAlerts: async (_, __, ctx) => {
@@ -219,7 +216,9 @@ const resolvers = {
     notificationLogs: async parent => {
       return (
         parent.notificationLogs ||
-        Task.relatedQuery('notificationLogs').for(parent.id).orderBy('created')
+        Task.relatedQuery('notificationLogs')
+          .for(parent.id)
+          .orderBy('created', 'desc')
       )
     },
   },

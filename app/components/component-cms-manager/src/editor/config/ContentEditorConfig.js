@@ -1,5 +1,4 @@
 import { emDash, ellipsis } from 'prosemirror-inputrules'
-import { columnResizing, tableEditing } from 'prosemirror-tables'
 import {
   InlineAnnotationsService,
   AnnotationToolGroupService,
@@ -8,8 +7,6 @@ import {
   LinkService,
   ListsService,
   ListToolGroupService,
-  TablesService,
-  TableToolGroupService,
   BaseService,
   BaseToolGroupService,
   DisplayBlockLevelService,
@@ -23,9 +20,11 @@ import {
   SpecialCharactersService,
   SpecialCharactersToolGroupService,
 } from 'wax-prosemirror-services'
+import { TablesService, tableEditing, columnResizing } from 'wax-table-service'
 import { KotahiBlockDropDownToolGroupService } from '../../../../wax-collab/src/CustomWaxToolGroups'
 import CharactersList from '../../../../wax-collab/src/config/CharactersList'
 import KotahiSchema from '../../../../wax-collab/src/config/KotahiSchema'
+import 'wax-table-service/dist/index.css'
 
 const fullWaxEditorConfig = handleAssetManager => ({
   SchemaService: KotahiSchema,
@@ -86,7 +85,6 @@ const fullWaxEditorConfig = handleAssetManager => ({
     new SpecialCharactersService(),
     new SpecialCharactersToolGroupService(),
     new TablesService(),
-    new TableToolGroupService(),
     new TextBlockLevelService(),
     new TextToolGroupService(),
     // these are added for paragraph dropdown:

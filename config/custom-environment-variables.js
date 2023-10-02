@@ -71,6 +71,7 @@ module.exports = {
     automated: 'NOTIFICATION_EMAIL_AUTOMATED',
     cc_enabled: 'NOTIFICATION_EMAIL_CC_ENABLED',
     use_colab: 'USE_COLAB_EMAIL',
+    testEmailRecipient: 'TEST_EMAIL_RECIPIENT',
   },
   fileStorage: {
     minioRootUser: 'MINIO_ROOT_USER',
@@ -114,7 +115,6 @@ module.exports = {
     semanticScholarImportsRecencyPeriodDays:
       'SEMANTIC_SCHOLAR_IMPORTS_RECENCY_PERIOD_DAYS',
   },
-
   'flax-site': {
     clientId: 'FLAX_CLIENT_ID',
     clientSecret: 'FLAX_CLIENT_SECRET',
@@ -123,5 +123,8 @@ module.exports = {
     port: 'FLAX_EXPRESS_PORT',
     host: 'FLAX_EXPRESS_HOST',
     protocol: 'FLAX_EXPRESS_PROTOCOL',
+  },
+  'import-for-colab': {
+    default_import: 'USE_COLAB_BIOPHYSICS_IMPORT',
   },
 }

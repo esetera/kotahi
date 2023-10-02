@@ -18,7 +18,7 @@ export const FloatingUnreadLabelContainer = styled.div`
   width: 100%;
 `
 export const FloatingUnreadLabel = styled.div`
-  background-color: ${th('colors.brand1.tint25')};
+  background-color: ${th('color.brand1.tint25')};
   border-radius: 4px;
   color: #ffffff;
   font-size: 14px;
@@ -51,6 +51,8 @@ const Chat = ({
   updateChannelViewed,
   manuscriptId = null,
   reportUserIsActiveMutation,
+  notificationOptionData,
+  updateNotificationOptionData,
 }) => {
   const [showFloatingUnreadLabel, setShowFloatingUnreadLabel] = useState(false)
 
@@ -60,6 +62,32 @@ const Chat = ({
 
   const handleFloatingUnreadLabelClose = () => {
     setShowFloatingUnreadLabel(false)
+  }
+
+  const [channelNotificationOption, setChannelNotificationOption] = useState(
+    notificationOptionData?.notificationOption?.option,
+  )
+
+  useEffect(() => {
+    setChannelNotificationOption(
+      notificationOptionData?.notificationOption?.option,
+    )
+  }, [notificationOptionData])
+
+  const toggleChannelMuteStatus = async () => {
+    const newOption = channelNotificationOption === 'off' ? 'inherit' : 'off'
+    setChannelNotificationOption(newOption)
+
+    try {
+      await updateNotificationOptionData({
+        variables: {
+          path: ['chat', channelId],
+          option: newOption,
+        },
+      })
+    } catch (error) {
+      console.error('Error updating notification digest:', error)
+    }
   }
 
   const handleReportUserIsActive = async () => {
@@ -78,11 +106,14 @@ const Chat = ({
     <UserActivityTracker reportUserIsActive={handleReportUserIsActive}>
       <Messages
         channelId={channelId}
+        channelNotificationOption={channelNotificationOption}
         chatRoomId={chatRoomId}
+        currentUser={currentUser}
         fetchMoreData={fetchMoreData}
         firstUnreadMessageId={firstUnreadMessageId}
         manuscriptId={manuscriptId}
         queryData={queryData}
+        toggleChannelMuteStatus={toggleChannelMuteStatus}
         unreadMessagesCount={unreadMessagesCount}
         updateChannelViewed={updateChannelViewed}
       />
