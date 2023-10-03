@@ -89,6 +89,7 @@ const manuscriptFields = `
     }
   }
   status
+  isAuthorProofingEnabled
   meta {
     manuscriptId
     title

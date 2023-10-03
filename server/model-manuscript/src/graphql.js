@@ -529,6 +529,23 @@ const resolvers = {
 
       return archivedManuscript[0].id
     },
+    async assignAuthoForProofingManuscript(_, { id }, ctx) {
+      const manuscript = await models.Manuscript.find(id)
+
+      // TODO: Identify if submitter or invited author present then update status else throw error!
+
+      // getting the ID of the firstVersion for all manuscripts.
+      const firstVersionId = manuscript.parentId || manuscript.id
+
+      manuscript.isAuthorProofingEnabled = true
+
+      const updated = await models.Manuscript.query().updateAndFetchById(
+        firstVersionId,
+        manuscript,
+      )
+
+      return updated
+    },
 
     async deleteManuscripts(_, { ids }, ctx) {
       if (ids.length > 0) {
@@ -1852,6 +1869,7 @@ const typeDefs = `
     setShouldPublishField(manuscriptId: ID!, objectId: ID!, fieldName: String!, shouldPublish: Boolean!): Manuscript!
     archiveManuscript(id: ID!): ID!
     archiveManuscripts(ids: [ID]!): [ID!]!
+    assignAuthoForProofingManuscript(id: ID!): Manuscript!
   }
 
   type Manuscript {
@@ -1881,6 +1899,7 @@ const typeDefs = `
     tasks: [Task!]
     hasOverdueTasksForUser: Boolean
     invitations: [Invitation]
+    isAuthorProofingEnabled: Boolean
   }
 
   input ManuscriptInput {

@@ -1,22 +1,18 @@
 import React, { useState } from 'react'
 import {
-  FlexCenter,
+  AssignedAuthorForProofingLogsContainer,
+  AssignedAuthorForProofingLogsToggle,
+  AssignedAuthorForProofingLogs,
   SectionHeader,
   SectionRowGrid,
-  StatusInfoText,
   Title,
 } from '../style'
 import { ActionButton, SectionContent } from '../../../../shared'
 import { convertTimestampToDateTimeString } from '../../../../../shared/dateUtils'
 
-const AssignAuthorForProofing = ({
-  manuscript,
-  AssignEditor,
-  allUsers,
-  updateTeam,
-  createTeam,
-  teamLabels,
-}) => {
+const AssignAuthorForProofing = ({ assignAuthorForProofing, manuscript }) => {
+  const [isToggled, setToggled] = useState(false)
+
   const [submitAuthorProofingStatus, setSubmitAuthorProofingStatus] = useState(
     null,
   )
@@ -29,40 +25,16 @@ const AssignAuthorForProofing = ({
       <SectionRowGrid>
         <ActionButton
           dataTestid="submit-author-proofing"
+          disabled={manuscript?.isAuthorProofingEnabled}
           onClick={async () => {
             // TODO: submit-author-proofing actions
-            // setSubmitAuthorProofingStatus('pending')
+            setSubmitAuthorProofingStatus('pending')
 
-            // const response = await sendEmail(
-            //   manuscript,
-            //   false,
-            //   currentUser,
-            //   sendNotifyEmail,
-            //   reviewerInvitationEmailTemplate,
-            //   identity.email,
-            //   identity.email,
-            //   identity.username,
-            //   false,
-            //   config.groupId,
-            // )
-
-            // if (!response || !response?.emailStatus) {
-            //   setInviteStatus('failure')
-            //   return
-            // }
-
-            // if (response.input) {
-            //   sendEmailChannelMessage(
-            //     sendChannelMessage,
-            //     currentUser,
-            //     response.input,
-            //     reviewerUsers.map(reviewer => ({
-            //       userName: reviewer.username,
-            //       value: reviewer.email,
-            //     })),
-            //     emailTemplates,
-            //   )
-            // }
+            await assignAuthorForProofing({
+              variables: {
+                id: manuscript?.id,
+              },
+            })
 
             setSubmitAuthorProofingStatus('success')
           }}
@@ -71,12 +43,33 @@ const AssignAuthorForProofing = ({
         >
           Submit for author proofing
         </ActionButton>
-        <StatusInfoText>
-          <FlexCenter>
-            Authorname assigned {convertTimestampToDateTimeString(new Date())}
-          </FlexCenter>
-        </StatusInfoText>
       </SectionRowGrid>
+      {manuscript?.isAuthorProofingEnabled ? (
+        <AssignedAuthorForProofingLogsContainer>
+          <AssignedAuthorForProofingLogsToggle
+            onClick={() => setToggled(!isToggled)}
+          >
+            {isToggled
+              ? `Hide all authors assigned`
+              : `Show all authors assigned`}
+          </AssignedAuthorForProofingLogsToggle>
+          {isToggled && (
+            <AssignedAuthorForProofingLogs>
+              {[1].map(log => (
+                <>
+                  <div>
+                    Authorname assigned{' '}
+                    {convertTimestampToDateTimeString(new Date())}
+                  </div>
+                  <br />
+                </>
+              ))}
+            </AssignedAuthorForProofingLogs>
+          )}
+        </AssignedAuthorForProofingLogsContainer>
+      ) : (
+        <></>
+      )}
     </SectionContent>
   )
 }

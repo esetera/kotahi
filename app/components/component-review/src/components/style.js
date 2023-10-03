@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components'
 import { th, grid } from '@pubsweet/ui-toolkit'
 import { Button } from '@pubsweet/ui'
-import { color } from '../../../../theme'
+import theme, { color } from '../../../../theme'
 
 export const AdminSection = styled.div`
   margin-bottom: calc(${th('gridUnit')} * 3);
@@ -111,17 +111,27 @@ export const BadgeContainer = styled.div`
   gap: 4px 18px;
 `
 
-export const StatusInfoText = styled.div`
+export const AssignedAuthorForProofingLogsContainer = styled.div`
+  align-items: flex-end;
   display: flex;
-  font-size: ${th('fontSizeBaseSmall')};
-  font-weight: 400;
-  margin-right: 16px;
+  flex-direction: column;
+  justify-content: flex-end;
 `
 
-export const FlexCenter = styled.div`
-  align-items: end;
-  display: flex;
-  justify-content: flex-end;
+export const AssignedAuthorForProofingLogsToggle = styled.button`
+  background-color: transparent;
+  border: none;
+  color: ${color.brand1.base};
+  font-size: ${theme.fontSizeBaseSmall};
+  padding: 20px 10px;
+  text-decoration: underline;
+`
+
+export const AssignedAuthorForProofingLogs = styled.div`
+  color: ${color.brand1.base};
+  font-size: ${theme.fontSizeBaseSmall};
+  margin: 10px 10px;
+  text-align: left;
 `
 
 export {

@@ -448,3 +448,12 @@ export const GET_GROUPS = gql`
     }
   }
 `
+
+export const ASSIGN_AUTHOR_FOR_PROOFING = gql`
+  mutation($id: ID!) {
+    assignAuthoForProofingManuscript(id: $id) {
+      id
+      isAuthorProofingEnabled
+    }
+  }
+`

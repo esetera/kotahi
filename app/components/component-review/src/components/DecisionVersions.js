@@ -15,6 +15,7 @@ import MessageContainer from '../../../component-chat/src/MessageContainer'
 const DecisionVersions = ({
   allUsers,
   addReviewer,
+  assignAuthorForProofing,
   roles,
   currentUser,
   decisionForm,
@@ -105,6 +106,7 @@ const DecisionVersions = ({
               <DecisionVersion
                 addReviewer={addReviewer}
                 allUsers={allUsers}
+                assignAuthorForProofing={assignAuthorForProofing}
                 canHideReviews={canHideReviews}
                 createFile={createFile}
                 createTaskEmailNotificationLog={createTaskEmailNotificationLog}

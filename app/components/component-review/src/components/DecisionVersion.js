@@ -41,6 +41,7 @@ const createBlankSubmissionBasedOnForm = form => {
 const DecisionVersion = ({
   allUsers,
   addReviewer,
+  assignAuthorForProofing,
   roles,
   decisionForm,
   form,
@@ -352,7 +353,10 @@ const DecisionVersion = ({
           )}
           {isCurrentVersion && (
             <AdminSection>
-              <AssignAuthorForProofing />
+              <AssignAuthorForProofing
+                assignAuthorForProofing={assignAuthorForProofing}
+                manuscript={version}
+              />
             </AdminSection>
           )}
         </>
