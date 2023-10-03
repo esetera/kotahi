@@ -458,7 +458,11 @@ const CitationComponent = ({ node, getPos }) => {
             ) : null}
             <StatusBar>
               <Button
-                disabled={loading || otherLoading} // This is now set to disabled if there are still versions to come in
+                disabled={
+                  !decodeEntities(formattedOriginalText) ===
+                    decodeEntities(potentialText) &&
+                  (loading || otherLoading)
+                } // This is now set to disabled if there are still versions to come in BUT NOT if the original text is selected
                 onClick={e => {
                   e.preventDefault()
                   setEditing(true)
