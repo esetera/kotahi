@@ -123,15 +123,15 @@ export const AssignedAuthorForProofingLogsToggle = styled.button`
   border: none;
   color: ${color.brand1.base};
   font-size: ${theme.fontSizeBaseSmall};
-  padding: 20px 10px;
+  padding: 10px 10px;
   text-decoration: underline;
 `
 
 export const AssignedAuthorForProofingLogs = styled.div`
-  color: ${color.brand1.base};
+  color: ${color.text};
   font-size: ${theme.fontSizeBaseSmall};
   margin: 10px 10px;
-  text-align: left;
+  text-align: right;
 `
 
 export {

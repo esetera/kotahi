@@ -17,6 +17,8 @@ const AssignAuthorForProofing = ({ assignAuthorForProofing, manuscript }) => {
     null,
   )
 
+  const authorTeam = manuscript.teams.find(team => team.role === 'author')
+
   return (
     <SectionContent>
       <SectionHeader>
@@ -25,9 +27,8 @@ const AssignAuthorForProofing = ({ assignAuthorForProofing, manuscript }) => {
       <SectionRowGrid>
         <ActionButton
           dataTestid="submit-author-proofing"
-          disabled={manuscript?.isAuthorProofingEnabled}
+          disabled={manuscript.isAuthorProofingEnabled}
           onClick={async () => {
-            // TODO: submit-author-proofing actions
             setSubmitAuthorProofingStatus('pending')
 
             await assignAuthorForProofing({
@@ -44,7 +45,7 @@ const AssignAuthorForProofing = ({ assignAuthorForProofing, manuscript }) => {
           Submit for author proofing
         </ActionButton>
       </SectionRowGrid>
-      {manuscript?.isAuthorProofingEnabled ? (
+      {manuscript.isAuthorProofingEnabled ? (
         <AssignedAuthorForProofingLogsContainer>
           <AssignedAuthorForProofingLogsToggle
             onClick={() => setToggled(!isToggled)}
@@ -55,12 +56,13 @@ const AssignAuthorForProofing = ({ assignAuthorForProofing, manuscript }) => {
           </AssignedAuthorForProofingLogsToggle>
           {isToggled && (
             <AssignedAuthorForProofingLogs>
-              {[1].map(log => (
+              {authorTeam?.members.map(member => (
                 <>
-                  <div>
-                    Authorname assigned{' '}
-                    {convertTimestampToDateTimeString(new Date())}
-                  </div>
+                  <span>
+                    {member?.user?.username ||
+                      member?.user?.defaultIdentity?.identifier}{' '}
+                    {/* on {convertTimestampToDateTimeString(new Date())} */}
+                  </span>
                   <br />
                 </>
               ))}
