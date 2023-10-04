@@ -52,6 +52,13 @@ const updateTitle = title => {
   // console.log(`Title changed: ${title}`)
 }
 
+// WEIRD THINGS NOTICED:
+
+// 1) List functionality doesn't actually work. Why? I've commented that out for now.
+// 2) Tables, images, footnotes, comments work.
+// 3) Changing block formats works (though there's no record of it)
+// 4) Sidebar seems to work–-we could take that out.
+
 const authorProofingEditorConfig = (
   handleAssetManager,
   updateAnystyle,
@@ -105,7 +112,7 @@ const authorProofingEditorConfig = (
           ],
         },
         'SpecialCharacters',
-        'Lists',
+        // 'Lists',
         'Notes',
         'Tables',
         'Images',

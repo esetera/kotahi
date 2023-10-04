@@ -18,7 +18,7 @@ import {
   EditorContainer,
   InfoContainer,
   ReadOnlyEditorDiv,
-  // SideMenu,
+  SideMenu,
   EditorArea,
   WaxSurfaceScroll,
 } from './EditorStyles'
@@ -47,7 +47,7 @@ const NotesArea = ComponentPlugin('notesArea')
 const RightArea = ComponentPlugin('rightArea')
 const CounterInfo = ComponentPlugin('bottomRightInfo')
 const CommentTrackToolBar = ComponentPlugin('commentTrackToolBar')
-// const LeftSideBar = ComponentPlugin('leftSideBar')
+const LeftSideBar = ComponentPlugin('leftSideBar')
 const CitationArea = ComponentPlugin('citationArea')
 
 const AuthorProofingEditorLayout = readOnly => ({ editor }) => {
@@ -117,7 +117,9 @@ const AuthorProofingEditorLayout = readOnly => ({ editor }) => {
               <TopBar />
             </Menu>
             <ProductionEditorDiv>
-              {/* <SideMenu><LeftSideBar /></SideMenu> */}
+              <SideMenu>
+                <LeftSideBar />
+              </SideMenu>
 
               <EditorArea className="editorArea authorProofing">
                 <div>

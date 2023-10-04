@@ -12,6 +12,8 @@ import {
 } from '../../../shared'
 import { Info } from './styles'
 
+// TODO: we need to have tabs in here if isAuthorProofingVersion is true. How?
+
 const Production = ({
   client,
   file,
