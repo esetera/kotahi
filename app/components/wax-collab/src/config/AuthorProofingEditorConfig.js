@@ -31,7 +31,10 @@ import {
   EditingSuggestingService,
   TrackingAndEditingToolGroupService,
 } from 'wax-prosemirror-services'
-import { TablesService, tableEditing, columnResizing } from 'wax-table-service'
+import {
+  TablesService,
+  /* tableEditing, */ columnResizing,
+} from 'wax-table-service'
 import {
   KotahiBlockDropDownToolGroupService,
   JatsSideMenuToolGroupService,
@@ -56,7 +59,7 @@ const authorProofingEditorConfig = (
   styleReference,
 ) => ({
   EnableTrackChangeService: {
-    enabled: false, // Why does this not function?
+    enabled: true, // Why does this not function?
     toggle: false,
     updateTrackStatus: () => {
       // console.log('update track status fired')
@@ -124,7 +127,7 @@ const authorProofingEditorConfig = (
     },
   ],
 
-  PmPlugins: [columnResizing(), tableEditing() /* WaxSelectionPlugin */],
+  PmPlugins: [columnResizing() /* tableEditing() */ /* WaxSelectionPlugin */],
 
   RulesService: [emDash, ellipsis],
 
