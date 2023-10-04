@@ -10,6 +10,11 @@ import withModal from '../../../asset-manager/src/ui/Modal/withModal'
 import DownloadPdfComponent from './DownloadPdf'
 import DownloadJatsComponent from './DownloadJats'
 
+// FOR NOW: I AM SETTING THESE VARIABLES HERE. These should be coming through props somehow
+
+const isAuthorProofingVersion = true
+const isReadOnlyVersion = false
+
 const mapper = {
   getSpecificFilesQuery,
   withModal,
@@ -169,11 +174,14 @@ const ProductionPage = ({ currentUser, match, ...props }) => {
             file={manuscript.files.find(file =>
               file.tags.includes('manuscript'),
             )}
+            isAuthorProofingVersion={isAuthorProofingVersion}
+            isReadOnlyVersion={isReadOnlyVersion}
             makeJats={setMakingJats}
             makePdf={setMakingPdf}
             manuscript={manuscript}
             onAssetManager={onAssetManager}
             updateManuscript={(a, b) => {
+              // TODO: This might need to be different based on value of isAuthorProofing?
               // eslint-disable-next-line
               // console.log('in update manuscript!')
               updateManuscript(a, b)

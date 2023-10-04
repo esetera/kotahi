@@ -49,16 +49,19 @@ const updateTitle = title => {
   // console.log(`Title changed: ${title}`)
 }
 
-const productionWaxEditorConfig = (
+const authorProofingEditorConfig = (
   handleAssetManager,
   updateAnystyle,
   updateCrossRef,
   styleReference,
 ) => ({
   EnableTrackChangeService: {
-    enabled: false,
-    toggle: true,
-    updateTrackStatus: () => true,
+    enabled: false, // Why does this not function?
+    toggle: false,
+    updateTrackStatus: () => {
+      // console.log('update track status fired')
+      return true
+    },
   },
   AcceptTrackChangeService: {
     own: {
@@ -103,7 +106,7 @@ const productionWaxEditorConfig = (
         'Notes',
         'Tables',
         'Images',
-        'TrackingAndEditing',
+        // 'TrackingAndEditing',
         'FullScreen',
       ],
     },
@@ -182,4 +185,4 @@ const productionWaxEditorConfig = (
   ],
 })
 
-export default productionWaxEditorConfig
+export default authorProofingEditorConfig

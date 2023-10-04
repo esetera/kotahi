@@ -18,7 +18,7 @@ import {
   EditorContainer,
   InfoContainer,
   ReadOnlyEditorDiv,
-  SideMenu,
+  // SideMenu,
   EditorArea,
   WaxSurfaceScroll,
 } from './EditorStyles'
@@ -47,10 +47,10 @@ const NotesArea = ComponentPlugin('notesArea')
 const RightArea = ComponentPlugin('rightArea')
 const CounterInfo = ComponentPlugin('bottomRightInfo')
 const CommentTrackToolBar = ComponentPlugin('commentTrackToolBar')
-const LeftSideBar = ComponentPlugin('leftSideBar')
+// const LeftSideBar = ComponentPlugin('leftSideBar')
 const CitationArea = ComponentPlugin('citationArea')
 
-const ProductionWaxEditorLayout = readOnly => ({ editor }) => {
+const AuthorProofingEditorLayout = readOnly => ({ editor }) => {
   const {
     pmViews: { main },
     options,
@@ -117,11 +117,9 @@ const ProductionWaxEditorLayout = readOnly => ({ editor }) => {
               <TopBar />
             </Menu>
             <ProductionEditorDiv>
-              <SideMenu>
-                <LeftSideBar />
-              </SideMenu>
+              {/* <SideMenu><LeftSideBar /></SideMenu> */}
 
-              <EditorArea className="editorArea production">
+              <EditorArea className="editorArea authorProofing">
                 <div>
                   <WaxSurfaceScroll className="panelWrapper">
                     <EditorContainer>{editor}</EditorContainer>
@@ -171,4 +169,4 @@ const ProductionWaxEditorLayout = readOnly => ({ editor }) => {
   )
 }
 
-export default ProductionWaxEditorLayout
+export default AuthorProofingEditorLayout

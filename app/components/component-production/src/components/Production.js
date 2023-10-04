@@ -21,6 +21,8 @@ const Production = ({
   makeJats,
   updateManuscript,
   onAssetManager,
+  isAuthorProofingVersion,
+  isReadOnlyVersion,
 }) => {
   const debouncedSave = useCallback(
     debounce(source => {
@@ -34,8 +36,11 @@ const Production = ({
   return (
     <Container>
       <HeadingWithAction>
-        <Heading>Production</Heading>
+        <Heading>
+          {isAuthorProofingVersion ? 'Author Proofing' : 'Production'}
+        </Heading>
         <DownloadDropdown
+          isAuthorProofingVersion={isAuthorProofingVersion}
           makeJats={makeJats}
           makePdf={makePdf}
           manuscriptId={manuscript.id}
@@ -52,8 +57,10 @@ const Production = ({
               //   updateManuscript(manuscript.id, { meta: { source } })
               // }}
               client={client}
+              isAuthorProofingVersion={isAuthorProofingVersion}
               manuscriptId={manuscript.id}
               onAssetManager={onAssetManager}
+              readOnly={isReadOnlyVersion || false}
               saveSource={debouncedSave}
               user={currentUser}
               value={manuscript.meta.source}
