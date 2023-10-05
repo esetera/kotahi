@@ -205,7 +205,7 @@ const ProductionWaxEditor = ({
   // eslint-disable-next-line no-nested-ternary
   const productionLayout = isAuthorProofingVersion
     ? AuthorProofingEditorLayout(readonly)
-    : useComments // TODO: Check if we actually ever use readOnly in production mode?
+    : useComments // TODO: Check if we actually ever use useComments in production mode?
     ? ProductionWaxEditorLayout(readonly)
     : ProductionWaxEditorNoCommentsLayout(readonly)
 

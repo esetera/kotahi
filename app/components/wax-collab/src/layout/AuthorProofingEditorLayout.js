@@ -5,19 +5,13 @@ import {
   DocumentHelpers,
 } from 'wax-prosemirror-core'
 
-import {
-  NotesAreaContainer,
-  ReadOnlyNotesAreaContainer,
-  NotesHeading,
-  NotesContainer,
-} from './NotesStyles'
+import { NotesAreaContainer, NotesHeading, NotesContainer } from './NotesStyles'
 import {
   Grid,
   Menu,
   ProductionEditorDiv,
   EditorContainer,
   InfoContainer,
-  ReadOnlyEditorDiv,
   SideMenu,
   EditorArea,
   WaxSurfaceScroll,
@@ -105,12 +99,39 @@ const AuthorProofingEditorLayout = readOnly => ({ editor }) => {
     <div style={fullScreenStyles}>
       <Grid production readonly={readOnly}>
         {readOnly ? (
-          <ReadOnlyEditorDiv
-            className="wax-surface-scroll"
-            style={{ gridArea: 'editor' }}
-          >
-            {editor}
-          </ReadOnlyEditorDiv>
+          <ProductionEditorDiv>
+            <SideMenu />
+
+            <EditorArea className="editorArea production">
+              <div>
+                <WaxSurfaceScroll className="panelWrapper">
+                  <EditorContainer>{editor}</EditorContainer>
+                  <CitationArea />
+                  <CommentsContainer>
+                    <CommentTrackToolsContainer>
+                      <CommentTrackTools>
+                        {commentsTracksCount + trackBlockNodesCount} COMMENTS
+                        AND SUGGESTIONS
+                        <CommentTrackOptions />
+                      </CommentTrackTools>
+                    </CommentTrackToolsContainer>
+                    <RightArea area="main" />
+                  </CommentsContainer>
+                </WaxSurfaceScroll>
+                {hasNotes && (
+                  <NotesAreaContainer className="productionnotes panelWrapper">
+                    <NotesContainer id="notes-container">
+                      <NotesHeading>Notes</NotesHeading>
+                      <NotesArea view={main} />
+                    </NotesContainer>
+                    <CommentsContainerNotes>
+                      <RightArea area="notes" />
+                    </CommentsContainerNotes>
+                  </NotesAreaContainer>
+                )}
+              </div>
+            </EditorArea>
+          </ProductionEditorDiv>
         ) : (
           <>
             <Menu className="waxmenu">
@@ -156,14 +177,6 @@ const AuthorProofingEditorLayout = readOnly => ({ editor }) => {
           </>
         )}
       </Grid>
-      {readOnly && notes.length > 0 && (
-        <ReadOnlyNotesAreaContainer>
-          <NotesHeading>Notes</NotesHeading>
-          <NotesContainer id="notes-container">
-            <NotesArea view={main} />
-          </NotesContainer>
-        </ReadOnlyNotesAreaContainer>
-      )}
       <InfoContainer>
         <CounterInfo />
       </InfoContainer>

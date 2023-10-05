@@ -40,6 +40,7 @@ const Production = ({
       <HeadingWithAction>
         <Heading>
           {isAuthorProofingVersion ? 'Author Proofing' : 'Production'}
+          {isReadOnlyVersion ? ' (read-only)' : ''}
         </Heading>
         <DownloadDropdown
           isAuthorProofingVersion={isAuthorProofingVersion}
@@ -62,7 +63,7 @@ const Production = ({
               isAuthorProofingVersion={isAuthorProofingVersion}
               manuscriptId={manuscript.id}
               onAssetManager={onAssetManager}
-              readOnly={isReadOnlyVersion || false}
+              readonly={isReadOnlyVersion || false}
               saveSource={debouncedSave}
               user={currentUser}
               value={manuscript.meta.source}
