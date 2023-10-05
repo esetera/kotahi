@@ -532,8 +532,6 @@ const resolvers = {
     async assignAuthoForProofingManuscript(_, { id }, ctx) {
       const manuscript = await models.Manuscript.find(id)
 
-      // TODO: Identify if submitter or invited author present then update status else throw error!
-
       // getting the ID of the firstVersion for all manuscripts.
       const firstVersionId = manuscript.parentId || manuscript.id
 

@@ -85,6 +85,7 @@ const manuscriptFields = `
       }
       status
       isShared
+      created
       updated
     }
   }

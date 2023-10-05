@@ -134,6 +134,12 @@ export const AssignedAuthorForProofingLogs = styled.div`
   text-align: right;
 `
 
+export const AssignedAuthorForProofingInfo = styled.div`
+  color: ${color.text};
+  font-size: ${theme.fontSizeBaseSmall};
+  margin: 8px 0px;
+`
+
 export {
   Title,
   SectionHeader,

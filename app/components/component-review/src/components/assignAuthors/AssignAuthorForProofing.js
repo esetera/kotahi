@@ -3,12 +3,12 @@ import {
   AssignedAuthorForProofingLogsContainer,
   AssignedAuthorForProofingLogsToggle,
   AssignedAuthorForProofingLogs,
+  AssignedAuthorForProofingInfo,
   SectionHeader,
   SectionRowGrid,
   Title,
 } from '../style'
 import { ActionButton, SectionContent } from '../../../../shared'
-import { convertTimestampToDateTimeString } from '../../../../../shared/dateUtils'
 
 const AssignAuthorForProofing = ({ assignAuthorForProofing, manuscript }) => {
   const [isToggled, setToggled] = useState(false)
@@ -19,15 +19,25 @@ const AssignAuthorForProofing = ({ assignAuthorForProofing, manuscript }) => {
 
   const authorTeam = manuscript.teams.find(team => team.role === 'author')
 
+  const sortedAuthors = authorTeam?.members
+    .slice()
+    .sort(
+      (a, b) =>
+        Date.parse(new Date(b.created)) - Date.parse(new Date(a.created)),
+    )
+
   return (
     <SectionContent>
       <SectionHeader>
-        <Title>Assign Author for Proofing</Title>
+        <Title>Assign Author for Proofing </Title>
       </SectionHeader>
       <SectionRowGrid>
         <ActionButton
           dataTestid="submit-author-proofing"
-          disabled={manuscript.isAuthorProofingEnabled}
+          disabled={
+            authorTeam?.members.length === 0 ||
+            manuscript.isAuthorProofingEnabled
+          }
           onClick={async () => {
             setSubmitAuthorProofingStatus('pending')
 
@@ -44,6 +54,10 @@ const AssignAuthorForProofing = ({ assignAuthorForProofing, manuscript }) => {
         >
           Submit for author proofing
         </ActionButton>
+        <AssignedAuthorForProofingInfo>
+          {authorTeam?.members.length === 0 &&
+            'Requires an author to be invited!'}
+        </AssignedAuthorForProofingInfo>
       </SectionRowGrid>
       {manuscript.isAuthorProofingEnabled ? (
         <AssignedAuthorForProofingLogsContainer>
@@ -56,12 +70,11 @@ const AssignAuthorForProofing = ({ assignAuthorForProofing, manuscript }) => {
           </AssignedAuthorForProofingLogsToggle>
           {isToggled && (
             <AssignedAuthorForProofingLogs>
-              {authorTeam?.members.map(member => (
+              {sortedAuthors.slice(0, 1).map(member => (
                 <>
                   <span>
                     {member?.user?.username ||
-                      member?.user?.defaultIdentity?.identifier}{' '}
-                    {/* on {convertTimestampToDateTimeString(new Date())} */}
+                      member?.user?.defaultIdentity?.identifier}
                   </span>
                   <br />
                 </>

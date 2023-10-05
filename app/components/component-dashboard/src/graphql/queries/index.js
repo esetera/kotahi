@@ -14,10 +14,12 @@ teams {
       username
     }
     status
+    created
     updated
   }
 }
 status
+isAuthorProofingEnabled
 meta {
   manuscriptId
   title
