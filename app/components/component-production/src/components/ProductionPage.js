@@ -13,7 +13,7 @@ import DownloadJatsComponent from './DownloadJats'
 // FOR NOW: I AM SETTING THESE VARIABLES HERE. These should be coming through props somehow
 
 const isAuthorProofingVersion = true
-const isReadOnlyVersion = false
+const isReadOnlyVersion = false // Query: what happens with comments in this?
 
 const mapper = {
   getSpecificFilesQuery,

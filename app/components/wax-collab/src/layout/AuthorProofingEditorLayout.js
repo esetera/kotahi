@@ -21,7 +21,7 @@ import {
   CommentsContainerNotes,
   CommentTrackToolsContainer,
   CommentTrackTools,
-  CommentTrackOptions,
+  // CommentTrackOptions,
 } from './CommentsStyles'
 import 'wax-prosemirror-core/dist/index.css'
 import 'wax-prosemirror-services/dist/index.css'
@@ -40,7 +40,7 @@ const TopBar = ComponentPlugin('topBar')
 const NotesArea = ComponentPlugin('notesArea')
 const RightArea = ComponentPlugin('rightArea')
 const CounterInfo = ComponentPlugin('bottomRightInfo')
-const CommentTrackToolBar = ComponentPlugin('commentTrackToolBar')
+// const CommentTrackToolBar = ComponentPlugin('commentTrackToolBar')
 const LeftSideBar = ComponentPlugin('leftSideBar')
 const CitationArea = ComponentPlugin('citationArea')
 
@@ -110,9 +110,10 @@ const AuthorProofingEditorLayout = readOnly => ({ editor }) => {
                   <CommentsContainer>
                     <CommentTrackToolsContainer>
                       <CommentTrackTools>
-                        {commentsTracksCount + trackBlockNodesCount} COMMENTS
-                        AND SUGGESTIONS
-                        <CommentTrackOptions />
+                        <span style={{ marginRight: '1em' }}>
+                          {commentsTracksCount + trackBlockNodesCount} COMMENTS
+                          AND SUGGESTIONS
+                        </span>
                       </CommentTrackTools>
                     </CommentTrackToolsContainer>
                     <RightArea area="main" />
@@ -150,11 +151,10 @@ const AuthorProofingEditorLayout = readOnly => ({ editor }) => {
                     <CommentsContainer>
                       <CommentTrackToolsContainer>
                         <CommentTrackTools>
-                          {commentsTracksCount + trackBlockNodesCount} COMMENTS
-                          AND SUGGESTIONS
-                          <CommentTrackOptions>
-                            <CommentTrackToolBar />
-                          </CommentTrackOptions>
+                          <span style={{ marginRight: '1em' }}>
+                            {commentsTracksCount + trackBlockNodesCount}{' '}
+                            COMMENTS AND SUGGESTIONS
+                          </span>
                         </CommentTrackTools>
                       </CommentTrackToolsContainer>
                       <RightArea area="main" />

@@ -116,14 +116,14 @@ const authorProofingEditorConfig = (
         'Notes',
         'Tables',
         'Images',
-        // 'TrackingAndEditing',
+        'TrackingAndEditing',
         'FullScreen',
       ],
     },
-    {
-      templateArea: 'leftSideBar',
-      toolGroups: ['JatsSideMenu'],
-    },
+    // {
+    //   templateArea: 'leftSideBar',
+    //   toolGroups: ['JatsSideMenu'],
+    // },
     {
       templateArea: 'commentTrackToolBar',
       toolGroups: ['TrackCommentOptions'],
