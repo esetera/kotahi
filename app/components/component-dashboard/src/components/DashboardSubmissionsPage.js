@@ -12,7 +12,7 @@ import queries from '../graphql/queries'
 import SubmissionsTable from './sections/SubmissionsTable'
 import { CommsErrorBanner, Spinner } from '../../../shared'
 
-const DashboardSubmissionsPage = ({ history }) => {
+const DashboardSubmissionsPage = ({ currentUser, history }) => {
   const config = useContext(ConfigContext)
   const wantedRoles = ['author']
 
@@ -57,6 +57,7 @@ const DashboardSubmissionsPage = ({ history }) => {
   return config?.dashboard?.showSections?.includes('submission') ? (
     <SubmissionsTable
       applyQueryParams={applyQueryParams}
+      currentUser={currentUser}
       manuscriptsUserHasCurrentRoleIn={data.manuscriptsUserHasCurrentRoleIn}
       submissionForm={data.formForPurposeAndCategory}
       uriQueryParams={uriQueryParams}

@@ -16,6 +16,7 @@ import {
   ReviewerStatusBadge,
 } from '../cell-components'
 import reviewFilterOptions from '../../../../../config/journal/review-status'
+import AuthorProofingLink from '../cell-components/AuthorProofingLink'
 
 /**
  * buildSpecialColumnProps: Build the special components for specific form fields
@@ -35,6 +36,7 @@ const buildSpecialColumnProps = (specialComponentValues, config) => {
     getMainActionLink,
     currentUser,
     updateReviewerStatus,
+    getIsAuthorProofingEnabled,
   } = specialComponentValues
 
   const specialColumnProps = {
@@ -135,6 +137,16 @@ const buildSpecialColumnProps = (specialComponentValues, config) => {
       component: EditorItemLinks,
       extraProps: {
         urlFrag,
+      },
+    },
+    authorProofingLink: {
+      title: 'Actions',
+      flex: '0 1 10em',
+      component: AuthorProofingLink,
+      extraProps: {
+        urlFrag,
+        currentUser,
+        getIsAuthorProofingEnabled,
       },
     },
     reviewerLinks: {

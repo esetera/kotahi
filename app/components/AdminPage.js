@@ -287,6 +287,7 @@ const AdminPage = () => {
           path={profileLink}
           redirectLink={redirectLink}
         />
+        {/* TODO: remove after checking production page author-proofing refactors
         <PrivateRoute
           component={AuthorProofingPage}
           currentUser={currentUser}
@@ -294,7 +295,7 @@ const AdminPage = () => {
           key="proofing"
           path={`${urlFrag}/versions/:version/proofing`}
           redirectLink={redirectLink}
-        />
+        /> */}
         {(isUser || isGroupManager || isAdmin) && [
           <PrivateRoute
             component={ProfilePage}
