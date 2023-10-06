@@ -57,6 +57,7 @@ const createFormattedReference = async (data, groupId) => {
 
   const outputData = {
     doi,
+    DOI: doi,
     author: pluckAuthors(author),
     page,
     issue,
@@ -65,7 +66,7 @@ const createFormattedReference = async (data, groupId) => {
     journalTitle: pluckJournalTitle(journalTitle),
   }
 
-  const formattedCitation = await formatCitation(JSON.stringify(data), groupId)
+  const formattedCitation = await formatCitation(outputData, groupId)
 
   outputData.formattedCitation = formattedCitation.result
 
@@ -96,6 +97,7 @@ const getMatchingReferencesFromCrossRef = async (
         select: 'DOI,author,issue,page,title,volume,container-title',
         mailto: crossrefRetrievalEmail,
       },
+      timeout: 5000,
       headers: {
         'User-Agent': `Kotahi (Axios 0.21; mailto:${crossrefRetrievalEmail})`,
       },
@@ -109,6 +111,10 @@ const getMatchingReferencesFromCrossRef = async (
         [],
       )
     })
+    .catch(e => {
+      console.error('Crossref failure!', e.message)
+      return []
+    })
 }
 
 const getFormattedReferencesFromCrossRef = async (
@@ -118,6 +124,7 @@ const getFormattedReferencesFromCrossRef = async (
   groupId,
 ) => {
   // console.log('Coming in server-side: ', reference, count)
+  // Documentation on this API: https://api.crossref.org/swagger-ui/index.html#/Works/get_works
   // eslint-disable-next-line no-return-await
   return await axios
     .get('https://api.crossref.org/v1/works', {
@@ -127,6 +134,7 @@ const getFormattedReferencesFromCrossRef = async (
         select: 'DOI,author,issue,page,title,volume,container-title',
         mailto: crossrefRetrievalEmail || '',
       },
+      timeout: 5000,
       headers: {
         'User-Agent': `Kotahi (Axios 0.21; mailto:${
           crossrefRetrievalEmail || ''
@@ -142,6 +150,10 @@ const getFormattedReferencesFromCrossRef = async (
         [],
       )
     })
+    .catch(e => {
+      console.error('Crossref failure!', e.message)
+      return []
+    })
 }
 
 const getReferenceWithDoi = async (doi, crossrefRetrievalEmail) => {
@@ -151,6 +163,7 @@ const getReferenceWithDoi = async (doi, crossrefRetrievalEmail) => {
       params: {
         mailto: crossrefRetrievalEmail,
       },
+      timeout: 5000,
       headers: {
         'User-Agent': `Kotahi (Axios 0.21; mailto:${crossrefRetrievalEmail})`,
       },

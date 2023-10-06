@@ -31,7 +31,10 @@ import {
   EditingSuggestingService,
   TrackingAndEditingToolGroupService,
 } from 'wax-prosemirror-services'
-import { TablesService, tableEditing, columnResizing } from 'wax-table-service'
+import {
+  TablesService,
+  /* tableEditing, */ columnResizing,
+} from 'wax-table-service'
 import {
   KotahiBlockDropDownToolGroupService,
   JatsSideMenuToolGroupService,
@@ -122,7 +125,7 @@ const productionWaxEditorConfig = (
     },
   ],
 
-  PmPlugins: [columnResizing(), tableEditing() /* WaxSelectionPlugin */],
+  PmPlugins: [columnResizing() /* tableEditing() */],
 
   RulesService: [emDash, ellipsis],
 
@@ -136,6 +139,7 @@ const productionWaxEditorConfig = (
     AnyStyleTransformation: updateAnystyle,
     CrossRefTransformation: updateCrossRef,
     CiteProcTransformation: styleReference,
+    readOnly: false,
   },
   services: [
     new AnnotationToolGroupService(),

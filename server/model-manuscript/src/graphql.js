@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 const { ref } = require('objection')
 const axios = require('axios')
-const { map } = require('lodash')
+const { map, chunk } = require('lodash')
 const config = require('config')
 const { pubsubManager, File } = require('@coko/server')
 const models = require('@pubsweet/models')
@@ -286,10 +286,7 @@ const commonUpdateManuscript = async (id, input, ctx) => {
     .findById(id)
     .withGraphFetched('[reviews.user, files, tasks]')
 
-  const activeConfig = await models.Config.query().findOne({
-    groupId: ms.groupId,
-    active: true,
-  })
+  const activeConfig = await models.Config.getCached(ms.groupId)
 
   /** Crude hack to circumvent and help diagnose bug 1193 */
   const oldMetaAbstract = ms && ms.meta ? ms.meta.abstract : null
@@ -329,11 +326,7 @@ const commonUpdateManuscript = async (id, input, ctx) => {
 /** Send the manuscriptId OR a configured ref; and send token if one is configured */
 const tryPublishingWebhook = async manuscriptId => {
   const manuscript = await models.Manuscript.query().findById(manuscriptId)
-
-  const activeConfig = await models.Config.query().findOne({
-    groupId: manuscript.groupId,
-    active: true,
-  })
+  const activeConfig = await models.Config.getCached(manuscript.groupId)
 
   const publishingWebhookUrl = activeConfig.formData.publishing.webhook.url
 
@@ -365,12 +358,23 @@ const publishOnCMS = async (groupId, manuscriptId) => {
   return true // rebuildCMSSite will throw an exception on any failure, so no need to check its response
 }
 
-const getManuscriptSubmissionFiles = async manuscript => {
+const getPublishableSubmissionFiles = async manuscript => {
   const submissionForm = await getSubmissionForm(manuscript.groupId)
 
+  const { fieldsToPublish } =
+    manuscript.formFieldsToPublish.find(ff => ff.objectId === manuscript.id) ||
+    []
+
   const supplementaryFileField = submissionForm.structure.children.find(
-    field => field.component === 'SupplementaryFiles',
+    f =>
+      (f.permitPublishing === 'always' ||
+        (f.permitPublishing === 'true' &&
+          fieldsToPublish &&
+          fieldsToPublish.includes(f.name))) &&
+      f.component === 'SupplementaryFiles',
   )
+
+  if (!supplementaryFileField) return null
 
   const fieldTitle = supplementaryFileField ? supplementaryFileField.title : ''
   const supplementaryFiles = await getSupplementaryFiles(manuscript.id)
@@ -387,13 +391,8 @@ const resolvers = {
     async createManuscript(_, vars, ctx) {
       const { meta, files, groupId } = vars.input
       const group = await models.Group.query().findById(groupId)
-
       const submissionForm = await getSubmissionForm(group.id)
-
-      const activeConfig = await models.Config.query().findOne({
-        groupId: group.id,
-        active: true,
-      })
+      const activeConfig = await models.Config.getCached(group.id)
 
       const parsedFormStructure = submissionForm.structure.children
         .map(formElement => {
@@ -546,10 +545,7 @@ const resolvers = {
       const toDeleteList = []
       const manuscript = await models.Manuscript.find(id)
 
-      const activeConfig = await models.Config.query().findOne({
-        groupId: manuscript.groupId,
-        active: true,
-      })
+      const activeConfig = await models.Config.getCached(manuscript.groupId)
 
       toDeleteList.push(manuscript.id)
 
@@ -611,7 +607,10 @@ const resolvers = {
       if (!team) throw new Error('No team was found')
 
       for (let i = 0; i < team.members.length; i += 1) {
-        if (team.members[i].userId === context.user)
+        if (
+          team.members[i].userId === context.user &&
+          team.members[i].status !== 'completed'
+        )
           team.members[i].status = action
       }
 
@@ -686,10 +685,7 @@ const resolvers = {
           handlingEditor.user.defaultIdentity.name ||
           ''
 
-        const activeConfig = await models.Config.query().findOne({
-          groupId: manuscript.groupId,
-          active: true,
-        })
+        const activeConfig = await models.Config.getCached(manuscript.groupId)
 
         const selectedTemplate =
           activeConfig.formData.eventNotification?.reviewRejectedEmailTemplate
@@ -774,10 +770,7 @@ const resolvers = {
           .findById(id)
           .withGraphFetched('[submitter.[defaultIdentity], channels]')
 
-        const activeConfig = await models.Config.query().findOne({
-          groupId: manuscript.groupId,
-          active: true,
-        })
+        const activeConfig = await models.Config.getCached(manuscript.groupId)
 
         const receiverEmail = manuscript.submitter.email
         /* eslint-disable-next-line */
@@ -852,10 +845,7 @@ const resolvers = {
           '[submitter.[defaultIdentity], channels, teams.members.user, reviews.user]',
         )
 
-      const activeConfig = await models.Config.query().findOne({
-        groupId: manuscript.groupId,
-        active: true,
-      })
+      const activeConfig = await models.Config.getCached(manuscript.groupId)
 
       /** Crude hack to circumvent and help diagnose bug 1193 */
       const oldMetaAbstract =
@@ -1095,10 +1085,7 @@ const resolvers = {
 
       const containsElifeStyleEvaluations = hasElifeStyleEvaluations(manuscript)
 
-      const activeConfig = await models.Config.query().findOne({
-        groupId: manuscript.groupId,
-        active: true,
-      })
+      const activeConfig = await models.Config.getCached(manuscript.groupId)
 
       // We will roll back to the following values if all publishing steps fail:
       const prevPublishedDate = manuscript.published
@@ -1253,6 +1240,8 @@ const resolvers = {
     async manuscript(_, { id }, ctx) {
       return models.Manuscript.query().findById(id)
     },
+    // TODO This is overcomplicated, trying to do three things at once (find manuscripts
+    // where author is author, reviewer or editor).
     async manuscriptsUserHasCurrentRoleIn(
       _,
       {
@@ -1272,7 +1261,7 @@ const resolvers = {
       // Get IDs of the top-level manuscripts
       // TODO move this query to the model
       const topLevelManuscripts = await models.Manuscript.query()
-        .distinct(
+        .select(
           raw(
             'coalesce(manuscripts.parent_id, manuscripts.id) AS top_level_id',
           ),
@@ -1282,17 +1271,24 @@ const resolvers = {
         .where('team_members.user_id', ctx.user)
         .where('is_hidden', false)
         .where('group_id', groupId)
+        .distinct()
 
       // Get those top-level manuscripts with all versions, all with teams and members
-      const allManuscriptsWithInfo = await models.Manuscript.query()
-        .withGraphFetched(
-          '[teams.members, tasks, invitations, manuscriptVersions(orderByCreatedDesc).[teams.members, tasks, invitations]]',
-        )
-        .whereIn(
-          'id',
-          topLevelManuscripts.map(m => m.topLevelId),
-        )
-        .orderBy('created', 'desc')
+      const allManuscriptsWithInfo = []
+      const topLevelIds = topLevelManuscripts.map(m => m.topLevelId)
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const someIds of chunk(topLevelIds, 20)) {
+        // eslint-disable-next-line no-await-in-loop
+        const someManuscriptsWithInfo = await models.Manuscript.query()
+          .withGraphFetched(
+            '[teams.members, tasks, invitations, manuscriptVersions(orderByCreatedDesc).[teams.members, tasks, invitations]]',
+          )
+          .whereIn('id', someIds)
+          .orderBy('created', 'desc')
+
+        allManuscriptsWithInfo.push(...someManuscriptsWithInfo)
+      }
 
       // Get the latest version of each manuscript, and check the users role in that version
       const userManuscriptsWithInfo = {}
@@ -1464,10 +1460,7 @@ const resolvers = {
       else if (groups.length === 1) [group] = groups
       if (!group) throw new Error(`Group with name '${groupName}' not found`)
 
-      const activeConfig = await models.Config.query().findOne({
-        groupId: group.id,
-        active: true,
-      })
+      const activeConfig = await models.Config.getCached(group.id)
 
       if (activeConfig.formData.user.kotahiApiTokens) {
         validateApiToken(token, activeConfig.formData.user.kotahiApiTokens)
@@ -1500,10 +1493,7 @@ const resolvers = {
         .findById(id)
         .withGraphFetched('reviews')
 
-      const activeConfig = await models.Config.query().findOne({
-        groupId: manuscript.groupId,
-        active: true,
-      })
+      const activeConfig = await models.Config.getCached(manuscript.groupId)
 
       if (!activeConfig.formData.publishing.crossref.login) {
         return null
@@ -1592,10 +1582,7 @@ const resolvers = {
     // To be called in submit manuscript as
     // first validation step for custom suffix
     async validateSuffix(_, { suffix, groupId }, ctx) {
-      const activeConfig = await models.Config.query().findOne({
-        groupId,
-        active: true,
-      })
+      const activeConfig = await models.Config.getCached(groupId)
 
       const doi = getDoi(suffix, activeConfig)
       return { isDOIValid: await doiIsAvailable(doi) }
@@ -1772,7 +1759,7 @@ const resolvers = {
       return submissionWithFields
     },
     async supplementaryFiles(parent) {
-      const supplementaryFilesWithTitles = await getManuscriptSubmissionFiles(
+      const supplementaryFilesWithTitles = await getPublishableSubmissionFiles(
         parent,
       )
 

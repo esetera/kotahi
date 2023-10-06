@@ -1,4 +1,5 @@
 const models = require('@pubsweet/models')
+const config = require('config')
 const { pubsubManager } = require('@coko/server')
 const importArticlesFromBiorxiv = require('../../import-articles/biorxiv-import')
 const importArticlesFromBiorxivWithFullTextSearch = require('../../import-articles/biorxiv-full-text-import')
@@ -10,6 +11,10 @@ const { getPubsub } = pubsubManager
 
 let isImportInProgress = false
 let isImportingFromSemanticScholarInProgress = false
+
+const shouldRunDefaultImportsForColab = [true, 'true'].includes(
+  config['import-for-colab'].default_import,
+)
 
 const importManuscripts = async (groupId, ctx) => {
   if (isImportInProgress) return false
@@ -27,7 +32,10 @@ const importManuscripts = async (groupId, ctx) => {
   if (activeConfig.formData.instanceName === 'ncrc') {
     promises.push(importArticlesFromBiorxiv(groupId, ctx))
     promises.push(importArticlesFromPubmed(groupId, ctx))
-  } else if (activeConfig.formData.instanceName === 'colab') {
+  } else if (
+    activeConfig.formData.instanceName === 'colab' &&
+    shouldRunDefaultImportsForColab
+  ) {
     promises.push(importArticlesFromBiorxivWithFullTextSearch(groupId, ctx))
   }
 
@@ -57,7 +65,10 @@ const importManuscriptsFromSemanticScholar = async (groupId, ctx) => {
 
   const promises = []
 
-  if (activeConfig.formData.instanceName === 'colab') {
+  if (
+    activeConfig.formData.instanceName === 'colab' &&
+    shouldRunDefaultImportsForColab
+  ) {
     promises.push(importArticlesFromSemanticScholar(groupId, ctx))
   }
 

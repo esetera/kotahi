@@ -14,25 +14,27 @@ const sendNotifications = async () => {
     .where('max_notification_time', '<', new Date())
     .orderBy(['user_id', 'path_string', 'max_notification_time'])
 
-  notificationDigestRows.forEach(async notificationDigest => {
-    if (notificationDigest.actioned) return
+  await Promise.all(
+    notificationDigestRows.map(async notificationDigest => {
+      if (notificationDigest.actioned) return
 
-    await sendChatNotification({
-      recipientId: notificationDigest.userId,
-      messageId: notificationDigest.context.messageId,
-      title: 'Unread messages in chat',
-    })
+      await sendChatNotification({
+        recipientId: notificationDigest.userId,
+        messageId: notificationDigest.context.messageId,
+        title: 'Unread messages in chat',
+      })
 
-    // query to update all notificationdigest entries where user=user and path=path
-    await models.NotificationDigest.query()
-      .update({
-        actioned: true,
-      })
-      .where({
-        userId: notificationDigest.userId,
-        pathString: notificationDigest.pathString,
-      })
-  })
+      // query to update all notificationdigest entries where user=user and path=path
+      await models.NotificationDigest.query()
+        .update({
+          actioned: true,
+        })
+        .where({
+          userId: notificationDigest.userId,
+          pathString: notificationDigest.pathString,
+        })
+    }),
+  )
 }
 
 const sendChatNotification = async ({
@@ -89,10 +91,7 @@ const sendChatNotification = async ({
     currentUser: currentUser?.username,
   }
 
-  const activeConfig = await models.Config.query().findOne({
-    groupId,
-    active: true,
-  })
+  const activeConfig = await models.Config.getCached(groupId)
 
   const selectedTemplate = isMentioned
     ? activeConfig.formData.eventNotification.mentionNotificationTemplate

@@ -9,19 +9,40 @@ const Config = require('../../config/src/config')
 // eslint-disable-next-line new-cap
 const sys = new citeproc.simpleSys()
 
-const formatCitation = async (stringifiedCSL, groupId) => {
-  // This takes stringified CSL. Feeding it an object will not work.
-  // The output is JATS-flavored HTML as a string.
+// const getStyleNameFromTitle = title => {
+//   return title
+// }
 
-  const activeConfig = await Config.query().findOne({
-    groupId,
-    active: true,
-  })
+const getFirstPageFromPageRange = range => {
+  const match = range.match(/(?<=^\s*)\d+/)
+  return match?.[0] || null
+}
 
-  const localeName =
-    activeConfig.formData.publishing.crossref.localeName || 'en-US'
+/** Converts a CSL object into a JATS-flavoured HTML citation string,
+ * using the style and locale configured for the group */
+const formatCitation = async (cslObject, groupId) => {
+  const thisRef = `ref-${uuid()}`
+  const csl = { ...cslObject }
+  // Content needs to be shaped like this:
+  // {
+  //  "ref1": {
+  //		"id": "ref1",
+  //		"title": "Adiposity and Cognitive Decline in the Cardiovascular Health Study",
+  //		"author": [....]
+  //   }
+  // }
+  // where the id is the key and the rest is the value. If we had an array coming in, turn it into an object
+  csl.id = thisRef
+  // Fix possible missing items
+  if (csl.page && !csl['page-first'])
+    csl['page-first'] = getFirstPageFromPageRange(csl.page)
+  if (csl.doi && !csl.DOI) csl.DOI = csl.doi
 
-  const styleName = activeConfig.formData.publishing.crossref.styleName || 'apa'
+  const activeConfig = await Config.query().findOne({ groupId, active: true })
+  const localeName = activeConfig.formData.production?.localeName || 'en-US'
+  const styleName = activeConfig.formData.production?.styleName || 'apa'
+
+  // const styleName = getStyleNameFromTitle(styleTitle)
 
   // console.log('Citeproc settings: ', localeName, styleName)
 
@@ -48,20 +69,9 @@ const formatCitation = async (stringifiedCSL, groupId) => {
   let result = ''
 
   try {
-    // Content needs to be shaped like this:
-    // {
-    //  "ref1": {
-    //		"id": "ref1",
-    //		"title": "Adiposity and Cognitive Decline in the Cardiovascular Health Study",
-    //		"author": [....]
-    //   }
-    // }
-    // where the id is the key and the rest is the value. If we had an array coming in, turn it into an object
     // console.log('stringifiedCSL: ', stringifiedCSL)
     // console.log(typeof stringifiedCSL)
-    const thisRef = `ref-${uuid()}`
-    referenceCSL[thisRef] = JSON.parse(stringifiedCSL)
-    referenceCSL[thisRef].id = thisRef
+    referenceCSL[thisRef] = csl
 
     sys.items = referenceCSL
 
@@ -77,9 +87,11 @@ const formatCitation = async (stringifiedCSL, groupId) => {
       result = results[0]
       // This is CSL-flavored HTML, need to make it JATS-flavored HTML.
       // Not 100% sure that all of the HTML coming out of this will work for us, keep an eye out.
+
+      // Worth noting that sometimes there are spaces between tags, sometimes not. We're going to remove them all.
       result = result
-        .replace(/<div class="csl-entry">/g, '<p class="ref">')
-        .replace(/<\/div>/g, '</p>')
+        .replace(/<div class="csl-entry">\s*/g, '<p class="ref">')
+        .replace(/\s*<\/div>/g, '</p>')
         .replace(/<i>/g, '<em>')
         .replace(/<\/i>/g, '</em>')
         .replace(/<b>/g, '<strong>')

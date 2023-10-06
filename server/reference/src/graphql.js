@@ -22,10 +22,11 @@ const resolvers = {
         active: true,
       })
 
-      const {
-        crossrefRetrievalEmail,
-        crossrefSearchResultCount,
-      } = activeConfig.formData.publishing.crossref
+      const crossrefRetrievalEmail =
+        activeConfig.formData.production?.crossrefRetrievalEmail
+
+      const crossrefSearchResultCount =
+        activeConfig.formData.production?.crossrefSearchResultCount
 
       try {
         const matches = await getMatchingReferencesFromCrossRef(
@@ -33,6 +34,11 @@ const resolvers = {
           input.count || crossrefSearchResultCount || 3,
           crossrefRetrievalEmail,
         )
+
+        if (matches.length === 0) {
+          logger.error('Crossref timed out.')
+          return { matches: [], success: false, message: 'error' }
+        }
 
         return { matches, success: true, message: '' }
       } catch (error) {
@@ -49,10 +55,11 @@ const resolvers = {
         active: true,
       })
 
-      const {
-        crossrefRetrievalEmail,
-        crossrefSearchResultCount,
-      } = activeConfig.formData.publishing.crossref
+      const crossrefRetrievalEmail =
+        activeConfig.formData.production?.crossrefRetrievalEmail
+
+      const crossrefSearchResultCount =
+        activeConfig.formData.production?.crossrefSearchResultCount
 
       try {
         const matches = await getFormattedReferencesFromCrossRef(
@@ -61,6 +68,11 @@ const resolvers = {
           crossrefRetrievalEmail,
           groupId,
         )
+
+        if (matches.length === 0) {
+          logger.error('Crossref timed out.')
+          return { matches: [], success: false, message: 'error' }
+        }
 
         return { matches, success: true, message: '' }
       } catch (error) {
@@ -77,9 +89,8 @@ const resolvers = {
         active: true,
       })
 
-      const {
-        crossrefRetrievalEmail,
-      } = activeConfig.formData.publishing.crossref
+      const crossrefRetrievalEmail =
+        activeConfig.formData.production?.crossrefRetrievalEmail
 
       try {
         const reference = await getReferenceWithDoi(doi, crossrefRetrievalEmail)
@@ -92,11 +103,10 @@ const resolvers = {
     },
     async formatCitation(_, { citation }, ctx) {
       // You know, it's probably bad to have two formatCitation functions!
-      // citation should be stringified CSL
 
       try {
         const { result, error } = await formatCitation(
-          citation,
+          JSON.parse(citation),
           ctx.req.headers['group-id'],
         )
 
