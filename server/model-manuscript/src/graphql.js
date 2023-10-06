@@ -616,13 +616,9 @@ const resolvers = {
 
       await new models.Team(team).saveGraph()
 
-      const selectedManuscript = await models.Manuscript.query().findById(
-        team.objectId,
-      )
-
       if (action === 'accepted') {
         await addUserToManuscriptChatChannel({
-          manuscriptId: selectedManuscript.parentId || team.objectId,
+          manuscriptId: team.objectId,
           userId: context.user,
           type: 'editorial',
         })

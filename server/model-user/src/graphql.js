@@ -194,7 +194,7 @@ const resolvers = {
         throw new Error('Channel ID is required.')
       }
 
-      const userRolesQuery = await models.User.query()
+      const usersWithRoles = await models.User.query()
         .join('team_members', 'users.id', 'team_members.user_id')
         .join('teams', 'team_members.team_id', 'teams.id')
         .select('teams.role')
@@ -216,7 +216,7 @@ const resolvers = {
 
       if (
         channel.type === 'editorial' &&
-        userRolesQuery.some(user => user.role === 'editor')
+        usersWithRoles.some(user => user.role === 'editor')
       ) {
         return query
           .where('teams.role', 'groupManager')
