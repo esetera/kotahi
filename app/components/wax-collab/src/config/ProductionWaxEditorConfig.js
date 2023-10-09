@@ -31,7 +31,10 @@ import {
   EditingSuggestingService,
   TrackingAndEditingToolGroupService,
 } from 'wax-prosemirror-services'
-import { TablesService, tableEditing, columnResizing } from 'wax-table-service'
+import {
+  TablesService,
+  /* tableEditing, */ columnResizing,
+} from 'wax-table-service'
 import {
   KotahiBlockDropDownToolGroupService,
   JatsSideMenuToolGroupService,
@@ -50,7 +53,6 @@ const updateTitle = title => {
 }
 
 const productionWaxEditorConfig = (
-  readOnlyComments,
   handleAssetManager,
   updateAnystyle,
   updateCrossRef,
@@ -78,7 +80,7 @@ const productionWaxEditorConfig = (
     },
   },
   SchemaService: KotahiSchema,
-  CommentsService: { readOnly: readOnlyComments || false }, // this should make it work though this is not yet in Wax
+  CommentsService: { readOnly: false }, // this should make it work though this is not yet in Wax
   MenuService: [
     {
       templateArea: 'topBar',
@@ -122,7 +124,7 @@ const productionWaxEditorConfig = (
     },
   ],
 
-  PmPlugins: [columnResizing(), tableEditing() /* WaxSelectionPlugin */],
+  PmPlugins: [columnResizing() /* tableEditing() */ /* WaxSelectionPlugin */],
 
   RulesService: [emDash, ellipsis],
 

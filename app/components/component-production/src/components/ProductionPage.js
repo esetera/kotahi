@@ -64,6 +64,16 @@ const fragmentFields = `
   id
   created
   status
+	isAuthorProofingEnabled
+	teams {
+		role
+		members {
+			user {
+				id
+				created
+			}
+		}
+	}
   files {
     id
     tags
@@ -96,6 +106,22 @@ export const updateMutation = gql`
     }
   }
 `
+
+const showAuthorProofingMode = (manuscript, currentUser) => {
+  const authorTeam = manuscript.teams.find(team => team.role === 'author')
+
+  const sortedAuthors = authorTeam?.members
+    .slice()
+    .sort(
+      (a, b) =>
+        Date.parse(new Date(b.created)) - Date.parse(new Date(a.created)),
+    )
+
+  return (
+    manuscript.isAuthorProofingEnabled &&
+    sortedAuthors[0]?.user?.id === currentUser.id
+  )
+}
 
 const ProductionPage = ({ currentUser, match, ...props }) => {
   const client = useApolloClient()
@@ -132,6 +158,15 @@ const ProductionPage = ({ currentUser, match, ...props }) => {
   if (error) return <CommsErrorBanner error={error} />
 
   const { manuscript } = data
+
+  const isAuthorProofingMode = showAuthorProofingMode(manuscript, currentUser) // If true, we are in author proofing mode
+
+  const isReadOnlyMode =
+    manuscript.isAuthorProofingEnabled && !isAuthorProofingMode // If author proofing is enabled, but we are not the author, we go read-only
+
+  // console.log('Author proofing mode: ', isAuthorProofingMode)
+  // console.log('Read only mode: ', isReadOnlyMode)
+
   return (
     <Composed
       client={client}
@@ -169,11 +204,14 @@ const ProductionPage = ({ currentUser, match, ...props }) => {
             file={manuscript.files.find(file =>
               file.tags.includes('manuscript'),
             )}
+            isAuthorProofingVersion={isAuthorProofingMode}
+            isReadOnlyVersion={isReadOnlyMode}
             makeJats={setMakingJats}
             makePdf={setMakingPdf}
             manuscript={manuscript}
             onAssetManager={onAssetManager}
             updateManuscript={(a, b) => {
+              // TODO: This might need to be different based on value of isAuthorProofingMode?
               // eslint-disable-next-line
               // console.log('in update manuscript!')
               updateManuscript(a, b)

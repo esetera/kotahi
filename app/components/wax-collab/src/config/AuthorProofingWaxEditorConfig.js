@@ -1,3 +1,4 @@
+// import { WaxSelectionPlugin } from 'wax-prosemirror-plugins'
 import { emDash, ellipsis } from 'prosemirror-inputrules'
 import {
   InlineAnnotationsService,
@@ -27,34 +28,53 @@ import {
   BottomInfoService,
   TrackOptionsToolGroupService,
   TrackCommentOptionsToolGroupService,
-  TrackingAndEditingToolGroupService,
   EditingSuggestingService,
+  TrackingAndEditingToolGroupService,
 } from 'wax-prosemirror-services'
 import {
   TablesService,
   /* tableEditing, */ columnResizing,
 } from 'wax-table-service'
-import { KotahiBlockDropDownToolGroupService } from '../CustomWaxToolGroups'
+import {
+  KotahiBlockDropDownToolGroupService,
+  JatsSideMenuToolGroupService,
+  JatsAnnotationListTooolGroupService,
+} from '../CustomWaxToolGroups'
 import JatsTagsService from '../JatsTags'
 import CharactersList from './CharactersList'
 import KotahiSchema from './KotahiSchema'
+// import AnyStyleService from '../CustomWaxToolGroups/AnystyleService/AnyStyleService'
 import CitationService from '../CustomWaxToolGroups/CitationService/CitationService'
 import 'wax-table-service/dist/index.css'
 
-const updateTrackStatus = change => {
-  // this returns "true" when Suggesting Mode is turned on.
-  // eslint-disable-next-line no-console
-  // console.log(change)
-}
-
 const updateTitle = title => {
   // this gets fired when the title is changed in original version of this—not called now, but might still be needed
-  // eslint-disable-next-line no-console
   // console.log(`Title changed: ${title}`)
 }
 
-const fullWaxEditorConfig = handleAssetManager => ({
-  EnableTrackChangeService: { enabled: false, toggle: true, updateTrackStatus },
+// WEIRD THINGS NOTICED:
+
+// 1) List functionality doesn't actually work. Why? I've commented that out for now.
+// 2) Tables, images, footnotes, comments work.
+// 3) Changing block formats works (though there's no record of it)
+// 4) Sidebar seems to work–-we could take that out.
+//
+// QUESTION: Can we make sure that resolving other people's comments is not possible? Test this.
+
+const authorProofingWaxEditorConfig = (
+  handleAssetManager,
+  updateAnystyle,
+  updateCrossRef,
+  styleReference,
+) => ({
+  EnableTrackChangeService: {
+    enabled: true, // Why does this not function?
+    toggle: false,
+    updateTrackStatus: () => {
+      // console.log('update track status fired')
+      return true
+    },
+  },
   AcceptTrackChangeService: {
     own: {
       accept: true,
@@ -71,9 +91,8 @@ const fullWaxEditorConfig = handleAssetManager => ({
       reject: true,
     },
   },
-
   SchemaService: KotahiSchema,
-  CommentsService: { readOnly: false },
+  CommentsService: { readOnly: false }, // this should make it work though this is not yet in Wax
   MenuService: [
     {
       templateArea: 'topBar',
@@ -95,7 +114,7 @@ const fullWaxEditorConfig = handleAssetManager => ({
           ],
         },
         'SpecialCharacters',
-        'Lists',
+        // 'Lists',
         'Notes',
         'Tables',
         'Images',
@@ -103,6 +122,10 @@ const fullWaxEditorConfig = handleAssetManager => ({
         'FullScreen',
       ],
     },
+    // {
+    //   templateArea: 'leftSideBar',
+    //   toolGroups: ['JatsSideMenu'],
+    // },
     {
       templateArea: 'commentTrackToolBar',
       toolGroups: ['TrackCommentOptions'],
@@ -113,25 +136,22 @@ const fullWaxEditorConfig = handleAssetManager => ({
     },
   ],
 
-  PmPlugins: [columnResizing() /* tableEditing() */],
+  PmPlugins: [columnResizing() /* tableEditing() */ /* WaxSelectionPlugin */],
 
   RulesService: [emDash, ellipsis],
 
   ShortCutsService: {},
-
   SpecialCharactersService: CharactersList,
 
   TitleService: { updateTitle },
-
+  // AnyStyleService: {},
   ImageService: handleAssetManager ? { handleAssetManager } : {},
-
   CitationService: {
-    AnyStyleTransformation: () => {},
-    CrossRefTransformation: () => {},
-    CiteProcTransformation: () => {}, // We may need to pass this in if we're letting this editor change these.
-    readOnly: true,
+    AnyStyleTransformation: updateAnystyle,
+    CrossRefTransformation: updateCrossRef,
+    CiteProcTransformation: styleReference,
+    readOnly: false,
   },
-
   services: [
     new AnnotationToolGroupService(),
     new BaseService(),
@@ -168,9 +188,13 @@ const fullWaxEditorConfig = handleAssetManager => ({
     new CommentsService(),
     new TrackCommentOptionsToolGroupService(),
     new TrackOptionsToolGroupService(),
+    // for side menu
     new JatsTagsService(),
+    new JatsSideMenuToolGroupService(),
+    new JatsAnnotationListTooolGroupService(),
+    // new AnyStyleService(),
     new CitationService(),
   ],
 })
 
-export default fullWaxEditorConfig
+export default authorProofingWaxEditorConfig
