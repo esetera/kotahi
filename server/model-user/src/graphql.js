@@ -228,6 +228,8 @@ const resolvers = {
 
       user.defaultIdentity = identity
 
+      // todo: add a new check here
+
       try {
         const result = await models.User.create(user, ctx, {
           eager: 'defaultIdentity',
