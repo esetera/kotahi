@@ -15,9 +15,9 @@ const {
   sendAutomatedTaskEmailNotifications,
 } = require('../model-task/src/taskCommsUtils')
 
-const {
-  sendNotifications,
-} = require('../model-notification/src/notificationCommsUtils')
+// const {
+//   sendNotifications,
+// } = require('../model-notification/src/notificationCommsUtils')
 
 const {
   deleteActionedEntries,
@@ -115,7 +115,7 @@ const getJobs = async (activeConfig, groupId) => {
         )
 
         try {
-          await sendNotifications()
+          // await sendNotifications()
         } catch (error) {
           console.error(error)
         }
