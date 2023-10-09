@@ -31,7 +31,6 @@ import TasksTemplatePage from './component-task-manager/src/TasksTemplatePage'
 import UsersPage from './component-users-manager/src/UsersPage'
 import ConfigManagerPage from './component-config-manager/src/ConfigManagerPage'
 import EmailTemplatesPage from './component-email-templates/src/EmailTemplatesPage'
-import AuthorProofingPage from './component-proofing/src/AuthorProofingPage'
 
 import CMSPagesPage from './component-cms-manager/src/CMSPagesPage'
 import CMSLayoutPage from './component-cms-manager/src/CMSLayoutPage'
@@ -287,15 +286,6 @@ const AdminPage = () => {
           path={profileLink}
           redirectLink={redirectLink}
         />
-        {/* TODO: remove after checking production page author-proofing refactors
-        <PrivateRoute
-          component={AuthorProofingPage}
-          currentUser={currentUser}
-          exact
-          key="proofing"
-          path={`${urlFrag}/versions/:version/proofing`}
-          redirectLink={redirectLink}
-        /> */}
         {(isUser || isGroupManager || isAdmin) && [
           <PrivateRoute
             component={ProfilePage}

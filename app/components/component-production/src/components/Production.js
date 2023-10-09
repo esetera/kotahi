@@ -1,16 +1,27 @@
 import React, { useCallback, useEffect } from 'react'
+import styled from 'styled-components'
+import { grid } from '@pubsweet/ui-toolkit'
 import { withRouter } from 'react-router-dom'
 import { debounce } from 'lodash'
 import ProductionWaxEditor from '../../../wax-collab/src/ProductionWaxEditor'
 import { DownloadDropdown } from './DownloadDropdown'
 import {
-  Container,
   Heading,
   HeadingWithAction,
+  HiddenTabs,
+  Manuscript,
+  ErrorBoundary,
   SectionContent,
   Spinner,
 } from '../../../shared'
 import { Info } from './styles'
+import { ControlsContainer } from '../../../component-manuscripts/src/style'
+
+const FlexRow = styled.div`
+  display: flex;
+  gap: ${grid(1)};
+  justify-content: space-between;
+`
 
 const Production = ({
   client,
@@ -33,49 +44,73 @@ const Production = ({
 
   useEffect(() => debouncedSave.flush, [])
 
+  const editorSection = {
+    content: (
+      <>
+        {file &&
+        file.storedObjects[0].mimetype ===
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ? (
+          <SectionContent>
+            {manuscript ? (
+              <ProductionWaxEditor
+                // onBlur={source => {
+                //   updateManuscript(manuscript.id, { meta: { source } })
+                // }}
+                client={client}
+                isAuthorProofingVersion={isAuthorProofingVersion}
+                manuscriptId={manuscript.id}
+                onAssetManager={onAssetManager}
+                readonly={isReadOnlyVersion || false}
+                saveSource={debouncedSave}
+                user={currentUser}
+                value={manuscript.meta.source}
+              />
+            ) : (
+              <Spinner />
+            )}
+          </SectionContent>
+        ) : (
+          <SectionContent>
+            <Info>No supported view of the file</Info>
+          </SectionContent>
+        )}
+      </>
+    ),
+    key: 'editor',
+    label: `Editor ${isReadOnlyVersion ? ' (read-only)' : ''}`,
+  }
+
+  const feedbackSection = {
+    content: 'TODO: Add a new feedback form to go here.',
+    key: 'feedback',
+    label: 'Feedback',
+  }
+
   return (
-    <Container>
+    <Manuscript>
       <HeadingWithAction>
-        <Heading>
-          {isAuthorProofingVersion ? 'Author Proofing' : 'Production'}
-          {isReadOnlyVersion ? ' (read-only)' : ''}
-        </Heading>
-        <DownloadDropdown
-          isAuthorProofingVersion={isAuthorProofingVersion}
-          makeJats={makeJats}
-          makePdf={makePdf}
-          manuscriptId={manuscript.id}
-          manuscriptSource={manuscript.meta.source}
-        />
-      </HeadingWithAction>
-      {file &&
-      file.storedObjects[0].mimetype ===
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ? (
-        <SectionContent>
-          {manuscript ? (
-            <ProductionWaxEditor
-              // onBlur={source => {
-              //   updateManuscript(manuscript.id, { meta: { source } })
-              // }}
-              client={client}
+        <FlexRow>
+          <Heading>
+            {isAuthorProofingVersion ? 'Author Proofing' : 'Production'}
+          </Heading>
+          <ControlsContainer>
+            <DownloadDropdown
               isAuthorProofingVersion={isAuthorProofingVersion}
+              makeJats={makeJats}
+              makePdf={makePdf}
               manuscriptId={manuscript.id}
-              onAssetManager={onAssetManager}
-              readonly={isReadOnlyVersion || false}
-              saveSource={debouncedSave}
-              user={currentUser}
-              value={manuscript.meta.source}
+              manuscriptSource={manuscript.meta.source}
             />
-          ) : (
-            <Spinner />
-          )}
-        </SectionContent>
-      ) : (
-        <SectionContent>
-          <Info>No supported view of the file</Info>
-        </SectionContent>
-      )}
-    </Container>
+          </ControlsContainer>
+        </FlexRow>
+      </HeadingWithAction>
+      <ErrorBoundary>
+        <HiddenTabs
+          defaultActiveKey="editor"
+          sections={[editorSection, feedbackSection]}
+        />
+      </ErrorBoundary>
+    </Manuscript>
   )
 }
 
