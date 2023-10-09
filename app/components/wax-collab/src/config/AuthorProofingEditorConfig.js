@@ -58,6 +58,8 @@ const updateTitle = title => {
 // 2) Tables, images, footnotes, comments work.
 // 3) Changing block formats works (though there's no record of it)
 // 4) Sidebar seems to work–-we could take that out.
+//
+// QUESTION: Can we make sure that resolving other people's comments is not possible? Test this.
 
 const authorProofingEditorConfig = (
   handleAssetManager,
