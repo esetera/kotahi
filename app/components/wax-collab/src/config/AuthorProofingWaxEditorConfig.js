@@ -17,7 +17,7 @@ import {
   NoteService,
   NoteToolGroupService,
   TrackChangeService,
-  CommentsService,
+  // CommentsService,
   MathService,
   FindAndReplaceService,
   FullScreenService,
@@ -35,6 +35,7 @@ import {
   TablesService,
   /* tableEditing, */ columnResizing,
 } from 'wax-table-service'
+import CommentsService from '../extensions/CommentsService/CommentsService'
 import {
   KotahiBlockDropDownToolGroupService,
   JatsSideMenuToolGroupService,
@@ -68,19 +69,17 @@ const authorProofingWaxEditorConfig = (
   styleReference,
 ) => ({
   EnableTrackChangeService: {
-    enabled: true, // Why does this not function?
+    enabled: true,
     toggle: false,
-    updateTrackStatus: () => {
-      // console.log('update track status fired')
-      return true
-    },
+    updateTrackStatus: () => true, // what does this do? Nothing because we're not toggling?
   },
   AcceptTrackChangeService: {
+    // n.b. this is also connected to comment functionality!
     own: {
       accept: true,
     },
     others: {
-      accept: true,
+      accept: false,
     },
   },
   RejectTrackChangeService: {
@@ -88,11 +87,14 @@ const authorProofingWaxEditorConfig = (
       reject: true,
     },
     others: {
-      reject: true,
+      reject: false,
     },
   },
   SchemaService: KotahiSchema,
-  CommentsService: { readOnly: false }, // this should make it work though this is not yet in Wax
+  CommentsService: {
+    readOnly: true, // this makes comments read only – we can't resolve them or reply.
+    replyToReadOnlyComments: true,
+  },
   MenuService: [
     {
       templateArea: 'topBar',

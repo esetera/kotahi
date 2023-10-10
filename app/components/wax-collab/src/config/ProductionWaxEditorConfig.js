@@ -17,7 +17,7 @@ import {
   NoteService,
   NoteToolGroupService,
   TrackChangeService,
-  CommentsService,
+  // CommentsService,
   MathService,
   FindAndReplaceService,
   FullScreenService,
@@ -35,6 +35,7 @@ import {
   TablesService,
   /* tableEditing, */ columnResizing,
 } from 'wax-table-service'
+import CommentsService from '../extensions/CommentsService/CommentsService'
 import {
   KotahiBlockDropDownToolGroupService,
   JatsSideMenuToolGroupService,
