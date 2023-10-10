@@ -18,7 +18,7 @@ import {
   DisplayBlockLevelService,
   EnterService,
 } from 'wax-prosemirror-services'
-// import autocomplete from 'prosemirror-autocomplete'
+import autocomplete from 'prosemirror-autocomplete'
 import { KotahiBlockDropDownToolGroupService } from '../../../wax-collab/src/CustomWaxToolGroups'
 import CharactersList from '../../../wax-collab/src/config/CharactersList'
 import MentionService from '../../../wax-collab/src/config/MentionService'
@@ -29,16 +29,16 @@ const updateTitle = title => {
 }
 
 const chatWaxEditorConfig = ({ onEnterPress, autoCompleteReducer }) => {
-  // const options = {
-  //   reducer: autoCompleteReducer,
-  //   triggers: [
-  //     {
-  //       name: 'mention',
-  //       trigger: /(@)$/,
-  //       decorationAttrs: { class: 'mention-tag' },
-  //     },
-  //   ],
-  // }
+  const options = {
+    reducer: autoCompleteReducer,
+    triggers: [
+      {
+        name: 'mention',
+        trigger: /(@)$/,
+        decorationAttrs: { class: 'mention-tag' },
+      },
+    ],
+  }
 
   return {
     SchemaService: DefaultSchema,
@@ -67,7 +67,7 @@ const chatWaxEditorConfig = ({ onEnterPress, autoCompleteReducer }) => {
 
     MentionService: {},
 
-    // PmPlugins: [...autocomplete(options)],
+    PmPlugins: [...autocomplete(options)],
 
     EnterService: {
       getContentOnEnter: source => {
