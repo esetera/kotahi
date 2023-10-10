@@ -112,7 +112,7 @@
     "passport": "^0.4.1",
     "passport-orcid": "0.0.4",
     "prop-types": "15.7.2",
-    "prosemirror-autocomplete": "^0.4.3",
+    "prosemirror-autocomplete": "^0.3.1",
     "prosemirror-commands": "1.5.1",
     "prosemirror-inputrules": "1.2.0",
     "prosemirror-model": "1.19.0",
