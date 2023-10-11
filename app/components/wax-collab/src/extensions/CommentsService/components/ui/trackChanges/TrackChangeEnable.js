@@ -1,15 +1,15 @@
 /* eslint react/prop-types: 0 */
-import React, { useState, useMemo } from 'react';
-import { MenuButton } from 'wax-prosemirror-core';
+import React, { useState, useMemo } from 'react'
+import { MenuButton } from 'wax-prosemirror-core'
 
 const TrackChangeEnable = ({ view = {}, item, enabled }) => {
-  const [isEnabled, setEnabled] = useState(enabled);
+  const [isEnabled, setEnabled] = useState(enabled)
 
   const handleMouseDown = e => {
-    e.preventDefault();
-    setEnabled(!isEnabled);
-    item.run(view.state, view.dispatch);
-  };
+    e.preventDefault()
+    setEnabled(!isEnabled)
+    item.run(view.state, view.dispatch)
+  }
 
   const TrackChangeEnableComponent = useMemo(
     () => (
@@ -22,9 +22,9 @@ const TrackChangeEnable = ({ view = {}, item, enabled }) => {
       />
     ),
     [isEnabled],
-  );
+  )
 
-  return TrackChangeEnableComponent;
-};
+  return TrackChangeEnableComponent
+}
 
-export default TrackChangeEnable;
+export default TrackChangeEnable

@@ -1,11 +1,11 @@
 /* eslint react/prop-types: 0 */
-import React from 'react';
-import styled, { css } from 'styled-components';
-import { DateParser, Icon } from 'wax-prosemirror-core';
+import React from 'react'
+import styled, { css } from 'styled-components'
+import { DateParser, Icon } from 'wax-prosemirror-core'
 
 const activeBorder = css`
   border-color: #bfc4cd;
-`;
+`
 
 const Wrapper = styled.div`
   background: #f5f5f5;
@@ -19,28 +19,28 @@ const Wrapper = styled.div`
   &:hover {
     ${activeBorder}
   }
-`;
+`
 
 const HeadWrapper = styled.div`
   display: flex;
   margin-bottom: 8px;
-`;
+`
 
 const Info = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-`;
+`
 
-const Name = styled.div``;
+const Name = styled.div``
 
 const Timestamp = styled.div`
   color: gray;
-`;
+`
 
-const Tools = styled.div``;
+const Tools = styled.div``
 
-const ChangeWrapper = styled.div``;
+const ChangeWrapper = styled.div``
 
 const Label = styled.span`
   display: flex;
@@ -51,13 +51,13 @@ const Label = styled.span`
   &:after {
     content: ':';
   }
-`;
+`
 
 const ActionWrapper = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 5px;
-`;
+`
 
 const StyledIcon = styled(Icon)`
   bottom: 2px;
@@ -66,9 +66,9 @@ const StyledIcon = styled(Icon)`
   position: relative;
   right: 2px;
   width: 16px;
-`;
+`
 
-const Text = styled.span``;
+const Text = styled.span``
 
 const Icons = styled.div`
   border-radius: 3px;
@@ -81,21 +81,22 @@ const Icons = styled.div`
   &:hover {
     background: #bfc4cd;
   }
-`;
+`
 
 const IconButton = props => {
-  const { name, onClick } = props;
+  const { name, onClick } = props
+
   const handleClick = e => {
-    e.stopPropagation();
-    onClick();
-  };
+    e.stopPropagation()
+    onClick()
+  }
 
   return (
     <Icons onClick={handleClick} type="button">
       <StyledIcon name={name.toString()} />
     </Icons>
-  );
-};
+  )
+}
 
 const TrackChangesBox = props => {
   const {
@@ -105,56 +106,58 @@ const TrackChangesBox = props => {
     onClickAccept,
     onClickReject,
     trackData,
-  } = props;
+  } = props
 
   const onClickTrackBox = () => {
-    onClickBox(trackData);
-  };
+    onClickBox(trackData)
+  }
 
   const username = trackData.attrs
     ? trackData.attrs.username
-    : trackData.node.attrs.track[0].username;
+    : trackData.node.attrs.track[0].username
 
   const date = trackData.attrs
     ? trackData.attrs.date
-    : trackData.node.attrs.track[0].date;
+    : trackData.node.attrs.track[0].date
 
-  const labelRemoved = `removed `;
-  let textRemoved = '';
-  const labelAdded = `added `;
-  let textAdded = '';
+  const labelRemoved = `removed `
+  let textRemoved = ''
+  const labelAdded = `added `
+  let textAdded = ''
 
-  const labelBlockChange = 'changed ';
-  let textBlockChange = '';
-  let textBlockInsert = '';
+  const labelBlockChange = 'changed '
+  let textBlockChange = ''
+  let textBlockInsert = ''
 
   if (trackData.type && trackData.type.name === 'format_change') {
-    const { before, after } = trackData.attrs;
+    const { before, after } = trackData.attrs
 
     for (let i = 0; i < before.length; i += 1) {
       if (i < before.length - 1) {
-        textRemoved += `${before[i]}, `;
+        textRemoved += `${before[i]}, `
       } else {
-        textRemoved += `${before[i]}`;
+        textRemoved += `${before[i]}`
       }
     }
 
     for (let i = 0; i < after.length; i += 1) {
       if (i < after.length - 1) {
-        textAdded += `${after[i]}, `;
+        textAdded += `${after[i]}, `
       } else {
-        textAdded += `${after[i]}`;
+        textAdded += `${after[i]}`
       }
     }
   }
 
   if (trackData.node) {
-    const track = trackData.node.attrs.track[0];
+    const track = trackData.node.attrs.track[0]
+
     if (track.type === 'insertion') {
-      textBlockInsert = trackData.node.type.name;
+      textBlockInsert = trackData.node.type.name
     }
+
     if (track.type === 'block_change') {
-      textBlockChange = `${track.before.type} to ${trackData.node.type.name}`;
+      textBlockChange = `${track.before.type} to ${trackData.node.type.name}`
     }
   }
 
@@ -166,7 +169,7 @@ const TrackChangesBox = props => {
           <Timestamp>
             <DateParser timestamp={date}>
               {(timeStamp, timeAgo) => {
-                return `${timeAgo} ago`;
+                return `${timeAgo} ago`
               }}
             </DateParser>
           </Timestamp>
@@ -206,7 +209,7 @@ const TrackChangesBox = props => {
         )}
       </ChangeWrapper>
     </Wrapper>
-  );
-};
+  )
+}
 
-export default TrackChangesBox;
+export default TrackChangesBox
