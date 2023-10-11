@@ -1,1 +1,0 @@
-ALTER TABLE manuscripts ADD is_author_proofing_enabled BOOLEAN DEFAULT false;

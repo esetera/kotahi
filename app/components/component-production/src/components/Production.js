@@ -16,6 +16,7 @@ import {
 } from '../../../shared'
 import { Info } from './styles'
 import { ControlsContainer } from '../../../component-manuscripts/src/style'
+import AuthorFeedbackForm from '../../../component-author-feedback/src/components/AuthorFeedbackForm'
 
 const FlexRow = styled.div`
   display: flex;
@@ -81,7 +82,17 @@ const Production = ({
   }
 
   const feedbackSection = {
-    content: 'TODO: Add a new feedback form to go here.',
+    content: (
+      <SectionContent>
+        <AuthorFeedbackForm
+          currentUser={currentUser}
+          isAuthorProofingVersion={isAuthorProofingVersion}
+          isReadOnlyVersion={isReadOnlyVersion}
+          manuscript={manuscript}
+          updateManuscript={updateManuscript}
+        />
+      </SectionContent>
+    ),
     key: 'feedback',
     label: 'Feedback',
   }

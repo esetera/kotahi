@@ -74,7 +74,7 @@ const AssignAuthorForProofing = ({ assignAuthorForProofing, manuscript }) => {
                 <>
                   <span>
                     {member?.user?.username ||
-                      member?.user?.defaultIdentity?.identifier}
+                      member?.user?.defaultIdentity?.name}
                   </span>
                   <br />
                 </>

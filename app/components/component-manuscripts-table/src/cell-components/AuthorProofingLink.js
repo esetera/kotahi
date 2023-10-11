@@ -44,9 +44,7 @@ const AuthorProofingLink = ({
             e.stopPropagation()
           }}
           to={{
-            pathname: `${urlFrag}/versions/${
-              manuscript.parentId || manuscript.id
-            }/production`,
+            pathname: `${urlFrag}/versions/${manuscript.id}/production`,
           }}
         >
           <Edit />

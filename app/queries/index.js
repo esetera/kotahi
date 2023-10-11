@@ -457,3 +457,28 @@ export const ASSIGN_AUTHOR_FOR_PROOFING = gql`
     }
   }
 `
+
+export const CREATE_FILE_MUTATION = gql`
+  mutation($file: Upload!, $meta: FileMetaInput!) {
+    createFile(file: $file, meta: $meta) {
+      id
+      created
+      name
+      updated
+      name
+      tags
+      objectId
+      storedObjects {
+        key
+        mimetype
+        url
+      }
+    }
+  }
+`
+
+export const DELETE_FILE_MUTATION = gql`
+  mutation($id: ID!) {
+    deleteFile(id: $id)
+  }
+`

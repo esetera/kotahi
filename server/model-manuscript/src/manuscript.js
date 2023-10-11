@@ -223,6 +223,8 @@ class Manuscript extends BaseModel {
     // All versions should be linked to one parent, original manuscript
     newVersion.parentId = this.parentId || this.id
 
+    newVersion.authorFeedback = {}
+
     const manuscript = await Manuscript.query().insertGraphAndFetch(
       omit(cloneDeep(newVersion), ['id', 'created', 'updated', 'decision']),
     )
@@ -403,6 +405,22 @@ class Manuscript extends BaseModel {
         searchableText: { type: 'string' },
         groupId: { type: ['string', 'null'], format: 'uuid' },
         isAuthorProofingEnabled: { type: ['boolean', 'null'] },
+        authorFeedback: {
+          type: 'object',
+          properties: {
+            text: { type: 'string' },
+            fileIds: { type: 'array' },
+            submitterId: { type: ['string', 'null'], format: 'uuid' },
+            edited: {
+              type: ['string', 'object', 'null'],
+              format: 'date-time',
+            },
+            submitted: {
+              type: ['string', 'object', 'null'],
+              format: 'date-time',
+            },
+          },
+        },
       },
     }
   }

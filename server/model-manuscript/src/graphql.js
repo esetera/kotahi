@@ -458,6 +458,7 @@ const resolvers = {
           },
         ],
         groupId: group.id,
+        authorFeedback: {},
       }
 
       if (['ncrc', 'colab'].includes(activeConfig.formData.instanceName)) {
@@ -532,14 +533,20 @@ const resolvers = {
     async assignAuthoForProofingManuscript(_, { id }, ctx) {
       const manuscript = await models.Manuscript.find(id)
 
-      // getting the ID of the firstVersion for all manuscripts.
-      const firstVersionId = manuscript.parentId || manuscript.id
-
       manuscript.isAuthorProofingEnabled = true
 
-      const updated = await models.Manuscript.query().updateAndFetchById(
-        firstVersionId,
-        manuscript,
+      if (manuscript.authorFeedback.submitted) {
+        delete manuscript.authorFeedback.submitted
+      }
+
+      const updated = await models.Manuscript.query().patchAndFetchById(
+        manuscript.id,
+        {
+          isAuthorProofingEnabled: true,
+          authorFeedback: {
+            ...manuscript.authorFeedback,
+          },
+        },
       )
 
       return updated
@@ -1639,6 +1646,23 @@ const resolvers = {
         models.Manuscript.relatedQuery('submitter').for(parent.id).first()
       )
     },
+    async authorFeedback(parent) {
+      let files = parent.authorFeedback.fileIds
+        ? await models.File.query().findByIds(parent.authorFeedback.fileIds)
+        : []
+
+      const submitter = parent.authorFeedback.submitterId
+        ? await models.User.query().findById(parent.authorFeedback.submitterId)
+        : null
+
+      files = await getFilesWithUrl(files)
+
+      return {
+        ...(parent.authorFeedback || {}),
+        files,
+        submitter,
+      }
+    },
   },
   PublishedManuscript: {
     ...manuscriptAndPublishedManuscriptSharedResolvers,
@@ -1898,6 +1922,7 @@ const typeDefs = `
     hasOverdueTasksForUser: Boolean
     invitations: [Invitation]
     isAuthorProofingEnabled: Boolean
+    authorFeedback: ManuscriptAuthorFeeback
   }
 
   input ManuscriptInput {
@@ -1965,6 +1990,15 @@ const typeDefs = `
     subjects: [String]
     history: [MetaDate]
     manuscriptId: ID
+  }
+
+  type ManuscriptAuthorFeeback {
+    text: String
+    fileIds: [String]
+    files: [File]
+    submitter: User
+    edited: DateTime
+    submitted: DateTime
   }
 
   type Preprint {
