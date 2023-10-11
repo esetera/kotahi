@@ -58,6 +58,7 @@ const productionWaxEditorConfig = (
   updateAnystyle,
   updateCrossRef,
   styleReference,
+  isReadOnly,
 ) => ({
   EnableTrackChangeService: {
     enabled: false,
@@ -81,7 +82,10 @@ const productionWaxEditorConfig = (
     },
   },
   SchemaService: KotahiSchema,
-  CommentsService: { readOnly: false }, // this should make it work though this is not yet in Wax
+  // If we are in read-only mode, readOnly is set to true. This makes it so that the user cannot add more comments.
+  // A little vexingly, however, the interface for adding (or replying to) comments is shown. Maybe this should be
+  // changed in CommentsService in the future.
+  CommentsService: { readOnly: isReadOnly || false },
   MenuService: [
     {
       templateArea: 'topBar',

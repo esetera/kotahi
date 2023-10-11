@@ -227,6 +227,7 @@ const ProductionWaxEditor = ({
                   updateAnystyle,
                   updateCrossRef,
                   updateCiteProc,
+                  readonly,
                 )
           }
           fileUpload={file => renderImage(file)}
