@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Formik } from 'formik'
 import { useMutation } from '@apollo/client'
 import { ValidatedFieldFormik } from '@pubsweet/ui'
@@ -13,6 +13,7 @@ import SimpleWaxEditor from '../../../wax-collab/src/SimpleWaxEditor'
 import { CREATE_FILE_MUTATION, DELETE_FILE_MUTATION } from '../../../../queries'
 import SubmittedStatus from './SubmittedStatus'
 import { Legend } from '../../../component-submit/src/style'
+import { ConfigContext } from '../../../config/src'
 
 // Kept the file changes minimal with this single file can be split into separate files in further iterations for code optimization
 
@@ -79,6 +80,8 @@ const AuthorFeedbackForm = ({
   updateManuscript,
   isReadOnlyVersion,
 }) => {
+  const config = useContext(ConfigContext)
+  const { urlFrag } = config
   const { authorFeedback } = manuscript
 
   const [readOnly, setReadOnly] = useState(
@@ -121,6 +124,10 @@ const AuthorFeedbackForm = ({
       },
     })
     setReadOnly(true)
+
+    setTimeout(() => {
+      window.location.href = `${urlFrag}/dashboard`
+    }, 2000)
   }
 
   // Initial data for the form

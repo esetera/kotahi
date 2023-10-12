@@ -26,6 +26,7 @@ import KanbanBoard from './KanbanBoard'
 import InviteReviewer from './reviewers/InviteReviewer'
 import { ConfigContext } from '../../../config/src'
 import { getActiveTab } from '../../../../shared/manuscriptUtils'
+import AuthorFeedbackForm from '../../../component-author-feedback/src/components/AuthorFeedbackForm'
 
 const TaskSectionRow = styled(SectionRow)`
   padding: 12px 0 18px;
@@ -481,6 +482,22 @@ const DecisionVersion = ({
     }
   }
 
+  const feedbackSection = () => {
+    return {
+      content: (
+        <SectionContent>
+          <AuthorFeedbackForm
+            currentUser={currentUser}
+            isReadOnlyVersion
+            manuscript={version}
+          />
+        </SectionContent>
+      ),
+      key: 'feedback',
+      label: 'Feedback',
+    }
+  }
+
   let defaultActiveKey
 
   switch (config?.controlPanel?.showTabs[0]) {
@@ -525,6 +542,9 @@ const DecisionVersion = ({
     if (config?.controlPanel?.showTabs.includes('Tasks & Notifications'))
       sections.push(tasksAndNotificationsSection())
   }
+
+  // Temporary may change in future iterations so not adding it to config for now!
+  if (version?.authorFeedback?.submitted) sections.push(feedbackSection())
 
   return (
     <HiddenTabs

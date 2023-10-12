@@ -86,7 +86,6 @@ const Production = ({
       <SectionContent>
         <AuthorFeedbackForm
           currentUser={currentUser}
-          isAuthorProofingVersion={isAuthorProofingVersion}
           isReadOnlyVersion={isReadOnlyVersion}
           manuscript={manuscript}
           updateManuscript={updateManuscript}

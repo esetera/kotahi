@@ -91,6 +91,30 @@ const manuscriptFields = `
   }
   status
   isAuthorProofingEnabled
+  authorFeedback {
+    text
+    fileIds
+    files {
+      id
+      name
+      tags
+      storedObjects {
+        mimetype
+        key
+        url
+        type
+      }
+    }
+    edited
+    submitted
+    submitter {
+      username
+      defaultIdentity {
+        name
+      }
+      id
+    }
+  }
   meta {
     manuscriptId
     title
