@@ -12,7 +12,9 @@ const ConnectedCommentStyled = styled.div`
   margin-left: ${props => (props.active ? `${-20}px` : `${50}px`)};
   position: absolute;
   transition: ${props =>
-    props.active && props.length ? `none!important` : `all 1.3s`};
+    props.active && props.length
+      ? `none!important`
+      : `all 0.25s`}; /* was 1.3s*/
   width: 200px;
   @media (max-width: 600px) {
     margin-left: 15px;
