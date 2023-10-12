@@ -12,7 +12,10 @@ const ReadonlyFieldData = ({
   threadedDiscussionProps,
 }) => {
   const data = get(formData, fieldName)
-  const fieldDefinition = form.children?.find(field => field.name === fieldName)
+
+  const fieldDefinition = form.structure?.children?.find(
+    field => field.name === fieldName,
+  )
 
   if (fieldDefinition?.component === 'AuthorsInput' && Array.isArray(data)) {
     return (data || []).map((author, i) => {
@@ -138,7 +141,7 @@ const ReadonlyFieldData = ({
                   {option.label}
                 </ColorBadge>
               )
-            return <div>{option.label}</div>
+            return <div key={option.id}>{option.label}</div>
           }
 
           return <span key={item}>{item}</span> // Fallback for data not matching any option

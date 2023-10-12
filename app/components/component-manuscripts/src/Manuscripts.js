@@ -146,7 +146,7 @@ const Manuscripts = ({ history, ...props }) => {
 
     const hasInvalidFields = await validateManuscriptSubmission(
       manuscript.submission,
-      data.formForPurposeAndCategory?.structure,
+      data.formForPurposeAndCategory,
       validateDoi,
       validateSuffix,
     )

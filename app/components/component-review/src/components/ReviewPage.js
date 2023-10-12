@@ -109,7 +109,9 @@ const fragmentFields = `
   submission
 `
 
-const formStructure = `
+const formFields = `
+  category
+  purpose
   structure {
     name
     description
@@ -171,15 +173,15 @@ const query = gql`
     }
 
     submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
-      ${formStructure}
+      ${formFields}
     }
 
     reviewForm: formForPurposeAndCategory(purpose: "review", category: "review", groupId: $groupId) {
-      ${formStructure}
+      ${formFields}
     }
 
     decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision", groupId: $groupId) {
-      ${formStructure}
+      ${formFields}
     }
   }
 `
@@ -327,25 +329,37 @@ const ReviewPage = ({ currentUser, history, match }) => {
     userId: currentUser.id,
   }
 
-  const submissionForm = data.submissionForm?.structure ?? {
-    name: '',
-    children: [],
-    description: '',
-    haspopup: 'false',
+  const submissionForm = data.submissionForm ?? {
+    category: 'submission',
+    purpose: '',
+    structure: {
+      name: '',
+      children: [],
+      description: '',
+      haspopup: 'false',
+    },
   }
 
-  const reviewForm = data.reviewForm?.structure ?? {
-    name: '',
-    children: [],
-    description: '',
-    haspopup: 'false',
+  const reviewForm = data.reviewForm ?? {
+    category: 'review',
+    purpose: '',
+    structure: {
+      name: '',
+      children: [],
+      description: '',
+      haspopup: 'false',
+    },
   }
 
-  const decisionForm = data.decisionForm?.structure ?? {
-    name: '',
-    children: [],
-    description: '',
-    haspopup: 'false',
+  const decisionForm = data.decisionForm ?? {
+    category: 'decision',
+    purpose: '',
+    structure: {
+      name: '',
+      children: [],
+      description: '',
+      haspopup: 'false',
+    },
   }
 
   const channelId = manuscript.channels.find(c => c.type === 'editorial')?.id

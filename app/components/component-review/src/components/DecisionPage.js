@@ -299,34 +299,46 @@ const DecisionPage = ({ currentUser, match }) => {
 
   const {
     manuscript,
-    submissionForm,
-    decisionForm: decisionFormOuter,
-    reviewForm: reviewFormOuter,
+    submissionForm: submissionFormOrNull,
+    decisionForm: decisionFormOrNull,
+    reviewForm: reviewFormOrNull,
     users,
     threadedDiscussions,
     doisToRegister,
     emailTemplates,
   } = data
 
-  const form = submissionForm?.structure ?? {
-    name: '',
-    children: [],
-    description: '',
-    haspopup: 'false',
+  const submissionForm = submissionFormOrNull ?? {
+    category: 'submission',
+    purpose: '',
+    structure: {
+      name: '',
+      children: [],
+      description: '',
+      haspopup: 'false',
+    },
   }
 
-  const decisionForm = decisionFormOuter?.structure ?? {
-    name: '',
-    children: [],
-    description: '',
-    haspopup: 'false',
+  const decisionForm = decisionFormOrNull ?? {
+    category: 'decision',
+    purpose: '',
+    structure: {
+      name: '',
+      children: [],
+      description: '',
+      haspopup: 'false',
+    },
   }
 
-  const reviewForm = reviewFormOuter?.structure ?? {
-    name: '',
-    children: [],
-    description: '',
-    haspopup: 'false',
+  const reviewForm = reviewFormOrNull ?? {
+    category: 'review',
+    purpose: '',
+    structure: {
+      name: '',
+      children: [],
+      description: '',
+      haspopup: 'false',
+    },
   }
 
   const sendNotifyEmail = async emailData => {
@@ -393,7 +405,6 @@ const DecisionPage = ({ currentUser, match }) => {
       dois={doisToRegister}
       emailTemplates={emailTemplates}
       externalEmail={externalEmail}
-      form={form}
       handleChange={handleChange}
       makeDecision={makeDecision}
       manuscript={manuscript}
@@ -412,6 +423,7 @@ const DecisionPage = ({ currentUser, match }) => {
       setExternalEmail={setExternalEmail}
       setSelectedEmail={setSelectedEmail}
       setShouldPublishField={setShouldPublishField}
+      submissionForm={submissionForm}
       teamLabels={config.teams}
       teams={data?.manuscript?.teams}
       threadedDiscussionProps={threadedDiscussionProps}

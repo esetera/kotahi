@@ -22,6 +22,8 @@ export const reviewFields = `
 `
 
 const formFields = `
+  category
+  purpose
   structure {
     name
     description

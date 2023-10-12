@@ -137,7 +137,7 @@ const ReviewLayout = ({
                 createFile={createFile}
                 deleteFile={deleteFile}
                 form={reviewForm}
-                initialValues={reviewData}
+                formData={reviewData}
                 manuscriptId={latestVersion.id}
                 manuscriptShortId={latestVersion.shortId}
                 manuscriptStatus={latestVersion.status}
@@ -211,14 +211,18 @@ ReviewLayout.propTypes = {
   uploadFile: PropTypes.func,
   channelId: PropTypes.string.isRequired,
   submissionForm: PropTypes.shape({
-    children: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string,
-        title: PropTypes.string,
-        shortDescription: PropTypes.string,
-      }).isRequired,
-    ).isRequired,
+    category: PropTypes.string.isRequired,
+    purpose: PropTypes.string.isRequired,
+    structure: PropTypes.shape({
+      children: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string.isRequired,
+          name: PropTypes.string,
+          title: PropTypes.string,
+          shortDescription: PropTypes.string,
+        }).isRequired,
+      ).isRequired,
+    }).isRequired,
   }).isRequired,
 }
 

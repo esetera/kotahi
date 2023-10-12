@@ -31,7 +31,7 @@ const ReadonlyFormTemplate = ({
           </SectionRowGrid>
         )}
 
-      {form.children
+      {form.structure.children
         .filter(element => {
           return (
             (showEditorOnlyFields || element.hideFromAuthors !== 'true') &&
@@ -58,15 +58,19 @@ const ReadonlyFormTemplate = ({
 
 ReadonlyFormTemplate.propTypes = {
   form: PropTypes.shape({
-    children: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string,
-        component: PropTypes.string,
-        title: PropTypes.string,
-        shortDescription: PropTypes.string,
-      }).isRequired,
-    ).isRequired,
+    category: PropTypes.string.isRequired,
+    purpose: PropTypes.string.isRequired,
+    structure: PropTypes.shape({
+      children: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string.isRequired,
+          name: PropTypes.string,
+          component: PropTypes.string,
+          title: PropTypes.string,
+          shortDescription: PropTypes.string,
+        }).isRequired,
+      ).isRequired,
+    }).isRequired,
   }).isRequired,
   manuscript: PropTypes.shape({
     meta: PropTypes.shape({ source: PropTypes.string }).isRequired,

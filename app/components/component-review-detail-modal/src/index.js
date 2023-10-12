@@ -264,11 +264,11 @@ const ReviewData = ({
   const isFileField = element =>
     ['SupplementaryFiles', 'VisualAbstract'].includes(element.component)
 
-  const nonFileFields = reviewForm.children.filter(
+  const nonFileFields = reviewForm.structure.children.filter(
     element => isViewable(element) && !isFileField(element),
   )
 
-  const fileFields = reviewForm.children.filter(
+  const fileFields = reviewForm.structure.children.filter(
     element => isViewable(element) && isFileField(element),
   )
 

@@ -126,10 +126,7 @@ const SubmitPage = ({ currentUser, match, history }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const manuscript = data?.manuscript
-  const submissionForm = data?.submissionForm?.structure
-  const decisionForm = data?.decisionForm?.structure
-  const reviewForm = data?.reviewForm?.structure
+  const { manuscript, submissionForm, decisionForm, reviewForm } = data
 
   const updateManuscript = (versionId, manuscriptDelta) => {
     return update({

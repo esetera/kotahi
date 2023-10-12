@@ -1,8 +1,14 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik, ErrorMessage } from 'formik'
-import { unescape, get, set, debounce } from 'lodash'
+import { unescape, get, set, debounce, merge } from 'lodash'
 import { sanitize } from 'isomorphic-dompurify'
 import { RadioGroup } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
@@ -156,6 +162,18 @@ const prepareFieldProps = rawField => ({
     rawField.options.map(e => ({ ...e, color: e.labelColor })),
 })
 
+/** Fleshes out all fields with empty strings if they have no existing data */
+const createInitializedFormData = (form, existingData) => {
+  const allBlankedFields = {}
+  const fieldNames = form.structure.children.map(field => field.name)
+  fieldNames.forEach(fieldName => set(allBlankedFields, fieldName, ''))
+
+  // The following should be stored in the form but not displayed
+  allBlankedFields.$$formCategory = form.category
+  allBlankedFields.$$formPurpose = form.purpose
+  return merge(allBlankedFields, existingData)
+}
+
 // This is not being kept as state because we need to access it
 // outside of the render thread. This is a global variable, NOT
 // per component, but that's OK for our purposes.
@@ -163,7 +181,7 @@ let lastChangedField = null
 
 const FormTemplate = ({
   form,
-  initialValues,
+  formData,
   manuscriptId,
   manuscriptShortId,
   manuscriptStatus,
@@ -191,13 +209,15 @@ const FormTemplate = ({
   const config = useContext(ConfigContext)
   const [confirming, setConfirming] = React.useState(false)
 
+  const fields = form.structure.children || []
+
   const toggleConfirming = () => {
     setConfirming(confirm => !confirm)
   }
 
   const sumbitPendingThreadedDiscussionComments = async values => {
     await Promise.all(
-      form.children
+      fields
         .filter(field => field.component === 'ThreadedDiscussion')
         .map(field => get(values, field.name))
         .filter(Boolean)
@@ -209,17 +229,10 @@ const FormTemplate = ({
     )
   }
 
-  const createBlankSubmissionBasedOnForm = value => {
-    const allBlankedFields = {}
-    const fieldNames = value.children.map(field => field.name)
-    fieldNames.forEach(fieldName => set(allBlankedFields, fieldName, ''))
-    return allBlankedFields
-  }
-
-  const initialValuesWithDummyValues = {
-    ...createBlankSubmissionBasedOnForm(form),
-    ...initialValues,
-  }
+  const initialValues = useMemo(
+    () => createInitializedFormData(form, formData),
+    [],
+  )
 
   const debounceChange = useCallback(
     debounce(
@@ -237,8 +250,8 @@ const FormTemplate = ({
 
   return (
     <Formik
-      displayName={form.name}
-      initialValues={initialValuesWithDummyValues}
+      displayName={form.structure.name}
+      initialValues={initialValues}
       onSubmit={async (values, actions) => {
         await sumbitPendingThreadedDiscussionComments(values)
         if (onSubmit) await onSubmit(values, actions)
@@ -278,7 +291,7 @@ const FormTemplate = ({
           return (
             <div>
               <ActionButton
-                dataTestid={`${form.name
+                dataTestid={`${form.structure.name
                   .toLowerCase()
                   .replace(/ /g, '-')
                   .replace(/[^\w-]+/g, '')}-action-btn`}
@@ -339,7 +352,9 @@ const FormTemplate = ({
         }
 
         // this is whether the form includes a popup
-        const hasPopup = form.haspopup ? JSON.parse(form.haspopup) : false
+        const hasPopup = form.structure.haspopup
+          ? JSON.parse(form.structure.haspopup)
+          : false
 
         // this is whether to show a popup
         const showPopup = hasPopup && values.status !== 'revise'
@@ -365,10 +380,10 @@ const FormTemplate = ({
               <NoteRight>Manuscript Number: {manuscriptShortId}</NoteRight>
             )}
             <header>
-              <Heading1>{form.name}</Heading1>
+              <Heading1>{form.structure.name}</Heading1>
               <Intro
                 dangerouslySetInnerHTML={createMarkup(
-                  (form.description || '').replace(
+                  (form.structure.description || '').replace(
                     '###link###',
                     link(urlFrag, manuscriptId),
                   ),
@@ -376,7 +391,7 @@ const FormTemplate = ({
               />
             </header>
             <form>
-              {(form.children || [])
+              {fields
                 .filter(
                   element =>
                     element.component &&
@@ -582,28 +597,32 @@ const FormTemplate = ({
 
 FormTemplate.propTypes = {
   form: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    children: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired,
-        sectioncss: PropTypes.string,
-        id: PropTypes.string.isRequired,
-        component: PropTypes.string.isRequired,
-        group: PropTypes.string,
-        placeholder: PropTypes.string,
-        validate: PropTypes.arrayOf(PropTypes.object.isRequired),
-        validateValue: PropTypes.objectOf(
-          PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        ),
-        hideFromAuthors: PropTypes.string,
-        readonly: PropTypes.bool,
-      }).isRequired,
-    ).isRequired,
-    popuptitle: PropTypes.string,
-    popupdescription: PropTypes.string,
-    haspopup: PropTypes.string.isRequired, // bool as string
+    category: PropTypes.string.isRequired,
+    purpose: PropTypes.string.isRequired,
+    structure: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      description: PropTypes.string,
+      children: PropTypes.arrayOf(
+        PropTypes.shape({
+          name: PropTypes.string.isRequired,
+          title: PropTypes.string.isRequired,
+          sectioncss: PropTypes.string,
+          id: PropTypes.string.isRequired,
+          component: PropTypes.string.isRequired,
+          group: PropTypes.string,
+          placeholder: PropTypes.string,
+          validate: PropTypes.arrayOf(PropTypes.object.isRequired),
+          validateValue: PropTypes.objectOf(
+            PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+          ),
+          hideFromAuthors: PropTypes.string,
+          readonly: PropTypes.bool,
+        }).isRequired,
+      ).isRequired,
+      popuptitle: PropTypes.string,
+      popupdescription: PropTypes.string,
+      haspopup: PropTypes.string.isRequired, // bool as string
+    }).isRequired,
   }).isRequired,
   manuscriptId: PropTypes.string.isRequired,
   manuscriptShortId: PropTypes.number.isRequired,

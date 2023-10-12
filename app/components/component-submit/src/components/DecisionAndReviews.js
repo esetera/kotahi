@@ -25,19 +25,22 @@ const Decision = ({
     ? JSON.parse(decisionDataString)
     : null
 
-  const filteredChildren = !manuscript.decision
+  const filteredForm = !manuscript.decision
     ? {
         ...decisionForm,
-        children: decisionForm.children.filter(
-          formComponent => formComponent.component === 'ThreadedDiscussion',
-        ),
+        structure: {
+          ...decisionForm.structure,
+          children: decisionForm.structure.children.filter(
+            formComponent => formComponent.component === 'ThreadedDiscussion',
+          ),
+        },
       }
     : decisionForm
 
   return decisionData ? (
     <ReadonlyFormTemplate
       allowAuthorsSubmitNewVersion={allowAuthorsSubmitNewVersion}
-      form={filteredChildren}
+      form={filteredForm}
       formData={decisionData}
       hideSpecialInstructions
       manuscript={manuscript}

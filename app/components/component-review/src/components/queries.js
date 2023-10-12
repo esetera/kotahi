@@ -156,6 +156,8 @@ const manuscriptFields = `
 `
 
 const formFields = `
+  category
+  purpose
   structure {
     name
     description

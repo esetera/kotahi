@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { set, debounce } from 'lodash'
+import { debounce } from 'lodash'
 import { ConfigContext } from '../../../config/src'
 import DecisionAndReviews from './DecisionAndReviews'
 import CreateANewVersion from './CreateANewVersion'
@@ -21,13 +21,6 @@ import EditorSection from '../../../component-review/src/components/decision/Edi
 import AssignEditorsReviewers from './assignEditors/AssignEditorsReviewers'
 import AssignEditor from './assignEditors/AssignEditor'
 import SubmissionForm from './SubmissionForm'
-
-export const createBlankSubmissionBasedOnForm = form => {
-  const allBlankedFields = {}
-  const fieldNames = form.children.map(field => field.name)
-  fieldNames.forEach(fieldName => set(allBlankedFields, fieldName, ''))
-  return allBlankedFields.submission ?? {}
-}
 
 const Submit = ({
   versions = [],
@@ -56,8 +49,6 @@ const Submit = ({
     config?.submission?.allowAuthorsSubmitNewVersion
 
   const decisionSections = []
-
-  const submissionValues = createBlankSubmissionBasedOnForm(submissionForm)
 
   const handleSave = (source, versionId) =>
     updateManuscript(versionId, { meta: { source } })
@@ -101,16 +92,9 @@ const Submit = ({
     }
 
     if (userCanEditManuscriptAndFormData) {
-      Object.assign(submissionValues, version.submission)
-
-      const versionValues = {
-        ...version,
-        submission: submissionValues,
-      }
-
       const submissionProps = {
-        versionValues,
-        form: submissionForm,
+        version,
+        submissionForm,
         onSubmit,
         onChange,
         republish,
@@ -210,30 +194,34 @@ const Submit = ({
 }
 
 const formPropTypes = PropTypes.shape({
-  name: PropTypes.string.isRequired,
-  description: PropTypes.string,
-  children: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      sectioncss: PropTypes.string,
-      id: PropTypes.string.isRequired,
-      component: PropTypes.string.isRequired,
-      group: PropTypes.string,
-      placeholder: PropTypes.string,
-      validate: PropTypes.arrayOf(PropTypes.object.isRequired),
-      validateValue: PropTypes.objectOf(
-        PropTypes.oneOfType([
-          PropTypes.string.isRequired,
-          PropTypes.number.isRequired,
-        ]).isRequired,
-      ),
-      readonly: PropTypes.bool,
-    }).isRequired,
-  ).isRequired,
-  popuptitle: PropTypes.string,
-  popupdescription: PropTypes.string,
-  haspopup: PropTypes.string.isRequired, // bool as string
+  category: PropTypes.string.isRequired,
+  purpose: PropTypes.string.isRequired,
+  structure: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    children: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired,
+        sectioncss: PropTypes.string,
+        id: PropTypes.string.isRequired,
+        component: PropTypes.string.isRequired,
+        group: PropTypes.string,
+        placeholder: PropTypes.string,
+        validate: PropTypes.arrayOf(PropTypes.object.isRequired),
+        validateValue: PropTypes.objectOf(
+          PropTypes.oneOfType([
+            PropTypes.string.isRequired,
+            PropTypes.number.isRequired,
+          ]).isRequired,
+        ),
+        readonly: PropTypes.bool,
+      }).isRequired,
+    ).isRequired,
+    popuptitle: PropTypes.string,
+    popupdescription: PropTypes.string,
+    haspopup: PropTypes.string.isRequired, // bool as string
+  }).isRequired,
 })
 
 Submit.propTypes = {

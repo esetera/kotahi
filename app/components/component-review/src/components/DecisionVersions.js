@@ -18,7 +18,7 @@ const DecisionVersions = ({
   roles,
   currentUser,
   decisionForm,
-  form,
+  submissionForm,
   handleChange,
   updateManuscript,
   manuscript,
@@ -118,7 +118,6 @@ const DecisionVersions = ({
                 dois={dois}
                 emailTemplates={emailTemplates}
                 externalEmail={externalEmail}
-                form={form}
                 invitations={version.manuscript.invitations || []}
                 isCurrentVersion={index === 0}
                 key={version.manuscript.id}
@@ -139,6 +138,7 @@ const DecisionVersions = ({
                 setExternalEmail={setExternalEmail}
                 setSelectedEmail={setSelectedEmail}
                 setShouldPublishField={setShouldPublishField}
+                submissionForm={submissionForm}
                 teamLabels={teamLabels}
                 teams={teams}
                 threadedDiscussionProps={threadedDiscussionProps}

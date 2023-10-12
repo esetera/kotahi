@@ -35,16 +35,10 @@ const query = gql`
     }
 
     formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
+      category
+      purpose
       structure {
-        children {
-          title
-          shortDescription
-          id
-          component
-          name
-          hideFromReviewers
-          format
-        }
+        children
       }
     }
   }
@@ -74,11 +68,15 @@ const ReviewPreviewPage = ({ match, currentUser }) => {
 
   const { manuscript, formForPurposeAndCategory } = data
 
-  const submissionForm = formForPurposeAndCategory?.structure ?? {
-    name: '',
-    children: [],
-    description: '',
-    haspopup: 'false',
+  const submissionForm = formForPurposeAndCategory ?? {
+    category: 'submission',
+    purpose: '',
+    structure: {
+      name: '',
+      children: [],
+      description: '',
+      haspopup: 'false',
+    },
   }
 
   // Currently not expecting to preview threadedDiscussions from the ReviewPreviewPage

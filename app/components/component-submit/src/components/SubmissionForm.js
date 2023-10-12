@@ -4,8 +4,8 @@ import FormTemplate from './FormTemplate'
 import { articleStatuses } from '../../../../globals'
 
 const SubmissionForm = ({
-  versionValues,
-  form,
+  version,
+  submissionForm,
   onSubmit,
   onChange,
   republish,
@@ -38,8 +38,8 @@ const SubmissionForm = ({
             ff => ff.objectId === manuscript.id,
           )?.fieldsToPublish ?? []
         }
-        form={form}
-        initialValues={versionValues}
+        form={submissionForm}
+        formData={version}
         isSubmission
         manuscriptId={manuscript.id}
         manuscriptShortId={manuscript.shortId}

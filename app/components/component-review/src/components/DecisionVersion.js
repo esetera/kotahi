@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { set, debounce } from 'lodash'
+import { debounce } from 'lodash'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import DecisionReviews from './decision/DecisionReviews'
@@ -30,19 +30,12 @@ const TaskSectionRow = styled(SectionRow)`
   padding: 12px 0 18px;
 `
 
-const createBlankSubmissionBasedOnForm = form => {
-  const allBlankedFields = {}
-  const fieldNames = form?.children?.map(field => field.name)
-  fieldNames.forEach(fieldName => set(allBlankedFields, fieldName, ''))
-  return allBlankedFields.submission ?? {}
-}
-
 const DecisionVersion = ({
   allUsers,
   addReviewer,
   roles,
   decisionForm,
-  form,
+  submissionForm,
   currentDecisionData,
   currentUser,
   version,
@@ -151,17 +144,6 @@ const DecisionVersion = ({
   )
 
   const metadataSection = () => {
-    const submissionValues = isCurrentVersion
-      ? createBlankSubmissionBasedOnForm(form)
-      : {}
-
-    Object.assign(submissionValues, version.submission)
-
-    const versionValues = {
-      ...version,
-      submission: submissionValues,
-    }
-
     const versionId = version.id
 
     return {
@@ -170,7 +152,7 @@ const DecisionVersion = ({
           {!isCurrentVersion ? (
             <ReadonlyFormTemplate
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
-              form={form}
+              form={submissionForm}
               formData={version}
               manuscript={version}
               showEditorOnlyFields
@@ -187,8 +169,8 @@ const DecisionVersion = ({
                     ff => ff.objectId === version.id,
                   )?.fieldsToPublish ?? []
                 }
-                form={form}
-                initialValues={versionValues}
+                form={submissionForm}
+                formData={version}
                 isSubmission
                 manuscriptId={version.id}
                 manuscriptShortId={version.shortId}
@@ -409,10 +391,10 @@ const DecisionVersion = ({
                     )?.fieldsToPublish ?? []
                   }
                   form={decisionForm}
-                  initialValues={
+                  formData={
                     currentDecisionData?.jsonData
                       ? JSON.parse(currentDecisionData?.jsonData)
-                      : { comment: '', $verdict: '', discussion: '' } // TODO this should just be {}, but needs testing.
+                      : {}
                   }
                   isSubmission={false}
                   manuscriptId={version.id}
@@ -525,15 +507,19 @@ const DecisionVersion = ({
 DecisionVersion.propTypes = {
   addReviewer: PropTypes.func.isRequired,
   updateManuscript: PropTypes.func.isRequired,
-  form: PropTypes.shape({
-    children: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string,
-        title: PropTypes.string,
-        shortDescription: PropTypes.string,
-      }).isRequired,
-    ).isRequired,
+  submissionForm: PropTypes.shape({
+    category: PropTypes.string.isRequired,
+    purpose: PropTypes.string.isRequired,
+    structure: PropTypes.shape({
+      children: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string.isRequired,
+          name: PropTypes.string,
+          title: PropTypes.string,
+          shortDescription: PropTypes.string,
+        }).isRequired,
+      ).isRequired,
+    }).isRequired,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
   isCurrentVersion: PropTypes.bool.isRequired,
