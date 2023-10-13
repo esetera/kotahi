@@ -4,7 +4,7 @@ import { debounce } from 'lodash'
 import { ConfigContext } from '../../../config/src'
 import DecisionAndReviews from './DecisionAndReviews'
 import CreateANewVersion from './CreateANewVersion'
-import ReadonlyFormTemplate from '../../../component-review/src/components/metadata/ReadonlyFormTemplate'
+import { ReadonlyFormTemplate } from '../../../component-form/src'
 import MessageContainer from '../../../component-chat/src/MessageContainer'
 
 import {

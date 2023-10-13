@@ -1,8 +1,14 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import ReadonlyFieldData from './ReadonlyFieldData'
-import { Title, SectionHeader, SectionRowGrid, Heading, Cell } from '../style'
-import { SectionContent } from '../../../../shared'
+import {
+  Title,
+  SectionHeader,
+  SectionRowGrid,
+  Heading,
+  Cell,
+} from '../../component-review/src/components/style'
+import { SectionContent } from '../../shared'
 
 const ReadonlyFormTemplate = ({
   form,

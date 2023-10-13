@@ -18,7 +18,7 @@ const DecisionVersions = ({
   roles,
   currentUser,
   decisionForm,
-  submissionForm,
+  submissionForms,
   handleChange,
   updateManuscript,
   manuscript,
@@ -138,7 +138,7 @@ const DecisionVersions = ({
                 setExternalEmail={setExternalEmail}
                 setSelectedEmail={setSelectedEmail}
                 setShouldPublishField={setShouldPublishField}
-                submissionForm={submissionForm}
+                submissionForms={submissionForms}
                 teamLabels={teamLabels}
                 teams={teams}
                 threadedDiscussionProps={threadedDiscussionProps}

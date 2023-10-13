@@ -1,6 +1,6 @@
 import React from 'react'
 import { SectionContent } from '../../../shared'
-import FormTemplate from './FormTemplate'
+import { FormTemplate } from '../../../component-form/src'
 import { articleStatuses } from '../../../../globals'
 
 const SubmissionForm = ({

@@ -299,7 +299,7 @@ const DecisionPage = ({ currentUser, match }) => {
 
   const {
     manuscript,
-    submissionForm: submissionFormOrNull,
+    submissionForms,
     decisionForm: decisionFormOrNull,
     reviewForm: reviewFormOrNull,
     users,
@@ -307,17 +307,6 @@ const DecisionPage = ({ currentUser, match }) => {
     doisToRegister,
     emailTemplates,
   } = data
-
-  const submissionForm = submissionFormOrNull ?? {
-    category: 'submission',
-    purpose: '',
-    structure: {
-      name: '',
-      children: [],
-      description: '',
-      haspopup: 'false',
-    },
-  }
 
   const decisionForm = decisionFormOrNull ?? {
     category: 'decision',
@@ -423,7 +412,7 @@ const DecisionPage = ({ currentUser, match }) => {
       setExternalEmail={setExternalEmail}
       setSelectedEmail={setSelectedEmail}
       setShouldPublishField={setShouldPublishField}
-      submissionForm={submissionForm}
+      submissionForms={submissionForms}
       teamLabels={config.teams}
       teams={data?.manuscript?.teams}
       threadedDiscussionProps={threadedDiscussionProps}

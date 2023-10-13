@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
+import { ReadonlyFormTemplate } from '../../../../component-form/src'
 import { ensureJsonIsParsed } from '../../../../../shared/objectUtils'
 
 const Heading = styled.h4``

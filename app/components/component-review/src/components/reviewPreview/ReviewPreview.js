@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { useHistory } from 'react-router-dom'
 import { grid } from '@pubsweet/ui-toolkit'
-import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
+import { ReadonlyFormTemplate } from '../../../../component-form/src'
 import { Heading, Title, Icon, PlainOrRichText } from '../../../../shared'
 import { color } from '../../../../../theme'
 

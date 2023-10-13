@@ -1,9 +1,13 @@
 import React from 'react'
 import { get } from 'lodash'
-import SimpleWaxEditor from '../../../../wax-collab/src/SimpleWaxEditor'
-import { Affiliation, Email, BadgeContainer } from '../style'
-import { Attachment, ColorBadge } from '../../../../shared'
-import ThreadedDiscussion from '../../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
+import SimpleWaxEditor from '../../wax-collab/src/SimpleWaxEditor'
+import {
+  Affiliation,
+  Email,
+  BadgeContainer,
+} from '../../component-review/src/components/style'
+import { Attachment, ColorBadge } from '../../shared'
+import ThreadedDiscussion from '../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
 
 const ReadonlyFieldData = ({
   fieldName,

@@ -7,7 +7,7 @@ import DecisionReviews from './decision/DecisionReviews'
 import AssignEditorsReviewers from './assignEditors/AssignEditorsReviewers'
 import AssignEditor from './assignEditors/AssignEditor'
 import EmailNotifications from './emailNotifications'
-import ReadonlyFormTemplate from './metadata/ReadonlyFormTemplate'
+import { FormTemplate, ReadonlyFormTemplate } from '../../../component-form/src'
 import EditorSection from './decision/EditorSection'
 import Publish from './Publish'
 import { AdminSection } from './style'
@@ -19,7 +19,6 @@ import {
   Title,
 } from '../../../shared'
 import DecisionAndReviews from '../../../component-submit/src/components/DecisionAndReviews'
-import FormTemplate from '../../../component-submit/src/components/FormTemplate'
 import TaskList from '../../../component-task-manager/src/TaskList'
 import KanbanBoard from './KanbanBoard'
 import InviteReviewer from './reviewers/InviteReviewer'
@@ -35,7 +34,7 @@ const DecisionVersion = ({
   addReviewer,
   roles,
   decisionForm,
-  submissionForm,
+  submissionForms,
   currentDecisionData,
   currentUser,
   version,
@@ -142,6 +141,16 @@ const DecisionVersion = ({
     isCurrentVersion,
     currentUser,
   )
+
+  const submissionForm = submissionForms.find(
+    f => f.purpose === version.submission.purpose,
+  ) ??
+    submissionForms.find(f => f.purpose === 'submit') ??
+    submissionForms[0] ?? {
+      category: 'submission',
+      purpose: '',
+      structure: { children: [] },
+    }
 
   const metadataSection = () => {
     const versionId = version.id

@@ -4,13 +4,15 @@ import PropTypes from 'prop-types'
 import moment from 'moment'
 import { Tabs } from '@pubsweet/ui'
 
-import ReadonlyFormTemplate from '../metadata/ReadonlyFormTemplate'
+import {
+  FormTemplate,
+  ReadonlyFormTemplate,
+} from '../../../../component-form/src'
 import Review from './Review'
 import EditorSection from '../decision/EditorSection'
 import { Columns, Manuscript, Chat, SectionContent } from '../../../../shared'
 import MessageContainer from '../../../../component-chat/src/MessageContainer'
 import SharedReviewerGroupReviews from './SharedReviewerGroupReviews'
-import FormTemplate from '../../../../component-submit/src/components/FormTemplate'
 import { ConfigContext } from '../../../../config/src'
 
 const hasManuscriptFile = manuscript =>

@@ -21,20 +21,25 @@ import {
   TextInput,
   CheckboxGroup,
   RichTextEditor,
-} from '../../../shared'
-import { Heading1, Section, Legend, SubNote } from '../style'
-import AuthorsInput from './AuthorsInput'
-import LinksInput from './LinksInput'
-import ValidatedFieldFormik from './ValidatedField'
-import Confirm from './Confirm'
-import { articleStatuses } from '../../../../globals'
-import { validateFormField } from '../../../../shared/formValidation'
-import ThreadedDiscussion from '../../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
-import ActionButton from '../../../shared/ActionButton'
-import { hasValue } from '../../../../shared/htmlUtils'
-import { ConfigContext } from '../../../config/src'
-import Modal from '../../../component-modal/src/Modal'
-import PublishingResponse from '../../../component-review/src/components/publishing/PublishingResponse'
+} from '../../shared'
+import {
+  Heading1,
+  Section,
+  Legend,
+  SubNote,
+} from '../../component-submit/src/style'
+import AuthorsInput from '../../component-submit/src/components/AuthorsInput'
+import LinksInput from '../../component-submit/src/components/LinksInput'
+import ValidatedFieldFormik from '../../component-submit/src/components/ValidatedField'
+import Confirm from '../../component-submit/src/components/Confirm'
+import { articleStatuses } from '../../../globals'
+import { validateFormField } from '../../../shared/formValidation'
+import ThreadedDiscussion from '../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
+import ActionButton from '../../shared/ActionButton'
+import { hasValue } from '../../../shared/htmlUtils'
+import { ConfigContext } from '../../config/src'
+import Modal from '../../component-modal/src/Modal'
+import PublishingResponse from '../../component-review/src/components/publishing/PublishingResponse'
 
 const FormContainer = styled(Container)`
   background: white;
@@ -169,8 +174,11 @@ const createInitializedFormData = (form, existingData) => {
   fieldNames.forEach(fieldName => set(allBlankedFields, fieldName, ''))
 
   // The following should be stored in the form but not displayed
-  allBlankedFields.$$formCategory = form.category
-  allBlankedFields.$$formPurpose = form.purpose
+  if (allBlankedFields.submission) {
+    allBlankedFields.submission.$$formCategory = form.category
+    allBlankedFields.submission.$$formPurpose = form.purpose
+  }
+
   return merge(allBlankedFields, existingData)
 }
 
@@ -184,7 +192,6 @@ const FormTemplate = ({
   formData,
   manuscriptId,
   manuscriptShortId,
-  manuscriptStatus,
   submissionButtonText,
   onChange,
   republish,
@@ -233,6 +240,25 @@ const FormTemplate = ({
     () => createInitializedFormData(form, formData),
     [],
   )
+
+  useEffect(() => {
+    if (
+      initialValues.submission?.$$formPurpose !==
+      formData.submission?.$$formPurpose
+    )
+      onChange(
+        initialValues.submission.$$formPurpose,
+        'submission.$$formPurpose',
+      )
+    if (
+      initialValues.submission?.$$formCategory !==
+      formData.submission?.$$formCategory
+    )
+      onChange(
+        initialValues.submission.$$formCategory,
+        'submission.$$formCategory',
+      )
+  }, [])
 
   const debounceChange = useCallback(
     debounce(

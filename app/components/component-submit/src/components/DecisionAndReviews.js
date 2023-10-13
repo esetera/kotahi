@@ -2,7 +2,7 @@ import React from 'react'
 
 // TODO: Sort out the imports, perhaps make DecisionReview a shared component?
 import DecisionReview from '../../../component-review/src/components/decision/DecisionReview'
-import ReadonlyFormTemplate from '../../../component-review/src/components/metadata/ReadonlyFormTemplate'
+import { ReadonlyFormTemplate } from '../../../component-form/src'
 
 import {
   SectionHeader,

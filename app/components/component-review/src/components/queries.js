@@ -240,7 +240,7 @@ export const query = gql`
       userCanEditAnyComment
     }
 
-    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
+    submissionForms: formsByCategory(category: "submission", groupId: $groupId) {
       ${formFields}
     }
 

@@ -16,7 +16,7 @@ import reviewStatuses from '../../../../config/journal/review-status'
 import recommendations from '../../../../config/journal/recommendations'
 import { UserAvatar } from '../../component-avatar/src'
 import DeleteReviewerModal from '../../component-review/src/components/reviewers/DeleteReviewerModal'
-import ReadonlyFieldData from '../../component-review/src/components/metadata/ReadonlyFieldData'
+import { ReadonlyFieldData } from '../../component-form/src'
 import { ConfigContext } from '../../config/src'
 
 const Header = styled.div`
