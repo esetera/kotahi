@@ -354,7 +354,6 @@ const getBaseComponentProperties = category => ({
   },
   SupplementaryFiles: {
     label: 'Attachments',
-    permitPublishing: null,
     publishingTag: null,
   },
   VisualAbstract: {

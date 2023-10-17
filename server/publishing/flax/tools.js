@@ -18,22 +18,27 @@ const getPublishableFieldsForFlax = (
   threadedDiscussions,
   objectId,
   objectDate,
+  formType,
 ) => {
   if (!form) return []
-  const { fieldsToPublish } = formFieldsToPublish || { fieldsToPublish: [] }
+
+  const fieldsToPublish = formFieldsToPublish?.fieldsToPublish || []
 
   const {
     structure: { children: fields },
   } = form
 
   return fields
-    .filter(
-      f =>
-        ['always', 'true'].includes(f.permitPublishing) &&
-        f.hideFromAuthors !== 'true',
-    )
+    .filter(f => ['always', 'true'].includes(f.permitPublishing))
     .map(field => {
-      const value = get(data, field.name)
+      let fieldName = field.name
+
+      if (formType === 'submission') {
+        fieldName = field.name.replace('submission.', '')
+        fieldName = fieldName.replace('meta.', '')
+      }
+
+      const value = get(data, fieldName)
 
       if (field.component === 'ThreadedDiscussion') {
         const discussion = threadedDiscussions.find(td => td.id === value)
@@ -46,7 +51,6 @@ const getPublishableFieldsForFlax = (
 
             const shouldPublish =
               text &&
-              field.hideFromAuthors !== 'true' &&
               (field.permitPublishing === 'always' ||
                 fieldsToPublish.includes(expandedFieldName))
 
@@ -67,12 +71,12 @@ const getPublishableFieldsForFlax = (
 
       const shouldPublish =
         text &&
-        field.hideFromAuthors !== 'true' &&
         (field.permitPublishing === 'always' ||
           fieldsToPublish.includes(field.name))
 
       return {
         field,
+        value,
         fieldName: field.name,
         fieldTitle: field.shortDescription || field.title,
         text,
@@ -108,6 +112,7 @@ const getPublishableReviewFields = (
       threadedDiscussions,
       review.id,
       review.updated,
+      'reviews',
     ).filter(data => data.shouldPublish)
 
     resultReview.jsonData = JSON.stringify(modifiedJsonData)
@@ -117,6 +122,30 @@ const getPublishableReviewFields = (
   return resultReviews
 }
 
+const getPublishableSubmissionFields = (form, manuscript) => {
+  let submissionWithFields = {}
+  let manuscriptData = manuscript.submission
+  const metaTitle = manuscript.meta.title
+  const submissionTitle = manuscript.submission.title
+  const title = metaTitle || submissionTitle
+
+  manuscriptData = { ...manuscriptData, title }
+
+  const modifiedJsonData = getPublishableFieldsForFlax(
+    manuscript.formFieldsToPublish.find(ff => ff.objectId === manuscript.id),
+    manuscriptData,
+    form,
+    null,
+    manuscript.id,
+    manuscript.updated,
+    'submission',
+  ).filter(data => data.shouldPublish)
+
+  submissionWithFields = JSON.stringify(modifiedJsonData)
+  return submissionWithFields
+}
+
 module.exports = {
   getPublishableReviewFields,
+  getPublishableSubmissionFields,
 }

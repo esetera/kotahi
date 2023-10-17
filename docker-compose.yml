@@ -302,7 +302,7 @@ services:
   anystyle:
     depends_on:
       - db-anystyle
-    image: cokoapps/anystyle:1.0.0
+    image: cokoapps/anystyle:1.1.1
     ports:
       - ${SERVICE_ANYSTYLE_PORT:-4567}:${SERVICE_ANYSTYLE_PORT:-4567}
     environment:
@@ -339,7 +339,7 @@ services:
       - ./scripts/init-pgboss.sql:/docker-entrypoint-initdb.d/init-pgboss.sql
 
   kotahi-flax-site:
-    image: cokoapps/kotahi-flax:0.2.18
+    image: cokoapps/kotahi-flax:0.2.24
     depends_on:
       - client
     ports:

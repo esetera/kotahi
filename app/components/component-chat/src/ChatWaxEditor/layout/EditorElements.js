@@ -1,4 +1,4 @@
-/* stylelint-disable selector-type-no-unknown */
+/* stylelint-disable selector-type-no-unknown, no-descending-specificity */
 import { css } from 'styled-components'
 import { color } from '../../../../../theme'
 
@@ -96,7 +96,7 @@ export default css`
       top: -4px;
     }
 
-    & p,
+    & p:not(.ref),
     & li {
       &:before {
         content: '§ ';

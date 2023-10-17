@@ -53,6 +53,23 @@ const ReviewLayout = ({
 
   const decision = latestVersion.reviews.find(r => r.isDecision) || {}
 
+  const decisionIsComplete = [
+    'accepted',
+    'revise',
+    'rejected',
+    'evaluated',
+    'published',
+  ].includes(latestVersion.status)
+
+  const redactedDecisionForm = decisionIsComplete
+    ? decisionForm
+    : {
+        ...decisionForm,
+        children: decisionForm.children.filter(
+          x => x.component === 'ThreadedDiscussion',
+        ),
+      }
+
   priorVersions.forEach(msVersion => {
     if (msVersion.reviews?.some(r => !r.user))
       console.error(
@@ -165,7 +182,7 @@ const ReviewLayout = ({
           {config?.review?.showSummary && (
             <ReadonlyFormTemplate
               customComponents={componentsMap[latestVersion.id]}
-              form={decisionForm}
+              form={redactedDecisionForm}
               formData={decision.jsonData || {}}
               hideSpecialInstructions
               manuscript={latestVersion}
