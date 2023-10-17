@@ -22,6 +22,7 @@ export const reviewFields = `
 `
 
 const formFields = `
+  id
   category
   purpose
   structure {

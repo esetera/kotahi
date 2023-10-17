@@ -6,6 +6,7 @@ import { articleStatuses } from '../../../../globals'
 const SubmissionForm = ({
   version,
   submissionForm,
+  submissionFormComponents,
   onSubmit,
   onChange,
   republish,
@@ -32,6 +33,7 @@ const SubmissionForm = ({
     <SectionContent>
       <FormTemplate
         createFile={createFile}
+        customComponents={submissionFormComponents}
         deleteFile={deleteFile}
         fieldsToPublish={
           manuscript.formFieldsToPublish.find(

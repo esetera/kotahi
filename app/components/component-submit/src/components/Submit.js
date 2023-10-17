@@ -4,7 +4,10 @@ import { debounce } from 'lodash'
 import { ConfigContext } from '../../../config/src'
 import DecisionAndReviews from './DecisionAndReviews'
 import CreateANewVersion from './CreateANewVersion'
-import { ReadonlyFormTemplate } from '../../../component-form/src'
+import {
+  ReadonlyFormTemplate,
+  getComponentsForManuscriptVersions,
+} from '../../../component-form/src'
 import MessageContainer from '../../../component-chat/src/MessageContainer'
 
 import {
@@ -45,6 +48,11 @@ const Submit = ({
 }) => {
   const config = useContext(ConfigContext)
 
+  const componentsMap = getComponentsForManuscriptVersions(
+    versions,
+    threadedDiscussionProps,
+  )
+
   const allowAuthorsSubmitNewVersion =
     config?.submission?.allowAuthorsSubmitNewVersion
 
@@ -61,10 +69,7 @@ const Submit = ({
 
   versions.forEach(({ manuscript: version, label }, index) => {
     const userCanEditManuscriptAndFormData =
-      index === 0 &&
-      (['new', 'revising'].includes(version.status) ||
-        (currentUser.groupRoles.includes('groupManager') &&
-          version.status !== 'rejected'))
+      index === 0 && ['new', 'revising'].includes(version.status)
 
     const editorSection = {
       content: (
@@ -95,6 +100,7 @@ const Submit = ({
       const submissionProps = {
         version,
         submissionForm,
+        submissionFormComponents: componentsMap[version.id],
         onSubmit,
         onChange,
         republish,
@@ -121,16 +127,17 @@ const Submit = ({
               allowAuthorsSubmitNewVersion={allowAuthorsSubmitNewVersion}
               currentUser={currentUser}
               decisionForm={decisionForm}
+              decisionFormComponents={componentsMap[version.id]}
               manuscript={version}
               reviewForm={reviewForm}
-              threadedDiscussionProps={threadedDiscussionExtendedProps}
+              reviewFormComponents={componentsMap[version.id]}
             />
             <ReadonlyFormTemplate
+              customComponents={componentsMap[version.id]}
               form={submissionForm}
               formData={version}
               manuscript={version}
               showEditorOnlyFields={false}
-              threadedDiscussionProps={threadedDiscussionExtendedProps}
               title="Metadata"
             />
           </>

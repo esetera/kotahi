@@ -4,6 +4,7 @@ import ReactRouterPropTypes from 'react-router-prop-types'
 import ReviewPreview from './reviewPreview/ReviewPreview'
 import { Heading, Page, Spinner } from '../../../shared'
 import { ConfigContext } from '../../../config/src'
+import { getComponentsForManuscriptVersions } from '../../../component-form/src'
 
 const fragmentFields = `
   id
@@ -35,6 +36,7 @@ const query = gql`
     }
 
     formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
+      id
       category
       purpose
       structure {
@@ -79,19 +81,20 @@ const ReviewPreviewPage = ({ match, currentUser }) => {
     },
   }
 
-  // Currently not expecting to preview threadedDiscussions from the ReviewPreviewPage
-  const threadedDiscussionDummyProps = {
-    threadedDiscussions: [],
-  }
+  const componentsMap = getComponentsForManuscriptVersions(
+    [{ manuscript }],
+    { threadedDiscussions: [] },
+    false,
+  )
 
   return (
     <ReviewPreview
+      customComponents={componentsMap[manuscript.id]}
       manuscript={{
         ...manuscript,
         submission: JSON.parse(manuscript.submission),
       }}
       submissionForm={submissionForm}
-      threadedDiscussionProps={threadedDiscussionDummyProps}
     />
   )
 }

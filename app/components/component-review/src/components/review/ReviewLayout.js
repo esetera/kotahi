@@ -7,6 +7,7 @@ import { Tabs } from '@pubsweet/ui'
 import {
   FormTemplate,
   ReadonlyFormTemplate,
+  getComponentsForManuscriptVersions,
 } from '../../../../component-form/src'
 import Review from './Review'
 import EditorSection from '../decision/EditorSection'
@@ -40,9 +41,15 @@ const ReviewLayout = ({
 }) => {
   const config = useContext(ConfigContext)
   const reviewSections = []
-  const latestVersion = versions[0]
-  const priorVersions = versions.slice(1)
+  const latestVersion = versions[0].manuscript
+  const priorVersions = versions.slice(1).map(v => v.manuscript)
   priorVersions.reverse() // Convert to chronological order (was reverse-chron)
+
+  const componentsMap = getComponentsForManuscriptVersions(
+    versions,
+    threadedDiscussionProps,
+    false,
+  )
 
   const decision = latestVersion.reviews.find(r => r.isDecision) || {}
 
@@ -71,22 +78,22 @@ const ReviewLayout = ({
             />
           )}
           <ReadonlyFormTemplate
+            customComponents={componentsMap[msVersion.id]}
             form={submissionForm}
             formData={reviewData}
             manuscript={msVersion}
             showEditorOnlyFields={false}
-            threadedDiscussionProps={threadedDiscussionProps}
           />
           <SharedReviewerGroupReviews
+            customComponents={componentsMap[msVersion.id]}
             manuscript={msVersion}
             reviewerId={currentUser.id}
             reviewForm={reviewForm}
-            threadedDiscussionsProps={threadedDiscussionProps}
           />
           <Review
+            customComponents={componentsMap[msVersion.id]}
             review={reviewForCurrentUser}
             reviewForm={reviewForm}
-            threadedDiscussionProps={threadedDiscussionProps}
           />
         </div>
       ),
@@ -115,23 +122,23 @@ const ReviewLayout = ({
             />
           )}
           <ReadonlyFormTemplate // Display manuscript metadata
+            customComponents={componentsMap[latestVersion.id]}
             form={submissionForm}
             formData={latestVersion}
             manuscript={latestVersion}
             showEditorOnlyFields={false}
-            threadedDiscussionProps={threadedDiscussionProps}
           />
           <SharedReviewerGroupReviews
+            customComponents={componentsMap[latestVersion.id]}
             manuscript={latestVersion}
             reviewerId={currentUser.id}
             reviewForm={reviewForm}
-            threadedDiscussionProps={threadedDiscussionProps}
           />
           {status === 'completed' ? (
             <Review
+              customComponents={componentsMap[latestVersion.id]}
               review={review}
               reviewForm={reviewForm}
-              threadedDiscussionProps={threadedDiscussionProps}
             />
           ) : (
             <SectionContent>
@@ -157,11 +164,11 @@ const ReviewLayout = ({
           )}
           {config?.review?.showSummary && (
             <ReadonlyFormTemplate
+              customComponents={componentsMap[latestVersion.id]}
               form={decisionForm}
               formData={decision.jsonData || {}}
               hideSpecialInstructions
               manuscript={latestVersion}
-              threadedDiscussionProps={threadedDiscussionProps}
               title="Evaluation summary"
             />
           )}
@@ -194,16 +201,18 @@ ReviewLayout.propTypes = {
   }).isRequired,
   versions: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      reviews: PropTypes.arrayOf(PropTypes.shape({})),
-      status: PropTypes.string.isRequired,
-      meta: PropTypes.shape({ source: PropTypes.string }).isRequired,
-      files: PropTypes.arrayOf(
-        PropTypes.shape({
-          name: PropTypes.string.isRequired,
-          storedObjects: PropTypes.arrayOf(PropTypes.object.isRequired),
-        }).isRequired,
-      ).isRequired,
+      manuscript: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        reviews: PropTypes.arrayOf(PropTypes.shape({})),
+        status: PropTypes.string.isRequired,
+        meta: PropTypes.shape({ source: PropTypes.string }).isRequired,
+        files: PropTypes.arrayOf(
+          PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            storedObjects: PropTypes.arrayOf(PropTypes.object.isRequired),
+          }).isRequired,
+        ).isRequired,
+      }).isRequired,
     }).isRequired,
   ).isRequired,
   review: PropTypes.shape({}),

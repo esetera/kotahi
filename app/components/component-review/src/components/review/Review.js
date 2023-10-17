@@ -23,12 +23,12 @@ const filesToAttachment = file => ({
 */
 
 const Review = ({
+  customComponents,
   review,
   reviewForm,
   user,
   showEditorOnlyFields,
   showUserInfo = true,
-  threadedDiscussionProps,
 }) => (
   <Container>
     {review && !review?.isHiddenReviewerName && showUserInfo && (
@@ -49,13 +49,13 @@ const Review = ({
     )}
 
     <ReadonlyFormTemplate
+      customComponents={customComponents}
       form={reviewForm}
       formData={ensureJsonIsParsed(review?.jsonData) ?? {}}
       hideSpecialInstructions
       showEditorOnlyFields={
         showEditorOnlyFields || user.groupRoles.includes('groupManager')
       }
-      threadedDiscussionProps={threadedDiscussionProps}
     />
   </Container>
 )

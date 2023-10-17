@@ -208,6 +208,7 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
       category: "submission"
       groupId: $groupId
     ) {
+      id
       structure {
         children
       }

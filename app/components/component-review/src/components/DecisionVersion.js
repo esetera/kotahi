@@ -34,7 +34,9 @@ const DecisionVersion = ({
   addReviewer,
   roles,
   decisionForm,
+  decisionFormComponents,
   submissionForms,
+  submissionFormComponents,
   currentDecisionData,
   currentUser,
   version,
@@ -51,6 +53,7 @@ const DecisionVersion = ({
   createTeam,
   updateReview,
   reviewForm,
+  reviewFormComponents,
   reviewers,
   teamLabels,
   canHideReviews,
@@ -160,17 +163,18 @@ const DecisionVersion = ({
         <>
           {!isCurrentVersion ? (
             <ReadonlyFormTemplate
+              customComponents={submissionFormComponents}
               displayShortIdAsIdentifier={displayShortIdAsIdentifier}
               form={submissionForm}
               formData={version}
               manuscript={version}
               showEditorOnlyFields
-              threadedDiscussionProps={threadedDiscussionExtendedProps}
             />
           ) : (
             <SectionContent>
               <FormTemplate
                 createFile={createFile}
+                customComponents={submissionFormComponents}
                 deleteFile={deleteFile}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
                 fieldsToPublish={
@@ -309,6 +313,7 @@ const DecisionVersion = ({
             manuscript={version}
             removeReviewer={removeReviewer}
             reviewForm={reviewForm}
+            reviewFormComponents={reviewFormComponents}
             reviews={reviewers}
             updateReview={updateReview}
             updateSharedStatusForInvitedReviewer={
@@ -363,12 +368,13 @@ const DecisionVersion = ({
             <DecisionAndReviews
               currentUser={currentUser}
               decisionForm={decisionForm}
+              decisionFormComponents={decisionFormComponents}
               isControlPage
               manuscript={version}
               readOnly
               reviewForm={reviewForm}
+              reviewFormComponents={reviewFormComponents}
               showEditorOnlyFields
-              threadedDiscussionProps={threadedDiscussionExtendedProps}
             />
           )}
           {isCurrentVersion && (
@@ -379,7 +385,7 @@ const DecisionVersion = ({
               manuscript={version}
               reviewers={reviewers}
               reviewForm={reviewForm}
-              threadedDiscussionProps={threadedDiscussionExtendedProps}
+              reviewFormComponents={reviewFormComponents}
               updateReview={updateReview}
               updateSharedStatusForInvitedReviewer={
                 updateSharedStatusForInvitedReviewer
@@ -393,6 +399,7 @@ const DecisionVersion = ({
               <SectionContent>
                 <FormTemplate
                   createFile={createFile}
+                  customComponents={decisionFormComponents}
                   deleteFile={deleteFile}
                   fieldsToPublish={
                     version.formFieldsToPublish.find(
@@ -400,11 +407,7 @@ const DecisionVersion = ({
                     )?.fieldsToPublish ?? []
                   }
                   form={decisionForm}
-                  formData={
-                    currentDecisionData?.jsonData
-                      ? JSON.parse(currentDecisionData?.jsonData)
-                      : {}
-                  }
+                  formData={currentDecisionData?.jsonData}
                   isSubmission={false}
                   manuscriptId={version.id}
                   manuscriptShortId={version.shortId}
@@ -516,20 +519,22 @@ const DecisionVersion = ({
 DecisionVersion.propTypes = {
   addReviewer: PropTypes.func.isRequired,
   updateManuscript: PropTypes.func.isRequired,
-  submissionForm: PropTypes.shape({
-    category: PropTypes.string.isRequired,
-    purpose: PropTypes.string.isRequired,
-    structure: PropTypes.shape({
-      children: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          name: PropTypes.string,
-          title: PropTypes.string,
-          shortDescription: PropTypes.string,
-        }).isRequired,
-      ).isRequired,
+  submissionForms: PropTypes.arrayOf(
+    PropTypes.shape({
+      category: PropTypes.string.isRequired,
+      purpose: PropTypes.string.isRequired,
+      structure: PropTypes.shape({
+        children: PropTypes.arrayOf(
+          PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string,
+            title: PropTypes.string,
+            shortDescription: PropTypes.string,
+          }).isRequired,
+        ).isRequired,
+      }).isRequired,
     }).isRequired,
-  }).isRequired,
+  ).isRequired,
   onChange: PropTypes.func.isRequired,
   isCurrentVersion: PropTypes.bool.isRequired,
   version: PropTypes.shape({

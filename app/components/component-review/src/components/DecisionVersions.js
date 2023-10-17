@@ -11,6 +11,7 @@ import {
   Chat,
 } from '../../../shared'
 import MessageContainer from '../../../component-chat/src/MessageContainer'
+import { getComponentsForManuscriptVersions } from '../../../component-form/src'
 
 const DecisionVersions = ({
   allUsers,
@@ -96,6 +97,12 @@ const DecisionVersions = ({
 
   const manuscriptLatestVersionId = versions[0].manuscript.id
 
+  const componentsMap = getComponentsForManuscriptVersions(
+    versions,
+    threadedDiscussionProps,
+    true,
+  )
+
   return (
     <Columns>
       <Manuscript>
@@ -112,6 +119,7 @@ const DecisionVersions = ({
                 currentDecisionData={initialValue}
                 currentUser={currentUser}
                 decisionForm={decisionForm}
+                decisionFormComponents={componentsMap[version.manuscript.id]}
                 deleteFile={deleteFile}
                 deleteTaskNotification={deleteTaskNotification}
                 displayShortIdAsIdentifier={displayShortIdAsIdentifier}
@@ -130,6 +138,7 @@ const DecisionVersions = ({
                 removeReviewer={removeReviewer}
                 reviewers={reviewers}
                 reviewForm={reviewForm}
+                reviewFormComponents={componentsMap[version.manuscript.id]}
                 roles={roles}
                 selectedEmail={selectedEmail}
                 selectedEmailIsBlacklisted={selectedEmailIsBlacklisted}
@@ -138,6 +147,7 @@ const DecisionVersions = ({
                 setExternalEmail={setExternalEmail}
                 setSelectedEmail={setSelectedEmail}
                 setShouldPublishField={setShouldPublishField}
+                submissionFormComponents={componentsMap[version.manuscript.id]}
                 submissionForms={submissionForms}
                 teamLabels={teamLabels}
                 teams={teams}

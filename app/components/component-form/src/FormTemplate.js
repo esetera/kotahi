@@ -16,7 +16,6 @@ import {
   Section as Container,
   Select,
   FilesUpload,
-  Attachment,
   FieldPublishingSelector,
   TextInput,
   CheckboxGroup,
@@ -122,9 +121,6 @@ const FieldHead = styled.div`
   }
 `
 
-const filterFileManuscript = files =>
-  files.filter(file => file.tags.includes('manuscript'))
-
 /** Definitions for available field types */
 const elements = {
   Title: TextInput,
@@ -190,6 +186,7 @@ let lastChangedField = null
 const FormTemplate = ({
   form,
   formData,
+  customComponents = {},
   manuscriptId,
   manuscriptShortId,
   submissionButtonText,
@@ -244,7 +241,7 @@ const FormTemplate = ({
   useEffect(() => {
     if (
       initialValues.submission?.$$formPurpose !==
-      formData.submission?.$$formPurpose
+      formData?.submission?.$$formPurpose
     )
       onChange(
         initialValues.submission.$$formPurpose,
@@ -252,7 +249,7 @@ const FormTemplate = ({
       )
     if (
       initialValues.submission?.$$formCategory !==
-      formData.submission?.$$formCategory
+      formData?.submission?.$$formCategory
     )
       onChange(
         initialValues.submission.$$formCategory,
@@ -395,11 +392,6 @@ const FormTemplate = ({
                 values.status === 'submitted')
             : true)
 
-        const manuscriptFiles = filterFileManuscript(values.files || [])
-
-        const submittedManuscriptFile =
-          isSubmission && manuscriptFiles.length ? manuscriptFiles[0] : null
-
         return (
           <FormContainer>
             {displayShortIdAsIdentifier && (
@@ -426,28 +418,12 @@ const FormTemplate = ({
                 )
                 .map(prepareFieldProps)
                 .map((element, i) => {
-                  let threadedDiscussionProps
+                  const component =
+                    customComponents[element.component]?.component ??
+                    elements[element.component]
 
-                  if (element.component === 'ThreadedDiscussion') {
-                    const setShouldPublishComment =
-                      shouldShowOptionToPublish &&
-                      element.permitPublishing === 'true' &&
-                      ((id, val) =>
-                        setShouldPublishField(`${element.name}:${id}`, val))
-
-                    threadedDiscussionProps = {
-                      ...tdProps,
-                      threadedDiscussion: tdProps.threadedDiscussions.find(
-                        d => d.id === values[element.name],
-                      ),
-                      threadedDiscussions: undefined,
-                      commentsToPublish: fieldsToPublish
-                        .filter(f => f.startsWith(`${element.name}:`))
-                        .map(f => f.split(':')[1]),
-                      setShouldPublishComment,
-                      userCanAddThread: true,
-                    }
-                  }
+                  const customValidate =
+                    customComponents[element.component]?.customValidate
 
                   let markup = createMarkup(element.title)
 
@@ -515,19 +491,7 @@ const FormTemplate = ({
                           values={values}
                         />
                       )}
-                      {element.component === 'ManuscriptFile' &&
-                      submittedManuscriptFile ? (
-                        <Attachment
-                          file={submittedManuscriptFile}
-                          key={submittedManuscriptFile.storedObjects[0].url}
-                          uploaded
-                        />
-                      ) : null}
-                      {![
-                        'SupplementaryFiles',
-                        'VisualAbstract',
-                        'ManuscriptFile',
-                      ].includes(element.component) && (
+                      {component && (
                         <ValidatedFieldFormik
                           {...rejectProps(element, [
                             'component',
@@ -542,8 +506,9 @@ const FormTemplate = ({
                             'labelColor',
                           ])}
                           aria-label={element.placeholder || element.title}
-                          component={elements[element.component]}
-                          data-testid={element.name} // TODO: Improve this
+                          component={component}
+                          data-testid={element.name}
+                          hasSubmitButton={showSubmitButton}
                           key={`validate-${element.id}`}
                           name={element.name}
                           onChange={value => {
@@ -561,9 +526,9 @@ const FormTemplate = ({
                             setFieldValue(element.name, val, false)
                             innerOnChange(val, element.name)
                           }}
+                          setShouldPublishField={setShouldPublishField}
                           setTouched={setTouched}
                           spellCheck
-                          threadedDiscussionProps={threadedDiscussionProps}
                           validate={validateFormField(
                             element.validate,
                             element.validateValue,
@@ -575,7 +540,7 @@ const FormTemplate = ({
                             validateDoi,
                             validateSuffix,
                             element.component,
-                            threadedDiscussionProps,
+                            customValidate,
                           )}
                           values={values}
                         />

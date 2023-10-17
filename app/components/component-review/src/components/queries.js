@@ -156,6 +156,7 @@ const manuscriptFields = `
 `
 
 const formFields = `
+  id
   category
   purpose
   structure {

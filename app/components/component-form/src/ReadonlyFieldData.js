@@ -7,19 +7,18 @@ import {
   BadgeContainer,
 } from '../../component-review/src/components/style'
 import { Attachment, ColorBadge } from '../../shared'
-import ThreadedDiscussion from '../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
 
-const ReadonlyFieldData = ({
-  fieldName,
-  form,
-  formData,
-  threadedDiscussionProps,
-}) => {
+const ReadonlyFieldData = ({ customComponents, fieldName, form, formData }) => {
   const data = get(formData, fieldName)
 
   const fieldDefinition = form.structure?.children?.find(
     field => field.name === fieldName,
   )
+
+  const CustomComponent =
+    customComponents[fieldDefinition?.component]?.component
+
+  if (CustomComponent) return <CustomComponent readonly value={data} />
 
   if (fieldDefinition?.component === 'AuthorsInput' && Array.isArray(data)) {
     return (data || []).map((author, i) => {
@@ -46,28 +45,6 @@ const ReadonlyFieldData = ({
         </a>
       </p>
     ))
-  }
-
-  if (fieldDefinition?.component === 'ThreadedDiscussion' && data) {
-    // data should be the threadedDiscussion ID
-    const discussion = threadedDiscussionProps.threadedDiscussions.find(
-      d => d.id === data,
-    ) || {
-      threads: [],
-    }
-
-    const augmentedThreadedDiscussionProps = {
-      ...threadedDiscussionProps,
-      threadedDiscussion: discussion,
-      threadedDiscussions: undefined,
-      shouldRenderSubmitButton: true,
-    }
-
-    return (
-      <ThreadedDiscussion
-        threadedDiscussionProps={augmentedThreadedDiscussionProps}
-      />
-    )
   }
 
   if (

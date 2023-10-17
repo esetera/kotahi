@@ -13,17 +13,12 @@ import {
 
 const Decision = ({
   decisionForm,
+  decisionFormComponents,
   manuscript,
   showEditorOnlyFields,
-  threadedDiscussionProps,
   allowAuthorsSubmitNewVersion,
 }) => {
-  const decisionDataString = manuscript.reviews.find(r => r.isDecision)
-    ?.jsonData
-
-  const decisionData = decisionDataString
-    ? JSON.parse(decisionDataString)
-    : null
+  const decisionData = manuscript.reviews.find(r => r.isDecision)?.jsonData
 
   const filteredForm = !manuscript.decision
     ? {
@@ -40,12 +35,12 @@ const Decision = ({
   return decisionData ? (
     <ReadonlyFormTemplate
       allowAuthorsSubmitNewVersion={allowAuthorsSubmitNewVersion}
+      customComponents={decisionFormComponents}
       form={filteredForm}
       formData={decisionData}
       hideSpecialInstructions
       manuscript={manuscript}
       showEditorOnlyFields={showEditorOnlyFields}
-      threadedDiscussionProps={threadedDiscussionProps}
     />
   ) : (
     <SectionRow>Pending.</SectionRow>
@@ -56,9 +51,10 @@ const DecisionAndReviews = ({
   manuscript,
   isControlPage = false,
   reviewForm,
+  reviewFormComponents,
   decisionForm,
+  decisionFormComponents,
   showEditorOnlyFields,
-  threadedDiscussionProps,
   currentUser,
   allowAuthorsSubmitNewVersion,
 }) => {
@@ -100,10 +96,10 @@ const DecisionAndReviews = ({
         <Decision
           allowAuthorsSubmitNewVersion={allowAuthorsSubmitNewVersion}
           decisionForm={decisionForm}
+          decisionFormComponents={decisionFormComponents}
           editor={decision?.user}
           manuscript={manuscript}
           showEditorOnlyFields={showEditorOnlyFields}
-          threadedDiscussionProps={threadedDiscussionProps}
         />
       </SectionContent>
       <SectionContent>
@@ -126,9 +122,9 @@ const DecisionAndReviews = ({
                   user: review.user,
                 }}
                 reviewForm={reviewForm}
+                reviewFormComponents={reviewFormComponents}
                 showEditorOnlyFields={showEditorOnlyFields}
                 teams={manuscript.teams}
-                threadedDiscussionProps={threadedDiscussionProps}
               />
             </SectionRow>
           ))

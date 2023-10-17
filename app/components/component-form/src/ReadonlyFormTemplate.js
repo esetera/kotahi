@@ -11,6 +11,7 @@ import {
 import { SectionContent } from '../../shared'
 
 const ReadonlyFormTemplate = ({
+  customComponents,
   form,
   formData,
   hideSpecialInstructions,
@@ -18,7 +19,6 @@ const ReadonlyFormTemplate = ({
   showEditorOnlyFields,
   title,
   displayShortIdAsIdentifier,
-  threadedDiscussionProps,
   allowAuthorsSubmitNewVersion,
 }) => {
   return (
@@ -50,10 +50,10 @@ const ReadonlyFormTemplate = ({
             <Cell>
               <ReadonlyFieldData
                 allowAuthorsSubmitNewVersion={allowAuthorsSubmitNewVersion}
+                customComponents={customComponents}
                 fieldName={element.name}
                 form={form}
                 formData={formData}
-                threadedDiscussionProps={threadedDiscussionProps}
               />
             </Cell>
           </SectionRowGrid>
@@ -63,6 +63,9 @@ const ReadonlyFormTemplate = ({
 }
 
 ReadonlyFormTemplate.propTypes = {
+  customComponents: PropTypes.objectOf(
+    PropTypes.shape({ component: PropTypes.func.isRequired }),
+  ).isRequired,
   form: PropTypes.shape({
     category: PropTypes.string.isRequired,
     purpose: PropTypes.string.isRequired,

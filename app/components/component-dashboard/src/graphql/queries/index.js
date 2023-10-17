@@ -36,6 +36,7 @@ invitations {
 `
 
 const formForPurposeAndCategoryFragment = `formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
+  id
   structure {
     children
   }
