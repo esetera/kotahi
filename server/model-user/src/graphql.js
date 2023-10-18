@@ -188,6 +188,44 @@ const resolvers = {
         users,
       }
     },
+    channelUsersForMention: async (_, { channelId }, ctx) => {
+      if (!channelId) {
+        throw new Error('Channel ID is required.')
+      }
+
+      const channelWithUsers = await models.Channel.query()
+        .findById(channelId)
+        .withGraphFetched('users(orderByUsername)')
+
+      if (!channelWithUsers) {
+        throw new Error('Channel not found.')
+      }
+
+      const result = [...channelWithUsers.users]
+
+      if (channelWithUsers.type !== 'all') {
+        const groupId = ctx.req.headers['group-id']
+
+        const groupManagers = await models.Team.relatedQuery('users')
+          .for(
+            models.Team.query().where({
+              role: 'groupManager',
+              objectId: groupId,
+              objectType: 'Group',
+            }),
+          )
+          .whereNotIn(
+            'users.id',
+            result.map(user => user.id),
+          )
+          .modify('orderByUsername')
+
+        result.push(...groupManagers)
+      }
+
+      return result
+    },
+
     // Authentication
     async currentUser(_, vars, ctx) {
       if (!ctx.user) return null
@@ -455,6 +493,7 @@ const typeDefs = `
     users: [User]
     paginatedUsers(sort: UsersSort, offset: Int, limit: Int): PaginatedUsers
     searchUsers(teamId: ID, query: String): [User]
+    channelUsersForMention(channelId: ID!): [User]
   }
 
   type PaginatedUsers {

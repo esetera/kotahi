@@ -680,11 +680,11 @@ const generateSchema = (
                         title: 'American Psychological Association (APA)',
                       },
                       {
-                        const: 'chicago-note-bibliogrpahy',
+                        const: 'chicago-note-bibliography',
                         title: 'Chicago Manual of Style (CMOS)',
                       },
                       {
-                        const: 'counctil-of-science-editors-alphabetical',
+                        const: 'council-of-science-editors-alphabetical',
                         title: 'Council of Science Editors (CSE)',
                       },
                     ],
@@ -855,6 +855,13 @@ const generateSchema = (
                   },
                   alertUnreadMessageDigestTemplate: {
                     description: 'Unread discussion message',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                  },
+                  mentionNotificationTemplate: {
+                    description:
+                      'Immediate Notification for users @mentioned in a message',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
@@ -1132,11 +1139,11 @@ const generateSchema = (
                         title: 'American Psychological Association (APA)',
                       },
                       {
-                        const: 'chicago-note-bibliogrpahy',
+                        const: 'chicago-note-bibliography',
                         title: 'Chicago Manual of Style (CMOS)',
                       },
                       {
-                        const: 'counctil-of-science-editors-alphabetical',
+                        const: 'council-of-science-editors-alphabetical',
                         title: 'Council of Science Editors (CSE)',
                       },
                     ],
@@ -1305,6 +1312,13 @@ const generateSchema = (
                   },
                   alertUnreadMessageDigestTemplate: {
                     description: 'Unread discussion message',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                  },
+                  mentionNotificationTemplate: {
+                    description:
+                      'Immediate Notification for users @mentioned in a message',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
@@ -1578,11 +1592,11 @@ const generateSchema = (
                         title: 'American Psychological Association (APA)',
                       },
                       {
-                        const: 'chicago-note-bibliogrpahy',
+                        const: 'chicago-note-bibliography',
                         title: 'Chicago Manual of Style (CMOS)',
                       },
                       {
-                        const: 'counctil-of-science-editors-alphabetical',
+                        const: 'council-of-science-editors-alphabetical',
                         title: 'Council of Science Editors (CSE)',
                       },
                     ],
@@ -1751,6 +1765,13 @@ const generateSchema = (
                   },
                   alertUnreadMessageDigestTemplate: {
                     description: 'Unread discussion message',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                  },
+                  mentionNotificationTemplate: {
+                    description:
+                      'Immediate Notification for users @mentioned in a message',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
@@ -2024,11 +2045,11 @@ const generateSchema = (
                         title: 'American Psychological Association (APA)',
                       },
                       {
-                        const: 'chicago-note-bibliogrpahy',
+                        const: 'chicago-note-bibliography',
                         title: 'Chicago Manual of Style (CMOS)',
                       },
                       {
-                        const: 'counctil-of-science-editors-alphabetical',
+                        const: 'council-of-science-editors-alphabetical',
                         title: 'Council of Science Editors (CSE)',
                       },
                     ],
@@ -2216,6 +2237,13 @@ const generateSchema = (
                   },
                   alertUnreadMessageDigestTemplate: {
                     description: 'Unread discussion message',
+                    type: ['string', 'null'],
+                    oneOf: emailNotificationOptions,
+                    uniqueItems: true,
+                  },
+                  mentionNotificationTemplate: {
+                    description:
+                      'Immediate Notification for users @mentioned in a message',
                     type: ['string', 'null'],
                     oneOf: emailNotificationOptions,
                     uniqueItems: true,
