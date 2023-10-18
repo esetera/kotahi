@@ -20,7 +20,10 @@ import {
   SpecialCharactersService,
   SpecialCharactersToolGroupService,
 } from 'wax-prosemirror-services'
-import { TablesService, tableEditing, columnResizing } from 'wax-table-service'
+import {
+  TablesService,
+  /* tableEditing, */ columnResizing,
+} from 'wax-table-service'
 import 'wax-table-service/dist/index.css'
 import { KotahiBlockDropDownToolGroupService } from '../../../../wax-collab/src/CustomWaxToolGroups'
 import CharactersList from '../../../../wax-collab/src/config/CharactersList'
@@ -59,7 +62,7 @@ const fullWaxEditorConfig = handleAssetManager => ({
     },
   ],
 
-  PmPlugins: [columnResizing(), tableEditing()],
+  PmPlugins: [columnResizing() /* tableEditing() */],
 
   RulesService: [emDash, ellipsis],
 

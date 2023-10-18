@@ -151,6 +151,7 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
         submission
         created
         updated
+        firstVersionCreated
         status
         published
         teams {

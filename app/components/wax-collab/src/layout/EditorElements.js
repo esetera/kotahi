@@ -222,8 +222,8 @@ const EditorStyles = css`
 
   math-inline {
     display: inline-block;
-    max-width: 800px;
-    overflow-x: scroll;
+    max-width: 765px;
+    overflow-x: auto;
     white-space: nowrap;
   }
 
@@ -247,8 +247,8 @@ const EditorStyles = css`
 
   math-display {
     display: block;
-    max-width: 800px;
-    overflow-x: scroll;
+    max-width: 765px;
+    overflow-x: auto;
   }
 
   math-display .math-render {

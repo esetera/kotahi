@@ -4,7 +4,7 @@ import { DOMParser, DOMSerializer, Fragment } from 'prosemirror-model'
 import { WaxContext, DocumentHelpers } from 'wax-prosemirror-core'
 import { sanitize } from 'isomorphic-dompurify'
 import striptags from 'striptags'
-import { List, AlertCircle, CheckCircle } from 'react-feather'
+import { Loader, List, CheckCircle } from 'react-feather'
 import { color } from '../../../../../../theme'
 import { Spinner } from '../../../../../shared'
 import Modal from '../../../../../component-modal/src/Modal'
@@ -146,41 +146,45 @@ const CitationComponent = ({ node, getPos }) => {
     // This function replaces the current node with a version with new attributes and new content
     // if onlyAttrs is true, we're only changing the attributes, not the content
     const thisNode = getNodeWithId(refId)
+
     // console.log('\n\nSetting content: ', fragment)
-    let { tr } = activeView.state
-    const startPosition = getPos()
-    const endPosition = startPosition + thisNode.content.size + 1
+    if (thisNode) {
+      let { tr } = activeView.state
+      const startPosition = getPos()
 
-    const newNode = activeView.state.schema.nodes.reference.create({
-      class: 'ref',
-      refId,
-      originalText: formattedOriginalText,
-      needsReview,
-      needsValidation,
-      structure,
-      possibleStructures: structures,
-      valid,
-    })
+      const endPosition = startPosition + thisNode.content.size + 1
 
-    newNode.content = onlyAttrs ? thisNode.content : fragment
+      const newNode = activeView.state.schema.nodes.reference.create({
+        class: 'ref',
+        refId,
+        originalText: formattedOriginalText,
+        needsReview,
+        needsValidation,
+        structure,
+        possibleStructures: structures,
+        valid,
+      })
 
-    // eslint-disable-next-line
-    for (const [key, value] of Object.entries(attrs)) {
-      // check if the value is different from the current value
+      newNode.content = onlyAttrs ? thisNode.content : fragment
 
-      if (node.attrs[key] !== value) {
-        // console.log('Attr change! Key: ', key, 'Value: ', value)
-        newNode.attrs[key] = value
-      } else {
-        // console.log('Not changing: Key: ', key, 'Value: ', value)
+      // eslint-disable-next-line
+      for (const [key, value] of Object.entries(attrs)) {
+        // check if the value is different from the current value
+
+        if (node.attrs[key] !== value) {
+          // console.log('Attr change! Key: ', key, 'Value: ', value)
+          newNode.attrs[key] = value
+        } else {
+          // console.log('Not changing: Key: ', key, 'Value: ', value)
+        }
       }
+
+      // console.log('node in setContent:', newNode)
+
+      tr = tr.replaceWith(startPosition, endPosition, newNode)
+      activeView.dispatch(tr)
+      activeView.focus()
     }
-
-    // console.log('node in setContent:', newNode)
-
-    tr = tr.replaceWith(startPosition, endPosition, newNode)
-    activeView.dispatch(tr)
-    activeView.focus()
   }
 
   const makeFragmentFrom = text => {
@@ -201,9 +205,9 @@ const CitationComponent = ({ node, getPos }) => {
   }
 
   const sendToAnystyle = async text => {
-    const response = await AnyStyleTransformation({
-      content: striptags(text),
-    })
+    const content = striptags(text)
+    const response = await AnyStyleTransformation({ content })
+    if (response === content) return { anyStyle: [] } // response the same as input indicates failure
 
     const thisResponse = JSON.parse(response)[0]
     // thisResponse is a CSL object with .formattedCitation as the formatted version
@@ -212,7 +216,8 @@ const CitationComponent = ({ node, getPos }) => {
 
   const sendToCrossRef = async text => {
     const response = await CrossRefTransformation(text)
-    return { crossRef: response }
+    // Note: if this is failing, the function should return an empty array
+    return { crossRef: response || [] }
   }
 
   useEffect(() => {
@@ -220,6 +225,7 @@ const CitationComponent = ({ node, getPos }) => {
     const getVersions = async () => {
       // console.log('Getting versions from CrossRef and AnyStyle')
       setLoading(true)
+
       await Promise.all([
         await sendToAnystyle(formattedOriginalText),
         await sendToCrossRef(formattedOriginalText),
@@ -527,17 +533,17 @@ const CitationComponent = ({ node, getPos }) => {
           )}
           {decideStatus(internalNeedsReview, internalNeedsValidation) ===
             'needs validation' && (
-            <List
+            <Loader
               alt="needs validation"
-              color={color.brand1.base()}
+              color={color.gray70}
               title="needs validation"
             />
           )}
           {decideStatus(internalNeedsReview, internalNeedsValidation) ===
             'needs review' && (
-            <AlertCircle
+            <List
               alt="needs review"
-              color={color.warning.base}
+              color={color.brand1.base()}
               title="needs review"
             />
           )}

@@ -36,6 +36,13 @@ export const MessagesGroup = styled.div`
   max-width: 100%;
   overflow: hidden auto;
   width: 100%;
+
+  span.mention-tag {
+    background-color: ${th('colorPrimary')};
+    border-radius: 4px;
+    color: ${color.white};
+    padding: 2px 4px;
+  }
 `
 
 export const MessageGroupContainer = styled.div`
@@ -202,10 +209,10 @@ const ChatLabel = styled.div`
 `
 
 export const UnreadLabelContainer = styled(ChatLabelContainer)`
-  border-top: 2px solid ${th('colors.brand1.tint25')};
+  border-top: 2px solid ${th('color.brand1.tint25')};
 `
 export const UnreadLabel = styled(ChatLabel)`
-  background-color: ${th('colors.brand1.tint25')};
+  background-color: ${th('color.brand1.tint25')};
   color: #ffffff;
 `
 
@@ -239,6 +246,10 @@ export const Ellipsis = styled(MoreVertical)`
     position: absolute;
     right: 0;
     top: 4px;
+  }
+
+  &.toggle-ellipsis-menu {
+    z-index: 2000;
   }
 `
 
