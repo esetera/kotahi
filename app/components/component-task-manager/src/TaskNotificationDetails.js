@@ -356,7 +356,6 @@ const TaskNotificationDetails = ({
         return team.role === notificationRecipientType && team.members.length
       })
 
-    let logsData
     const logsDataArray = []
 
     const prepareEmailRecipients = () => {
@@ -387,7 +386,7 @@ const TaskNotificationDetails = ({
               groupId,
             }
 
-            logsData = {
+            const logsData = {
               selectedTemplate: taskEmailNotification.emailTemplateId,
               recipientName: member.user.username,
               recipientEmail: member.user.email,
@@ -614,7 +613,7 @@ const TaskNotificationDetails = ({
   const logTaskNotificationEmails = async logsData => {
     const manuscriptEditor = manuscript.teams.reduce((editors, item) => {
       if (item.role === 'editor') {
-        editors.push(item.members[0].user.username)
+        editors.push(item.members[0]?.user.username)
       }
 
       return editors
@@ -628,7 +627,9 @@ const TaskNotificationDetails = ({
 
       const selectedTemplateValue = emailTemplateOption.emailContent.description
 
-      const messageBody = `${selectedTemplateValue} sent by ${manuscriptEditor[0]} to ${logData.recipientName}`
+      const messageBody = `${selectedTemplateValue} sent by ${
+        manuscriptEditor[0] ?? currentUser.username
+      } to ${logData.recipientName}`
 
       // eslint-disable-next-line no-await-in-loop
       await createTaskEmailNotificationLog({
