@@ -65,9 +65,12 @@ const ReviewLayout = ({
     ? decisionForm
     : {
         ...decisionForm,
-        children: decisionForm.children.filter(
-          x => x.component === 'ThreadedDiscussion',
-        ),
+        structure: {
+          ...decisionForm.structure,
+          children: decisionForm.structure.children.filter(
+            x => x.component === 'ThreadedDiscussion',
+          ),
+        },
       }
 
   priorVersions.forEach(msVersion => {
@@ -173,7 +176,6 @@ const ReviewLayout = ({
                 showEditorOnlyFields={false}
                 submissionButtonText="Submit"
                 tagForFiles="review"
-                threadedDiscussionProps={threadedDiscussionProps}
                 validateDoi={validateDoi}
                 validateSuffix={validateSuffix}
               />

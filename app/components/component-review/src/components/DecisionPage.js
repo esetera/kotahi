@@ -414,7 +414,6 @@ const DecisionPage = ({ currentUser, match }) => {
       setShouldPublishField={setShouldPublishField}
       submissionForms={submissionForms}
       teamLabels={config.teams}
-      teams={data?.manuscript?.teams}
       threadedDiscussionProps={threadedDiscussionProps}
       updateManuscript={updateManuscript}
       updateReview={updateReview}

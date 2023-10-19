@@ -8,8 +8,7 @@ import React, {
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Formik, ErrorMessage } from 'formik'
-import { unescape, get, set, debounce, merge } from 'lodash'
-import { sanitize } from 'isomorphic-dompurify'
+import { get, set, debounce, merge } from 'lodash'
 import { RadioGroup } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import {
@@ -33,9 +32,8 @@ import ValidatedFieldFormik from '../../component-submit/src/components/Validate
 import Confirm from '../../component-submit/src/components/Confirm'
 import { articleStatuses } from '../../../globals'
 import { validateFormField } from '../../../shared/formValidation'
-import ThreadedDiscussion from '../../component-formbuilder/src/components/builderComponents/ThreadedDiscussion/ThreadedDiscussion'
 import ActionButton from '../../shared/ActionButton'
-import { hasValue } from '../../../shared/htmlUtils'
+import { createSafeMarkup, hasValue } from '../../../shared/htmlUtils'
 import { ConfigContext } from '../../config/src'
 import Modal from '../../component-modal/src/Modal'
 import PublishingResponse from '../../component-review/src/components/publishing/PublishingResponse'
@@ -134,7 +132,6 @@ const elements = {
   AuthorsInput,
   Select,
   LinksInput,
-  ThreadedDiscussion,
 }
 
 /** Shallow clone props, leaving out all specified keys, and also stripping all keys with (string) value 'false'. */
@@ -147,13 +144,6 @@ const rejectProps = (obj, keys) =>
         Object.values(o).includes('false') ? { ...res } : Object.assign(res, o),
       {},
     )
-
-const link = (urlFrag, manuscriptId) =>
-  String.raw`<a href=${urlFrag}/versions/${manuscriptId}/manuscript>view here</a>`
-
-const createMarkup = encodedHtml => ({
-  __html: sanitize(unescape(encodedHtml)),
-})
 
 /** Rename some props so the various formik components can understand them */
 const prepareFieldProps = rawField => ({
@@ -186,7 +176,7 @@ let lastChangedField = null
 const FormTemplate = ({
   form,
   formData,
-  customComponents = {},
+  customComponents: volatileCustomComponents = {},
   manuscriptId,
   manuscriptShortId,
   submissionButtonText,
@@ -194,7 +184,6 @@ const FormTemplate = ({
   republish,
   onSubmit,
   showEditorOnlyFields,
-  urlFrag,
   displayShortIdAsIdentifier,
   validateDoi,
   validateSuffix,
@@ -205,13 +194,13 @@ const FormTemplate = ({
   shouldStoreFilesInForm,
   initializeReview,
   tagForFiles,
-  threadedDiscussionProps: tdProps,
   fieldsToPublish,
   setShouldPublishField,
   shouldShowOptionToPublish = false,
 }) => {
   const config = useContext(ConfigContext)
   const [confirming, setConfirming] = React.useState(false)
+  const customComponents = useMemo(() => volatileCustomComponents, [])
 
   const fields = form.structure.children || []
 
@@ -219,24 +208,18 @@ const FormTemplate = ({
     setConfirming(confirm => !confirm)
   }
 
-  const sumbitPendingThreadedDiscussionComments = async values => {
+  const doCustomSubmitActions = async values => {
     await Promise.all(
-      fields
-        .filter(field => field.component === 'ThreadedDiscussion')
-        .map(field => get(values, field.name))
-        .filter(Boolean)
-        .map(async threadedDiscussionId =>
-          tdProps.completeComments({
-            variables: { threadedDiscussionId },
-          }),
-        ),
+      fields.map(async field => {
+        const customOnSubmit = customComponents[field.component]?.onSubmit
+        if (!customOnSubmit) return
+        const value = get(values, field.name)
+        await customOnSubmit(value)
+      }),
     )
   }
 
-  const initialValues = useMemo(
-    () => createInitializedFormData(form, formData),
-    [],
-  )
+  const initialValues = createInitializedFormData(form, formData)
 
   useEffect(() => {
     if (
@@ -271,12 +254,17 @@ const FormTemplate = ({
 
   useEffect(() => debounceChange.flush, [])
 
+  const submitButtonTestId = `${form.structure.name
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '')}-action-btn`
+
   return (
     <Formik
       displayName={form.structure.name}
       initialValues={initialValues}
       onSubmit={async (values, actions) => {
-        await sumbitPendingThreadedDiscussionComments(values)
+        await doCustomSubmitActions(values)
         if (onSubmit) await onSubmit(values, actions)
       }}
       validateOnBlur
@@ -314,10 +302,7 @@ const FormTemplate = ({
           return (
             <div>
               <ActionButton
-                dataTestid={`${form.structure.name
-                  .toLowerCase()
-                  .replace(/ /g, '-')
-                  .replace(/[^\w-]+/g, '')}-action-btn`}
+                dataTestid={submitButtonTestId}
                 onClick={async () => {
                   setButtonIsPending(true)
 
@@ -400,11 +385,8 @@ const FormTemplate = ({
             <header>
               <Heading1>{form.structure.name}</Heading1>
               <Intro
-                dangerouslySetInnerHTML={createMarkup(
-                  (form.structure.description || '').replace(
-                    '###link###',
-                    link(urlFrag, manuscriptId),
-                  ),
+                dangerouslySetInnerHTML={createSafeMarkup(
+                  form.structure.description || '',
                 )}
               />
             </header>
@@ -425,13 +407,13 @@ const FormTemplate = ({
                   const customValidate =
                     customComponents[element.component]?.customValidate
 
-                  let markup = createMarkup(element.title)
+                  let markup = createSafeMarkup(element.title)
 
                   // add an '*' to the markup if it is marked required
                   if (Array.isArray(element.validate)) {
                     // element.validate can specify multiple validation functions; we're looking for 'required'
                     if (element.validate.some(v => v.value === 'required'))
-                      markup = createMarkup(`${element.title} *`)
+                      markup = createSafeMarkup(`${element.title} *`)
                   }
 
                   return (
@@ -547,7 +529,7 @@ const FormTemplate = ({
                       )}
                       {hasValue(element.description) && (
                         <SubNote
-                          dangerouslySetInnerHTML={createMarkup(
+                          dangerouslySetInnerHTML={createSafeMarkup(
                             element.description,
                           )}
                         />

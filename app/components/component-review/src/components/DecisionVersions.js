@@ -95,8 +95,6 @@ const DecisionVersions = ({
     },
   ]
 
-  const manuscriptLatestVersionId = versions[0].manuscript.id
-
   const componentsMap = getComponentsForManuscriptVersions(
     versions,
     threadedDiscussionProps,
@@ -130,7 +128,6 @@ const DecisionVersions = ({
                 isCurrentVersion={index === 0}
                 key={version.manuscript.id}
                 makeDecision={makeDecision}
-                manuscriptLatestVersionId={manuscriptLatestVersionId}
                 onChange={handleChange}
                 parent={firstVersion.manuscript}
                 publishManuscript={publishManuscript}
@@ -150,8 +147,6 @@ const DecisionVersions = ({
                 submissionFormComponents={componentsMap[version.manuscript.id]}
                 submissionForms={submissionForms}
                 teamLabels={teamLabels}
-                teams={teams}
-                threadedDiscussionProps={threadedDiscussionProps}
                 updateManuscript={updateManuscript}
                 updateReview={updateReview}
                 updateReviewJsonData={(value, path) =>

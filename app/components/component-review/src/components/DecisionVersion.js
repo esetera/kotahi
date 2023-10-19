@@ -88,12 +88,6 @@ const DecisionVersion = ({
 }) => {
   const config = useContext(ConfigContext)
 
-  const threadedDiscussionExtendedProps = {
-    ...threadedDiscussionProps,
-    manuscriptLatestVersionId,
-    selectedManuscriptVersionId: version.id,
-  }
-
   const debouncedSave = useCallback(
     debounce(source => {
       updateManuscript(version.id, { meta: { source } })
@@ -205,8 +199,6 @@ const DecisionVersion = ({
                 }
                 shouldShowOptionToPublish
                 showEditorOnlyFields
-                threadedDiscussionProps={threadedDiscussionExtendedProps}
-                urlFrag={urlFrag}
                 validateDoi={validateDoi}
                 validateSuffix={validateSuffix}
               />
@@ -438,8 +430,6 @@ const DecisionVersion = ({
                   showEditorOnlyFields
                   submissionButtonText="Submit"
                   tagForFiles="decision"
-                  threadedDiscussionProps={threadedDiscussionExtendedProps}
-                  urlFrag={urlFrag}
                   validateDoi={validateDoi}
                   validateSuffix={validateSuffix}
                 />

@@ -42,7 +42,6 @@ const Submit = ({
   deleteFile,
   setShouldPublishField,
   threadedDiscussionProps,
-  manuscriptLatestVersionId,
   validateDoi,
   validateSuffix,
 }) => {
@@ -88,14 +87,6 @@ const Submit = ({
 
     let decisionSection
 
-    const selectedManuscriptVersionId = version.id
-
-    const threadedDiscussionExtendedProps = {
-      ...threadedDiscussionProps,
-      manuscriptLatestVersionId,
-      selectedManuscriptVersionId,
-    }
-
     if (userCanEditManuscriptAndFormData) {
       const submissionProps = {
         version,
@@ -109,7 +100,6 @@ const Submit = ({
         createFile,
         deleteFile,
         setShouldPublishField,
-        threadedDiscussionExtendedProps,
         validateDoi,
         validateSuffix,
       }

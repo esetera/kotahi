@@ -15,7 +15,6 @@ const SubmissionForm = ({
   createFile,
   deleteFile,
   setShouldPublishField,
-  threadedDiscussionProps,
   validateDoi,
   validateSuffix,
 }) => {
@@ -70,7 +69,6 @@ const SubmissionForm = ({
         shouldShowOptionToPublish={!!setShouldPublishField}
         showEditorOnlyFields={false}
         submissionButtonText={submissionButtonText}
-        threadedDiscussionProps={threadedDiscussionProps}
         validateDoi={validateDoi}
         validateSuffix={validateSuffix}
       />

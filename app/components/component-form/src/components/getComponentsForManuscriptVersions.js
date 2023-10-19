@@ -20,6 +20,8 @@ const getThreadedDiscussionComponent = (
   tdProps,
   shouldShowPublishingControls,
   fieldsToPublish,
+  latestVersionId,
+  thisVersionId,
 ) => {
   return {
     customValidate: (value, validators) => {
@@ -83,9 +85,15 @@ const getThreadedDiscussionComponent = (
         setShouldPublishComment,
         shouldRenderSubmitButton: !hasSubmitButton,
         userCanAddThread: true,
+        manuscriptLatestVersionId: latestVersionId,
+        selectedManuscriptVersionId: thisVersionId,
       }
 
       return <ThreadedDiscussion {...rest} {...threadedDiscussionProps} />
+    },
+    onSubmit: async threadedDiscussionId => {
+      if (threadedDiscussionId)
+        tdProps.completeComments({ variables: { threadedDiscussionId } })
     },
   }
 }
@@ -115,6 +123,8 @@ const getComponentsForManuscriptVersions = (
         shouldShowPublishingControls &&
           version.manuscript.id === latestVersionId,
         fieldsToPublish,
+        latestVersionId,
+        version.manuscript.id,
       ),
     }
   })

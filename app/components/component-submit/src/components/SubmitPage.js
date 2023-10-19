@@ -221,8 +221,6 @@ const SubmitPage = ({ currentUser, match, history }) => {
 
   const versions = gatherManuscriptVersions(manuscript)
 
-  const manuscriptLatestVersionId = versions[0].manuscript.id
-
   const threadedDiscussionProps = {
     threadedDiscussions: data.threadedDiscussions,
     updatePendingComment,
@@ -242,7 +240,6 @@ const SubmitPage = ({ currentUser, match, history }) => {
       currentUser={currentUser}
       decisionForm={decisionForm}
       deleteFile={deleteFile}
-      manuscriptLatestVersionId={manuscriptLatestVersionId}
       match={match}
       onChange={handleChange}
       onSubmit={onSubmit}
