@@ -12,23 +12,19 @@ const updateChannelLastViewed = async ({ channelId, userId }) => {
   return models.ChannelMember.query().findOne({ channelId, userId })
 }
 
-const addUserToChatChannel = async ({ channelId, userId }) => {
-  const channelMember = await models.ChannelMember.query()
-    .where({
-      channelId,
-      userId,
-    })
-    .first()
+const addUsersToChatChannel = async (channelId, userIds) => {
+  const uniqueUserIds = [...new Set(userIds)]
 
-  if (!channelMember) {
-    await new models.ChannelMember({
-      channelId,
-      userId,
-      lastViewed: new Date(),
-    }).save()
-  } else {
-    await updateChannelLastViewed({ channelId, userId })
-  }
+  const records = uniqueUserIds.map(userId => ({
+    channelId,
+    userId,
+    lastViewed: new Date(),
+  }))
+
+  await models.ChannelMember.query()
+    .insert(records)
+    .onConflict(['channelId', 'userId'])
+    .ignore()
 }
 
 const addUserToManuscriptChatChannel = async ({
@@ -74,15 +70,10 @@ const removeUserFromManuscriptChatChannel = async ({
   )
 }
 
-const deleteActionedEntries = async () => {
-  await models.NotificationDigest.query().delete().where({ actioned: true })
-}
-
 module.exports = {
   getChannelMemberByChannel,
   updateChannelLastViewed,
   addUserToManuscriptChatChannel,
-  addUserToChatChannel,
+  addUsersToChatChannel,
   removeUserFromManuscriptChatChannel,
-  deleteActionedEntries,
 }

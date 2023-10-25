@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { grid } from '@pubsweet/ui-toolkit'
 import { withRouter } from 'react-router-dom'
 import { debounce } from 'lodash'
+import { useTranslation } from 'react-i18next'
 import ProductionWaxEditor from '../../../wax-collab/src/ProductionWaxEditor'
 import { DownloadDropdown } from './DownloadDropdown'
 import {
@@ -44,6 +45,7 @@ const Production = ({
   )
 
   useEffect(() => debouncedSave.flush, [])
+  const { t } = useTranslation()
 
   const editorSection = {
     content: (
@@ -72,7 +74,7 @@ const Production = ({
           </SectionContent>
         ) : (
           <SectionContent>
-            <Info>No supported view of the file</Info>
+            <Info>{t('productionPage.No supported view of the file')}</Info>
           </SectionContent>
         )}
       </>
@@ -101,7 +103,7 @@ const Production = ({
       <HeadingWithAction>
         <FlexRow>
           <Heading>
-            {isAuthorProofingVersion ? 'Author Proofing' : 'Production'}
+            {isAuthorProofingVersion ? 'Author Proofing' : t('productionPage.Production')}
           </Heading>
           <ControlsContainer>
             <DownloadDropdown

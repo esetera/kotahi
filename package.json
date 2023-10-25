@@ -1,6 +1,6 @@
 {
   "name": "kotahi",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "description": "Kotahi - open journals",
   "repository": {
@@ -51,6 +51,9 @@
     "pg": "8.4.0",
     "prettier": "2.2.1",
     "react": "16.14.0",
+    "prosemirror-inputrules": "1.2.0",
+    "prosemirror-state": "1.4.2",
+    "prosemirror-view": "1.30.2",
     "styled-components": "5.2.1"
   },
   "dependencies": {
@@ -95,6 +98,8 @@
     "history": "4.10.1",
     "html-to-text": "^8.0.0",
     "htmlparser2": "^7.2.0",
+    "i18next": "^23.4.1",
+    "i18next-browser-languagedetector": "^6.1.4",
     "inversify": "^5.1.1",
     "isomorphic-dompurify": "0.19.0",
     "libxmljs2-xsd": "^0.28.0",
@@ -112,6 +117,7 @@
     "passport": "^0.4.1",
     "passport-orcid": "0.0.4",
     "prop-types": "15.7.2",
+    "prosemirror-autocomplete": "^0.4.3",
     "prosemirror-commands": "1.5.1",
     "prosemirror-inputrules": "1.2.0",
     "prosemirror-model": "1.19.0",
@@ -132,6 +138,7 @@
     "react-feather": "^1.1.6",
     "react-google-charts": "^4.0.0",
     "react-hot-loader": "^4.13.0",
+    "react-i18next": "^13.0.3",
     "react-image": "4.0.3",
     "react-mentions": "3.3.2",
     "react-modal": "^3.14.3",

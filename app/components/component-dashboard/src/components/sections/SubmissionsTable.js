@@ -1,4 +1,5 @@
 import React, { useMemo, useContext } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ownerColumns } from '../../../../../../config/journal/manuscripts'
 import {
   extractSortData,
@@ -25,6 +26,7 @@ const SubmissionsTable = ({
 }) => {
   const config = useContext(ConfigContext)
   const { urlFrag } = config
+  const { t } = useTranslation()
 
   const fieldDefinitions = useMemo(() => {
     const fields = submissionForm?.structure?.children ?? []
@@ -72,7 +74,7 @@ const SubmissionsTable = ({
   return (
     <SectionContent>
       <SectionHeader>
-        <Title>My Submissions</Title>
+        <Title>{t('dashboardPage.mySubmissions.My Submissions')}</Title>
       </SectionHeader>
       <ManuscriptsTable
         applyQueryParams={applyQueryParams}

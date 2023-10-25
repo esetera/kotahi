@@ -5,6 +5,8 @@
 import * as React from 'react'
 import { Button } from '@pubsweet/ui'
 import styled from 'styled-components'
+import { useTranslation } from 'react-i18next'
+import { Send } from 'react-feather'
 import { Icon } from '../../../shared'
 import {
   Form,
@@ -15,15 +17,21 @@ import {
   PreviewWrapper,
   RemovePreviewButton,
 } from './style'
-import ChatWaxEditor from '../ChatWaxEditor'
 
 import { useAppScroller } from '../../../../hooks/useAppScroller'
+import EditorMention from './EditorMention'
 
 const QuotedMessage = styled.div``
 
 const SendButton = styled(Button)`
+  align-items: center;
+  display: flex;
   font-size: 90%;
+  justify-content: center;
+  min-height: 42px;
   min-width: unset;
+  /* stylelint-disable-next-line declaration-no-important */
+  padding: 0 !important;
   width: 50px;
 `
 
@@ -38,7 +46,7 @@ export const cleanSuggestionUserObject = user => {
 }
 
 const SuperChatInput = props => {
-  const { sendChannelMessages, searchUsers } = props
+  const { sendChannelMessages, searchUsers, mentionsList } = props
 
   const cacheKey = `last-content-${props.channelId}`
   const [text, changeText] = React.useState('')
@@ -163,10 +171,13 @@ const SuperChatInput = props => {
     (props.websocketConnection !== 'connected' &&
       props.websocketConnection !== 'reconnected')
 
+  const { t } = useTranslation()
+  const sendTooltip = t('chat.Send') // For accessibility
+
   return (
     <>
       <ChatInputContainer>
-        {photoSizeError && (
+        {photoSizeError && ( // TODO Dead code?
           <PhotoSizeError>
             <p>{photoSizeError}</p>
             <Icon
@@ -213,25 +224,31 @@ const SuperChatInput = props => {
                   </RemovePreviewButton>
                 </PreviewWrapper>
               )}
-              <ChatWaxEditor
+              <EditorMention
                 autoFocus={chatInputFocus}
                 editorRef={editorRef}
+                field={{
+                  name: 'comment',
+                }}
                 hasAttachment={!!props.quotedMessage || !!mediaPreview}
-                key={messageSentCount}
+                id={`comment-editor-${props.channelId}`}
+                mentionsList={mentionsList}
+                messageSentCount={messageSentCount}
                 networkDisabled={networkDisabled}
                 onEnterPress={onEnterPress}
-                placeholder="Your message here..."
+                placeholder={t('chat.Your message here...')}
                 searchUsersCallBack={searchUsers} // props.participants is currently undefined
                 staticSuggestions={props.participants}
-                value=""
               />
             </InputWrapper>
             <SendButton
+              aria-label={sendTooltip}
               data-cy="chat-input-send-button"
               onClick={submit}
               primary
+              title={sendTooltip}
             >
-              Send
+              <Send color="white" size={18} />
             </SendButton>
           </Form>
         </ChatInputWrapper>

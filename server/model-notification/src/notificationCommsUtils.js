@@ -6,48 +6,67 @@ const {
   getUserRolesInManuscript,
 } = require('../../model-user/src/userCommsUtils')
 
-const sendNotifications = async () => {
+const sendNotifications = async groupId => {
   // The following query results first row for every user and path string combination
   // in the notification digest, where max notification time is in the past.
   const notificationDigestRows = await models.NotificationDigest.query()
     .distinctOn(['user_id', 'path_string'])
     .where('max_notification_time', '<', new Date())
+    .where({ groupId })
     .orderBy(['user_id', 'path_string', 'max_notification_time'])
+
+  let notificationCount = 0
 
   await Promise.all(
     notificationDigestRows.map(async notificationDigest => {
       if (notificationDigest.actioned) return
 
-      await sendEmailNotificationOfMessages({
-        userId: notificationDigest.userId,
+      await sendChatNotification({
+        recipientId: notificationDigest.userId,
         messageId: notificationDigest.context.messageId,
-        title: 'Unread messages in chat',
+        groupId,
       })
+
+      notificationCount += 1
 
       // query to update all notificationdigest entries where user=user and path=path
       await models.NotificationDigest.query()
-        .patch({
+        .update({
           actioned: true,
         })
         .where({
           userId: notificationDigest.userId,
           pathString: notificationDigest.pathString,
+          groupId,
         })
     }),
   )
+
+  if (notificationCount > 0) {
+    // eslint-disable-next-line no-console
+    console.info(
+      `Sent ${notificationCount} event notification${
+        notificationCount === 1 ? '' : 's'
+      } for group ${groupId}`,
+    )
+  }
 }
 
-const sendEmailNotificationOfMessages = async ({ userId, messageId }) => {
-  const user = await models.User.query().findById(userId)
-
-  const message = await models.Message.query()
-    .findById(messageId)
-    .withGraphFetched('channel.group')
-
-  if (!message) return // Message has since been deleted
-
-  const { channel } = message
-  const { groupId, group } = channel
+const sendChatNotification = async ({
+  recipientId,
+  messageId,
+  groupId,
+  currentUserId = null,
+  isMentioned = false,
+}) => {
+  const recipient = await models.User.query().findById(recipientId)
+  const message = await models.Message.query().findById(messageId)
+  const channel = await models.Channel.query().findById(message.channelId)
+  if (channel.groupId !== groupId)
+    throw new Error(
+      `Attempt by group ${groupId} to send chat notification for group ${channel.groupId}`,
+    )
+  const group = await models.Group.query().findById(groupId)
 
   // send email notification
   const baseUrl = `${config['pubsweet-client'].baseUrl}/${group.name}`
@@ -58,7 +77,11 @@ const sendEmailNotificationOfMessages = async ({ userId, messageId }) => {
     discussionUrl += `/admin/manuscripts` // admin discussion
   } else {
     discussionUrl += `/versions/${channel.manuscriptId}`
-    const roles = await getUserRolesInManuscript(user.id, channel.manuscriptId)
+
+    const roles = await getUserRolesInManuscript(
+      recipient.id,
+      channel.manuscriptId,
+    )
 
     if (roles.groupManager || roles.anyEditor) {
       discussionUrl += '/decision'
@@ -75,15 +98,23 @@ const sendEmailNotificationOfMessages = async ({ userId, messageId }) => {
     }
   }
 
+  let currentUser
+
+  if (currentUserId) {
+    currentUser = await models.User.query().findById(currentUserId)
+  }
+
   const data = {
-    recipientName: user.username,
+    recipientName: recipient.username,
     discussionUrl,
+    currentUser: currentUser?.username,
   }
 
   const activeConfig = await models.Config.getCached(groupId)
 
-  const selectedTemplate =
-    activeConfig.formData.eventNotification.alertUnreadMessageDigestTemplate
+  const selectedTemplate = isMentioned
+    ? activeConfig.formData.eventNotification.mentionNotificationTemplate
+    : activeConfig.formData.eventNotification.alertUnreadMessageDigestTemplate
 
   if (!selectedTemplate) return
 
@@ -91,7 +122,12 @@ const sendEmailNotificationOfMessages = async ({ userId, messageId }) => {
     selectedTemplate,
   )
 
-  await sendEmailNotification(user.email, selectedEmailTemplate, data, groupId)
+  await sendEmailNotification(
+    recipient.email,
+    selectedEmailTemplate,
+    data,
+    groupId,
+  )
 }
 
 const getNotificationOptionForUser = async ({ userId, path, groupId }) => {
@@ -126,40 +162,59 @@ const getNotificationOptionForUser = async ({ userId, path, groupId }) => {
   return nearestAncestor?.option || '30MinSummary' // Fallback if no options are set
 }
 
-const notify = async (path, { context, time, users, groupId }) => {
+const notify = async (
+  path,
+  { context, time, users, groupId, currentUserId },
+) => {
   if (!users) return
 
-  await Promise.all(
-    // eslint-disable-next-line consistent-return
-    users.map(async user => {
-      const option = await getNotificationOptionForUser({
-        userId: user.id,
-        path,
+  // eslint-disable-next-line consistent-return
+  const notificationPromises = users.map(async userId => {
+    const option = await getNotificationOptionForUser({
+      userId,
+      path,
+      groupId,
+    })
+
+    if (context.isMentioned && option === '30MinSummary') {
+      // Immediate notification recipients
+      return sendChatNotification({
+        recipientId: userId,
+        messageId: context.messageId,
         groupId,
+        isMentioned: context.isMentioned,
+        currentUserId,
       })
+    }
 
-      if (option === '30MinSummary') {
-        const maxNotificationTime = new Date(time)
-        maxNotificationTime.setMinutes(maxNotificationTime.getMinutes() + 30)
+    if (option === '30MinSummary') {
+      const maxNotificationTime = new Date(time)
+      maxNotificationTime.setMinutes(maxNotificationTime.getMinutes() + 30)
 
-        // eslint-disable-next-line no-return-await
-        return await new models.NotificationDigest({
-          time,
-          maxNotificationTime,
-          pathString: path.join('/'),
-          option,
-          context,
-          userId: user.id,
-          groupId,
-        }).save()
-      }
-    }),
-  )
+      return new models.NotificationDigest({
+        time,
+        maxNotificationTime,
+        pathString: path.join('/'),
+        option,
+        context,
+        userId,
+        groupId,
+      }).save()
+    }
+  })
+
+  await Promise.all(notificationPromises)
+}
+
+const deleteActionedEntries = async groupId => {
+  await models.NotificationDigest.query()
+    .delete()
+    .where({ actioned: true, groupId })
 }
 
 module.exports = {
   sendNotifications,
-  sendEmailNotificationOfMessages,
   getNotificationOptionForUser,
   notify,
+  deleteActionedEntries,
 }

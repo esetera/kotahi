@@ -638,6 +638,14 @@ const resolvers = {
 
       await new models.Team(team).saveGraph()
 
+      if (action === 'accepted') {
+        await addUserToManuscriptChatChannel({
+          manuscriptId: team.objectId,
+          userId: context.user,
+          type: 'editorial',
+        })
+      }
+
       const existingReview = await ReviewModel.query().where({
         manuscriptId: team.objectId,
         userId: context.user,
@@ -980,12 +988,6 @@ const resolvers = {
       if (invitationId) {
         invitationData = await models.Invitation.query().findById(invitationId)
       }
-
-      await addUserToManuscriptChatChannel({
-        manuscriptId: manuscript.parentId || manuscriptId,
-        userId,
-        type: 'editorial',
-      })
 
       const existingTeam = await manuscript
         .$relatedQuery('teams')
@@ -1332,7 +1334,7 @@ const resolvers = {
             ctx.user,
           )
 
-          userManuscriptsWithInfo[m.id] = m
+          userManuscriptsWithInfo[latestVersion.id] = latestVersion
         }
       })
 
@@ -1352,11 +1354,14 @@ const resolvers = {
       const knex = models.Manuscript.knex()
       const rawQResult = await knex.raw(rawQuery, rawParams)
       let totalCount = 0
-      if (rawQResult.rowCount)
-        totalCount = parseInt(rawQResult.rows[0].full_count, 10)
+
+      const resultRows =
+        Object.keys(userManuscriptsWithInfo).length > 0 ? rawQResult.rows : []
+
+      totalCount = parseInt(resultRows.length, 10)
 
       // Add in searchRank and searchSnippet
-      const result = rawQResult.rows.map(row => ({
+      const result = resultRows.map(row => ({
         ...userManuscriptsWithInfo[row.id],
         searchRank: row.rank,
         searchSnippet: row.snippet,
@@ -1397,7 +1402,9 @@ const resolvers = {
       { sort, offset, limit, filters, timezoneOffsetMinutes, groupId },
       ctx,
     ) {
-      const submissionForm = await getSubmissionForm(groupId)
+      const groupIdFromHeader = ctx.req.headers['group-id']
+      const finalGroupId = groupId || groupIdFromHeader
+      const submissionForm = await getSubmissionForm(finalGroupId)
 
       // TODO Move this to the model, as only the model should interact with DB directly
       const [rawQuery, rawParams] = buildQueryForManuscriptSearchFilterAndOrder(
@@ -1408,7 +1415,7 @@ const resolvers = {
         submissionForm,
         timezoneOffsetMinutes || 0,
         null,
-        groupId,
+        finalGroupId,
       )
 
       const knex = models.Manuscript.knex()
@@ -1645,6 +1652,15 @@ const resolvers = {
         parent.submitter ||
         models.Manuscript.relatedQuery('submitter').for(parent.id).first()
       )
+    },
+    async firstVersionCreated(parent) {
+      const id = parent.parentId || parent.id
+
+      const createdDate = await models.Manuscript.query()
+        .findById(id)
+        .select('created')
+
+      return createdDate.created
     },
     async authorFeedback(parent) {
       let files = parent.authorFeedback.fileIds
@@ -1898,6 +1914,7 @@ const typeDefs = `
     id: ID!
     parentId: ID
     created: DateTime!
+    firstVersionCreated: DateTime!
     updated: DateTime
     manuscriptVersions: [Manuscript]
     shortId: Int!
@@ -2082,7 +2099,7 @@ const typeDefs = `
     id: ID
     username: String
   }
-  
+
 `
 
 module.exports = {
