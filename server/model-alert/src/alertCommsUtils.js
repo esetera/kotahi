@@ -108,7 +108,7 @@ const sendAlertForMessage = async ({
   } else {
     // eslint-disable-next-line no-console
     console.info(
-      'No email template is configured for notifying of unread message. Skipping sendig email.',
+      'No email template is configured for notifying of unread message. Skipping sending email.',
     )
   }
 
