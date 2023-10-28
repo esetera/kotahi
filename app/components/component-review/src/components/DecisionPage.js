@@ -310,9 +310,9 @@ const DecisionPage = ({ currentUser, match }) => {
 
   const decisionForm = decisionFormOrNull ?? {
     category: 'decision',
-    purpose: '',
     structure: {
       name: '',
+      purpose: '',
       children: [],
       description: '',
       haspopup: 'false',
@@ -321,9 +321,9 @@ const DecisionPage = ({ currentUser, match }) => {
 
   const reviewForm = reviewFormOrNull ?? {
     category: 'review',
-    purpose: '',
     structure: {
       name: '',
+      purpose: '',
       children: [],
       description: '',
       haspopup: 'false',

@@ -192,9 +192,9 @@ const Submit = ({
 
 const formPropTypes = PropTypes.shape({
   category: PropTypes.string.isRequired,
-  purpose: PropTypes.string.isRequired,
   structure: PropTypes.shape({
     name: PropTypes.string.isRequired,
+    purpose: PropTypes.string,
     description: PropTypes.string,
     children: PropTypes.arrayOf(
       PropTypes.shape({

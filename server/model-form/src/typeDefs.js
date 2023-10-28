@@ -3,7 +3,6 @@ const typeDefs = `
     id: ID!
     created: DateTime
     updated: DateTime
-    purpose: String!
     structure: FormStructureInput!
     category: String!
     groupId: ID!
@@ -11,7 +10,6 @@ const typeDefs = `
 
   input CreateFormInput {
     created: DateTime
-    purpose: String!
     structure: FormStructureInput!
     category: String!
     groupId: ID!
@@ -19,6 +17,7 @@ const typeDefs = `
 
   input FormStructureInput {
     name: String
+    purpose: String
     description: String
     haspopup: String!
     popuptitle: String
@@ -30,7 +29,7 @@ const typeDefs = `
     id: ID!
     created: DateTime!
     updated: DateTime
-    purpose: String!
+    isActive: Boolean!
     structure: FormStructure!
     category: String!
     groupId: ID
@@ -38,6 +37,7 @@ const typeDefs = `
 
   type FormStructure {
     name: String
+    purpose: String
     description: String
     haspopup: String!
     popuptitle: String
@@ -51,15 +51,15 @@ const typeDefs = `
 
   extend type Query {
     form(formId: ID!): Form
-    forms: [Form]
-    formsByCategory(category: String!, groupId: ID): [Form]
-    formForPurposeAndCategory(purpose: String!, category: String!, groupId: ID): Form
+    allFormsInCategory(category: String!, groupId: ID!): [Form!]!
+    activeFormInCategory(category: String!, groupId: ID!): Form
+    activeFormsInCategory(category: String!, groupId: ID!): [Form!]!
   }
 
   extend type Mutation {
-    createForm(form: CreateFormInput!): Form
-    updateForm(form: FormInput!): Form
-    updateFormElement(element: JSON!, formId: ID!, parentElementId: ID): Form
+    createForm(form: CreateFormInput!): Form!
+    updateForm(form: FormInput!): Form!
+    updateFormElement(element: JSON!, formId: ID!, parentElementId: ID): Form!
     deleteFormElement(formId: ID!, elementId: ID!): Form
     deleteForm(formId: ID!): DeleteFormPayload
   }

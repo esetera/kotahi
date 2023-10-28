@@ -36,9 +36,11 @@ invitations {
 }
 `
 
-const formForPurposeAndCategoryFragment = `formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
+const activeFormsInCategoryFragment = `activeFormsInCategory(category: "submission", groupId: $groupId) {
   id
+  category
   structure {
+    purpose
     children
   }
 }
@@ -67,7 +69,7 @@ export default {
             searchSnippet
           }
         }
-      ${formForPurposeAndCategoryFragment}
+      submissionForms: ${activeFormsInCategoryFragment}
     }
   `,
 }

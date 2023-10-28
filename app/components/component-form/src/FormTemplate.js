@@ -162,7 +162,7 @@ const createInitializedFormData = (form, existingData) => {
   // The following should be stored in the form but not displayed
   if (allBlankedFields.submission) {
     allBlankedFields.submission.$$formCategory = form.category
-    allBlankedFields.submission.$$formPurpose = form.purpose
+    allBlankedFields.submission.$$formPurpose = form.structure.purpose
   }
 
   return merge(allBlankedFields, existingData)
@@ -571,9 +571,9 @@ const FormTemplate = ({
 FormTemplate.propTypes = {
   form: PropTypes.shape({
     category: PropTypes.string.isRequired,
-    purpose: PropTypes.string.isRequired,
     structure: PropTypes.shape({
       name: PropTypes.string.isRequired,
+      purpose: PropTypes.string.isRequired,
       description: PropTypes.string,
       children: PropTypes.arrayOf(
         PropTypes.shape({

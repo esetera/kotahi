@@ -219,8 +219,7 @@ export const GET_MANUSCRIPTS_AND_FORM = gql`
       }
     }
 
-    formForPurposeAndCategory(
-      purpose: "submit"
+    submissionForms: activeFormsInCategory(
       category: "submission"
       groupId: $groupId
     ) {

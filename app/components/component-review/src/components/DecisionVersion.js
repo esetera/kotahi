@@ -140,14 +140,11 @@ const DecisionVersion = ({
   )
 
   const submissionForm = submissionForms.find(
-    f => f.purpose === version.submission.purpose,
-  ) ??
-    submissionForms.find(f => f.purpose === 'submit') ??
-    submissionForms[0] ?? {
-      category: 'submission',
-      purpose: '',
-      structure: { children: [] },
-    }
+    f => f.structure.purpose === version.submission.$$formPurpose,
+  ) ?? {
+    category: 'submission',
+    structure: { purpose: '', children: [] },
+  }
 
   const metadataSection = () => {
     const versionId = version.id
@@ -512,8 +509,8 @@ DecisionVersion.propTypes = {
   submissionForms: PropTypes.arrayOf(
     PropTypes.shape({
       category: PropTypes.string.isRequired,
-      purpose: PropTypes.string.isRequired,
       structure: PropTypes.shape({
+        purpose: PropTypes.string.isRequired,
         children: PropTypes.arrayOf(
           PropTypes.shape({
             id: PropTypes.string.isRequired,

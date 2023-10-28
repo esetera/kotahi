@@ -55,20 +55,10 @@ const WidthLimiter = styled.div`
   min-height: 0;
 `
 
-const formIsActive = form => {
-  if (!form.category) return false
-
-  if (form.category === 'submission') {
-    if (form.purpose === 'submit') return true
-  } else if (form.purpose === form.category) return true
-
-  return false
-}
-
 const getFormsOrderedActiveFirstThenAlphabetical = forms =>
   forms?.toSorted((a, b) => {
-    if (formIsActive(a)) return -1
-    if (formIsActive(b)) return 1
+    const isActiveComparison = (a.isActive ? 0 : 1) - (b.isActive ? 0 : 1)
+    if (isActiveComparison) return isActiveComparison
     const nameA = a?.structure?.name?.toUpperCase()
     const nameB = b?.structure?.name?.toUpperCase()
     // eslint-disable-next-line no-nested-ternary
@@ -108,19 +98,23 @@ const FormBuilderLayout = ({
   }
 
   const makeFormActive = async form => {
-    let purpose = form.category
-    if (purpose === 'submission') purpose = 'submit'
+    const updatedForm = { ...form, isActive: true }
+    if (form.category !== 'submission')
+      updatedForm.structure.purpose = form.category
 
-    await updateForm({ variables: { form: { ...form, purpose } } })
-    // The server will enforce that other forms of the same category are not simultaneously active
+    await updateForm({ variables: { form: updatedForm } })
+    // The server will enforce that other forms of the same category are not simultaneously active (except submission forms; multiple submission forms can be active)
+  }
+
+  const makeFormInactive = async form => {
+    await updateForm({ variables: { form: { ...form, isActive: false } } })
+    // The server will prevent this if no other forms in the category are active.
   }
 
   const orderedForms = getFormsOrderedActiveFirstThenAlphabetical(forms)
 
   const sections = []
   forEach(orderedForms, form => {
-    const isActive = formIsActive(form)
-
     sections.push({
       content: (
         <SectionContent
@@ -146,7 +140,6 @@ const FormBuilderLayout = ({
             >
               <FormSummary
                 form={form}
-                isActive={isActive}
                 openFormSettingsDialog={() => setIsEditingFormSettings(true)}
               />
               <FormBuilder
@@ -180,7 +173,7 @@ const FormBuilderLayout = ({
       label: (
         <TightRow>
           {form.structure.name || 'Unnamed form'}
-          {!isActive && (
+          {!form.isActive && (
             <IconAction
               key="delete-form"
               onClick={e => {
@@ -201,11 +194,11 @@ const FormBuilderLayout = ({
   })
 
   const selectedForm = forms?.find(f => f.id === selectedFormId) ?? {
-    purpose: '',
     category,
     structure: {
       children: [],
       name: '',
+      purpose: '',
       description: '',
       haspopup: 'false',
     },
@@ -268,9 +261,9 @@ const FormBuilderLayout = ({
 
       <FormSettingsModal
         form={selectedForm}
-        isActive={formIsActive(selectedForm)}
         isOpen={isEditingFormSettings}
         makeFormActive={() => makeFormActive(selectedForm)}
+        makeFormInactive={() => makeFormInactive(selectedForm)}
         onClose={() => setIsEditingFormSettings(false)}
         onSubmit={async updatedForm => {
           const payload = {
@@ -314,8 +307,8 @@ FormBuilderLayout.propTypes = {
   forms: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      purpose: PropTypes.string,
       structure: PropTypes.shape({
+        purpose: PropTypes.string,
         children: PropTypes.arrayOf(
           PropTypes.shape({
             id: PropTypes.string.isRequired,

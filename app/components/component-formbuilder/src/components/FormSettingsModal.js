@@ -3,33 +3,20 @@ import PropTypes from 'prop-types'
 import { omitBy } from 'lodash'
 import styled from 'styled-components'
 import { TextField } from '@pubsweet/ui'
-import { th, grid } from '@pubsweet/ui-toolkit'
+import { th } from '@pubsweet/ui-toolkit'
 import { Formik } from 'formik'
 import { AbstractField, RadioBox } from './builderComponents'
 import { ActionButton } from '../../../shared'
 import ValidatedField from '../../../component-submit/src/components/ValidatedField'
 import Modal from '../../../component-modal/src/Modal'
 import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
+import { DetailText, Section, Legend } from './style'
 
 const InvalidWarning = styled.div`
   color: ${th('colorError')};
 `
 
-export const Legend = styled.div`
-  font-size: ${th('fontSizeBase')};
-  font-weight: 600;
-  margin-bottom: ${({ space, theme }) => space && theme.gridUnit};
-`
-
-export const Section = styled.div`
-  margin: ${grid(4)} 0;
-
-  &:first-child {
-    margin-top: 0;
-  }
-`
-
-const MakeActiveButton = styled(ActionButton)`
+const FloatRightButton = styled(ActionButton)`
   float: right;
   font-size: ${th('fontSizeBaseSmall')};
   line-height: ${th('lineHeightBaseSmall')};
@@ -42,7 +29,6 @@ const prepareForSubmit = (form, values) => {
 
   const updatedForm = {
     id: form.id,
-    purpose: form.purpose,
     category: form.category,
     structure: rest,
   }
@@ -52,13 +38,18 @@ const prepareForSubmit = (form, values) => {
 
 const FormSettingsModal = ({
   form,
-  isActive,
   isOpen,
   makeFormActive,
+  makeFormInactive,
   onClose,
   onSubmit,
 }) => {
   const [isConfirmingMakeActive, setIsConfirmingMakeActive] = useState(false)
+
+  const [isConfirmingMakeInactive, setIsConfirmingMakeInactive] = useState(
+    false,
+  )
+
   if (!isOpen) return null // To ensure Formik gets new initialValues whenever this is reopened
 
   return (
@@ -75,7 +66,9 @@ const FormSettingsModal = ({
         onClose()
       }}
       validate={values => {
-        if (!values.name) return 'Please give the form a name.'
+        if (!values.name) return ['Please give the form a name.']
+        if (form.category === 'submission' && !values.purpose)
+          return ['Please choose a purpose identifier.']
         return null
       }}
     >
@@ -86,7 +79,7 @@ const FormSettingsModal = ({
             isOpen={isOpen}
             leftActions={
               !!Object.keys(errors).length && (
-                <InvalidWarning>Give the form a title</InvalidWarning>
+                <InvalidWarning>{errors.join(' — ')}</InvalidWarning>
               )
             }
             onClose={onClose}
@@ -103,13 +96,23 @@ const FormSettingsModal = ({
               form.id ? `Update Form: ${form.structure.name}` : 'Create Form'
             }
           >
-            {!isActive && (
-              <MakeActiveButton
+            {!form.isActive && (
+              <FloatRightButton
                 isCompact
                 onClick={() => setIsConfirmingMakeActive(true)}
               >
-                Make this the active form
-              </MakeActiveButton>
+                {form.category === 'submission'
+                  ? 'Make this form active'
+                  : 'Make this the active form'}
+              </FloatRightButton>
+            )}
+            {form.isActive && form.category === 'submission' && (
+              <FloatRightButton
+                isCompact
+                onClick={() => setIsConfirmingMakeInactive(true)}
+              >
+                Make this form inactive
+              </FloatRightButton>
             )}
 
             <Section id="form.name" key="form.name">
@@ -121,6 +124,16 @@ const FormSettingsModal = ({
                 required
               />
             </Section>
+            {form.category === 'submission' && (
+              <Section id="form.purpose" key="form.purpose">
+                <Legend>Form purpose identifier</Legend>
+                <ValidatedField component={TextField} name="purpose" required />
+                <DetailText>
+                  Choose a name that will not change, to uniquely distinguish
+                  what type of submission this form is for. (Internal use only.)
+                </DetailText>
+              </Section>
+            )}
             <Section id="form.description" key="form.description">
               <Legend>Description</Legend>
               <ValidatedField
@@ -175,6 +188,13 @@ const FormSettingsModal = ({
               isOpen={isConfirmingMakeActive}
               message={`Make this the active ${form.category} form?`}
             />
+            <ConfirmationModal
+              closeModal={() => setIsConfirmingMakeInactive(false)}
+              confirmationAction={makeFormInactive}
+              confirmationButtonText="Confirm"
+              isOpen={isConfirmingMakeInactive}
+              message={`Remove this from active ${form.category} forms?`}
+            />
           </Modal>
         </form>
       )}
@@ -184,10 +204,10 @@ const FormSettingsModal = ({
 
 FormSettingsModal.propTypes = {
   form: PropTypes.shape({
-    purpose: PropTypes.string.isRequired,
     id: PropTypes.string,
     structure: PropTypes.shape({
       name: PropTypes.string,
+      purpose: PropTypes.string,
       description: PropTypes.string,
       haspopup: PropTypes.string.isRequired,
       popuptitle: PropTypes.string,

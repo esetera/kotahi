@@ -1,8 +1,4 @@
-const { NotFoundError } = require('@pubsweet/errors')
 const Form = require('./form')
-
-const notFoundError = (property, value, className) =>
-  new NotFoundError(`Object not found: ${className} with ${property} ${value}`)
 
 const resolvers = {
   Mutation: {
@@ -28,17 +24,23 @@ const resolvers = {
       return Form.query().insertAndFetch(form)
     },
     updateForm: async (_, { form }) => {
-      const result = await Form.query().patchAndFetchById(form.id, form)
-      let purposeIndicatingActiveForm = form.category
-      if (form.category === 'submission') purposeIndicatingActiveForm = 'submit'
-      const thisFormIsActive = form.purpose === purposeIndicatingActiveForm
+      if (!form.isActive) {
+        const formsInCategory = await Form.query()
+          .select('id')
+          .where({ category: form.category, isActive: true })
 
-      if (thisFormIsActive) {
-        // Ensure all other forms in this category are inactive
+        if (formsInCategory.length === 1 && formsInCategory[0].id === form.id)
+          // Don't let the last form in this category be made inactive, so just return the unaltered form
+          return Form.query().findById(form.id)
+      }
+
+      const result = await Form.query().patchAndFetchById(form.id, form)
+
+      // For non-submission forms, ensure we don't have two active forms in the same category
+      if (result.isActive && result.category !== 'submission') {
         await Form.query()
-          .patch({ purpose: 'other' })
-          .where({ purpose: purposeIndicatingActiveForm })
-          .where({ category: form.category })
+          .patch({ isActive: false })
+          .where({ isActive: true, category: result.category })
           .whereNot({ id: form.id })
       }
 
@@ -62,35 +64,33 @@ const resolvers = {
   },
   Query: {
     form: async (_, { formId }) => Form.find(formId),
-    forms: async () => Form.all(),
-    formsByCategory: async (_, { category, groupId }) =>
-      Form.query().where({
-        category,
-        groupId,
-      }),
-
-    /** Returns the specific requested form, with any incomplete fields omitted */
-    formForPurposeAndCategory: async (_, { purpose, category, groupId }) => {
-      const form = await Form.query().findOne({
-        purpose,
+    /** Both active and inactive forms in this category, for the current group */
+    allFormsInCategory: async (_, { category, groupId }) => {
+      return Form.query().where({
         category,
         groupId,
       })
-
-      if (!form) {
-        throw notFoundError(
-          'Category and purpose',
-          `${purpose} ${category}`,
-          this.name,
+    },
+    /** A single active form for this category, current group.
+     *  Not for use with "submission" category, which allows multiple active forms */
+    activeFormInCategory: async (_, { category, groupId }) => {
+      if (category === 'submission')
+        throw new Error(
+          'Use activeFormsInCategory instead for "submission" category, as as there may be multiple active forms.',
         )
-      }
-
-      // TODO Remove this once the form-builder no longer permits incomplete/malformed fields.
-      form.structure.children = form.structure.children.filter(
-        field => field.component && field.name,
-      )
-
-      return form
+      const result = Form.query().findOne({ category, groupId, isActive: true })
+      if (!result)
+        throw new Error(
+          `No active form found for category ${category}, groupId ${groupId}`,
+        )
+      return result
+    },
+    /** Returns active forms for this category, current group.
+     * Currently intended for use with the "submission" category only, which can
+     * have multiple active forms.
+     */
+    activeFormsInCategory: async (_, { category, groupId }) => {
+      return Form.query().where({ category, groupId, isActive: true })
     },
   },
 }

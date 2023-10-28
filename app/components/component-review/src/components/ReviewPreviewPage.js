@@ -35,11 +35,11 @@ const query = gql`
       }
     }
 
-    formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
+    submissionForms: activeFormsInCategory(category: "submission", groupId: $groupId) {
       id
       category
-      purpose
       structure {
+        purpose
         children
       }
     }
@@ -68,13 +68,19 @@ const ReviewPreviewPage = ({ match, currentUser }) => {
     )
   }
 
-  const { manuscript, formForPurposeAndCategory } = data
+  const { manuscript: rawManuscript, submissionForms } = data
 
-  const submissionForm = formForPurposeAndCategory ?? {
+  const manuscript = rawManuscript
+    ? { ...rawManuscript, submission: JSON.parse(rawManuscript.submission) }
+    : null
+
+  const submissionForm = submissionForms.find(
+    f => f.structure.purpose === manuscript.submission.$$formPurpose,
+  ) ?? {
     category: 'submission',
-    purpose: '',
     structure: {
       name: '',
+      purpose: '',
       children: [],
       description: '',
       haspopup: 'false',
@@ -90,10 +96,7 @@ const ReviewPreviewPage = ({ match, currentUser }) => {
   return (
     <ReviewPreview
       customComponents={componentsMap[manuscript.id]}
-      manuscript={{
-        ...manuscript,
-        submission: JSON.parse(manuscript.submission),
-      }}
+      manuscript={manuscript}
       submissionForm={submissionForm}
     />
   )

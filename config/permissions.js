@@ -489,9 +489,9 @@ const permissions = {
     files: deny, // Never used
     findByDOI: deny, // Never used
     form: isAuthenticated,
-    formForPurposeAndCategory: allow,
-    forms: allow,
-    formsByCategory: userIsGmOrAdmin,
+    allFormsInCategory: or(userIsEditor, userIsGmOrAdmin),
+    activeFormInCategory: allow,
+    activeFormsInCategory: allow,
     getBlacklistInformation: or(userIsEditor, userIsGmOrAdmin),
     getEntityFiles: isAuthenticated,
     getInvitationsForManuscript: or(userIsEditor, userIsGmOrAdmin),

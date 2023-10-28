@@ -242,8 +242,8 @@ ReviewLayout.propTypes = {
   channelId: PropTypes.string.isRequired,
   submissionForm: PropTypes.shape({
     category: PropTypes.string.isRequired,
-    purpose: PropTypes.string.isRequired,
     structure: PropTypes.shape({
+      purpose: PropTypes.string,
       children: PropTypes.arrayOf(
         PropTypes.shape({
           id: PropTypes.string.isRequired,

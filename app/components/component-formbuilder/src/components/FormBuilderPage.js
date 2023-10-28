@@ -10,11 +10,12 @@ const formFieldsSegment = `
 id
 created
 updated
-purpose
 category
+isActive
 groupId
 structure {
   name
+  purpose
   description
   haspopup
   popuptitle
@@ -72,8 +73,8 @@ const deleteFormMutation = gql`
 `
 
 const query = gql`
-  query GET_FORM($category: String!, $groupId: ID) {
-    formsByCategory(category: $category, groupId: $groupId) {
+  query GET_FORMS($category: String!, $groupId: ID!) {
+    allFormsInCategory(category: $category, groupId: $groupId) {
       ${formFieldsSegment}
     }
   }
@@ -91,7 +92,7 @@ const FormBuilderPage = ({ category }) => {
     variables: { category, groupId: config.groupId },
   })
 
-  const cleanedForms = pruneEmpty(data?.formsByCategory)
+  const cleanedForms = pruneEmpty(data?.allFormsInCategory)
 
   // TODO Structure forms for graphql and retrieve IDs from these mutations to allow Apollo Cache to do its magic, rather than forcing refetch.
   const [deleteForm] = useMutation(deleteFormMutation, {
@@ -130,7 +131,7 @@ const FormBuilderPage = ({ category }) => {
 
   useEffect(() => {
     setFormFields(cleanedForms)
-  }, [data?.formsByCategory])
+  }, [data?.allFormsInCategory])
 
   const moveFieldUp = (form, fieldId) => {
     const fields = form.structure.children
@@ -174,7 +175,7 @@ const FormBuilderPage = ({ category }) => {
 
   const dragField = event => {
     const form = pruneEmpty(
-      data.formsByCategory.find(f => f.id === selectedFormId),
+      data.allFormsInCategory.find(f => f.id === selectedFormId),
     )
 
     const fields = form.structure.children
@@ -207,16 +208,12 @@ const FormBuilderPage = ({ category }) => {
   }
 
   useEffect(() => {
-    if (data?.formsByCategory?.length) {
+    if (data?.allFormsInCategory?.length) {
       setSelectedFormId(
         prevFormId =>
           prevFormId ??
-          data.formsByCategory.find(
-            f =>
-              f.purpose ===
-              (f.category === 'submission' ? 'submit' : f.category),
-          ).id ??
-          data.formsByCategory[0].id,
+          data.allFormsInCategory.find(f => f.isActive).id ??
+          data.allFormsInCategory[0].id,
       )
     } else {
       setSelectedFormId(null)

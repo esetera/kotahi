@@ -24,9 +24,9 @@ export const reviewFields = `
 const formFields = `
   id
   category
-  purpose
   structure {
     name
+    purpose
     description
     haspopup
     popuptitle
@@ -108,15 +108,15 @@ const query = gql`
       }
     }
 
-    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
+    submissionForms: activeFormsInCategory(category: "submission", groupId: $groupId) {
       ${formFields}
     }
 
-    decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision", groupId: $groupId) {
+    decisionForm: activeFormInCategory(category: "decision", groupId: $groupId) {
       ${formFields}
     }
 
-    reviewForm: formForPurposeAndCategory(purpose: "review", category: "review", groupId: $groupId) {
+    reviewForm: activeFormInCategory(category: "review", groupId: $groupId) {
       ${formFields}
     }
 

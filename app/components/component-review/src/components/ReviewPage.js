@@ -112,9 +112,9 @@ const fragmentFields = `
 const formFields = `
   id
   category
-  purpose
   structure {
     name
+    purpose
     description
     haspopup
     popuptitle
@@ -173,15 +173,15 @@ const query = gql`
       userCanEditAnyComment
     }
 
-    submissionForm: formForPurposeAndCategory(purpose: "submit", category: "submission", groupId: $groupId) {
+    submissionForms: activeFormsInCategory(category: "submission", groupId: $groupId) {
       ${formFields}
     }
 
-    reviewForm: formForPurposeAndCategory(purpose: "review", category: "review", groupId: $groupId) {
+    reviewForm: activeFormInCategory(category: "review", groupId: $groupId) {
       ${formFields}
     }
 
-    decisionForm: formForPurposeAndCategory(purpose: "decision", category: "decision", groupId: $groupId) {
+    decisionForm: activeFormInCategory(category: "decision", groupId: $groupId) {
       ${formFields}
     }
   }
@@ -324,11 +324,15 @@ const ReviewPage = ({ currentUser, history, match }) => {
     userId: currentUser.id,
   }
 
-  const submissionForm = data.submissionForm ?? {
+  const { submissionForms } = data
+
+  const submissionForm = submissionForms.find(
+    f => f.structure.purpose === latestVersion.submission.$$formPurpose,
+  ) ?? {
     category: 'submission',
-    purpose: '',
     structure: {
       name: '',
+      purpose: '',
       children: [],
       description: '',
       haspopup: 'false',
@@ -337,9 +341,9 @@ const ReviewPage = ({ currentUser, history, match }) => {
 
   const reviewForm = data.reviewForm ?? {
     category: 'review',
-    purpose: '',
     structure: {
       name: '',
+      purpose: '',
       children: [],
       description: '',
       haspopup: 'false',
@@ -348,9 +352,9 @@ const ReviewPage = ({ currentUser, history, match }) => {
 
   const decisionForm = data.decisionForm ?? {
     category: 'decision',
-    purpose: '',
     structure: {
       name: '',
+      purpose: '',
       children: [],
       description: '',
       haspopup: 'false',
