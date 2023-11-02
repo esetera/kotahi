@@ -16,7 +16,7 @@ import {
   TextToolGroupService,
   NoteService,
   NoteToolGroupService,
-  TrackChangeService,
+  // TrackChangeService,
   CommentsService,
   MathService,
   FindAndReplaceService,
@@ -45,6 +45,7 @@ import CharactersList from './CharactersList'
 import KotahiSchema from './KotahiSchema'
 // import AnyStyleService from '../CustomWaxToolGroups/AnystyleService/AnyStyleService'
 import CitationService from '../CustomWaxToolGroups/CitationService/CitationService'
+import TrackChangeService from '../CustomWaxToolGroups/TrackChangeService/TrackChangeService'
 import 'wax-table-service/dist/index.css'
 
 const updateTitle = title => {
