@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { debounce } from 'lodash'
+import styled from 'styled-components'
 import { ConfigContext } from '../../../config/src'
 import DecisionAndReviews from './DecisionAndReviews'
 import CreateANewVersion from './CreateANewVersion'
@@ -17,6 +18,7 @@ import {
   Chat,
   Manuscript,
   ErrorBoundary,
+  Select,
 } from '../../../shared'
 
 // TODO: Improve the import, perhaps a shared component?
@@ -25,10 +27,16 @@ import AssignEditorsReviewers from './assignEditors/AssignEditorsReviewers'
 import AssignEditor from './assignEditors/AssignEditor'
 import SubmissionForm from './SubmissionForm'
 
+const SubmissionSelect = styled(Select)`
+  margin: 40px auto;
+  width: 300px;
+`
+
 const Submit = ({
   versions = [],
   decisionForm,
   reviewForm,
+  submissionForms,
   submissionForm,
   createNewVersion,
   currentUser,
@@ -63,7 +71,18 @@ const Submit = ({
   const debouncedSave = useCallback(debounce(handleSave, 2000), [])
   useEffect(() => {
     debouncedSave.flush()
-    return () => debouncedSave.flush()
+
+    if (
+      versions.length &&
+      submissionForms.length === 1 &&
+      !versions[0].manuscript.submission.$$formPurpose
+    ) {
+      updateManuscript(versions[0].manuscript.id, {
+        submission: { $$formPurpose: submissionForms[0].structure.purpose },
+      })
+    }
+
+    return debouncedSave.flush
   }, [versions.length])
 
   versions.forEach(({ manuscript: version, label }, index) => {
@@ -177,10 +196,25 @@ const Submit = ({
     <Columns>
       <Manuscript>
         <ErrorBoundary>
-          <VersionSwitcher
-            key={decisionSections.length}
-            versions={decisionSections}
-          />
+          {submissionForm ? (
+            <VersionSwitcher
+              key={decisionSections.length}
+              versions={decisionSections}
+            />
+          ) : (
+            <SubmissionSelect
+              onChange={opt =>
+                updateManuscript(versions[0].manuscript.id, {
+                  submission: { $$formPurpose: opt.value },
+                })
+              }
+              options={submissionForms.map(form => ({
+                label: form.structure.name,
+                value: form.structure.purpose,
+              }))}
+              placeholder="Choose a submission type..."
+            />
+          )}
         </ErrorBoundary>
       </Manuscript>
       <Chat>

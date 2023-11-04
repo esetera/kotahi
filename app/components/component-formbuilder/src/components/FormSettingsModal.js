@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { omitBy } from 'lodash'
 import styled from 'styled-components'
@@ -6,30 +6,28 @@ import { TextField } from '@pubsweet/ui'
 import { th } from '@pubsweet/ui-toolkit'
 import { Formik } from 'formik'
 import { AbstractField, RadioBox } from './builderComponents'
-import { ActionButton } from '../../../shared'
+import { ActionButton, Checkbox } from '../../../shared'
 import ValidatedField from '../../../component-submit/src/components/ValidatedField'
 import Modal from '../../../component-modal/src/Modal'
-import { ConfirmationModal } from '../../../component-modal/src/ConfirmationModal'
 import { DetailText, Section, Legend } from './style'
 
 const InvalidWarning = styled.div`
   color: ${th('colorError')};
 `
 
-const FloatRightButton = styled(ActionButton)`
+const FloatRightCheckbox = styled(Checkbox)`
   float: right;
-  font-size: ${th('fontSizeBaseSmall')};
-  line-height: ${th('lineHeightBaseSmall')};
 `
 
 const prepareForSubmit = (form, values) => {
   const cleanedValues = omitBy(values, value => value === '')
 
-  const { created, updated, ...rest } = cleanedValues
+  const { created, updated, isActive, ...rest } = cleanedValues
 
   const updatedForm = {
     id: form.id,
     category: form.category,
+    isActive,
     structure: rest,
   }
 
@@ -39,17 +37,12 @@ const prepareForSubmit = (form, values) => {
 const FormSettingsModal = ({
   form,
   isOpen,
+  canMakeFormInactive,
   makeFormActive,
   makeFormInactive,
   onClose,
   onSubmit,
 }) => {
-  const [isConfirmingMakeActive, setIsConfirmingMakeActive] = useState(false)
-
-  const [isConfirmingMakeInactive, setIsConfirmingMakeInactive] = useState(
-    false,
-  )
-
   if (!isOpen) return null // To ensure Formik gets new initialValues whenever this is reopened
 
   return (
@@ -57,13 +50,19 @@ const FormSettingsModal = ({
       initialValues={{
         description: '',
         popupdescription: '',
+        isActive: form.isActive,
         ...form.structure,
       }}
       key={form.id}
       onSubmit={(values, actions) => {
-        onSubmit(prepareForSubmit(form, values))
-        actions.resetForm()
-        onClose()
+        try {
+          onSubmit(prepareForSubmit(form, values))
+          actions.resetForm()
+          onClose()
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.log(err)
+        }
       }}
       validate={values => {
         if (!values.name) return ['Please give the form a name.']
@@ -96,25 +95,16 @@ const FormSettingsModal = ({
               form.id ? `Update Form: ${form.structure.name}` : 'Create Form'
             }
           >
-            {!form.isActive && (
-              <FloatRightButton
-                isCompact
-                onClick={() => setIsConfirmingMakeActive(true)}
-              >
-                {form.category === 'submission'
-                  ? 'Make this form active'
-                  : 'Make this the active form'}
-              </FloatRightButton>
-            )}
-            {form.isActive && form.category === 'submission' && (
-              <FloatRightButton
-                isCompact
-                onClick={() => setIsConfirmingMakeInactive(true)}
-              >
-                Make this form inactive
-              </FloatRightButton>
-            )}
-
+            <FloatRightCheckbox
+              checked={values.isActive}
+              disabled={
+                values.isActive &&
+                (form.category !== 'submission' || !canMakeFormInactive)
+              }
+              handleChange={e => setFieldValue('isActive', !values.isActive)}
+              id="formIsActive"
+              label="Active"
+            />
             <Section id="form.name" key="form.name">
               <Legend>Form title</Legend>
               <ValidatedField
@@ -126,7 +116,7 @@ const FormSettingsModal = ({
             </Section>
             {form.category === 'submission' && (
               <Section id="form.purpose" key="form.purpose">
-                <Legend>Form purpose identifier</Legend>
+                <Legend>Submission type</Legend>
                 <ValidatedField component={TextField} name="purpose" required />
                 <DetailText>
                   Choose a name that will not change, to uniquely distinguish
@@ -181,20 +171,6 @@ const FormSettingsModal = ({
                 />
               </Section>,
             ]}
-            <ConfirmationModal
-              closeModal={() => setIsConfirmingMakeActive(false)}
-              confirmationAction={makeFormActive}
-              confirmationButtonText="Confirm"
-              isOpen={isConfirmingMakeActive}
-              message={`Make this the active ${form.category} form?`}
-            />
-            <ConfirmationModal
-              closeModal={() => setIsConfirmingMakeInactive(false)}
-              confirmationAction={makeFormInactive}
-              confirmationButtonText="Confirm"
-              isOpen={isConfirmingMakeInactive}
-              message={`Remove this from active ${form.category} forms?`}
-            />
           </Modal>
         </form>
       )}

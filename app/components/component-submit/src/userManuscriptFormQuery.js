@@ -94,7 +94,7 @@ export const fragmentFields = `
 `
 
 const query = gql`
-  query($id: ID!, $groupId: ID) {
+  query($id: ID!, $groupId: ID!) {
     manuscript(id: $id) {
       ${fragmentFields}
       manuscriptVersions {

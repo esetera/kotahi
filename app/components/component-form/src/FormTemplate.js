@@ -161,7 +161,6 @@ const createInitializedFormData = (form, existingData) => {
 
   // The following should be stored in the form but not displayed
   if (allBlankedFields.submission) {
-    allBlankedFields.submission.$$formCategory = form.category
     allBlankedFields.submission.$$formPurpose = form.structure.purpose
   }
 
@@ -229,14 +228,6 @@ const FormTemplate = ({
       onChange(
         initialValues.submission.$$formPurpose,
         'submission.$$formPurpose',
-      )
-    if (
-      initialValues.submission?.$$formCategory !==
-      formData?.submission?.$$formCategory
-    )
-      onChange(
-        initialValues.submission.$$formCategory,
-        'submission.$$formCategory',
       )
   }, [])
 

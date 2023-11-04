@@ -126,7 +126,7 @@ const SubmitPage = ({ currentUser, match, history }) => {
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
-  const { manuscript, submissionForm, decisionForm, reviewForm } = data
+  const { manuscript, submissionForms, decisionForm, reviewForm } = data
 
   const updateManuscript = (versionId, manuscriptDelta) => {
     return update({
@@ -153,6 +153,14 @@ const SubmitPage = ({ currentUser, match, history }) => {
     debouncers[path] = debouncers[path] || debounce(updateManuscript, 3000)
     return debouncers[path](versionId, manuscriptDelta)
   }
+
+  /** The form used for submission, or undefined
+   *  if submission.$$formPurpose is not yet set. */
+  const submissionForm = submissionForms.find(
+    form =>
+      JSON.parse(manuscript?.submission || '{}').$$formPurpose ===
+      form.structure.purpose,
+  )
 
   const republish = async (manuscriptId, groupId) => {
     const fieldErrors = await validateManuscriptSubmission(
@@ -252,6 +260,7 @@ const SubmitPage = ({ currentUser, match, history }) => {
           : null
       }
       submissionForm={submissionForm}
+      submissionForms={submissionForms}
       threadedDiscussionProps={threadedDiscussionProps}
       updateManuscript={updateManuscript}
       validateDoi={validateDoi(client)}

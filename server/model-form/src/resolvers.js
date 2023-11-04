@@ -36,11 +36,12 @@ const resolvers = {
 
       const result = await Form.query().patchAndFetchById(form.id, form)
 
-      // For non-submission forms, ensure we don't have two active forms in the same category
-      if (result.isActive && result.category !== 'submission') {
+      // Ensure we don't have two active forms for the same category/purpose combination
+      if (result.isActive) {
         await Form.query()
           .patch({ isActive: false })
           .where({ isActive: true, category: result.category })
+          .whereRaw("structure->>'purpose' = ?", result.structure.purpose)
           .whereNot({ id: form.id })
       }
 

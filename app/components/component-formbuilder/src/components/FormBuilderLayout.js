@@ -55,6 +55,10 @@ const WidthLimiter = styled.div`
   min-height: 0;
 `
 
+const TabLabel = styled.div`
+  color: ${({ isActive }) => (isActive ? color.text : color.gray50)};
+`
+
 const getFormsOrderedActiveFirstThenAlphabetical = forms =>
   forms?.toSorted((a, b) => {
     const isActiveComparison = (a.isActive ? 0 : 1) - (b.isActive ? 0 : 1)
@@ -95,20 +99,6 @@ const FormBuilderLayout = ({
 
   const closeModalHandler = () => {
     setOpenModal(false)
-  }
-
-  const makeFormActive = async form => {
-    const updatedForm = { ...form, isActive: true }
-    if (form.category !== 'submission')
-      updatedForm.structure.purpose = form.category
-
-    await updateForm({ variables: { form: updatedForm } })
-    // The server will enforce that other forms of the same category are not simultaneously active (except submission forms; multiple submission forms can be active)
-  }
-
-  const makeFormInactive = async form => {
-    await updateForm({ variables: { form: { ...form, isActive: false } } })
-    // The server will prevent this if no other forms in the category are active.
   }
 
   const orderedForms = getFormsOrderedActiveFirstThenAlphabetical(forms)
@@ -172,7 +162,9 @@ const FormBuilderLayout = ({
       key: `${form.id}`,
       label: (
         <TightRow>
-          {form.structure.name || 'Unnamed form'}
+          <TabLabel isActive={form.isActive}>
+            {form.structure.name || 'Unnamed form'}
+          </TabLabel>
           {!form.isActive && (
             <IconAction
               key="delete-form"
@@ -211,6 +203,13 @@ const FormBuilderLayout = ({
   const reservedFieldNames = selectedForm.structure.children
     .filter(field => field.id !== selectedFieldId)
     .map(field => field.name)
+
+  const canMakeFormInactive = forms.some(
+    f =>
+      f.id !== selectedForm?.id &&
+      f.category === selectedForm?.category &&
+      f.structure.purpose === selectedForm?.structure.purpose,
+  )
 
   return (
     <>
@@ -260,10 +259,9 @@ const FormBuilderLayout = ({
       </Container>
 
       <FormSettingsModal
+        canMakeFormInactive={canMakeFormInactive}
         form={selectedForm}
         isOpen={isEditingFormSettings}
-        makeFormActive={() => makeFormActive(selectedForm)}
-        makeFormInactive={() => makeFormInactive(selectedForm)}
         onClose={() => setIsEditingFormSettings(false)}
         onSubmit={async updatedForm => {
           const payload = {
