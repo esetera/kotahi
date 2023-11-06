@@ -444,7 +444,8 @@ const fr = {
       'User Management': 'Gestion des utilisateurs',
       userIsAdmin:
         "Tous les utilisateurs sont assignés les rôles de gestionnaire de groupe et d'administrateur",
-      kotahiApiTokens: 'Jetons API Kotahi',
+      kotahiApis: 'API Kotahi',
+      tokens: 'Jetons',
       Submit: 'Soumettre',
       article: 'article',
       'peer review': 'évaluation par les pairs',
