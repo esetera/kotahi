@@ -446,7 +446,7 @@ const esLa = {
       userIsAdmin:
         'Todos los usuarios tienen roles de Gerente de Grupo y Administrador',
       kotahiApis: 'API de Kotahi',
-      tokens: 'Fichas',
+      tokens: 'Tokens',
       Submit: 'Enviar',
       article: 'artículo',
       'peer review': 'revisión de pares',
