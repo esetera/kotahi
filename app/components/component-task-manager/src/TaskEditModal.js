@@ -81,6 +81,7 @@ const TitleFieldContainer = styled(BaseFieldContainer)`
 const AssigneeFieldContainer = styled(BaseFieldContainer)`
   flex: 1 1 290px;
 `
+
 const DescriptionFieldContainer = styled(BaseFieldContainer)`
   margin-top: 40px;
 `
@@ -349,8 +350,8 @@ const TaskEditModal = ({
         <DescriptionFieldContainer>
           <TaskTitle>{t('modals.taskEdit.Task description')}</TaskTitle>
           <FormWaxEditor
-            value={taskDescription}
             onChange={value => updateTaskDescription(value)}
+            value={taskDescription}
           />
         </DescriptionFieldContainer>
       </TaskSectionContainer>

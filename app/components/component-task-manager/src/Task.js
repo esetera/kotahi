@@ -59,6 +59,7 @@ const TitleCell = styled.div`
     margin-left: 7px;
   }
 `
+
 const InfoIcon = styled.div`
   align-items: center;
   background-color: #7cbff9;
