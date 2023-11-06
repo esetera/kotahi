@@ -5,6 +5,7 @@ import React, {
   useRef,
   useCallback,
 } from 'react'
+import Tooltip from 'rc-tooltip'
 import PropTypes from 'prop-types'
 import moment from 'moment-timezone'
 import styled, { css } from 'styled-components'
@@ -56,6 +57,25 @@ const TitleCell = styled.div`
 
   input {
     margin-left: 7px;
+  }
+`
+const InfoIcon = styled.div`
+  align-items: center;
+  background-color: #7cbff9;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  font-size: 110%;
+  font-weight: bold;
+  height: 25px;
+  justify-content: center;
+  line-height: 1.4ex;
+  margin-left: 11px;
+  min-height: 25px;
+  min-width: 25px;
+
+  &::before {
+    content: 'i';
   }
 `
 
@@ -445,6 +465,26 @@ const Task = ({
                     placeholder={t('taskManager.task.Give your task a name')}
                     value={taskTitle}
                   />
+                  <Tooltip
+                    destroyTooltipOnHide={{ keepParent: false }}
+                    getTooltipContainer={el => el}
+                    overlay={<span>{taskTitle}</span>}
+                    overlayInnerStyle={{
+                      backgroundColor: 'black',
+                      color: 'white',
+                      borderColor: 'black',
+                      fontWeight: 'normal',
+                    }}
+                    overlayStyle={{
+                      display: 'inline',
+                      maxWidth: '30em',
+                      wordBreak: 'break-word',
+                    }}
+                    placement="top"
+                    trigger={['hover']}
+                  >
+                    <InfoIcon />
+                  </Tooltip>
                   <TaskAction ref={taskRef}>
                     <MinimalButton
                       onClick={() => {

@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid'
 import { debounce } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { ActionButton, TextInput } from '../../shared'
-
+import FormWaxEditor from '../../component-formbuilder/src/components/FormWaxEditor'
 import TaskNotificationDetails from './TaskNotificationDetails'
 import AssigneeDropdown from './AssigneeDropdown'
 import DueDateField from './DueDateField'
@@ -81,6 +81,9 @@ const TitleFieldContainer = styled(BaseFieldContainer)`
 const AssigneeFieldContainer = styled(BaseFieldContainer)`
   flex: 1 1 290px;
 `
+const DescriptionFieldContainer = styled(BaseFieldContainer)`
+  margin-top: 40px;
+`
 
 const DueDateFieldContainer = styled(BaseFieldContainer)`
   flex: 0 0 7.8em;
@@ -137,6 +140,8 @@ const TaskEditModal = ({
   onCancel,
   emailTemplates,
 }) => {
+  const { t } = useTranslation()
+
   const [taskEmailNotifications, setTaskNotifications] = useState(
     task.emailNotifications ?? [],
   )
@@ -147,29 +152,39 @@ const TaskEditModal = ({
 
   const [taskTitle, setTaskTitle] = useState(task?.title || '')
 
-  const updateTaskTitleDebounce = useCallback(
+  const [taskDescription, setTaskDescription] = useState(
+    task?.description || '',
+  )
+
+  useEffect(() => {
+    setTaskTitle(task.title)
+  }, [task])
+
+  useEffect(() => {
+    setTaskNotifications(task.emailNotifications ?? [])
+  }, [isOpen, task])
+
+  useEffect(() => {
+    setTaskDescription(task.description)
+  }, [task])
+
+  const updateTaskDescriptionDebounce = useCallback(
     debounce(updateTask ?? (() => {}), 1000),
     [],
   )
 
-  const { t } = useTranslation()
+  const updateTaskTitleDebounce = useCallback(
+    debounce(updateTask ?? (() => {}), 1000),
+    [],
+  )
 
   useEffect(() => {
     return updateTaskTitleDebounce.flush()
   }, [])
 
   useEffect(() => {
-    setTaskNotifications(task.emailNotifications ?? [])
-  }, [isOpen, task])
-
-  const updateTaskTitle = value => {
-    setTaskTitle(value)
-    updateTaskTitleDebounce(task.id, { ...task, title: value })
-  }
-
-  useEffect(() => {
-    setTaskTitle(task.title)
-  }, [task])
+    return updateTaskDescriptionDebounce.flush()
+  }, [])
 
   const repackageTaskNotification = taskNotification => ({
     id: taskNotification.id,
@@ -181,6 +196,16 @@ const TaskEditModal = ({
     recipientName: taskNotification.recipientName || null,
     recipientEmail: taskNotification.recipientEmail || null,
   })
+
+  const updateTaskTitle = value => {
+    setTaskTitle(value)
+    updateTaskTitleDebounce(task.id, { ...task, title: value })
+  }
+
+  const updateTaskDescription = value => {
+    setTaskDescription(value)
+    updateTaskDescriptionDebounce(task.id, { ...task, description: value })
+  }
 
   const updateTaskNotification = async updatedTaskNotification => {
     if (
@@ -321,6 +346,13 @@ const TaskEditModal = ({
             </div>
           )}
         </TaskPrimaryFieldsContainer>
+        <DescriptionFieldContainer>
+          <TaskTitle>{t('modals.taskEdit.Task description')}</TaskTitle>
+          <FormWaxEditor
+            value={taskDescription}
+            onChange={value => updateTaskDescription(value)}
+          />
+        </DescriptionFieldContainer>
       </TaskSectionContainer>
       <TaskSectionContainer>
         <TaskRecipientsContainer>

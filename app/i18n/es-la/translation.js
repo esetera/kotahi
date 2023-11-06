@@ -788,6 +788,7 @@ const esLa = {
       taskEdit: {
         'Task details': 'Detalles de la Tarea',
         'Task title': 'Título de la Tarea',
+        'Task description': 'Descripción de la tarea',
         Save: 'Guardar',
         'Give your task a name': 'Dale un nombre a tu tarea...',
         Assignee: 'Asignatario',
