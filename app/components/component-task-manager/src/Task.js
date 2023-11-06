@@ -60,26 +60,6 @@ const TitleCell = styled.div`
   }
 `
 
-const InfoIcon = styled.div`
-  align-items: center;
-  background-color: #7cbff9;
-  border-radius: 50%;
-  color: white;
-  display: flex;
-  font-size: 110%;
-  font-weight: bold;
-  height: 25px;
-  justify-content: center;
-  line-height: 1.4ex;
-  margin-left: 11px;
-  min-height: 25px;
-  min-width: 25px;
-
-  &::before {
-    content: 'i';
-  }
-`
-
 const StatusActionCell = styled.div`
   /* stylelint-disable-next-line declaration-no-important */
   background: none !important;
@@ -200,6 +180,10 @@ const AssigneeFieldContainer = styled(BaseFieldContainer)`
 const DurationDaysFieldContainer = styled(BaseFieldContainer)`
   flex: 0 0 10em;
   margin-left: 10px;
+`
+
+const TooltipContainer = styled.div`
+  width: 100%;
 `
 
 const DueDateFieldContainer = styled(BaseFieldContainer)`
@@ -461,11 +445,6 @@ const Task = ({
                       )}
                     </Handle>
                   )}
-                  <TextInput
-                    onChange={event => updateTaskTitle(event.target.value)}
-                    placeholder={t('taskManager.task.Give your task a name')}
-                    value={taskTitle}
-                  />
                   <Tooltip
                     destroyTooltipOnHide={{ keepParent: false }}
                     getTooltipContainer={el => el}
@@ -484,7 +463,15 @@ const Task = ({
                     placement="top"
                     trigger={['hover']}
                   >
-                    <InfoIcon />
+                    <TooltipContainer>
+                      <TextInput
+                        onChange={event => updateTaskTitle(event.target.value)}
+                        placeholder={t(
+                          'taskManager.task.Give your task a name',
+                        )}
+                        value={taskTitle}
+                      />
+                    </TooltipContainer>
                   </Tooltip>
                   <TaskAction ref={taskRef}>
                     <MinimalButton
