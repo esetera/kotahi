@@ -62,13 +62,7 @@ const deleteFormElementMutation = gql`
 
 const deleteFormMutation = gql`
   mutation($formId: ID!) {
-    deleteForm(formId: $formId) {
-      query {
-        forms {
-          id
-        }
-      }
-    }
+    deleteForm(formId: $formId)
   }
 `
 
@@ -212,8 +206,8 @@ const FormBuilderPage = ({ category }) => {
       setSelectedFormId(
         prevFormId =>
           prevFormId ??
-          data.allFormsInCategory.find(f => f.isActive).id ??
-          data.allFormsInCategory[0].id,
+          data.allFormsInCategory.find(f => f.isActive)?.id ??
+          data.allFormsInCategory[0]?.id,
       )
     } else {
       setSelectedFormId(null)

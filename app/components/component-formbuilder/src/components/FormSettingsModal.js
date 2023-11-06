@@ -28,7 +28,7 @@ const prepareForSubmit = (form, values) => {
     id: form.id,
     category: form.category,
     isActive,
-    structure: rest,
+    structure: { ...rest, purpose: values.purpose },
   }
 
   return updatedForm
@@ -36,10 +36,8 @@ const prepareForSubmit = (form, values) => {
 
 const FormSettingsModal = ({
   form,
+  isLastActiveFormInCategory,
   isOpen,
-  canMakeFormInactive,
-  makeFormActive,
-  makeFormInactive,
   onClose,
   onSubmit,
 }) => {
@@ -97,10 +95,7 @@ const FormSettingsModal = ({
           >
             <FloatRightCheckbox
               checked={values.isActive}
-              disabled={
-                values.isActive &&
-                (form.category !== 'submission' || !canMakeFormInactive)
-              }
+              disabled={isLastActiveFormInCategory}
               handleChange={e => setFieldValue('isActive', !values.isActive)}
               id="formIsActive"
               label="Active"

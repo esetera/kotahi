@@ -189,8 +189,9 @@ const FormBuilderLayout = ({
     category,
     structure: {
       children: [],
+      isActive: false,
       name: '',
-      purpose: '',
+      purpose: category === 'submission' ? '' : category,
       description: '',
       haspopup: 'false',
     },
@@ -204,12 +205,14 @@ const FormBuilderLayout = ({
     .filter(field => field.id !== selectedFieldId)
     .map(field => field.name)
 
-  const canMakeFormInactive = forms.some(
-    f =>
-      f.id !== selectedForm?.id &&
-      f.category === selectedForm?.category &&
-      f.structure.purpose === selectedForm?.structure.purpose,
-  )
+  const isLastActiveFormInCategory =
+    selectedForm.isActive &&
+    !forms.some(
+      f =>
+        f.id !== selectedForm.id &&
+        f.category === selectedForm.category &&
+        f.isActive,
+    )
 
   return (
     <>
@@ -259,8 +262,8 @@ const FormBuilderLayout = ({
       </Container>
 
       <FormSettingsModal
-        canMakeFormInactive={canMakeFormInactive}
         form={selectedForm}
+        isLastActiveFormInCategory={isLastActiveFormInCategory}
         isOpen={isEditingFormSettings}
         onClose={() => setIsEditingFormSettings(false)}
         onSubmit={async updatedForm => {

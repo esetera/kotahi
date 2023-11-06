@@ -1,44 +1,73 @@
-const Form = require('./form')
+const models = require('@pubsweet/models')
 
 const resolvers = {
   Mutation: {
-    deleteForm: async (_, { formId }) => {
-      await Form.query().deleteById(formId)
-      return { query: {} }
-    },
+    deleteForm: async (_, { formId }) => models.Form.query().deleteById(formId),
     deleteFormElement: async (_, { formId, elementId }) => {
-      const form = await Form.find(formId)
+      const form = await models.Form.find(formId)
 
       if (!form) return null
       form.structure.children = form.structure.children.filter(
         child => child.id !== elementId,
       )
 
-      const result = await Form.query().patchAndFetchById(formId, {
+      const result = await models.Form.query().patchAndFetchById(formId, {
         structure: form.structure,
       })
 
       return result
     },
     createForm: async (_, { form }) => {
-      return Form.query().insertAndFetch(form)
+      return models.Form.query().insertAndFetch(form)
     },
     updateForm: async (_, { form }) => {
-      if (!form.isActive) {
-        const formsInCategory = await Form.query()
-          .select('id')
-          .where({ category: form.category, isActive: true })
+      if (!form.structure.purpose)
+        throw new Error('Form without purpose field encountered!')
+      const currentForm = await models.Form.query().findById(form.id)
 
-        if (formsInCategory.length === 1 && formsInCategory[0].id === form.id)
-          // Don't let the last form in this category be made inactive, so just return the unaltered form
-          return Form.query().findById(form.id)
+      const isActiveIsChanging = form.isActive !== currentForm.isActive
+      let newIsActive = form.isActive
+
+      if (isActiveIsChanging && !form.isActive) {
+        const activeFormsInCategoryCount = await models.Form.query()
+          .where({ category: currentForm.category, isActive: true })
+          .count()
+
+        if (activeFormsInCategoryCount <= 1) {
+          // eslint-disable-next-line no-console
+          console.log(
+            `Preventing inactivation of the last active ${currentForm.category} form.`,
+          )
+          newIsActive = true
+        } else if (form.category === 'submission') {
+          const formIsUsedByManuscripts = (
+            await models.Manuscript.query()
+              .whereRaw(
+                "submission->>'$$formPurpose' = ?",
+                form.structure.purpose,
+              )
+              .limit(1)
+              .select('id')
+          ).length
+
+          if (formIsUsedByManuscripts) {
+            // eslint-disable-next-line no-console
+            console.log(
+              `Preventing inactivation of form with purpose "${form.structure.purpose}", which is in use`,
+            )
+            newIsActive = true
+          }
+        }
       }
 
-      const result = await Form.query().patchAndFetchById(form.id, form)
+      const result = await models.Form.query().patchAndFetchById(form.id, {
+        ...form,
+        isActive: newIsActive,
+      })
 
       // Ensure we don't have two active forms for the same category/purpose combination
-      if (result.isActive) {
-        await Form.query()
+      if (isActiveIsChanging && form.isActive) {
+        await models.Form.query()
           .patch({ isActive: false })
           .where({ isActive: true, category: result.category })
           .whereRaw("structure->>'purpose' = ?", result.structure.purpose)
@@ -48,7 +77,7 @@ const resolvers = {
       return result
     },
     updateFormElement: async (_, { element, formId }) => {
-      const form = await Form.find(formId)
+      const form = await models.Form.find(formId)
       if (!form) return null
 
       const indexToReplace = form.structure.children.findIndex(
@@ -58,16 +87,16 @@ const resolvers = {
       if (indexToReplace < 0) form.structure.children.push(element)
       else form.structure.children[indexToReplace] = element
 
-      return Form.query().patchAndFetchById(formId, {
+      return models.Form.query().patchAndFetchById(formId, {
         structure: form.structure,
       })
     },
   },
   Query: {
-    form: async (_, { formId }) => Form.find(formId),
+    form: async (_, { formId }) => models.Form.find(formId),
     /** Both active and inactive forms in this category, for the current group */
     allFormsInCategory: async (_, { category, groupId }) => {
-      return Form.query().where({
+      return models.Form.query().where({
         category,
         groupId,
       })
@@ -79,7 +108,13 @@ const resolvers = {
         throw new Error(
           'Use activeFormsInCategory instead for "submission" category, as as there may be multiple active forms.',
         )
-      const result = Form.query().findOne({ category, groupId, isActive: true })
+
+      const result = models.Form.query().findOne({
+        category,
+        groupId,
+        isActive: true,
+      })
+
       if (!result)
         throw new Error(
           `No active form found for category ${category}, groupId ${groupId}`,
@@ -91,7 +126,7 @@ const resolvers = {
      * have multiple active forms.
      */
     activeFormsInCategory: async (_, { category, groupId }) => {
-      return Form.query().where({ category, groupId, isActive: true })
+      return models.Form.query().where({ category, groupId, isActive: true })
     },
   },
 }

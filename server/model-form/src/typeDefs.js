@@ -47,10 +47,6 @@ const typeDefs = `
     children: JSON!
   }
 
-  type DeleteFormPayload {
-    query: Query
-  }
-
   extend type Query {
     form(formId: ID!): Form
     allFormsInCategory(category: String!, groupId: ID!): [Form!]!
@@ -63,7 +59,7 @@ const typeDefs = `
     updateForm(form: FormInput!): Form!
     updateFormElement(element: JSON!, formId: ID!, parentElementId: ID): Form!
     deleteFormElement(formId: ID!, elementId: ID!): Form
-    deleteForm(formId: ID!): DeleteFormPayload
+    deleteForm(formId: ID!): Boolean
   }
 `
 
