@@ -5,7 +5,6 @@ import React, {
   useRef,
   useCallback,
 } from 'react'
-import Tooltip from 'rc-tooltip'
 import PropTypes from 'prop-types'
 import moment from 'moment-timezone'
 import styled, { css } from 'styled-components'
@@ -180,10 +179,6 @@ const AssigneeFieldContainer = styled(BaseFieldContainer)`
 const DurationDaysFieldContainer = styled(BaseFieldContainer)`
   flex: 0 0 10em;
   margin-left: 10px;
-`
-
-const TooltipContainer = styled.div`
-  width: 100%;
 `
 
 const DueDateFieldContainer = styled(BaseFieldContainer)`
@@ -445,34 +440,12 @@ const Task = ({
                       )}
                     </Handle>
                   )}
-                  <Tooltip
-                    destroyTooltipOnHide={{ keepParent: false }}
-                    getTooltipContainer={el => el}
-                    overlay={<span>{taskTitle}</span>}
-                    overlayInnerStyle={{
-                      backgroundColor: 'black',
-                      color: 'white',
-                      borderColor: 'black',
-                      fontWeight: 'normal',
-                    }}
-                    overlayStyle={{
-                      display: 'inline',
-                      maxWidth: '30em',
-                      wordBreak: 'break-word',
-                    }}
-                    placement="top"
-                    trigger={['hover']}
-                  >
-                    <TooltipContainer>
-                      <TextInput
-                        onChange={event => updateTaskTitle(event.target.value)}
-                        placeholder={t(
-                          'taskManager.task.Give your task a name',
-                        )}
-                        value={taskTitle}
-                      />
-                    </TooltipContainer>
-                  </Tooltip>
+                  <TextInput
+                    title={taskTitle}
+                    onChange={event => updateTaskTitle(event.target.value)}
+                    placeholder={t('taskManager.task.Give your task a name')}
+                    value={taskTitle}
+                  />
                   <TaskAction ref={taskRef}>
                     <MinimalButton
                       onClick={() => {
