@@ -12,6 +12,7 @@ created
 updated
 category
 isActive
+isDefault
 groupId
 structure {
   name

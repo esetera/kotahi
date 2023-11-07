@@ -4,6 +4,7 @@ const typeDefs = `
     created: DateTime
     updated: DateTime
     isActive: Boolean
+    isDefault: Boolean
     structure: FormStructureInput!
     category: String!
     groupId: ID!
@@ -12,6 +13,7 @@ const typeDefs = `
   input CreateFormInput {
     created: DateTime
     isActive: Boolean!,
+    isDefault: Boolean!,
     structure: FormStructureInput!
     category: String!
     groupId: ID!
@@ -32,6 +34,7 @@ const typeDefs = `
     created: DateTime!
     updated: DateTime
     isActive: Boolean!
+    isDefault: Boolean!
     structure: FormStructure!
     category: String!
     groupId: ID

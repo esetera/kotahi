@@ -27,13 +27,19 @@ const resolvers = {
 
       const isActiveIsChanging = form.isActive !== currentForm.isActive
       let newIsActive = form.isActive
+      let newIsDefault = form.isDefault
 
       if (isActiveIsChanging && !form.isActive) {
-        const activeFormsInCategoryCount = await models.Form.query()
-          .where({ category: currentForm.category, isActive: true })
-          .count()
+        const otherActiveFormsInCategory = await models.Form.query()
+          .where({
+            category: currentForm.category,
+            isActive: true,
+            groupId: currentForm.groupId,
+          })
+          .whereNot({ id: currentForm.id })
+          .select('id')
 
-        if (activeFormsInCategoryCount <= 1) {
+        if (otherActiveFormsInCategory.length < 1) {
           // eslint-disable-next-line no-console
           console.log(
             `Preventing inactivation of the last active ${currentForm.category} form.`,
@@ -46,6 +52,7 @@ const resolvers = {
                 "submission->>'$$formPurpose' = ?",
                 form.structure.purpose,
               )
+              .where({ groupId: currentForm.groupId })
               .limit(1)
               .select('id')
           ).length
@@ -58,20 +65,48 @@ const resolvers = {
             newIsActive = true
           }
         }
+
+        if (!newIsActive && currentForm.isDefault) {
+          const idOfNewDefault = otherActiveFormsInCategory[0]?.id
+          if (!idOfNewDefault)
+            throw new Error(
+              `Last active form in category "${currentForm.category}" has been inactivated. This isn't supposed to happen!`,
+            )
+          newIsDefault = false
+          await models.Form.query()
+            .findById(idOfNewDefault)
+            .patch({ isDefault: true })
+        }
       }
 
       const result = await models.Form.query().patchAndFetchById(form.id, {
         ...form,
         isActive: newIsActive,
+        isDefault: newIsDefault,
       })
 
       // Ensure we don't have two active forms for the same category/purpose combination
       if (isActiveIsChanging && form.isActive) {
         await models.Form.query()
           .patch({ isActive: false })
-          .where({ isActive: true, category: result.category })
+          .where({
+            isActive: true,
+            category: result.category,
+            groupId: result.groupId,
+          })
           .whereRaw("structure->>'purpose' = ?", result.structure.purpose)
-          .whereNot({ id: form.id })
+          .whereNot({ id: result.id })
+      }
+
+      if (result.isDefault && !currentForm.isDefault) {
+        await models.Form.query()
+          .patch({ isDefault: false })
+          .where({
+            isDefault: true,
+            category: result.category,
+            groupId: result.groupId,
+          })
+          .whereNot({ id: result.id })
       }
 
       return result
@@ -126,7 +161,9 @@ const resolvers = {
      * have multiple active forms.
      */
     activeFormsInCategory: async (_, { category, groupId }) => {
-      return models.Form.query().where({ category, groupId, isActive: true })
+      return models.Form.query()
+        .where({ category, groupId, isActive: true })
+        .orderByRaw("structure->>'name'")
     },
   },
 }

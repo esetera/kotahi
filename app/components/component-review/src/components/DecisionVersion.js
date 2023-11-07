@@ -139,12 +139,12 @@ const DecisionVersion = ({
     currentUser,
   )
 
-  const submissionForm = submissionForms.find(
-    f => f.structure.purpose === version.submission.$$formPurpose,
-  ) ?? {
-    category: 'submission',
-    structure: { purpose: '', children: [] },
-  }
+  const submissionForm =
+    submissionForms.find(
+      f => f.structure.purpose === version.submission.$$formPurpose,
+    ) ??
+    submissionForms.find(f => f.isDefault) ??
+    submissionForms[0]
 
   const metadataSection = () => {
     const versionId = version.id

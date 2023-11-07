@@ -41,6 +41,7 @@ class Form extends BaseModel {
         purpose: { type: ['string', 'null'] },
         category: { type: 'string' },
         isActive: { type: 'boolean' },
+        isDefault: { type: 'boolean' },
         structure: {
           type: 'object',
           properties: {

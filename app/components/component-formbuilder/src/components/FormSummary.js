@@ -27,6 +27,9 @@ const FormSummary = ({ form, openFormSettingsDialog }) => {
   return (
     <DetailPane>
       <RightLooseRow>
+        {form.isDefault && (
+          <LabelBadge color={th('colorSecondary')}>Default</LabelBadge>
+        )}
         {form.isActive && (
           <LabelBadge color={th('colorPrimary')}>Active</LabelBadge>
         )}

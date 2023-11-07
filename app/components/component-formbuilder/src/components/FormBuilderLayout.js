@@ -59,8 +59,11 @@ const TabLabel = styled.div`
   color: ${({ isActive }) => (isActive ? color.text : color.gray50)};
 `
 
+/** Order by default first, then active forms first, then alphabetically */
 const getFormsOrderedActiveFirstThenAlphabetical = forms =>
   forms?.toSorted((a, b) => {
+    const isDefaultComparison = (a.isDefault ? 0 : 1) - (b.isDefault ? 0 : 1)
+    if (isDefaultComparison) return isDefaultComparison
     const isActiveComparison = (a.isActive ? 0 : 1) - (b.isActive ? 0 : 1)
     if (isActiveComparison) return isActiveComparison
     const nameA = a?.structure?.name?.toUpperCase()

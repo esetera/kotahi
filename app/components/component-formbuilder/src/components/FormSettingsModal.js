@@ -17,17 +17,19 @@ const InvalidWarning = styled.div`
 
 const FloatRightCheckbox = styled(Checkbox)`
   float: right;
+  margin-left: 20px;
 `
 
 const prepareForSubmit = (form, values) => {
   const cleanedValues = omitBy(values, value => value === '')
 
-  const { created, updated, isActive, ...rest } = cleanedValues
+  const { created, updated, isActive, isDefault, ...rest } = cleanedValues
 
   const updatedForm = {
     id: form.id,
     category: form.category,
     isActive,
+    isDefault,
     structure: { ...rest, purpose: values.purpose },
   }
 
@@ -49,6 +51,7 @@ const FormSettingsModal = ({
         description: '',
         popupdescription: '',
         isActive: form.isActive,
+        isDefault: form.isDefault,
         ...form.structure,
       }}
       key={form.id}
@@ -93,6 +96,17 @@ const FormSettingsModal = ({
               form.id ? `Update Form: ${form.structure.name}` : 'Create Form'
             }
           >
+            {form.category === 'submission' && (
+              <FloatRightCheckbox
+                checked={values.isDefault}
+                disabled={isLastActiveFormInCategory || form.isDefault}
+                handleChange={e =>
+                  setFieldValue('isDefault', !values.isDefault)
+                }
+                id="formIsDefault"
+                label="Default"
+              />
+            )}
             <FloatRightCheckbox
               checked={values.isActive}
               disabled={isLastActiveFormInCategory}
