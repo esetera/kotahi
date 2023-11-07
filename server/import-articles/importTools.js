@@ -55,6 +55,8 @@ const getEmptySubmission = async groupId => {
     }
   }, {})
 
+  emptySubmission.$$formPurpose = submissionForm.structure.purpose
+
   return emptySubmission
 }
 
