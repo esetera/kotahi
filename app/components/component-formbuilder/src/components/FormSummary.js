@@ -27,7 +27,7 @@ const FormSummary = ({ form, openFormSettingsDialog }) => {
   return (
     <DetailPane>
       <RightLooseRow>
-        {form.isDefault && (
+        {form.isDefault && form.category === 'submission' && (
           <LabelBadge color={th('colorSecondary')}>Default</LabelBadge>
         )}
         {form.isActive && (

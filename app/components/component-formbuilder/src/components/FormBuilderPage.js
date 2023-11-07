@@ -133,7 +133,7 @@ const FormBuilderPage = ({ category }) => {
     ],
   })
 
-  const [selectedFormId, setSelectedFormId] = useState()
+  const [selectedFormId, setSelectedFormId] = useState(null)
   const [selectedFieldId, setSelectedFieldId] = useState()
   const [formFields, setFormFields] = useState(cleanedForms)
 
@@ -219,12 +219,10 @@ const FormBuilderPage = ({ category }) => {
     if (data?.allFormsInCategory?.length) {
       setSelectedFormId(
         prevFormId =>
-          prevFormId ??
-          data.allFormsInCategory.find(f => f.isActive)?.id ??
+          data.allFormsInCategory.find(f => f.id === prevFormId)?.id ??
+          data.allFormsInCategory.find(f => f.isDefault)?.id ??
           data.allFormsInCategory[0]?.id,
       )
-    } else {
-      setSelectedFormId(null)
     }
   }, [data])
 
