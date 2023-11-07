@@ -298,6 +298,7 @@ const TaskEditModal = ({
             <TaskTitle>{t('modals.taskEdit.Task title')}</TaskTitle>
             <TitleCell>
               <TextInput
+                title={taskTitle}
                 autoFocus={!taskTitle}
                 onChange={event => updateTaskTitle(event.target.value)}
                 placeholder={t('modals.taskEdit.Give your task a name')}
