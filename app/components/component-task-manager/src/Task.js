@@ -441,9 +441,9 @@ const Task = ({
                     </Handle>
                   )}
                   <TextInput
-                    title={taskTitle}
                     onChange={event => updateTaskTitle(event.target.value)}
                     placeholder={t('taskManager.task.Give your task a name')}
+                    title={taskTitle}
                     value={taskTitle}
                   />
                   <TaskAction ref={taskRef}>
