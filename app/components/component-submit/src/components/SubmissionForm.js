@@ -1,5 +1,5 @@
 import React from 'react'
-import { SectionContent } from '../../../shared'
+import { Action, SectionContent } from '../../../shared'
 import { FormTemplate } from '../../../component-form/src'
 import { articleStatuses } from '../../../../globals'
 
@@ -17,6 +17,7 @@ const SubmissionForm = ({
   setShouldPublishField,
   validateDoi,
   validateSuffix,
+  canChangeForm,
 }) => {
   let submissionButtonText = 'Submit your research object'
   let submitButtonShouldRepublish = false
@@ -26,6 +27,21 @@ const SubmissionForm = ({
       submitButtonShouldRepublish = true
       submissionButtonText = 'Republish'
     } else submissionButtonText = 'Submit Evaluation'
+  }
+
+  let headingControls = null
+
+  if (canChangeForm) {
+    headingControls = (
+      <Action
+        onClick={async () => {
+          onChange(null, 'submission.$$formPurpose', manuscript.id)
+          await new Promise(resolve => setTimeout(resolve, 5000)) // Pause a while to keep the spinner going until page refreshes
+        }}
+      >
+        Change form
+      </Action>
+    )
   }
 
   return (
@@ -41,6 +57,7 @@ const SubmissionForm = ({
         }
         form={submissionForm}
         formData={version}
+        headingControls={headingControls}
         isSubmission
         manuscriptId={manuscript.id}
         manuscriptShortId={manuscript.shortId}

@@ -19,6 +19,7 @@ import {
   TextInput,
   CheckboxGroup,
   RichTextEditor,
+  MediumRow,
 } from '../../shared'
 import {
   Heading1,
@@ -106,6 +107,11 @@ const NoteRight = styled.div`
   line-height: ${th('lineHeightBaseSmall')};
   padding: ${({ theme }) => `${theme.spacing.e} ${theme.spacing.f}`};
   text-align: right;
+`
+
+const HeadingToolsContainer = styled(MediumRow)`
+  float: right;
+  width: unset;
 `
 
 const FieldHead = styled.div`
@@ -196,6 +202,7 @@ const FormTemplate = ({
   fieldsToPublish,
   setShouldPublishField,
   shouldShowOptionToPublish = false,
+  headingControls,
 }) => {
   const config = useContext(ConfigContext)
   const [confirming, setConfirming] = React.useState(false)
@@ -370,11 +377,18 @@ const FormTemplate = ({
 
         return (
           <FormContainer>
-            {displayShortIdAsIdentifier && (
-              <NoteRight>Manuscript Number: {manuscriptShortId}</NoteRight>
-            )}
             <header>
-              <Heading1>{form.structure.name}</Heading1>
+              <div>
+                <HeadingToolsContainer>
+                  {headingControls}
+                  {displayShortIdAsIdentifier && (
+                    <NoteRight>
+                      Manuscript Number: {manuscriptShortId}
+                    </NoteRight>
+                  )}
+                </HeadingToolsContainer>
+                <Heading1>{form.structure.name}</Heading1>
+              </div>
               <Intro
                 dangerouslySetInnerHTML={createSafeMarkup(
                   form.structure.description || '',

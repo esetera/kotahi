@@ -121,6 +121,7 @@ const Submit = ({
         setShouldPublishField,
         validateDoi,
         validateSuffix,
+        canChangeForm: version.status === 'new' && submissionForms.length > 1,
       }
 
       decisionSection = {
