@@ -30,6 +30,7 @@ const tryAddForm = async (category, group, seedFilePath) => {
       structure: formStructure,
       category,
       isActive: true,
+      isDefault: true,
       groupId: group.id,
     }
 
