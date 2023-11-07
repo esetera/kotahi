@@ -20,8 +20,8 @@ const typeDefs = `
   }
 
   input FormStructureInput {
-    name: String
-    purpose: String
+    name: String!
+    purpose: String!
     description: String
     haspopup: String!
     popuptitle: String
@@ -50,11 +50,17 @@ const typeDefs = `
     children: JSON!
   }
 
+  type SubmissionFormUseCount {
+    purpose: String!
+    manuscriptsCount: Int!
+  }
+
   extend type Query {
     form(formId: ID!): Form
     allFormsInCategory(category: String!, groupId: ID!): [Form!]!
     activeFormInCategory(category: String!, groupId: ID!): Form
     activeFormsInCategory(category: String!, groupId: ID!): [Form!]!
+    submissionFormUseCounts(groupId: ID!): [SubmissionFormUseCount!]!
   }
 
   extend type Mutation {

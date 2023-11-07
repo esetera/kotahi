@@ -42,8 +42,14 @@ const FormSettingsModal = ({
   isOpen,
   onClose,
   onSubmit,
+  submissionFormUseCounts,
 }) => {
   if (!isOpen) return null // To ensure Formik gets new initialValues whenever this is reopened
+
+  const formUseCount =
+    form.category === 'submission'
+      ? submissionFormUseCounts[form.structure.purpose]
+      : 0
 
   return (
     <Formik
@@ -72,117 +78,151 @@ const FormSettingsModal = ({
         return null
       }}
     >
-      {({ handleSubmit, setFieldValue, values, errors }) => (
-        <form onSubmit={handleSubmit}>
-          <Modal
-            contentStyles={{ minWidth: '800px' }}
-            isOpen={isOpen}
-            leftActions={
-              !!Object.keys(errors).length && (
-                <InvalidWarning>{errors.join(' — ')}</InvalidWarning>
-              )
-            }
-            onClose={onClose}
-            rightActions={
-              <>
-                <ActionButton onClick={handleSubmit} primary type="submit">
-                  {form.id ? 'Update Form' : 'Create Form'}
-                </ActionButton>
-                <ActionButton onClick={onClose}>Cancel</ActionButton>
-              </>
-            }
-            shouldCloseOnOverlayClick={false}
-            title={
-              form.id ? `Update Form: ${form.structure.name}` : 'Create Form'
-            }
-          >
-            {form.category === 'submission' && (
+      {({ handleSubmit, setFieldValue, values, errors }) => {
+        const purposeUseCount =
+          form.category === 'submission'
+            ? submissionFormUseCounts[values.purpose]
+            : 0
+
+        return (
+          <form onSubmit={handleSubmit}>
+            <Modal
+              contentStyles={{ minWidth: '800px' }}
+              isOpen={isOpen}
+              leftActions={
+                !!Object.keys(errors).length && (
+                  <InvalidWarning>{errors.join(' — ')}</InvalidWarning>
+                )
+              }
+              onClose={onClose}
+              rightActions={
+                <>
+                  <ActionButton onClick={handleSubmit} primary type="submit">
+                    {form.id ? 'Update Form' : 'Create Form'}
+                  </ActionButton>
+                  <ActionButton onClick={onClose}>Cancel</ActionButton>
+                </>
+              }
+              shouldCloseOnOverlayClick={false}
+              title={
+                form.id ? `Update Form: ${form.structure.name}` : 'Create Form'
+              }
+            >
+              {form.category === 'submission' && (
+                <FloatRightCheckbox
+                  checked={values.isDefault}
+                  disabled={form.isDefault}
+                  handleChange={e => {
+                    setFieldValue('isDefault', e.target.checked)
+                    if (e.target.checked) setFieldValue('isActive', true)
+                  }}
+                  id="formIsDefault"
+                  label="Default"
+                />
+              )}
               <FloatRightCheckbox
-                checked={values.isDefault}
-                disabled={isLastActiveFormInCategory || form.isDefault}
-                handleChange={e =>
-                  setFieldValue('isDefault', !values.isDefault)
-                }
-                id="formIsDefault"
-                label="Default"
+                checked={values.isActive}
+                disabled={form.isDefault || (form.isActive && purposeUseCount)}
+                handleChange={e => {
+                  if (!e.target.checked) setFieldValue('isDefault', false)
+                  setFieldValue('isActive', e.target.checked)
+                }}
+                id="formIsActive"
+                label="Active"
               />
-            )}
-            <FloatRightCheckbox
-              checked={values.isActive}
-              disabled={isLastActiveFormInCategory}
-              handleChange={e => setFieldValue('isActive', !values.isActive)}
-              id="formIsActive"
-              label="Active"
-            />
-            <Section id="form.name" key="form.name">
-              <Legend>Form title</Legend>
-              <ValidatedField
-                autoFocus={!form.id}
-                component={TextField}
-                name="name"
-                required
-              />
-            </Section>
-            {form.category === 'submission' && (
-              <Section id="form.purpose" key="form.purpose">
-                <Legend>Submission type</Legend>
-                <ValidatedField component={TextField} name="purpose" required />
-                <DetailText>
-                  Choose a name that will not change, to uniquely distinguish
-                  what type of submission this form is for. (Internal use only.)
-                </DetailText>
+              <Section id="form.name" key="form.name">
+                <Legend>Form title</Legend>
+                <ValidatedField
+                  autoFocus={!form.id}
+                  component={TextField}
+                  name="name"
+                  required
+                />
               </Section>
-            )}
-            <Section id="form.description" key="form.description">
-              <Legend>Description</Legend>
-              <ValidatedField
-                component={AbstractField}
-                name="description"
-                onChange={val => {
-                  setFieldValue('description', val)
-                }}
-              />
-            </Section>
-            <Section id="form.submitpopup" key="form.submitpopup">
-              <Legend>Show confirmation page when submitting?</Legend>
-              <ValidatedField
-                component={RadioBox}
-                inline
-                name="haspopup"
-                onChange={(input, value) => {
-                  setFieldValue('haspopup', input)
-                }}
-                options={[
-                  {
-                    label: 'Yes',
-                    value: 'true',
-                  },
-                  {
-                    label: 'No',
-                    value: 'false',
-                  },
-                ]}
-              />
-            </Section>
-            {values.haspopup === 'true' && [
-              <Section id="popup.title" key="popup.title">
-                <Legend>Popup Title</Legend>
-                <ValidatedField component={TextField} name="popuptitle" />
-              </Section>,
-              <Section id="popup.description" key="popup.description">
+              {form.category === 'submission' && (
+                <Section id="form.purpose" key="form.purpose">
+                  {form.isActive && formUseCount ? (
+                    <>
+                      <Legend>Submission type: {form.structure.purpose}</Legend>
+                    </>
+                  ) : (
+                    <>
+                      <Legend>Submission type</Legend>
+                      <ValidatedField
+                        component={TextField}
+                        name="purpose"
+                        required
+                      />
+                      <DetailText>
+                        Choose a name that will not change, to uniquely
+                        distinguish what type of submission this form is for.
+                        (Internal use only.)
+                      </DetailText>
+                    </>
+                  )}
+                  {values.purpose && (
+                    <DetailText>
+                      The <b>{values.purpose}</b> submission type is
+                      {purposeUseCount
+                        ? ` used by ${purposeUseCount} manuscript${
+                            purposeUseCount === 1 ? '' : 's'
+                          }.`
+                        : ' currently unused.'}
+                    </DetailText>
+                  )}
+                </Section>
+              )}
+              <Section id="form.description" key="form.description">
                 <Legend>Description</Legend>
                 <ValidatedField
                   component={AbstractField}
-                  name="popupdescription"
+                  name="description"
                   onChange={val => {
-                    setFieldValue('popupdescription', val)
+                    setFieldValue('description', val)
                   }}
                 />
-              </Section>,
-            ]}
-          </Modal>
-        </form>
-      )}
+              </Section>
+              <Section id="form.submitpopup" key="form.submitpopup">
+                <Legend>Show confirmation page when submitting?</Legend>
+                <ValidatedField
+                  component={RadioBox}
+                  inline
+                  name="haspopup"
+                  onChange={(input, value) => {
+                    setFieldValue('haspopup', input)
+                  }}
+                  options={[
+                    {
+                      label: 'Yes',
+                      value: 'true',
+                    },
+                    {
+                      label: 'No',
+                      value: 'false',
+                    },
+                  ]}
+                />
+              </Section>
+              {values.haspopup === 'true' && [
+                <Section id="popup.title" key="popup.title">
+                  <Legend>Popup Title</Legend>
+                  <ValidatedField component={TextField} name="popuptitle" />
+                </Section>,
+                <Section id="popup.description" key="popup.description">
+                  <Legend>Description</Legend>
+                  <ValidatedField
+                    component={AbstractField}
+                    name="popupdescription"
+                    onChange={val => {
+                      setFieldValue('popupdescription', val)
+                    }}
+                  />
+                </Section>,
+              ]}
+            </Modal>
+          </form>
+        )
+      }}
     </Formik>
   )
 }

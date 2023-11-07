@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useMemo } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { cloneDeep, omitBy } from 'lodash'
 import { ConfigContext } from '../../../config/src'
@@ -72,12 +72,25 @@ const query = gql`
     allFormsInCategory(category: $category, groupId: $groupId) {
       ${formFieldsSegment}
     }
+
+    submissionFormUseCounts(groupId: $groupId) {
+      purpose
+      manuscriptsCount
+    }
   }
 `
 
 const prepareForSubmit = values => {
   const cleanedValues = omitBy(cloneDeep(values), value => value === '')
   return cleanedValues
+}
+
+const getFormUseCountsMap = (countsArray = []) => {
+  const result = {}
+  countsArray.forEach(x => {
+    result[x.purpose] = x.manuscriptsCount
+  })
+  return result
 }
 
 const FormBuilderPage = ({ category }) => {
@@ -215,6 +228,11 @@ const FormBuilderPage = ({ category }) => {
     }
   }, [data])
 
+  const submissionFormUseCounts = useMemo(
+    () => getFormUseCountsMap(data?.submissionFormUseCounts),
+    [data],
+  )
+
   if (loading) return <Spinner />
   if (error) return <CommsErrorBanner error={error} />
 
@@ -238,6 +256,7 @@ const FormBuilderPage = ({ category }) => {
       shouldAllowHypothesisTagging={
         config?.publishing?.hypothesis?.shouldAllowTagging
       }
+      submissionFormUseCounts={submissionFormUseCounts}
       updateField={updateFormElement}
       updateForm={updateForm}
     />

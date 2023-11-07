@@ -1,5 +1,59 @@
 const models = require('@pubsweet/models')
 
+/** Ensure we don't have two active forms for the same category/purpose combination,
+ * by deactivating other forms as necessary. If one of the deactivated forms was
+ * the default form for the category, this form will now be promoted to default.
+ */
+const reorganiseActiveAndDefaultForms = async (
+  form,
+  wasActive,
+  wasDefault,
+  oldPurpose,
+) => {
+  let result = form
+
+  if (form.isActive && (!wasActive || form.structure.purpose !== oldPurpose)) {
+    const shouldMakeDefault = !!(
+      await models.Form.query()
+        .where({
+          isDefault: true,
+          category: form.category,
+          groupId: form.groupId,
+        })
+        .whereRaw("structure->>'purpose' = ?", form.structure.purpose)
+        .whereNot({ id: form.id })
+    ).length
+
+    if (shouldMakeDefault)
+      result = await models.Form.query().patchAndFetchById(form.id, {
+        isDefault: true,
+      })
+
+    await models.Form.query()
+      .patch({ isActive: false, isDefault: false })
+      .where({
+        isActive: true,
+        category: form.category,
+        groupId: form.groupId,
+      })
+      .whereRaw("structure->>'purpose' = ?", form.structure.purpose)
+      .whereNot({ id: form.id })
+  }
+
+  if (result.isDefault && !wasDefault) {
+    await models.Form.query()
+      .patch({ isDefault: false })
+      .where({
+        isDefault: true,
+        category: form.category,
+        groupId: form.groupId,
+      })
+      .whereNot({ id: form.id })
+  }
+
+  return result
+}
+
 const resolvers = {
   Mutation: {
     deleteForm: async (_, { formId }) => models.Form.query().deleteById(formId),
@@ -18,98 +72,19 @@ const resolvers = {
       return result
     },
     createForm: async (_, { form }) => {
-      return models.Form.query().insertAndFetch(form)
+      const result = await models.Form.query().insertAndFetch(form)
+      return reorganiseActiveAndDefaultForms(result, false, false, null)
     },
     updateForm: async (_, { form }) => {
-      if (!form.structure.purpose)
-        throw new Error('Form without purpose field encountered!')
-      const currentForm = await models.Form.query().findById(form.id)
+      const prior = await models.Form.query().findById(form.id)
+      const result = await models.Form.query().patchAndFetchById(form.id, form)
 
-      const isActiveIsChanging = form.isActive !== currentForm.isActive
-      let newIsActive = form.isActive
-      let newIsDefault = form.isDefault
-
-      if (isActiveIsChanging && !form.isActive) {
-        const otherActiveFormsInCategory = await models.Form.query()
-          .where({
-            category: currentForm.category,
-            isActive: true,
-            groupId: currentForm.groupId,
-          })
-          .whereNot({ id: currentForm.id })
-          .select('id')
-
-        if (otherActiveFormsInCategory.length < 1) {
-          // eslint-disable-next-line no-console
-          console.log(
-            `Preventing inactivation of the last active ${currentForm.category} form.`,
-          )
-          newIsActive = true
-        } else if (form.category === 'submission') {
-          const formIsUsedByManuscripts = (
-            await models.Manuscript.query()
-              .whereRaw(
-                "submission->>'$$formPurpose' = ?",
-                form.structure.purpose,
-              )
-              .where({ groupId: currentForm.groupId })
-              .limit(1)
-              .select('id')
-          ).length
-
-          if (formIsUsedByManuscripts) {
-            // eslint-disable-next-line no-console
-            console.log(
-              `Preventing inactivation of form with purpose "${form.structure.purpose}", which is in use`,
-            )
-            newIsActive = true
-          }
-        }
-
-        if (!newIsActive && currentForm.isDefault) {
-          const idOfNewDefault = otherActiveFormsInCategory[0]?.id
-          if (!idOfNewDefault)
-            throw new Error(
-              `Last active form in category "${currentForm.category}" has been inactivated. This isn't supposed to happen!`,
-            )
-          newIsDefault = false
-          await models.Form.query()
-            .findById(idOfNewDefault)
-            .patch({ isDefault: true })
-        }
-      }
-
-      const result = await models.Form.query().patchAndFetchById(form.id, {
-        ...form,
-        isActive: newIsActive,
-        isDefault: newIsDefault,
-      })
-
-      // Ensure we don't have two active forms for the same category/purpose combination
-      if (isActiveIsChanging && form.isActive) {
-        await models.Form.query()
-          .patch({ isActive: false })
-          .where({
-            isActive: true,
-            category: result.category,
-            groupId: result.groupId,
-          })
-          .whereRaw("structure->>'purpose' = ?", result.structure.purpose)
-          .whereNot({ id: result.id })
-      }
-
-      if (result.isDefault && !currentForm.isDefault) {
-        await models.Form.query()
-          .patch({ isDefault: false })
-          .where({
-            isDefault: true,
-            category: result.category,
-            groupId: result.groupId,
-          })
-          .whereNot({ id: result.id })
-      }
-
-      return result
+      return reorganiseActiveAndDefaultForms(
+        result,
+        prior.isActive,
+        prior.isDefault,
+        prior.structure.purpose,
+      )
     },
     updateFormElement: async (_, { element, formId }) => {
       const form = await models.Form.find(formId)
@@ -164,6 +139,16 @@ const resolvers = {
       return models.Form.query()
         .where({ category, groupId, isActive: true })
         .orderByRaw("structure->>'name'")
+    },
+    submissionFormUseCounts: async (_, { groupId }) => {
+      const distinctFormPurposesWithCounts = await models.Manuscript.query()
+        .select(
+          models.Manuscript.raw("submission->>'$$formPurpose' as purpose"),
+        )
+        .count('* as manuscriptsCount')
+        .groupBy('purpose')
+
+      return distinctFormPurposesWithCounts.filter(x => x.purpose !== null)
     },
   },
 }

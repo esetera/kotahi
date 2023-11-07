@@ -88,6 +88,7 @@ const FormBuilderLayout = ({
   setSelectedFieldId,
   setSelectedFormId,
   shouldAllowHypothesisTagging,
+  submissionFormUseCounts,
 }) => {
   const [openModal, setOpenModal] = useState(false)
   const [formId, setFormId] = useState()
@@ -193,6 +194,7 @@ const FormBuilderLayout = ({
     structure: {
       children: [],
       isActive: false,
+      isDefault: false,
       name: '',
       purpose: category === 'submission' ? '' : category,
       description: '',
@@ -277,6 +279,7 @@ const FormBuilderLayout = ({
           if (selectedForm.id) await updateForm(payload)
           else await createForm(payload)
         }}
+        submissionFormUseCounts={submissionFormUseCounts}
       />
 
       <FieldSettingsModal

@@ -455,9 +455,10 @@ const permissions = {
     files: deny, // Never used
     findByDOI: deny, // Never used
     form: isAuthenticated,
-    allFormsInCategory: or(userIsEditor, userIsGmOrAdmin),
+    allFormsInCategory: userIsGmOrAdmin,
     activeFormInCategory: allow,
     activeFormsInCategory: allow,
+    submissionFormUseCounts: userIsGmOrAdmin,
     getBlacklistInformation: or(userIsEditor, userIsGmOrAdmin),
     getEntityFiles: isAuthenticated,
     getInvitationsForManuscript: or(userIsEditor, userIsGmOrAdmin),
@@ -619,6 +620,7 @@ const permissions = {
   Note: isAuthenticated,
   Identity: isAuthenticated,
   PublishedManuscript: allow,
+  SubmissionFormUseCount: userIsGmOrAdmin,
 }
 
 module.exports = permissions
