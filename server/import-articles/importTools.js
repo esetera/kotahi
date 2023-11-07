@@ -28,15 +28,17 @@ const getLastImportDate = async (serverId, groupId) => {
 
 const getEmptySubmission = async groupId => {
   const submissionForms = await getSubmissionForms(groupId)
+
+  const submissionForm =
+    submissionForms.find(f => f.isDefault) ?? submissionForms[0]
+
   const fieldNamesFound = new Set()
   const allFields = []
-  submissionForms.forEach(form => {
-    form.structure.children.forEach(field => {
-      if (!field.name.startsWith('submission.')) return
-      if (fieldNamesFound.has(field.name)) return
-      fieldNamesFound.add(field.name)
-      allFields.push(field)
-    })
+  submissionForm.structure.children.forEach(field => {
+    if (!field.name.startsWith('submission.')) return
+    if (fieldNamesFound.has(field.name)) return
+    fieldNamesFound.add(field.name)
+    allFields.push(field)
   })
 
   const emptySubmission = allFields.reduce((acc, curr) => {

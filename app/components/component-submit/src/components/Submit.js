@@ -72,6 +72,7 @@ const Submit = ({
   useEffect(() => {
     debouncedSave.flush()
 
+    // If there is only one submission form, set the $$formPurpose immediately to use that one
     if (
       versions.length &&
       submissionForms.length === 1 &&
