@@ -457,6 +457,8 @@ const en = {
         cse: 'Council of Science Editors (CSE)',
         'Select locale for citations': 'Select locale for citations',
       },
+      allowedIPs: 'List of repository IPs allowed access',
+      api: 'COAR Notify',
     },
     reportsPage: {
       Reports: 'Reports',

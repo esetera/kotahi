@@ -392,6 +392,8 @@ const fr = {
         'Pages de contrôle visibles aux éditeurs',
       Team: 'Équipe',
       Submission: 'Soumission',
+      coarNotify: 'COAR-Notifier',
+      acceptedIPs: 'IP acceptées',
       allowToSubmitNewVersion:
         'Permettre à un auteur de soumettre une nouvelle version de son manuscrit à tout moment',
       'Review page': "Page d'évaluation",
@@ -476,6 +478,8 @@ const fr = {
         'Select locale for citations':
           'Sélectionnez la langue pour les citations',
       },
+      allowedIPs: 'Liste des adresses IP du référentiel autorisées à accéder',
+      api: 'API Kotahi',
     },
     reportsPage: {
       Reports: 'Rapports',

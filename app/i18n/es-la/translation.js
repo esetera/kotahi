@@ -476,6 +476,8 @@ const esLa = {
         'Select locale for citations':
           'Seleccionar configuración regional para citas',
       },
+      allowedIPs: 'Lista de IP del repositorio a las que se permite el acceso',
+      api: 'API de Kotahi',
     },
     reportsPage: {
       Reports: 'Reportes',

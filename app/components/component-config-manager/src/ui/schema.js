@@ -967,6 +967,16 @@ const generateSchema = (
                   },
                 },
               },
+              coarNotify: {
+                type: 'object',
+                title: t('configPage.api'),
+                properties: {
+                  repoIpAddress: {
+                    type: ['string', 'null'],
+                    description: t('configPage.allowedIPs'),
+                  },
+                },
+              },
             },
           },
           {
@@ -1495,6 +1505,16 @@ const generateSchema = (
                   },
                 },
               },
+              coarNotify: {
+                type: 'object',
+                title: t('configPage.api'),
+                properties: {
+                  repoIpAddress: {
+                    type: ['string', 'null'],
+                    description: t('configPage.allowedIPs'),
+                  },
+                },
+              },
             },
           },
           {
@@ -2016,6 +2036,16 @@ const generateSchema = (
                   tokens: {
                     type: ['string', 'null'],
                     description: t('configPage.tokens'),
+                  },
+                },
+              },
+              coarNotify: {
+                type: 'object',
+                title: t('configPage.api'),
+                properties: {
+                  repoIpAddress: {
+                    type: ['string', 'null'],
+                    description: t('configPage.allowedIPs'),
                   },
                 },
               },
@@ -2563,6 +2593,16 @@ const generateSchema = (
                   tokens: {
                     type: ['string', 'null'],
                     description: t('configPage.tokens'),
+                  },
+                },
+              },
+              coarNotify: {
+                type: 'object',
+                title: t('configPage.api'),
+                properties: {
+                  repoIpAddress: {
+                    type: ['string', 'null'],
+                    description: t('configPage.allowedIPs'),
                   },
                 },
               },
