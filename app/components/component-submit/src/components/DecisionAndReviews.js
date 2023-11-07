@@ -25,14 +25,23 @@ const Decision = ({
     ? JSON.parse(decisionDataString)
     : null
 
-  const filteredChildren = !manuscript.decision
-    ? {
-        ...decisionForm,
-        children: decisionForm.children.filter(
-          formComponent => formComponent.component === 'ThreadedDiscussion',
-        ),
-      }
-    : decisionForm
+  // To support decision comments imported from ejp
+  const editorTeam =
+    manuscript.teams &&
+    !!manuscript.teams.length &&
+    manuscript.teams.find(team => {
+      return team.role.toLowerCase().includes('editor')
+    })
+
+  const filteredChildren =
+    !manuscript.decision && editorTeam
+      ? {
+          ...decisionForm,
+          children: decisionForm.children.filter(
+            formComponent => formComponent.component === 'ThreadedDiscussion',
+          ),
+        }
+      : decisionForm
 
   return decisionData ? (
     <ReadonlyFormTemplate

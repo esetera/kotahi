@@ -1,4 +1,5 @@
 /* eslint-disable global-require, no-console, import/no-dynamic-require, no-await-in-loop, no-continue */
+
 const models = require('@pubsweet/models')
 const { chunk } = require('lodash')
 
@@ -13,13 +14,47 @@ const runImports = async (groupId, submitterId = null) => {
   const saveImportedManuscripts = async allNewManuscripts => {
     try {
       const chunks = chunk(allNewManuscripts, 10)
-      await Promise.all(
-        chunks.map(async ch => {
-          await models.Manuscript.query().upsertGraphAndFetch(ch, {
-            relate: true,
-          })
-        }),
-      )
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const chunkUnit of chunks) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const item of chunkUnit) {
+          if (Array.isArray(item)) {
+            let parentManuscript
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const preprint of item) {
+              if (parentManuscript) {
+                const preprintWithParent = {
+                  ...preprint,
+                  parentId: parentManuscript.id,
+                }
+
+                delete parentManuscript.channels
+
+                const newVersion = await models.Manuscript.query().upsertGraphAndFetch(
+                  preprintWithParent,
+                  {
+                    relate: true,
+                  },
+                )
+
+                console.log('versionData', newVersion)
+              } else
+                parentManuscript = await models.Manuscript.query().upsertGraphAndFetch(
+                  preprint,
+                  {
+                    relate: true,
+                  },
+                )
+            }
+          } else {
+            await models.Manuscript.query().upsertGraphAndFetch(item, {
+              relate: true,
+            })
+          }
+        }
+      }
     } catch (e) {
       console.error(e)
     }
@@ -86,49 +121,87 @@ const runImports = async (groupId, submitterId = null) => {
       `Found ${newManuscripts.length} new manuscripts for group ${groupId}.`,
     )
 
-    newManuscripts.forEach(m => {
-      // TODO check manuscript structure
-      const uri =
-        m.submission.link ||
-        m.submission.biorxivURL ||
-        m.submission.url ||
-        m.submission.uri
+    // eslint-disable-next-line no-loop-func
+    newManuscripts.forEach(manuscriptData => {
+      // Ensure that you are working with an array, if not convert to an array with a single element
 
-      const { doi } = m
+      let uri, doi
 
-      // TODO replace an earlier manuscript if it shares uri or DOI
+      if (Array.isArray(manuscriptData)) {
+        const versions = []
+        manuscriptData.forEach(preprint => {
+          uri =
+            preprint.submission.link ||
+            preprint.submission.biorxivURL ||
+            preprint.submission.url ||
+            preprint.submission.uri
+          doi = preprint.doi
+          versions.push({
+            submission: {},
+            meta: { title: '' },
+            importSourceServer: null,
+            ...preprint,
+            status: 'new',
+            isImported: true,
+            importSource,
+            submitterId,
+            channels: [
+              {
+                topic: 'Manuscript discussion',
+                type: 'all',
+              },
+              {
+                topic: 'Editorial discussion',
+                type: 'editorial',
+              },
+            ],
+            files: [],
+            teams: [],
+            groupId,
+          })
+        })
+        allNewManuscripts.push(versions)
+      } else {
+        uri =
+          manuscriptData.submission.link ||
+          manuscriptData.submission.biorxivURL ||
+          manuscriptData.submission.url ||
+          manuscriptData.submission.uri
 
-      // force some fields to be empty; provide defaults for others.
-      allNewManuscripts.push({
-        submission: {},
-        meta: { title: '' },
-        importSourceServer: null,
-        ...m,
-        status: 'new',
-        isImported: true,
-        importSource,
-        submitterId,
-        channels: [
-          {
-            topic: 'Manuscript discussion',
-            type: 'all',
-          },
-          {
-            topic: 'Editorial discussion',
-            type: 'editorial',
-          },
-        ],
-        files: [],
-        reviews: [], // TODO This forces reviews to be empty. This should change if we want to import manuscripts with reviews already attached
-        teams: [],
-        groupId,
-      })
+        doi = manuscriptData.doi
 
+        allNewManuscripts.push({
+          submission: {},
+          meta: { title: '' },
+          importSourceServer: null,
+          ...manuscriptData,
+          status: 'new',
+          isImported: true,
+          importSource,
+          submitterId,
+          channels: [
+            {
+              topic: 'Manuscript discussion',
+              type: 'all',
+            },
+            {
+              topic: 'Editorial discussion',
+              type: 'editorial',
+            },
+          ],
+          files: [],
+          teams: [],
+          groupId,
+        })
+      }
+
+      // Check if DOI or URI already exist and skip if they do
       if (doi) doisAlreadyImporting.push(doi)
+
       if (uri) urisAlreadyImporting.push(uri)
     })
 
-    console.log('Total Manuscripts to save in DB => ', allNewManuscripts.length)
+    console.log('Total Items to save in DB => ', allNewManuscripts.length)
 
     saveImportedManuscripts(allNewManuscripts)
 

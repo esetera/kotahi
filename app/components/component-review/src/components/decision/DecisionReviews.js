@@ -37,11 +37,20 @@ const DecisionReviews = ({
   currentUser,
 }) => {
   const reviewsToShow = manuscript?.reviews?.length
-    ? manuscript.reviews.filter(
-        review =>
-          getReviewerTeamMember(manuscript, review.user)?.status ===
-            'completed' && review.isDecision === false,
-      )
+    ? manuscript.reviews.filter(review => {
+        if (review.user) {
+          const reviewerTeamMember = getReviewerTeamMember(
+            manuscript,
+            review.user,
+          )
+
+          return (
+            reviewerTeamMember?.status === 'completed' && !review.isDecision
+          )
+        }
+
+        return !review.isDecision
+      })
     : []
 
   return (
@@ -54,8 +63,8 @@ const DecisionReviews = ({
         reviewsToShow
           .sort((reviewOne, reviewTwo) => {
             // Get the username of reviewer and convert to uppercase
-            const usernameOne = reviewOne.user.username.toUpperCase()
-            const usernameTwo = reviewTwo.user.username.toUpperCase()
+            const usernameOne = reviewOne?.user?.username.toUpperCase()
+            const usernameTwo = reviewTwo?.user?.username.toUpperCase()
 
             // Sort by username
             if (usernameOne < usernameTwo) return -1
@@ -76,7 +85,7 @@ const DecisionReviews = ({
                 manuscriptId={manuscript.id}
                 open
                 review={review}
-                reviewer={{ user: review.user, ordinal: index + 1 }}
+                reviewer={{ user: review?.user, ordinal: index + 1 }}
                 reviewerTeamMember={getReviewerTeamMember(
                   manuscript,
                   review.user,

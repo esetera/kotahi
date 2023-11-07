@@ -52,20 +52,23 @@ const DeleteReviewerModal = ({
     <Modal isOpen={isOpen} leftActions={actions}>
       <ModalContainer>
         <StackedHeader title="Delete this reviewer?" />
-        <UserCombo>
-          <UserAvatar user={reviewer.user} />
-          <UserInfo>
-            <Primary>
-              Reviewer:{' '}
-              <ReviewerName>
-                {reviewer.user?.username ?? reviewer.invitedPersonName}
-              </ReviewerName>
-            </Primary>
-            <Secondary>
-              {reviewer.user?.defaultIdentity?.identifier ?? reviewer.toEmail}
-            </Secondary>
-          </UserInfo>
-        </UserCombo>
+        {reviewer && (
+          <UserCombo>
+            <UserAvatar user={reviewer?.user ?? ''} />
+            <UserInfo>
+              <Primary>
+                Reviewer:{' '}
+                <ReviewerName>
+                  {reviewer.user?.username ?? reviewer?.invitedPersonName}
+                </ReviewerName>
+              </Primary>
+              <Secondary>
+                {reviewer?.user?.defaultIdentity?.identifier ??
+                  reviewer?.toEmail}
+              </Secondary>
+            </UserInfo>
+          </UserCombo>
+        )}
       </ModalContainer>
     </Modal>
   )
